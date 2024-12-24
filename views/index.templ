@@ -1,7 +1,15 @@
 package views
 
-templ Hello(name string) {
+import "simple-server/database"
+
+templ Text(name string) {
 	<p>{ name }</p>
+}
+
+templ Authors(authors []database.Author) {
+	for _, author := range authors {
+		<li>{ author.Name }</li>
+	}
 }
 
 templ Index() {
@@ -10,10 +18,13 @@ templ Index() {
 		@Header()
 		<body>
 			<div class="container">
-				<div class="box">
-					@Hello("World")
+				<div id="text" class="box">
+					@Text("World")
 				</div>
-				<button class="button">Click</button>
+				<button hx-get="/hello" hx-target="#text" class="button">Hello</button>
+				<button hx-get="/buy" hx-target="#text" class="button">Buy</button>
+				<button hx-get="/list" hx-target="#authors" class="button">Get List</button>
+				<ul id="authors"></ul>
 			</div>
 		</body>
 	</html>

@@ -7,3 +7,7 @@ go install github.com/a-h/templ/cmd/templ@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 go install github.com/air-verse/air@latest
 ```
+
+```shell
+go env -w CGO_ENABLED=1
+```
