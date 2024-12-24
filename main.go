@@ -6,7 +6,7 @@ import (
 	"simple-server/views"
 
 	"github.com/a-h/templ"
-	_ "modernc.org/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
