@@ -1,0 +1,17 @@
+package views
+
+templ Hello(name string) {
+	<p>{ name }</p>
+}
+
+templ Index() {
+	<!DOCTYPE html>
+	<html>
+		@Header()
+		<body>
+			<div>
+				@Hello("World")
+			</div>
+		</body>
+	</html>
+}
