@@ -24,7 +24,18 @@ templ Index() {
 				<button hx-get="/hello" hx-target="#text" class="button">Hello</button>
 				<button hx-get="/buy" hx-target="#text" class="button">Buy</button>
 				<button hx-get="/list" hx-target="#authors" class="button">Get List</button>
-				<ul id="authors"></ul>
+				<ul class="my-1" id="authors"></ul>
+				<div x-data="{ input : ''}">
+					<label>
+						입력 값 1
+						<input x-model:="input"/>
+					</label>
+					<br/>
+					<label>
+						입력 값 2
+						<input x-model:="input"/>
+					</label>
+				</div>
 			</div>
 		</body>
 	</html>

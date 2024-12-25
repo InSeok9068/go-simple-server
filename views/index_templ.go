@@ -133,7 +133,7 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><button hx-get=\"/hello\" hx-target=\"#text\" class=\"button\">Hello</button> <button hx-get=\"/buy\" hx-target=\"#text\" class=\"button\">Buy</button> <button hx-get=\"/list\" hx-target=\"#authors\" class=\"button\">Get List</button><ul id=\"authors\"></ul></div></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><button hx-get=\"/hello\" hx-target=\"#text\" class=\"button\">Hello</button> <button hx-get=\"/buy\" hx-target=\"#text\" class=\"button\">Buy</button> <button hx-get=\"/list\" hx-target=\"#authors\" class=\"button\">Get List</button><ul class=\"my-1\" id=\"authors\"></ul><div x-data=\"{ input : &#39;&#39;}\"><label>입력 값 1 <input x-model:=\"input\"></label><br><label>입력 값 2 <input x-model:=\"input\"></label></div></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
