@@ -11,3 +11,5 @@ go install github.com/air-verse/air@latest
 ```shell
 go env -w CGO_ENABLED=1
 ```
+
+Window : [tdm-gcc](https://jmeubank.github.io/tdm-gcc/)
