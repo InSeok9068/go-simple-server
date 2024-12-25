@@ -4,25 +4,33 @@ import (
 	"context"
 	"database/sql"
 	"log/slog"
-	"net/http"
 	"simple-server/database"
 	"simple-server/views"
 
 	"github.com/a-h/templ"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		templ.Handler(views.Index()).ServeHTTP(w, r)
+	e := echo.New()
+
+	e.Use(middleware.Logger())
+
+	e.GET("/", func(c echo.Context) error {
+		return templ.Handler(views.Index()).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
-	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		templ.Handler(views.Text("Hello")).ServeHTTP(w, r)
+
+	e.GET("/hello", func(c echo.Context) error {
+		return templ.Handler(views.Text("Hello")).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
-	http.HandleFunc("/buy", func(w http.ResponseWriter, r *http.Request) {
-		templ.Handler(views.Text("Buy")).ServeHTTP(w, r)
+
+	e.GET("/buy", func(c echo.Context) error {
+		return templ.Handler(views.Text("Buy")).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
-	http.HandleFunc("/list", func(w http.ResponseWriter, r *http.Request) {
+
+	e.GET("/list", func(c echo.Context) error {
 		ctx := context.Background()
 		db, err := sql.Open("sqlite3", "file:./database/data.db")
 		if err != nil {
@@ -34,9 +42,8 @@ func main() {
 		if err != nil {
 			slog.Error(err.Error())
 		}
-		templ.Handler(views.Authors(authors)).ServeHTTP(w, r)
+		return templ.Handler(views.Authors(authors)).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
 
-	// 서버 실행
-	slog.Error(http.ListenAndServe(":8000", nil).Error())
+	e.Logger.Fatal(e.Start(":8000"))
 }
