@@ -12,4 +12,8 @@ go install github.com/air-verse/air@latest
 go env -w CGO_ENABLED=1
 ```
 
+```shell
+sqlc generate
+```
+
 Window : [tdm-gcc](https://jmeubank.github.io/tdm-gcc/)
