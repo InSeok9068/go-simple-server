@@ -33,3 +33,8 @@ clean_on_exit = false
 
 [screen]
 clear_on_rebuild = false
+
+[proxy]
+enabled = true
+proxy_port = 8080
+app_port = 8000
