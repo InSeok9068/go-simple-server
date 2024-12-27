@@ -257,7 +257,7 @@ func AuthorUpdateForm(author database.Author) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"button is-primary\">수정</button></form>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"button is-link\">수정</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -287,7 +287,7 @@ func Authors(authors []database.Author) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		for _, author := range authors {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"my-2\"><form><div class=\"columns\"><input type=\"hidden\" name=\"id\" value=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"my-2\"><form class=\"box\"><div class=\"columns\"><input type=\"hidden\" name=\"id\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -300,33 +300,33 @@ func Authors(authors []database.Author) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"column is-1\"><p class=\"block\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"column is-2\"><p class=\"box\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(author.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 73, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 73, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div><div class=\"column is-1\"><p class=\"block\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div><div class=\"column is-2\"><p class=\"box\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(author.Bio.String)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 74, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 74, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div><div class=\"column is-1\"><button class=\"button is-primary\" hx-get=\"/author\" hx-include=\"[name=&#39;id&#39;]\" hx-target=\".form\">수정</button></div><div class=\"column is-1\"><button class=\"delete\" hx-delete=\"/author\" hx-include=\"[name=&#39;id&#39;]\" hx-target=\"#authors\" hx-confirm=\"삭제 하시겠습니까?\"></button></div></div></form></li>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div><div class=\"column is-1\"><button class=\"button is-link\" hx-get=\"/author\" hx-include=\"[name=&#39;id&#39;]\" hx-target=\".form\">수정</button></div><div class=\"column is-1\"><button class=\"delete is-medium\" hx-delete=\"/author\" hx-include=\"[name=&#39;id&#39;]\" hx-target=\"#authors\" hx-confirm=\"삭제 하시겠습니까?\"></button></div></div></form></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -372,7 +372,7 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><button hx-get=\"/authors\" hx-target=\"#authors\" class=\"button mb-2\">리스트 조회</button> <button hx-get=\"/reset-form\" hx-target=\".form\" class=\"button mb-2\">등록</button><ul class=\"my-1\" id=\"authors\"></ul><div class=\"form\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><button hx-get=\"/authors\" hx-target=\"#authors\" class=\"button mb-2\">리스트 조회</button> <button hx-get=\"/reset-form\" hx-target=\".form\" class=\"button is-primary mb-2\">등록</button><ul class=\"my-1\" id=\"authors\"></ul><div class=\"form\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
