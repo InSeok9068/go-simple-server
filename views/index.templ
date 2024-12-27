@@ -11,20 +11,36 @@ templ Text(name string) {
 	</p>
 }
 
+templ authorName(name ...string) {
+	<div class="field">
+		<label class="label">Name</label>
+		<div class="control">
+			if len(name) > 0 {
+				<input class="input" name="name" value={ name[0] }/>
+			} else {
+				<input class="input" name="name"/>
+			}
+		</div>
+	</div>
+}
+
+templ authorBio(bio ...string) {
+	<div class="field">
+		<label class="label">Bio</label>
+		<div class="control">
+			if len(bio) > 0 {
+				<input class="input" name="bio" value={ bio[0] }/>
+			} else {
+				<input class="input" name="bio"/>
+			}
+		</div>
+	</div>
+}
+
 templ AuthorInsertForm() {
 	<form class="box" hx-post="/author" hx-target="#authors" hx-on::after-request="if(event.detail.successful) this.reset()">
-		<div class="field">
-			<label class="label">Name</label>
-			<div class="control">
-				<input class="input" name="name"/>
-			</div>
-		</div>
-		<div class="field">
-			<label class="label">Bio</label>
-			<div class="control">
-				<input class="input" name="bio"/>
-			</div>
-		</div>
+		@authorName()
+		@authorBio()
 		<button class="button is-primary">등록</button>
 	</form>
 }
@@ -32,18 +48,8 @@ templ AuthorInsertForm() {
 templ AuthorUpdateForm(author database.Author) {
 	<form class="box" hx-put="/author" hx-target="#authors">
 		<input type="hidden" name="id" value={ strconv.FormatInt(author.ID, 10) }/>
-		<div class="field">
-			<label class="label">Name</label>
-			<div class="control">
-				<input class="input" name="name" value={ author.Name }/>
-			</div>
-		</div>
-		<div class="field">
-			<label class="label">Bio</label>
-			<div class="control">
-				<input class="input" name="bio" value={ author.Bio.String }/>
-			</div>
-		</div>
+		@authorName(author.Name)
+		@authorBio(author.Bio.String)
 		<button class="button is-primary">수정</button>
 	</form>
 }
