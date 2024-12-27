@@ -21,8 +21,7 @@ script ToastGlobalState() {
 		});
 	});
  
-	document.addEventListener('htmx:afterRequest', (event) => {
-    debugger; 
+	document.addEventListener('htmx:afterRequest', (event) => { 
 		const contentType = event.detail.xhr.getResponseHeader("Content-Type");
 		if (contentType !== 'application/json') {
 			return;
@@ -45,7 +44,7 @@ script ToastGlobalState() {
 		}
 		const toastMessage = parsedResponse.message;   
 	
-		Alpine.store('toast').displayToast(toastMessage, toastType);
+		Alpine.store('toast').displayToast(toastMessage, toastType); 
 	});
 }
 
@@ -53,7 +52,7 @@ templ Toast() {
 	@ToastGlobalState()
 	<div
 		class="modal"
-		:class="$store.toast.toastVisible ? is-active : ''"
+		:class="$store.toast.toastVisible ? 'is-active' : ''"
 		x-data
 		x-show="$store.toast.toastVisible"
 		x-transition

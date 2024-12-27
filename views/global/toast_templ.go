@@ -10,8 +10,8 @@ import templruntime "github.com/a-h/templ/runtime"
 
 func ToastGlobalState() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_ToastGlobalState_0463`,
-		Function: `function __templ_ToastGlobalState_0463(){document.addEventListener('alpine:init', () => {
+		Name: `__templ_ToastGlobalState_7389`,
+		Function: `function __templ_ToastGlobalState_7389(){document.addEventListener('alpine:init', () => {
 		Alpine.store('toast', { 
 			toastVisible: false,
 			toastMessage: '',
@@ -31,8 +31,7 @@ func ToastGlobalState() templ.ComponentScript {
 		});
 	});
  
-	document.addEventListener('htmx:afterRequest', (event) => {
-    debugger; 
+	document.addEventListener('htmx:afterRequest', (event) => { 
 		const contentType = event.detail.xhr.getResponseHeader("Content-Type");
 		if (contentType !== 'application/json') {
 			return;
@@ -55,11 +54,11 @@ func ToastGlobalState() templ.ComponentScript {
 		}
 		const toastMessage = parsedResponse.message;   
 	
-		Alpine.store('toast').displayToast(toastMessage, toastType);
+		Alpine.store('toast').displayToast(toastMessage, toastType); 
 	});
 }`,
-		Call:       templ.SafeScript(`__templ_ToastGlobalState_0463`),
-		CallInline: templ.SafeScriptInline(`__templ_ToastGlobalState_0463`),
+		Call:       templ.SafeScript(`__templ_ToastGlobalState_7389`),
+		CallInline: templ.SafeScriptInline(`__templ_ToastGlobalState_7389`),
 	}
 }
 
@@ -88,7 +87,7 @@ func Toast() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal\" :class=\"$store.toast.toastVisible ? is-active : &#39;&#39;\" x-data x-show=\"$store.toast.toastVisible\" x-transition x-cloak un-cloak><div class=\"modal-background\"></div><div class=\"modal-content\"><div class=\"box\" x-text=\"$store.toast.toastMessage\"></div></div><button class=\"modal-close is-large\" aria-label=\"close\" @click=\"$store.toast.clearToast()\"></button></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal\" :class=\"$store.toast.toastVisible ? &#39;is-active&#39; : &#39;&#39;\" x-data x-show=\"$store.toast.toastVisible\" x-transition x-cloak un-cloak><div class=\"modal-background\"></div><div class=\"modal-content\"><div class=\"box\" x-text=\"$store.toast.toastMessage\"></div></div><button class=\"modal-close is-large\" aria-label=\"close\" @click=\"$store.toast.clearToast()\"></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

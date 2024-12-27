@@ -1,0 +1,8 @@
+.modal {
+  --bulma-modal-background-background-color: hsla(
+    var(--bulma-scheme-h),
+    var(--bulma-scheme-s),
+    /* Lightness를 10% 더 밝게 */ calc(var(--bulma-scheme-invert-l) + 10%),
+    0.86
+  );
+}

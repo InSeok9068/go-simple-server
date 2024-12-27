@@ -3,7 +3,9 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log/slog"
+	"net/http"
 	"simple-server/database"
 	"simple-server/views"
 	"strconv"
@@ -49,8 +51,12 @@ func CreateAuthor(c echo.Context) error {
 	name := c.FormValue("name")
 	bio := c.FormValue("bio")
 
+	if name == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "이름을 입력해주세요.")
+	}
+
 	queries, ctx := dbConnection()
-	_, err := queries.CreateAuthor(ctx, database.CreateAuthorParams{
+	author, err := queries.CreateAuthor(ctx, database.CreateAuthorParams{
 		Name: name,
 		Bio: sql.NullString{
 			String: bio,
@@ -59,7 +65,10 @@ func CreateAuthor(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "등록 오류")
 	}
+
+	slog.Info(fmt.Sprintf("Author: %+v", author))
 
 	return GetAuthors(c)
 }
@@ -72,7 +81,7 @@ func UpdateAuthor(c echo.Context) error {
 	bio := c.FormValue("bio")
 
 	queries, ctx := dbConnection()
-	_, err := queries.UpdateAuthor(ctx, database.UpdateAuthorParams{
+	author, err := queries.UpdateAuthor(ctx, database.UpdateAuthorParams{
 		ID:   idInt,
 		Name: name,
 		Bio: sql.NullString{
@@ -82,7 +91,10 @@ func UpdateAuthor(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "수정 오류")
 	}
+
+	slog.Info(fmt.Sprintf("Author: %+v", author))
 
 	return GetAuthors(c)
 }
@@ -95,6 +107,7 @@ func DeleteAuthor(c echo.Context) error {
 	err := queries.DeleteAuthor(ctx, idInt)
 	if err != nil {
 		slog.Error(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "삭제 오류")
 	}
 
 	return GetAuthors(c)

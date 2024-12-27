@@ -20,7 +20,7 @@ func main() {
 
 	e := echo.New()
 
-	e.Use(middleware.Static("public"))
+	e.Use(middleware.Static("static"))
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
