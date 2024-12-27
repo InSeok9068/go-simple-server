@@ -2,6 +2,7 @@ package views
 
 import (
 	"simple-server/database"
+	"simple-server/views/global"
 	"strconv"
 )
 
@@ -86,6 +87,7 @@ templ Index() {
 					@AuthorInsertForm()
 				</div>
 			</div>
+			@global.Toast()
 		</body>
 	</html>
 }

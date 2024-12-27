@@ -29,6 +29,7 @@ func GetAuthors(c echo.Context) error {
 		slog.Error(err.Error())
 	}
 	return templ.Handler(views.Authors(authors)).Component.Render(c.Request().Context(), c.Response().Writer)
+	// return echo.NewHTTPError(http.StatusInternalServerError, "오류 입니다.")
 }
 
 func GetAuthor(c echo.Context) error {

@@ -1,0 +1,69 @@
+package global
+
+script ToastGlobalState() {
+	document.addEventListener('alpine:init', () => {
+		Alpine.store('toast', { 
+			toastVisible: false,
+			toastMessage: '',
+			toastType: 'danger',
+			
+			displayToast(message, type) {
+				this.toastVisible = true;
+				this.toastMessage = message;
+				this.toastType = type;
+				setTimeout(() => {this.clearToast()}, 3000);
+			},
+ 
+			clearToast() {
+				this.toastVisible = false;
+				this.toastMessage = '';
+			}    
+		});
+	});
+ 
+	document.addEventListener('htmx:afterRequest', (event) => {
+    debugger; 
+		const contentType = event.detail.xhr.getResponseHeader("Content-Type");
+		if (contentType !== 'application/json') {
+			return;
+		}
+ 
+	    const responseData = event.detail.xhr.responseText;
+		if (responseData === '') {
+			return;
+		}
+ 
+		let toastType = 'success';
+		const isResponseError = event.detail.xhr.status >= 400;
+		if (isResponseError) {
+			toastType = 'danger';
+		}
+ 
+		const parsedResponse = JSON.parse(responseData);
+		if (parsedResponse.message === undefined || parsedResponse.message === '') {
+			return;
+		}
+		const toastMessage = parsedResponse.message;   
+	
+		Alpine.store('toast').displayToast(toastMessage, toastType);
+	});
+}
+
+templ Toast() {
+	@ToastGlobalState()
+	<div
+		class="modal"
+		:class="$store.toast.toastVisible ? is-active : ''"
+		x-data
+		x-show="$store.toast.toastVisible"
+		x-transition
+		x-cloak
+		un-cloak
+	>
+		<div class="modal-background"></div>
+		<div class="modal-content">
+			<div class="box" x-text="$store.toast.toastMessage"></div>
+		</div>
+		<button class="modal-close is-large" aria-label="close" @click="$store.toast.clearToast()"></button>
+	</div>
+}
