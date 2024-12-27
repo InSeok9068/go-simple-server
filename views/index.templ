@@ -6,8 +6,8 @@ import (
 	"strconv"
 )
 
-templ Text(name string) {
-	<p>
+templ Title(name string) {
+	<p class="is-size-4">
 		{ name }
 	</p>
 }
@@ -70,16 +70,50 @@ templ Authors(authors []database.Author) {
 			<form class="box">
 				<div class="columns">
 					<input type="hidden" name="id" value={ strconv.FormatInt(author.ID, 10) }/>
-					<div class="column is-2"><p class="box">{ author.Name }</p></div>
-					<div class="column is-2"><p class="box">{ author.Bio.String }</p></div>
+					<div class="column is-2">
+						<div class="field is-horizontal">
+							<div class="field-label is-normal">
+								<label class="label">Name</label>
+							</div>
+							<div class="field-body">
+								<div class="field">
+									<p class="control">
+										<input
+											class="input"
+											value={ author.Name }
+											readonly
+										/>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="column is-2">
+						<div class="field is-horizontal">
+							<div class="field-label is-normal">
+								<label class="label">Bio</label>
+							</div>
+							<div class="field-body">
+								<div class="field">
+									<p class="control">
+										<input
+											class="input"
+											value={ author.Bio.String }
+											readonly
+										/>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
 					<div class="column is-1">
 						<button
-							class="button is-link"
+							class="button is-text"
 							hx-get="/author"
 							hx-include="[name='id']"
 							hx-target=".form"
 						>
-							수정
+							선택
 						</button>
 					</div>
 					<div class="column is-1">
@@ -104,14 +138,15 @@ templ Index() {
 		<body>
 			<div class="container p-3">
 				<div id="text" class="box">
-					@Text("World")
+					@Title("Go 언어로 만든 심플서버")
 				</div>
 				<button
 					hx-get="/authors"
+					hx-trigger="load, click"
 					hx-target="#authors"
 					class="button mb-2"
 				>
-					리스트 조회
+					조회 
 				</button>
 				<button
 					hx-get="/reset-form"
