@@ -1,14 +1,66 @@
 package views
 
-import "simple-server/database"
+import (
+	"simple-server/database"
+	"strconv"
+)
 
 templ Text(name string) {
-	<p>{ name }</p>
+	<p>
+		{ name }
+	</p>
+}
+
+templ AuthorInsertForm() {
+	<form class="box" hx-post="/author" hx-target="#authors" hx-on::after-request="if(event.detail.successful) this.reset()">
+		<div class="field">
+			<label class="label">Name</label>
+			<div class="control">
+				<input class="input" name="name"/>
+			</div>
+		</div>
+		<div class="field">
+			<label class="label">Bio</label>
+			<div class="control">
+				<input class="input" name="bio"/>
+			</div>
+		</div>
+		<button class="button is-primary">등록</button>
+	</form>
+}
+
+templ AuthorUpdateForm(author database.Author) {
+	<form class="box" hx-put="/author" hx-target="#authors">
+		<input type="hidden" name="id" value={ strconv.FormatInt(author.ID, 10) }/>
+		<div class="field">
+			<label class="label">Name</label>
+			<div class="control">
+				<input class="input" name="name" value={ author.Name }/>
+			</div>
+		</div>
+		<div class="field">
+			<label class="label">Bio</label>
+			<div class="control">
+				<input class="input" name="bio" value={ author.Bio.String }/>
+			</div>
+		</div>
+		<button class="button is-primary">수정</button>
+	</form>
 }
 
 templ Authors(authors []database.Author) {
 	for _, author := range authors {
-		<li>{ author.Name }</li>
+		<li class="my-2">
+			<form>
+				<div class="columns">
+					<input type="hidden" name="id" value={ strconv.FormatInt(author.ID, 10) }/>
+					<div class="column is-1"><p>{ author.Name }</p></div>
+					<div class="column is-1"><p>{ author.Bio.String }</p></div>
+					<div class="column is-1"><button class="button is-primary" hx-get="/author" hx-include="[name='id']" hx-target=".form">수정</button></div>
+					<div class="column is-1"><button class="delete" hx-delete="/author" hx-include="[name='id']" hx-target="#authors"></button></div>
+				</div>
+			</form>
+		</li>
 	}
 }
 
@@ -17,24 +69,15 @@ templ Index() {
 	<html lang="ko">
 		@Header()
 		<body>
-			<div class="container">
+			<div class="container p-3">
 				<div id="text" class="box">
 					@Text("World")
 				</div>
-				<button hx-get="/hello" hx-target="#text" class="button">Hello</button>
-				<button hx-get="/buy" hx-target="#text" class="button">Buy</button>
-				<button hx-get="/list" hx-target="#authors" class="button">Get List</button>
+				<button hx-get="/authors" hx-target="#authors" class="button mb-2">리스트 조회</button>
+				<button hx-get="/reset-form" hx-target=".form" class="button mb-2">등록</button>
 				<ul class="my-1" id="authors"></ul>
-				<div x-data="{ input : ''}">
-					<label>
-						입력 값 1
-						<input x-model:="input"/>
-					</label>
-					<br/>
-					<label>
-						입력 값 2
-						<input x-model:="input"/>
-					</label>
+				<div class="form">
+					@AuthorInsertForm()
 				</div>
 			</div>
 		</body>
