@@ -1,8 +1,8 @@
 package global
 
 script ToastGlobalState() {
-	document.addEventListener('alpine:init', () => {
-		Alpine.store('toast', { 
+	document.addEventListener('alpine:init', () => { 
+		Alpine.store('toast', {
 			toastVisible: false,
 			toastMessage: '',
 			toastType: 'danger',
@@ -57,7 +57,6 @@ templ Toast() {
 		x-show="$store.toast.toastVisible"
 		x-transition
 		x-cloak
-		un-cloak
 	>
 		<div class="modal-background"></div>
 		<div class="modal-card">

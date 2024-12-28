@@ -10,9 +10,9 @@ import templruntime "github.com/a-h/templ/runtime"
 
 func ToastGlobalState() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_ToastGlobalState_7389`,
-		Function: `function __templ_ToastGlobalState_7389(){document.addEventListener('alpine:init', () => {
-		Alpine.store('toast', { 
+		Name: `__templ_ToastGlobalState_ed03`,
+		Function: `function __templ_ToastGlobalState_ed03(){document.addEventListener('alpine:init', () => { 
+		Alpine.store('toast', {
 			toastVisible: false,
 			toastMessage: '',
 			toastType: 'danger',
@@ -57,8 +57,8 @@ func ToastGlobalState() templ.ComponentScript {
 		Alpine.store('toast').displayToast(toastMessage, toastType); 
 	});
 }`,
-		Call:       templ.SafeScript(`__templ_ToastGlobalState_7389`),
-		CallInline: templ.SafeScriptInline(`__templ_ToastGlobalState_7389`),
+		Call:       templ.SafeScript(`__templ_ToastGlobalState_ed03`),
+		CallInline: templ.SafeScriptInline(`__templ_ToastGlobalState_ed03`),
 	}
 }
 
@@ -87,7 +87,7 @@ func Toast() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal\" :class=\"$store.toast.toastVisible ? &#39;is-active&#39; : &#39;&#39;\" x-data x-show=\"$store.toast.toastVisible\" x-transition x-cloak un-cloak><div class=\"modal-background\"></div><div class=\"modal-card\"><header class=\"modal-card-head\"><p class=\"modal-card-title\">메시지</p><button class=\"delete\" aria-label=\"close\" @click=\"$store.toast.clearToast()\"></button></header><section class=\"modal-card-body\"><p x-text=\"$store.toast.toastMessage\"></p></section><footer class=\"modal-card-foot\"></footer></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal\" :class=\"$store.toast.toastVisible ? &#39;is-active&#39; : &#39;&#39;\" x-data x-show=\"$store.toast.toastVisible\" x-transition x-cloak><div class=\"modal-background\"></div><div class=\"modal-card\"><header class=\"modal-card-head\"><p class=\"modal-card-title\">메시지</p><button class=\"delete\" aria-label=\"close\" @click=\"$store.toast.clearToast()\"></button></header><section class=\"modal-card-body\"><p x-text=\"$store.toast.toastMessage\"></p></section><footer class=\"modal-card-foot\"></footer></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

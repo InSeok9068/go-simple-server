@@ -26,3 +26,12 @@ go.work.sum
 
 # Templ
 tmp
+
+# IntelliJ IDEA
+.idea/
+
+# Visual Studio Code
+.vscode/!launch.json
+
+# Database
+database/data.db
