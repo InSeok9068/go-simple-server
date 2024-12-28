@@ -60,9 +60,15 @@ templ Toast() {
 		un-cloak
 	>
 		<div class="modal-background"></div>
-		<div class="modal-content">
-			<div class="box" x-text="$store.toast.toastMessage"></div>
+		<div class="modal-card">
+			<header class="modal-card-head">
+				<p class="modal-card-title">메시지</p>
+				<button class="delete" aria-label="close" @click="$store.toast.clearToast()"></button>
+			</header>
+			<section class="modal-card-body">
+				<p x-text="$store.toast.toastMessage"></p>
+			</section>
+			<footer class="modal-card-foot"></footer>
 		</div>
-		<button class="modal-close is-large" aria-label="close" @click="$store.toast.clearToast()"></button>
 	</div>
 }

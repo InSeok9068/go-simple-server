@@ -87,7 +87,7 @@ func Toast() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal\" :class=\"$store.toast.toastVisible ? &#39;is-active&#39; : &#39;&#39;\" x-data x-show=\"$store.toast.toastVisible\" x-transition x-cloak un-cloak><div class=\"modal-background\"></div><div class=\"modal-content\"><div class=\"box\" x-text=\"$store.toast.toastMessage\"></div></div><button class=\"modal-close is-large\" aria-label=\"close\" @click=\"$store.toast.clearToast()\"></button></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal\" :class=\"$store.toast.toastVisible ? &#39;is-active&#39; : &#39;&#39;\" x-data x-show=\"$store.toast.toastVisible\" x-transition x-cloak un-cloak><div class=\"modal-background\"></div><div class=\"modal-card\"><header class=\"modal-card-head\"><p class=\"modal-card-title\">메시지</p><button class=\"delete\" aria-label=\"close\" @click=\"$store.toast.clearToast()\"></button></header><section class=\"modal-card-body\"><p x-text=\"$store.toast.toastMessage\"></p></section><footer class=\"modal-card-foot\"></footer></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
