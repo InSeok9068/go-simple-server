@@ -2,8 +2,8 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-bin = "./tmp/main"
-cmd = "templ generate && go build -o ./tmp/main.exe ."
+bin = "./main serve --dev"
+cmd = "templ generate && go build -o ./main.exe ."
 delay = 1000
 exclude_dir = ["assets", "tmp", "vendor"]
 exclude_file = []
@@ -37,4 +37,4 @@ clear_on_rebuild = false
 [proxy]
 enabled = true
 proxy_port = 8080
-app_port = 8000
+app_port = 8090
