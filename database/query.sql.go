@@ -7,27 +7,32 @@ package database
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createAuthor = `-- name: CreateAuthor :one
 INSERT INTO authors (
-  name, bio
+  name, bio, created, updated
 ) VALUES (
-  ?, ?
+  ?, ?, datetime('now'), datetime('now')
 )
-RETURNING id, name, bio
+RETURNING bio, created, id, name, updated
 `
 
 type CreateAuthorParams struct {
 	Name string
-	Bio  sql.NullString
+	Bio  string
 }
 
 func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Author, error) {
 	row := q.db.QueryRowContext(ctx, createAuthor, arg.Name, arg.Bio)
 	var i Author
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	err := row.Scan(
+		&i.Bio,
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Updated,
+	)
 	return i, err
 }
 
@@ -36,25 +41,31 @@ DELETE FROM authors
 WHERE id = ?
 `
 
-func (q *Queries) DeleteAuthor(ctx context.Context, id int64) error {
+func (q *Queries) DeleteAuthor(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteAuthor, id)
 	return err
 }
 
 const getAuthor = `-- name: GetAuthor :one
-SELECT id, name, bio FROM authors
+SELECT bio, created, id, name, updated FROM authors
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetAuthor(ctx context.Context, id int64) (Author, error) {
+func (q *Queries) GetAuthor(ctx context.Context, id string) (Author, error) {
 	row := q.db.QueryRowContext(ctx, getAuthor, id)
 	var i Author
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	err := row.Scan(
+		&i.Bio,
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Updated,
+	)
 	return i, err
 }
 
 const listAuthors = `-- name: ListAuthors :many
-SELECT id, name, bio FROM authors
+SELECT bio, created, id, name, updated FROM authors
 ORDER BY name
 `
 
@@ -67,7 +78,13 @@ func (q *Queries) ListAuthors(ctx context.Context) ([]Author, error) {
 	var items []Author
 	for rows.Next() {
 		var i Author
-		if err := rows.Scan(&i.ID, &i.Name, &i.Bio); err != nil {
+		if err := rows.Scan(
+			&i.Bio,
+			&i.Created,
+			&i.ID,
+			&i.Name,
+			&i.Updated,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -84,20 +101,27 @@ func (q *Queries) ListAuthors(ctx context.Context) ([]Author, error) {
 const updateAuthor = `-- name: UpdateAuthor :one
 UPDATE authors
 set name = ?,
-bio = ?
+bio = ?,
+updated = datetime('now')
 WHERE id = ?
-RETURNING id, name, bio
+RETURNING bio, created, id, name, updated
 `
 
 type UpdateAuthorParams struct {
 	Name string
-	Bio  sql.NullString
-	ID   int64
+	Bio  string
+	ID   string
 }
 
 func (q *Queries) UpdateAuthor(ctx context.Context, arg UpdateAuthorParams) (Author, error) {
 	row := q.db.QueryRowContext(ctx, updateAuthor, arg.Name, arg.Bio, arg.ID)
 	var i Author
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	err := row.Scan(
+		&i.Bio,
+		&i.Created,
+		&i.ID,
+		&i.Name,
+		&i.Updated,
+	)
 	return i, err
 }

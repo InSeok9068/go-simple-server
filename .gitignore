@@ -24,14 +24,17 @@ go.work.sum
 # env file
 .env
 
-# Templ
-tmp
-
 # IntelliJ IDEA
 .idea/
 
 # Visual Studio Code
 .vscode/!launch.json
 
-# Database
-database/data.db
+# Log files
+*.log
+
+# Pocketbase
+pb_data
+
+# air
+tmp

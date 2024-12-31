@@ -3,7 +3,6 @@ package views
 import (
 	"simple-server/database"
 	"simple-server/views/global"
-	"strconv"
 )
 
 templ Title(name string) {
@@ -57,9 +56,9 @@ templ AuthorUpdateForm(author database.Author) {
 		hx-put="/author"
 		hx-target="#authors"
 	>
-		<input type="hidden" name="id" value={ strconv.FormatInt(author.ID, 10) }/>
+		<input type="hidden" name="id" value={ author.ID }/>
 		@authorName(author.Name)
-		@authorBio(author.Bio.String)
+		@authorBio(author.Bio)
 		<button class="button is-link">수정</button>
 	</form>
 }
@@ -97,7 +96,7 @@ templ Authors(authors []database.Author) {
 									<p class="control">
 										<input
 											class="input"
-											value={ author.Bio.String }
+											value={ author.Bio }
 											readonly
 										/>
 									</p>
@@ -110,7 +109,7 @@ templ Authors(authors []database.Author) {
 							hx-get="/author"
 							hx-target=".form"
 						>
-							<input type="hidden" name="id" value={ strconv.FormatInt(author.ID, 10) }/>
+							<input type="hidden" name="id" value={ author.ID }/>
 							<button class="button is-text">
 								선택
 							</button>
@@ -122,7 +121,7 @@ templ Authors(authors []database.Author) {
 							hx-target="#authors"
 							hx-confirm="삭제 하시겠습니까?"
 						>
-							<input type="hidden" name="id" value={ strconv.FormatInt(author.ID, 10) }/>
+							<input type="hidden" name="id" value={ author.ID }/>
 							<button class="delete is-medium"></button>
 						</form>
 					</div>
@@ -143,7 +142,7 @@ templ Index() {
 				</div>
 				<button
 					hx-get="/authors"
-					hx-trigger="load, click"
+					hx-trigger="click"
 					hx-target="#authors"
 					class="button mb-2"
 				>
