@@ -4,12 +4,10 @@
 
 package database
 
-import (
-	"database/sql"
-)
-
 type Author struct {
-	ID   int64
-	Name string
-	Bio  sql.NullString
+	Bio     string
+	Created string
+	ID      string
+	Name    string
+	Updated string
 }

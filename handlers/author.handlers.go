@@ -4,19 +4,18 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/a-h/templ"
+	"github.com/labstack/echo/v4"
+	_ "github.com/mattn/go-sqlite3"
 	"log/slog"
 	"net/http"
 	"simple-server/database"
 	"simple-server/views"
-	"strconv"
-
-	"github.com/a-h/templ"
-	"github.com/labstack/echo/v4"
 )
 
 func dbConnection() (*database.Queries, context.Context) {
 	ctx := context.Background()
-	db, err := sql.Open("sqlite3", "file:./database/data.db")
+	db, err := sql.Open("sqlite3", "file:./pb_data/data.db")
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -36,10 +35,9 @@ func GetAuthors(c echo.Context) error {
 
 func GetAuthor(c echo.Context) error {
 	id := c.QueryParam("id")
-	idInt, _ := strconv.ParseInt(id, 10, 64)
 
 	queries, ctx := dbConnection()
-	author, err := queries.GetAuthor(ctx, idInt)
+	author, err := queries.GetAuthor(ctx, id)
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -58,10 +56,7 @@ func CreateAuthor(c echo.Context) error {
 	queries, ctx := dbConnection()
 	author, err := queries.CreateAuthor(ctx, database.CreateAuthorParams{
 		Name: name,
-		Bio: sql.NullString{
-			String: bio,
-			Valid:  true, // bio가 유효하므로 true 설정
-		},
+		Bio:  bio,
 	})
 	if err != nil {
 		slog.Error(err.Error())
@@ -75,19 +70,15 @@ func CreateAuthor(c echo.Context) error {
 
 func UpdateAuthor(c echo.Context) error {
 	id := c.FormValue("id")
-	idInt, _ := strconv.ParseInt(id, 10, 64)
 
 	name := c.FormValue("name")
 	bio := c.FormValue("bio")
 
 	queries, ctx := dbConnection()
 	author, err := queries.UpdateAuthor(ctx, database.UpdateAuthorParams{
-		ID:   idInt,
+		ID:   id,
 		Name: name,
-		Bio: sql.NullString{
-			String: bio,
-			Valid:  true, // bio가 유효하므로 true 설정
-		},
+		Bio:  bio,
 	})
 	if err != nil {
 		slog.Error(err.Error())
@@ -101,10 +92,9 @@ func UpdateAuthor(c echo.Context) error {
 
 func DeleteAuthor(c echo.Context) error {
 	id := c.QueryParam("id")
-	idInt, _ := strconv.ParseInt(id, 10, 64)
 
 	queries, ctx := dbConnection()
-	err := queries.DeleteAuthor(ctx, idInt)
+	err := queries.DeleteAuthor(ctx, id)
 	if err != nil {
 		slog.Error(err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "삭제 오류")

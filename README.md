@@ -2,6 +2,30 @@
 
 Go + Htmx + AlpineJS + Bulma + SQLite3 기반 심플 서버 프로젝트입니다.
 
+## 실행
+
+### 앱 서버 실행
+
+#### 운영 환경
+
+```shell
+main --app 
+```
+
+#### 로컬 환경
+
+```shell
+air
+```
+
+### 어드민 서버 실행
+
+```shell
+.\main.exe serve
+```
+
+--- 
+
 ```shell
 go install github.com/a-h/templ/cmd/templ@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
