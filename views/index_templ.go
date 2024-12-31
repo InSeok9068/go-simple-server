@@ -384,7 +384,7 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><button hx-get=\"/authors\" hx-trigger=\"click\" hx-target=\"#authors\" class=\"button mb-2\">조회</button> <button hx-get=\"/reset-form\" hx-target=\".form\" class=\"button is-primary mb-2\">등록</button><ul class=\"my-1\" id=\"authors\"></ul><div class=\"form\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><button hx-get=\"/authors\" hx-trigger=\"load, click\" hx-target=\"#authors\" class=\"button mb-2\">조회</button> <button hx-get=\"/reset-form\" hx-target=\".form\" class=\"button is-primary mb-2\">등록</button><ul class=\"my-1\" id=\"authors\"></ul><div class=\"form\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
