@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"log/slog"
 	"simple-server/cmd"
-	handlers "simple-server/cmd/handlers"
+	"simple-server/cmd/handlers"
 )
 
 func main() {
@@ -27,12 +27,19 @@ func main() {
 	e.Use(middleware.Static("static"))
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.KeyAuthWithConfig(cmd.FirebaseAuth()))
+
+	// 공개 그룹
+	public := e.Group("public")
+
+	// 인증 그룹
+	private := e.Group("private")
+
+	private.Use(middleware.KeyAuthWithConfig(cmd.FirebaseAuth()))
 	/* 미들 웨어 */
 
 	/* 라우터  */
-	e.GET("/", handlers.IndexPageHandler)
-	e.GET("/login", handlers.LoginPageHanlder)
+	public.GET("/", handlers.IndexPageHandler)
+	public.GET("/login", handlers.LoginPageHanlder)
 
 	e.GET("/authors", handlers.GetAuthors)     // 저자 리스트 조회
 	e.GET("/author", handlers.GetAuthor)       // 저자 조회

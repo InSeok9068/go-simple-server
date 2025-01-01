@@ -38,10 +38,12 @@ func FirebaseAuth() middleware.KeyAuthConfig {
 				return false, nil
 			}
 
-			_, err = auth.VerifyIDToken(context.Background(), key)
+			user, err := auth.VerifyIDToken(context.Background(), key)
 			if err != nil {
 				return false, nil
 			}
+
+			c.Set("user", user)
 
 			return true, nil
 		},
