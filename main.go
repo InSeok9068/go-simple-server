@@ -5,8 +5,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"log/slog"
-	"os"
-	"simple-server/handlers"
+	"simple-server/cmd"
+	handlers "simple-server/cmd/handlers"
 )
 
 func main() {
@@ -15,8 +15,11 @@ func main() {
 	if err != nil {
 		slog.Error("Failed to load .env file", "err", err)
 	}
-	slog.Info(os.Getenv("TEST_ENV"))
 	/* 환경 설정 */
+
+	/* 파이어베이스 초기화 */
+	cmd.FirebaseInit()
+	/* 파이어베이스 초기화 */
 
 	e := echo.New()
 
@@ -24,10 +27,12 @@ func main() {
 	e.Use(middleware.Static("static"))
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.KeyAuthWithConfig(cmd.FirebaseAuth()))
 	/* 미들 웨어 */
 
 	/* 라우터  */
-	e.GET("/", handlers.RootHandler) // 페이지 렌더링
+	e.GET("/", handlers.IndexPageHandler)
+	e.GET("/login", handlers.LoginPageHanlder)
 
 	e.GET("/authors", handlers.GetAuthors)     // 저자 리스트 조회
 	e.GET("/author", handlers.GetAuthor)       // 저자 조회

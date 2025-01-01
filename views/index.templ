@@ -134,9 +134,13 @@ templ Authors(authors []database.Author) {
 templ Index() {
 	<!DOCTYPE html>
 	<html lang="ko">
-		@Header()
+		<head>
+			@Header()
+		</head>
 		<body>
+			@FirebaseInit()
 			<div class="container p-3">
+				@Navi()
 				<div id="text" class="box">
 					@Title("Go 언어로 만든 심플서버")
 				</div>

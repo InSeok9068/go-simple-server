@@ -10,8 +10,8 @@ import templruntime "github.com/a-h/templ/runtime"
 
 func ToastGlobalState() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_ToastGlobalState_ed03`,
-		Function: `function __templ_ToastGlobalState_ed03(){document.addEventListener('alpine:init', () => { 
+		Name: `__templ_ToastGlobalState_a5d1`,
+		Function: `function __templ_ToastGlobalState_a5d1(){document.addEventListener('alpine:init', () => { 
 		Alpine.store('toast', {
 			toastVisible: false,
 			toastMessage: '',
@@ -30,35 +30,35 @@ func ToastGlobalState() templ.ComponentScript {
 			}    
 		});
 	});
- 
-	document.addEventListener('htmx:afterRequest', (event) => { 
+
+     htmx.on("htmx:afterRequest", (event) => {
 		const contentType = event.detail.xhr.getResponseHeader("Content-Type");
 		if (contentType !== 'application/json') {
 			return;
 		}
- 
+
 	    const responseData = event.detail.xhr.responseText;
 		if (responseData === '') {
 			return;
 		}
- 
+
 		let toastType = 'success';
 		const isResponseError = event.detail.xhr.status >= 400;
 		if (isResponseError) {
 			toastType = 'danger';
 		}
- 
+
 		const parsedResponse = JSON.parse(responseData);
 		if (parsedResponse.message === undefined || parsedResponse.message === '') {
 			return;
 		}
-		const toastMessage = parsedResponse.message;   
-	
+		const toastMessage = parsedResponse.message;
+
 		Alpine.store('toast').displayToast(toastMessage, toastType); 
-	});
+     });
 }`,
-		Call:       templ.SafeScript(`__templ_ToastGlobalState_ed03`),
-		CallInline: templ.SafeScriptInline(`__templ_ToastGlobalState_ed03`),
+		Call:       templ.SafeScript(`__templ_ToastGlobalState_a5d1`),
+		CallInline: templ.SafeScriptInline(`__templ_ToastGlobalState_a5d1`),
 	}
 }
 
