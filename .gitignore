@@ -35,6 +35,7 @@ go.work.sum
 
 # Pocketbase
 pb_data
+pb_migrations
 !pocketbase.exe
 
 # air
