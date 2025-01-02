@@ -9,17 +9,17 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"log/slog"
 	"net/http"
-	"simple-server/database"
+	"simple-server/internal/main/db"
 	"simple-server/views"
 )
 
-func dbConnection() (*database.Queries, context.Context) {
+func dbConnection() (*db.Queries, context.Context) {
 	ctx := context.Background()
-	db, err := sql.Open("sqlite3", "file:./pb_data/data.db")
+	dbCon, err := sql.Open("sqlite3", "file:./pb_data/data.db")
 	if err != nil {
 		slog.Error(err.Error())
 	}
-	queries := database.New(db)
+	queries := db.New(dbCon)
 	return queries, ctx
 }
 
@@ -54,7 +54,7 @@ func CreateAuthor(c echo.Context) error {
 	}
 
 	queries, ctx := dbConnection()
-	author, err := queries.CreateAuthor(ctx, database.CreateAuthorParams{
+	author, err := queries.CreateAuthor(ctx, db.CreateAuthorParams{
 		Name: name,
 		Bio:  bio,
 	})
@@ -75,7 +75,7 @@ func UpdateAuthor(c echo.Context) error {
 	bio := c.FormValue("bio")
 
 	queries, ctx := dbConnection()
-	author, err := queries.UpdateAuthor(ctx, database.UpdateAuthorParams{
+	author, err := queries.UpdateAuthor(ctx, db.UpdateAuthorParams{
 		ID:   id,
 		Name: name,
 		Bio:  bio,

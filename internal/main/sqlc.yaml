@@ -5,5 +5,7 @@ sql:
     schema: "schema.sql"
     gen:
       go:
-        package: "database"
-        out: "database"
+        package: "db"
+        out: "db"
+
+# sqlc generate -f ./internal/main/sqlc.yaml

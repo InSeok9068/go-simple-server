@@ -1,8 +1,8 @@
 package views
 
 import (
-	"simple-server/database"
-	"simple-server/views/global"
+	"simple-server/internal/main/db"
+	"simple-server/views/pkg"
 )
 
 templ Title(name string) {
@@ -50,7 +50,7 @@ templ AuthorInsertForm() {
 	</form>
 }
 
-templ AuthorUpdateForm(author database.Author) {
+templ AuthorUpdateForm(author db.Author) {
 	<form
 		class="box"
 		hx-put="/author"
@@ -63,7 +63,7 @@ templ AuthorUpdateForm(author database.Author) {
 	</form>
 }
 
-templ Authors(authors []database.Author) {
+templ Authors(authors []db.Author) {
 	for _, author := range authors {
 		<li class="my-2">
 			<div class="box">
@@ -164,7 +164,7 @@ templ Index() {
 					@AuthorInsertForm()
 				</div>
 			</div>
-			@global.Toast()
+			@pkg.Toast()
 		</body>
 	</html>
 }

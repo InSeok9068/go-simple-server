@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"log/slog"
-	"simple-server/internal/handlers"
+	"simple-server/internal/main/handlers"
 	"simple-server/pkg"
 )
 
