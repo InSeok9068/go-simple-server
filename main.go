@@ -5,8 +5,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"log/slog"
-	"simple-server/cmd"
-	"simple-server/cmd/handlers"
+	"simple-server/internal/handlers"
+	"simple-server/pkg"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	/* 환경 설정 */
 
 	/* 파이어베이스 초기화 */
-	cmd.FirebaseInit()
+	pkg.FirebaseInit()
 	/* 파이어베이스 초기화 */
 
 	e := echo.New()
@@ -34,7 +34,7 @@ func main() {
 	// 인증 그룹
 	private := e.Group("")
 
-	private.Use(middleware.KeyAuthWithConfig(cmd.FirebaseAuth()))
+	private.Use(middleware.KeyAuthWithConfig(pkg.FirebaseAuth()))
 	/* 미들 웨어 */
 
 	/* 라우터  */
