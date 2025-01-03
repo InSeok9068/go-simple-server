@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log/slog"
+	"io/fs"
+	resources "simple-server"
 	"simple-server/internal"
 	"simple-server/projects/sample/handlers"
 
@@ -12,10 +13,8 @@ import (
 
 func main() {
 	/* 환경 설정 */
-	err := godotenv.Load()
-	if err != nil {
-		slog.Error("Failed to load .env file", "err", err)
-	}
+	envData, _ := resources.EmbeddedFiles.ReadFile(".env")
+	godotenv.Unmarshal(string(envData))
 	/* 환경 설정 */
 
 	/* 파이어베이스 초기화 */
@@ -25,8 +24,10 @@ func main() {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	e.Static("/shared/static", "/shared/static")   // 공통 정적 파일
-	e.Static("/static", "/projects/sample/static") // 프로젝트 정적 파일
+	sharedStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "shared/static")
+	projectStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "projects/sample/static")
+	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
+	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 

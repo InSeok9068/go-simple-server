@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	resources "simple-server"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/joho/godotenv"
@@ -15,10 +16,8 @@ import (
 var App *firebase.App
 
 func FirebaseInit() {
-	err := godotenv.Load()
-	if err != nil {
-		slog.Error("Failed to load .env file", "err", err)
-	}
+	envData, _ := resources.EmbeddedFiles.ReadFile(".env") 
+	godotenv.Unmarshal(string(envData))  
 	config := os.Getenv("FIREBASE_CONFIG")
 
 	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(config)))
