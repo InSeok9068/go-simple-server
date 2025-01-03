@@ -1,8 +1,8 @@
 package views
 
 import (
-	"simple-server/internal/main/db"
-	"simple-server/views/share"
+	"simple-server/projects/sample/db"
+	shared "simple-server/shared/views"
 )
 
 templ Title(name string) {
@@ -135,12 +135,12 @@ templ Index() {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
-			@Header()
+			@shared.Header("샘플 서버")
 		</head>
 		<body>
-			@FirebaseInit()
+			@shared.FirebaseInit()
 			<div class="container p-3">
-				@Navi()
+				@shared.Navi()
 				<div id="text" class="box">
 					@Title("Go 언어로 만든 심플서버")
 				</div>
@@ -164,7 +164,7 @@ templ Index() {
 					@AuthorInsertForm()
 				</div>
 			</div>
-			@share.Toast()
+			@shared.Toast()
 		</body>
 	</html>
 }

@@ -1,12 +1,13 @@
 package main
 
 import (
+	"log/slog"
+	"simple-server/internal"
+	"simple-server/projects/sample/handlers"
+
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"log/slog"
-	"simple-server/internal/main/handlers"
-	"simple-server/internal/share"
 )
 
 func main() {
@@ -18,13 +19,14 @@ func main() {
 	/* 환경 설정 */
 
 	/* 파이어베이스 초기화 */
-	share.FirebaseInit()
+	internal.FirebaseInit()
 	/* 파이어베이스 초기화 */
 
 	e := echo.New()
 
 	/* 미들 웨어 */
-	e.Use(middleware.Static("static"))
+	e.Use(middleware.Static("shared/static"))
+	e.Use(middleware.Static("sample/static"))
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
@@ -34,7 +36,7 @@ func main() {
 	// 인증 그룹
 	private := e.Group("")
 
-	private.Use(middleware.KeyAuthWithConfig(share.FirebaseAuth()))
+	private.Use(middleware.KeyAuthWithConfig(internal.FirebaseAuth()))
 	/* 미들 웨어 */
 
 	/* 라우터  */

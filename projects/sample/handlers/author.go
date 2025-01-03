@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"fmt"
+	"log/slog"
+	"net/http"
+	"simple-server/projects/sample/db"
+	"simple-server/projects/sample/views"
+
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
-	"log/slog"
-	"net/http"
-	"simple-server/internal/main/db"
-	"simple-server/views"
 )
 
 func GetAuthors(c echo.Context) error {

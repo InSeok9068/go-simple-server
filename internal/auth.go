@@ -1,14 +1,15 @@
-package share
+package internal
 
 import (
 	"context"
-	"firebase.google.com/go/v4"
+	"log/slog"
+	"os"
+
+	firebase "firebase.google.com/go/v4"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/api/option"
-	"log/slog"
-	"os"
 )
 
 var App *firebase.App
@@ -22,7 +23,7 @@ func FirebaseInit() {
 
 	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(config)))
 	if err != nil {
-		slog.Error("파이어베이스 초기화 실패", err)
+		slog.Error("파이어베이스 초기화 실패", "err", err)
 	}
 
 	App = app
@@ -49,12 +50,7 @@ func FirebaseAuth() middleware.KeyAuthConfig {
 		},
 		Skipper: func(c echo.Context) bool {
 			key := c.Request().Header.Get(echo.HeaderAuthorization)
-
-			if key == "" {
-				return true // Skip KeyAuth
-			}
-
-			return false
+			return key == ""
 		},
 	}
 }

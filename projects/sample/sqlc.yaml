@@ -7,5 +7,4 @@ sql:
       go:
         package: "db"
         out: "db"
-
-# sqlc generate -f ./internal/main/sqlc.yaml
+# sqlc generate -f ./projects/sample/sqlc.yaml
