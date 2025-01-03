@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"simple-server/internal/main/db"
-	"simple-server/views/pkg"
+	"simple-server/views/share"
 )
 
 func Title(name string) templ.Component {
@@ -412,7 +412,7 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = pkg.Toast().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = share.Toast().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

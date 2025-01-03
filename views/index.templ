@@ -2,7 +2,7 @@ package views
 
 import (
 	"simple-server/internal/main/db"
-	"simple-server/views/pkg"
+	"simple-server/views/share"
 )
 
 templ Title(name string) {
@@ -164,7 +164,7 @@ templ Index() {
 					@AuthorInsertForm()
 				</div>
 			</div>
-			@pkg.Toast()
+			@share.Toast()
 		</body>
 	</html>
 }
