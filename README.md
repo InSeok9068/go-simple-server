@@ -7,10 +7,10 @@ Go + Htmx + AlpineJS + Bulma + SQLite3 기반 심플 서버 프로젝트입니�
 ### 어드민 서버 실행
 
 ```shell
-.\pocketbase.exe serve
+.\pocketbase.exe serve --dir ./internal/main/pb_data
 ```
 
---- 
+---
 
 ```shell
 go install github.com/a-h/templ/cmd/templ@latest

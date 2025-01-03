@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -13,30 +11,19 @@ import (
 	"simple-server/views"
 )
 
-func dbConnection() (*db.Queries, context.Context) {
-	ctx := context.Background()
-	dbCon, err := sql.Open("sqlite3", "file:./pb_data/data.db")
-	if err != nil {
-		slog.Error(err.Error())
-	}
-	queries := db.New(dbCon)
-	return queries, ctx
-}
-
 func GetAuthors(c echo.Context) error {
-	queries, ctx := dbConnection()
+	queries, ctx := db.DbConnection()
 	authors, err := queries.ListAuthors(ctx)
 	if err != nil {
 		slog.Error(err.Error())
 	}
 	return templ.Handler(views.Authors(authors)).Component.Render(c.Request().Context(), c.Response().Writer)
-	// return echo.NewHTTPError(http.StatusInternalServerError, "오류 입니다.")
 }
 
 func GetAuthor(c echo.Context) error {
 	id := c.QueryParam("id")
 
-	queries, ctx := dbConnection()
+	queries, ctx := db.DbConnection()
 	author, err := queries.GetAuthor(ctx, id)
 	if err != nil {
 		slog.Error(err.Error())
@@ -53,7 +40,7 @@ func CreateAuthor(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "이름을 입력해주세요.")
 	}
 
-	queries, ctx := dbConnection()
+	queries, ctx := db.DbConnection()
 	author, err := queries.CreateAuthor(ctx, db.CreateAuthorParams{
 		Name: name,
 		Bio:  bio,
@@ -74,7 +61,7 @@ func UpdateAuthor(c echo.Context) error {
 	name := c.FormValue("name")
 	bio := c.FormValue("bio")
 
-	queries, ctx := dbConnection()
+	queries, ctx := db.DbConnection()
 	author, err := queries.UpdateAuthor(ctx, db.UpdateAuthorParams{
 		ID:   id,
 		Name: name,
@@ -93,7 +80,7 @@ func UpdateAuthor(c echo.Context) error {
 func DeleteAuthor(c echo.Context) error {
 	id := c.QueryParam("id")
 
-	queries, ctx := dbConnection()
+	queries, ctx := db.DbConnection()
 	err := queries.DeleteAuthor(ctx, id)
 	if err != nil {
 		slog.Error(err.Error())
