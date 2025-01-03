@@ -40,3 +40,6 @@ pb_migrations
 
 # air
 tmp
+
+# GCC
+!tdm-gcc-webdl.exe
