@@ -25,8 +25,8 @@ func main() {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	e.Use(middleware.Static("shared/static"))
-	e.Use(middleware.Static("sample/static"))
+	e.Static("/shared/static", "/shared/static")   // 공통 정적 파일
+	e.Static("/static", "/projects/sample/static") // 프로젝트 정적 파일
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
