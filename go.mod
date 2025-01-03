@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	firebase.google.com/go/v4 v4.15.1
-	github.com/a-h/templ v0.2.793
+	github.com/a-h/templ v0.3.819
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/mattn/go-sqlite3 v1.14.24
