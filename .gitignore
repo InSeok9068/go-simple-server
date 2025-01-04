@@ -41,6 +41,7 @@ pb_migrations
 
 # air
 tmp
+*_templ.go
 
 # GCC
 !tdm-gcc-webdl.exe
