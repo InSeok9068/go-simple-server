@@ -37,6 +37,7 @@ go.work.sum
 pb_data
 pb_migrations
 !pocketbase.exe
+!pocketbase
 
 # air
 tmp
@@ -44,3 +45,6 @@ tmp
 # GCC
 !tdm-gcc-webdl.exe
 !mingw-get-setup.exe
+
+# Build File
+main

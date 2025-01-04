@@ -4,10 +4,28 @@ Go + Htmx + AlpineJS + Bulma + SQLite3 기반 심플 서버 프로젝트입니�
 
 ## 실행
 
+### 서비스 실행
+
+#### 리눅스
+
+```shell
+chmod +x main
+./main
+```
+
 ### 어드민 서버 실행
+
+#### 윈도우
 
 ```shell
 .\pocketbase.exe serve --dir ./internal/main/pb_data
+```
+
+#### 리눅스
+
+```shell
+chmod +x pocketbase
+./pocketbase serve --dir ./internal/main/pb_data
 ```
 
 ---
