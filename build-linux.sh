@@ -4,7 +4,6 @@
 export GOOS=linux
 export GOARCH=amd64
 export CGO_ENABLED=1
-export CC=x86_64-w64-mingw32-gcc
 
 # 빌드 실행
 go build -o ./main ./cmd/sample
