@@ -72,6 +72,12 @@ sudo systemctl status nginx
 sudo systemctl enable nginx
 ```
 
+## 로그 파일 관리
+
+```shell
+sudo apt install logrotate -y
+```
+
 ## SSL 설치
 
 ```shell
