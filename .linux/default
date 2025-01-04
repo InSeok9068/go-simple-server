@@ -27,7 +27,8 @@ server {
 	# listen 443 ssl default_server;
 	# listen [::]:443 ssl default_server;
 
-	server_name _;
+	#server_name _;
+	server_name toy-project.n-e.kr;
 
 	# 기본 경로 (/) 요청 처리
         location / {
@@ -47,7 +48,8 @@ server {
         # listen 443 ssl default_server;
         # listen [::]:443 ssl default_server;
 
-        server_name _;
+        #server_name _;
+        server_name toy-project.n-e.kr;
 
         # 기본 경로 (/) 요청 처리
         location / {

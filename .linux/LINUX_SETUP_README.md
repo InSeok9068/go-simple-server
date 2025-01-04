@@ -48,3 +48,16 @@ sudo systemctl status ufw
 sudo systemctl status pocketbase.service
 sudo systemctl status pocketbase.service
 ```
+
+```shell
+sudo apt install -y certbot python3-certbot-nginx
+sudo systemctl status certbot.timer
+sudo certbot --nginx -d toy-project.n-e.kr
+sudo certbot renew --dry-run
+```
+
+혹시나 잘동작 안하면 크론잡
+
+```shell
+0 0 1 * * certbot renew --renew-hook "sudo service nginx restart"
+```

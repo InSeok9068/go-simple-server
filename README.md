@@ -2,6 +2,8 @@
 
 Go + Htmx + AlpineJS + Bulma + SQLite3 기반 심플 서버 프로젝트입니다.
 
+HOST : toy-project.kro.kr
+
 ## 실행
 
 ### 서비스 실행
