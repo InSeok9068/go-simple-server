@@ -1,18 +1,37 @@
-# Go 언어 풀스택 심플 서버
+# Go 언어 기반 풀스택 서버
 
-Go + Htmx + AlpineJS + Bulma + SQLite3 기반 심플 서버 프로젝트입니다.
+**Host** : toy-project.kro.kr
 
-HOST : toy-project.kro.kr
+| 구성                  | 사용 기술        |
+| --------------------- | ---------------- |
+| 언어                  | Go               |
+| 백엔드 프레임워크     | Echo             |
+| 프론트엔드 프레임워크 | Htmx + Alpine.js |
+| CSS 프레임워크        | Bulma            |
+| Template 엔진         | Templ            |
+| 데이터베이스          | SQLite3          |
+
+---
 
 ## 실행
 
 ### 서비스 실행
+
+#### 윈도우 (개발 환경)
+
+```shell
+air
+```
 
 #### 리눅스
 
 ```shell
 chmod +x main
 ./main
+```
+
+```shell
+sudo systemctl start main.service
 ```
 
 ### 어드민 서버 실행
@@ -34,6 +53,8 @@ chmod +x pocketbase
 
 ## 종속성 최신화
 
+### 프로젝트 종속성 최신화
+
 ```shell
 go get firebase.google.com/go/v4@latest
 go get github.com/a-h/templ@latest
@@ -43,10 +64,18 @@ go get github.com/mattn/go-sqlite3@latest
 go get google.golang.org/api@latest
 ```
 
+### 개발 도구 종속성 최신화
+
 ```shell
 go install github.com/a-h/templ/cmd/templ@latest
 go install github.com/air-verse/air@latest
 CGO_ENABLED=0 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+```
+
+### 불필요한 종속성 제거
+
+```shell
+go mod tidy
 ```
 
 ---

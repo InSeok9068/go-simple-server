@@ -1,3 +1,5 @@
+## 서버 초기 설정
+
 ```shell
 # 루트 비밀번호 설정
 sudo passwd root
@@ -5,13 +7,19 @@ sudo passwd root
 # 패키지 업데이트
 sudo apt update
 
+# 시간대 설정
+sudo timedatectl set-timezone Asia/Seoul
+
+# 시간 동기화 설정
+sudo apt install systemd-timesyncd -y
+sudo systemctl enable systemd-timesyncd
+sudo systemctl start systemd-timesyncd
+
 # nginx 설치
 sudo apt install nginx -y
 
 # nginx 서비스 등록
 sudo systemctl enable nginx
-
-# nginx 설정 파일 수정
 
 # ufw 설치
 sudo apt install ufw -y
@@ -35,29 +43,41 @@ sudo ufw status verbose
 sudo systemctl enable ufw
 ```
 
-sudo systemctl daemon-reload
-enabled
-start
-restart
-stop
-status
+## Nginx 설정
+
+`etc > nginx > sites-enabled > default`
+
+[파일 참조](default)
+
+### nginx 설정 확인
 
 ```shell
-sudo systemctl status nginx
-sudo systemctl status ufw
-sudo systemctl status pocketbase.service
-sudo systemctl status pocketbase.service
+sudo nginx -t
 ```
 
+## 서비스 관리
+
+- nginx
+- ufw
+- pocketbase.service
+- main.service
+- systemd-timesyncd
+
 ```shell
-sudo apt install -y certbot python3-certbot-nginx
-sudo systemctl status certbot.timer
+sudo systemctl daemon-reload
+sudo systemctl start nginx
+sudo systemctl stop nginx
+sudo systemctl restart nginx
+sudo systemctl status nginx
+sudo systemctl enable nginx
+```
+
+## SSL 설치
+
+```shell
+sudo apt install certbot python3-certbot-nginx -y
 sudo certbot --nginx -d toy-project.n-e.kr
 sudo certbot renew --dry-run
-```
-
-혹시나 잘동작 안하면 크론잡
-
-```shell
-0 0 1 * * certbot renew --renew-hook "sudo service nginx restart"
+# 한달에 한번 수동 갱신 (혹시나 동작 안할때 대비)
+# 0 0 1 * * certbot renew --renew-hook "sudo service nginx restart"
 ```
