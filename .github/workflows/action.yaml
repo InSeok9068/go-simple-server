@@ -35,7 +35,9 @@ jobs:
       # 5. .env 파일 생성
       - name: Generate .env File
         run: |
-          echo "FIREBASE_CONFIG=\"${{ secrets.FIREBASE_CONFIG }}\"" >> .env
+          cat <<EOF > .env
+            FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
+          EOF
 
       # (임시).env 파일 내용 확인
       - name: Debug .env File
