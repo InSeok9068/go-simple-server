@@ -1,0 +1,64 @@
+name: Build Go Application
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Go 설치
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23
+
+      # 3. 필요한 패키지 설치 (GCC 등)
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential gcc-multilib
+
+      # 4. .env 파일 생성
+      - name: Generate .env File
+        run: |
+          echo "FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}" >> .env
+
+      # 5. 환경 변수 설정 및 빌드
+      - name: Build for Linux
+        env:
+          CGO_ENABLED: 1
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          go build -o ./main ./cmd/sample"
+
+      # 6. SCP 파일 전송
+      - name: Deploy via SSH
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_ID }}
+          key: ${{ secrets.REMOTE_SSH_KEY }}
+          port: 22
+          source: ./main
+          target: ./app
+
+      # 6. SSH 명령어 실행
+      - aname: Deploy to Server
+        uses: appleboy/ssh-action@master
+        host: ${{ secrets.REMOTE_IP }}
+        username: ${{ secrets.REMOTE_ID }}
+        key: ${{ secrets.REMOTE_SSH_KEY }}
+        port: 22
+        script: |
+          cd ./app
+          chmod +x main
+          sudo systemctl restart main.service
