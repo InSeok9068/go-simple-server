@@ -25,6 +25,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential gcc-multilib
+          sudo go install github.com/a-h/templ/cmd/templ@latest
 
       # 4. .env 파일 생성
       - name: Generate .env File
@@ -38,6 +39,7 @@ jobs:
           GOOS: linux
           GOARCH: amd64
         run: |
+          templ generate
           go build -o ./main ./cmd/sample
 
       # 6. SCP 파일 전송
