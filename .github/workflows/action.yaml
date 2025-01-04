@@ -39,12 +39,6 @@ jobs:
             FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
           EOF
 
-      # (임시).env 파일 내용 확인
-      - name: Debug .env File
-        run: |
-          echo "Contents of .env file:"
-          cat .env
-
       # 6. 환경 변수 설정 및 빌드
       - name: Build for Linux
         env:
