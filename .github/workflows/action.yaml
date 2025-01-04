@@ -57,10 +57,10 @@ jobs:
       # 8. SCP 파일 전송 (직접 SCP 사용)
       - name: Transfer File via SCP
         run: |
-          echo "${{ secrets.REMOTE_SSH_KEY }}" > ssh_key.pem
+          echo -e "${{ secrets.REMOTE_SSH_KEY }}" > ssh_key.pem
           chmod 600 ssh_key.pem
 
-          scp -C -i ssh_key.pem -P 22 ./main.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:/app
+          scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./main.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:/app
 
           rm ssh_key.pem
 
