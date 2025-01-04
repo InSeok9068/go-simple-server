@@ -1,0 +1,13 @@
+[Unit]
+Description=PocketBase Service
+After=network.target
+
+[Service]
+ExecStart=/home/ubuntu/app/pocketbase serve --dir /home/ubuntu/app/projects/sample/pb_data
+WorkingDirectory=/home/ubuntu/app
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
