@@ -29,7 +29,7 @@ func Navi() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"navbar\" role=\"navigation\" aria-label=\"main navigation\"><div id=\"navbarBasicExample\" class=\"navbar-menu\"><div class=\"navbar-start\"><a class=\"navbar-item\" href=\"/\">Home</a></div><div class=\"navbar-end\"><div class=\"navbar-item\"><div><p id=\"username\"></p></div><div class=\"buttons\"><a id=\"login\" class=\"button is-light is-hidden\" href=\"/login\">Login</a> <a id=\"logout\" class=\"button is-light is-hidden\">Logout</a></div></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"navbar\" role=\"navigation\" aria-label=\"main navigation\"><div class=\"navbar-menu is-active\"><div class=\"navbar-start\"><a class=\"navbar-item\" href=\"/\"><h4 class=\"is-size-4\">Home</h4></a></div><div class=\"navbar-end\"><div class=\"navbar-item\"><div class=\"buttons\"><p id=\"username\"></p><a id=\"login\" class=\"button is-light is-hidden\" href=\"/login\">Login</a> <a id=\"logout\" class=\"button is-light is-hidden\">Logout</a></div></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

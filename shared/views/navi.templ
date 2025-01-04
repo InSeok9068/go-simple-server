@@ -2,18 +2,16 @@ package shared
 
 templ Navi() {
 	<nav class="navbar" role="navigation" aria-label="main navigation">
-		<div id="navbarBasicExample" class="navbar-menu">
+		<div class="navbar-menu is-active">
 			<div class="navbar-start">
 				<a class="navbar-item" href="/">
-					Home
+					<h4 class="is-size-4">Home</h4>
 				</a>
 			</div>
 			<div class="navbar-end">
 				<div class="navbar-item">
-					<div>
-						<p id="username"></p>
-					</div>
 					<div class="buttons">
+						<p id="username"></p>
 						<a id="login" class="button is-light is-hidden" href="/login">Login</a>
 						<a id="logout" class="button is-light is-hidden">Logout</a>
 					</div>
