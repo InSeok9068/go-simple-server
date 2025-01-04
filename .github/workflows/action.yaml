@@ -60,7 +60,7 @@ jobs:
           echo -e "${{ secrets.REMOTE_SSH_KEY }}" > ssh_key.pem
           chmod 600 ssh_key.pem
 
-          scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./main.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:/app
+          scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./main.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:./app
 
           rm ssh_key.pem
 
