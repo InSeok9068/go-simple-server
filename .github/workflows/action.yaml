@@ -47,9 +47,14 @@ jobs:
           GOARCH: amd64
         run: |
           templ generate
-          go build -o ./main ./cmd/sample
+          go build -ldflags "-s -w" -o ./main ./cmd/sample
 
-      # 7. SCP 파일 전송
+      # 7. 바이너리 압축
+      - name: Compress Binary
+        run: |
+          tar -czvf main.tar.gz main
+
+      # 8. SCP 파일 전송
       - name: Deploy File to Server
         uses: appleboy/scp-action@master
         with:
@@ -57,7 +62,7 @@ jobs:
           username: ${{ secrets.REMOTE_ID }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
-          source: ./main
+          source: ./main.tar.gz
           target: ./app
 
       # 8. SSH 명령어 실행
@@ -70,5 +75,7 @@ jobs:
           port: 22
           script: |
             cd ./app
+            tar -xzvf main.tar.gz
             chmod +x main
+            rm main.tar.gz
             sudo systemctl restart main.service
