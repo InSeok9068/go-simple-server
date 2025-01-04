@@ -85,5 +85,7 @@ sudo apt install certbot python3-certbot-nginx -y
 sudo certbot --nginx -d toy-project.n-e.kr
 sudo certbot renew --dry-run
 # 한달에 한번 수동 갱신 (혹시나 동작 안할때 대비)
-# 0 0 1 * * certbot renew --renew-hook "sudo service nginx restart"
+# sudo crontab -e
+# 0 0 1 * * certbot renew --renew-hook "sudo systemctl reload nginx"
+# 0 0 1 * * certbot renew --renew-hook "sudo systemctl reload nginx" || echo "Certbot failed!" | mail -s "SSL Renew Failed" dlstjr9068@gmail.com
 ```
