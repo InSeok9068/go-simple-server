@@ -38,7 +38,7 @@ jobs:
           GOOS: linux
           GOARCH: amd64
         run: |
-          go build -o ./main ./cmd/sample"
+          go build -o ./main ./cmd/sample
 
       # 6. SCP 파일 전송
       - name: Deploy via SSH
