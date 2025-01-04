@@ -54,16 +54,21 @@ jobs:
         run: |
           tar -czvf main.tar.gz main
 
-      # 8. SCP 파일 전송
-      - name: Deploy File to Server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_IP }}
-          username: ${{ secrets.REMOTE_ID }}
-          key: ${{ secrets.REMOTE_SSH_KEY }}
-          port: 22
-          source: ./main.tar.gz
-          target: ./app
+      # 8. SCP 파일 전송 (직접 SCP 사용)
+      - name: Transfer File via SCP
+        run: |
+          scp -C -i ${{ secrets.REMOTE_SSH_KEY }} -P 22 ./main.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:/app
+
+      # # 8. SCP 파일 전송 (라이브 러리 사용) -> 속도 이슈
+      # - name: Deploy File to Server
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ secrets.REMOTE_IP }}
+      #     username: ${{ secrets.REMOTE_ID }}
+      #     key: ${{ secrets.REMOTE_SSH_KEY }}
+      #     port: 22
+      #     source: ./main.tar.gz
+      #     target: ./app
 
       # 9 SSH 명령어 실행
       - name: Restart Server
