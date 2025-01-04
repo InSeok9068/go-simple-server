@@ -65,7 +65,7 @@ jobs:
           source: ./main.tar.gz
           target: ./app
 
-      # 8. SSH 명령어 실행
+      # 9 SSH 명령어 실행
       - name: Restart Server
         uses: appleboy/ssh-action@master
         with:
