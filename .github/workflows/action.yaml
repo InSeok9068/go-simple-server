@@ -25,13 +25,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential gcc-multilib
-          sudo go install github.com/a-h/templ/cmd/templ@latest
 
       # 4. Templ 패키지 설치
       - name: Install Templ Dependencies
         run: |
           export PATH=$PATH:$HOME/go/bin
-          go install github.com/a-h/templ/cmd/templ@latest     
+          go install github.com/a-h/templ/cmd/templ@latest
 
       # 5. .env 파일 생성
       - name: Generate .env File
