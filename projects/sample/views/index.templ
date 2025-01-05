@@ -142,24 +142,23 @@ templ Index() {
 			@shared.FirebaseInit()
 			<div class="container p-3">
 				@shared.Navi()
-				<div id="text" class="box">
-					@Title("Go 언어로 만든 심플서버")
+				<div class="buttons my-2">
+					<button
+						hx-get="/authors"
+						hx-trigger="load, click"
+						hx-target="#authors"
+						class="button"
+					>
+						조회
+					</button>
+					<button
+						hx-get="/reset-form"
+						hx-target=".form"
+						class="button is-primary"
+					>
+						등록
+					</button>
 				</div>
-				<button
-					hx-get="/authors"
-					hx-trigger="load, click"
-					hx-target="#authors"
-					class="button mb-2"
-				>
-					조회
-				</button>
-				<button
-					hx-get="/reset-form"
-					hx-target=".form"
-					class="button is-primary mb-2"
-				>
-					등록
-				</button>
 				<ul class="my-1" id="authors"></ul>
 				<div class="form">
 					@AuthorInsertForm()
