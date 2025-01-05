@@ -3,10 +3,8 @@ package internal
 import (
 	"context"
 	"log/slog"
-	resources "simple-server"
 
 	firebase "firebase.google.com/go/v4"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/api/option"
@@ -15,9 +13,7 @@ import (
 var App *firebase.App
 
 func FirebaseInit() {
-	envData, _ := resources.EmbeddedFiles.ReadFile(".env")
-	envMap, _ := godotenv.Unmarshal(string(envData))
-	config := envMap["FIREBASE_CONFIG"]
+	config := EnvMap["FIREBASE_CONFIG"]
 
 	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(config)))
 	if err != nil {

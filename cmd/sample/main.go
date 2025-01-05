@@ -7,15 +7,13 @@ import (
 	"simple-server/projects/sample/handlers"
 	"simple-server/projects/sample/jobs"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	/* 환경 설정 */
-	envData, _ := resources.EmbeddedFiles.ReadFile(".env")
-	godotenv.Unmarshal(string(envData))
+	internal.LoadEnv()
 	/* 환경 설정 */
 
 	/* 파이어베이스 초기화 */
