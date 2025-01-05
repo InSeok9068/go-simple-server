@@ -89,3 +89,9 @@ sudo certbot renew --dry-run
 # 0 0 1 * * certbot renew --renew-hook "sudo systemctl reload nginx"
 # 0 0 1 * * certbot renew --renew-hook "sudo systemctl reload nginx" || echo "Certbot failed!" | mail -s "SSL Renew Failed" dlstjr9068@gmail.com
 ```
+
+## Chromium 설치
+
+```shell
+sudo apt install chromium-browser -y
+```

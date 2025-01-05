@@ -5,6 +5,7 @@ import (
 	resources "simple-server"
 	"simple-server/internal"
 	"simple-server/projects/sample/handlers"
+	"simple-server/projects/sample/jobs"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -50,8 +51,22 @@ func main() {
 	private.PUT("/author", handlers.UpdateAuthor)    // 저자 수정
 	private.DELETE("/author", handlers.DeleteAuthor) // 저자 삭제
 
-	private.GET("/reset-form", handlers.ResetForm) // 저자 등록폼 리셋
+	private.GET("/reset-form", handlers.ResetForm)      // 저자 등록폼 리셋
+	private.GET("/squash", func(c echo.Context) error { // 스쿼시 잡 실행
+		jobs.SquashExecute()
+		return c.String(200, "Squash 실행")
+	})
 	/* 라우터  */
+
+	/* 크론 잡 */
+	// c := cron.New()
+
+	// jobs.SquashJob(c)
+
+	// go func() {
+	// 	c.Start()
+	// }()
+	/* 크론 잡 */
 
 	e.Logger.Fatal(e.Start(":8000"))
 }
