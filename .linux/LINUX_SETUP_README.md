@@ -31,8 +31,8 @@ sudo ufw allow 'Nginx Full'
 sudo ufw allow 'OpenSSH'
 
 # Pocketbase Admin 방화벽 허용
-sudo ufw allow 9000
 
+sudo ufw allow 9000
 # ufw 활성화
 sudo ufw enable
 

@@ -1,6 +1,6 @@
 # Go 언어 기반 풀스택 서버
 
-**Host** : toy-project.kro.kr
+**Host** : https://toy-project.n-e.kr
 
 | 구성                  | 사용 기술        |
 | --------------------- | ---------------- |
