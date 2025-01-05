@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#sudo apt update
+#sudo apt install -y build-essential gcc-multilib
+
 # Linux 환경 변수 설정
 export GOOS=linux
 export GOARCH=amd64

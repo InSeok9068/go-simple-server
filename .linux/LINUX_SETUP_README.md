@@ -47,7 +47,7 @@ sudo systemctl enable ufw
 
 `etc > nginx > sites-enabled > default`
 
-[파일 참조](default)
+[파일 참조](./nginx/default)
 
 ### nginx 설정 확인
 
