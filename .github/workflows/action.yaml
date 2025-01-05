@@ -55,7 +55,7 @@ jobs:
           tar -czvf main.tar.gz main
 
       # 8. SCP 파일 전송 (직접 SCP 사용)
-      - name: Transfer File via SCP
+      - name: Transfer File
         run: |
           echo -e "${{ secrets.REMOTE_SSH_KEY }}" > ssh_key.pem
           chmod 600 ssh_key.pem
