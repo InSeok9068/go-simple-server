@@ -48,7 +48,7 @@ jobs:
           GOARCH: amd64
         run: |
           templ generate
-          go build -ldflags "-s -w" -o ./main ./cmd/sample
+          go build -ldflags "-s -w" -o ./main ./cmd/homepage
 
       # 7. 바이너리 압축
       - name: Compress Binary

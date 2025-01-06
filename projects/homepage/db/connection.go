@@ -8,7 +8,7 @@ import (
 
 func DbConnection() (*Queries, context.Context) {
 	ctx := context.Background()
-	dbCon, err := sql.Open("sqlite3", "file:./projects/sample/pb_data/data.db")
+	dbCon, err := sql.Open("sqlite3", "file:./projects/homepage/pb_data/data.db")
 	if err != nil {
 		slog.Error(err.Error())
 	}

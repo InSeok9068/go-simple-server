@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"simple-server/projects/sample/db"
-	"simple-server/projects/sample/views"
+	"simple-server/projects/homepage/db"
+	"simple-server/projects/homepage/views"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"

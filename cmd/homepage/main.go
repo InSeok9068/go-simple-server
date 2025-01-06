@@ -4,8 +4,8 @@ import (
 	"io/fs"
 	resources "simple-server"
 	"simple-server/internal"
-	"simple-server/projects/sample/handlers"
-	"simple-server/projects/sample/jobs"
+	"simple-server/projects/homepage/handlers"
+	"simple-server/projects/homepage/jobs"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -24,7 +24,7 @@ func main() {
 
 	/* 미들 웨어 */
 	sharedStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "shared/static")
-	projectStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "projects/sample/static")
+	projectStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static")
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
 	e.Use(middleware.Logger())

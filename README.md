@@ -39,14 +39,14 @@ sudo systemctl start main.service
 #### 윈도우
 
 ```shell
-./pocketbase.exe serve --dir ./projects/sample/pb_data
+./pocketbase.exe serve --dir ./projects/homepage/pb_data
 ```
 
 #### 리눅스
 
 ```shell
 chmod +x pocketbase
-./pocketbase serve --dir ./projects/sample/pb_data
+./pocketbase serve --dir ./projects/homepage/pb_data
 ```
 
 ---

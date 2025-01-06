@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"simple-server/projects/sample/views"
+	"simple-server/projects/homepage/views"
 	shared "simple-server/shared/views"
 
 	"github.com/a-h/templ"
