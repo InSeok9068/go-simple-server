@@ -31,7 +31,7 @@ templ FirebaseInit() {
         onAuthStateChanged(auth, (user) => {
           if (user) {
             console.log("로그인됨:", user);
-            document.getElementById("username").textContent = user.displayName;
+            document.getElementById("username").textContent = `${user.displayName} 님 환영합니다!`;
             document.getElementById("login").classList.add("is-hidden");
             document.getElementById("logout").classList.remove("is-hidden");
 
