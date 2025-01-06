@@ -19,8 +19,8 @@ templ HomepageLayout(title string, content templ.Component) {
 			@shared.FirebaseInit()
 			<div>
 				@shared.Navi(os.Getenv("APP_NAME"))
-				<div class="columns">
-					<div class="column is-2 m-2">
+				<div class="columns ml-2">
+					<div class="column is-2">
 						<aside class="menu">
 							<p class="menu-label">General</p>
 							<ul class="menu-list">
@@ -28,7 +28,7 @@ templ HomepageLayout(title string, content templ.Component) {
 							</ul>
 						</aside>
 					</div>
-					<div class="column m-2">
+					<div class="column">
 						<h1 class="subtitle is-4">{ title }</h1>
 						@content
 					</div>
