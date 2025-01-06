@@ -42,6 +42,10 @@ func main() {
 	/* 라우터  */
 	public.GET("/", handlers.IndexPageHandler)
 	public.GET("/login", handlers.LoginPageHanlder)
+	public.GET("/squash", func(c echo.Context) error { // 스쿼시 잡 실행
+		jobs.SquashExecute()
+		return c.String(200, "Squash 실행")
+	})
 
 	private.GET("/authors", handlers.GetAuthors)     // 저자 리스트 조회
 	private.GET("/author", handlers.GetAuthor)       // 저자 조회
@@ -49,11 +53,7 @@ func main() {
 	private.PUT("/author", handlers.UpdateAuthor)    // 저자 수정
 	private.DELETE("/author", handlers.DeleteAuthor) // 저자 삭제
 
-	private.GET("/reset-form", handlers.ResetForm)      // 저자 등록폼 리셋
-	private.GET("/squash", func(c echo.Context) error { // 스쿼시 잡 실행
-		jobs.SquashExecute()
-		return c.String(200, "Squash 실행")
-	})
+	private.GET("/reset-form", handlers.ResetForm) // 저자 등록폼 리셋
 	/* 라우터  */
 
 	/* 크론 잡 */
