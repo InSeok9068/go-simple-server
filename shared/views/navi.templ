@@ -1,11 +1,11 @@
 package shared
 
-templ Navi() {
+templ Navi(title string) {
 	<nav class="navbar is-light" role="navigation" aria-label="main navigation">
 		<div class="navbar-menu is-active">
 			<div class="navbar-start">
 				<a class="navbar-item" href="/">
-					<h4 class="is-size-4">Homepage</h4>
+					<h4 class="is-size-4">{ title }</h4>
 				</a>
 			</div>
 			<div class="navbar-end">

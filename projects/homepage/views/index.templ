@@ -1,15 +1,6 @@
 package views
 
-import (
-	"simple-server/projects/homepage/db"
-	shared "simple-server/shared/views"
-)
-
-templ Title(name string) {
-	<p class="is-size-4">
-		{ name }
-	</p>
-}
+import "simple-server/projects/homepage/db"
 
 templ authorName(name ...string) {
 	<div class="field">
@@ -131,53 +122,30 @@ templ Authors(authors []db.Author) {
 	}
 }
 
+templ Page() {
+	<div class="buttons my-2">
+		<button
+			hx-get="/authors"
+			hx-trigger="load, click"
+			hx-target="#authors"
+			class="button"
+		>
+			조회
+		</button>
+		<button
+			hx-get="/reset-form"
+			hx-target=".form"
+			class="button is-primary"
+		>
+			등록
+		</button>
+	</div>
+	<ul class="my-1" id="authors"></ul>
+	<div class="form">
+		@AuthorInsertForm()
+	</div>
+}
+
 templ Index() {
-	<!DOCTYPE html>
-	<html lang="ko">
-		<head>
-			@shared.Header("샘플 서버")
-			<link rel="stylesheet" href="/static/style.css"/>
-		</head>
-		<body>
-			@shared.FirebaseInit()
-			<div>
-				@shared.Navi()
-				<div class="columns">
-					<div class="column is-2 m-2">
-						<aside class="menu">
-							<p class="menu-label">General</p>
-							<ul class="menu-list">
-								<li><a href="/">Authors</a></li>
-							</ul>
-						</aside>
-					</div>
-					<div class="column m-2">
-						<h1 class="title">Authors</h1>
-						<div class="buttons my-2">
-							<button
-								hx-get="/authors"
-								hx-trigger="load, click"
-								hx-target="#authors"
-								class="button"
-							>
-								조회
-							</button>
-							<button
-								hx-get="/reset-form"
-								hx-target=".form"
-								class="button is-primary"
-							>
-								등록
-							</button>
-						</div>
-						<ul class="my-1" id="authors"></ul>
-						<div class="form">
-							@AuthorInsertForm()
-						</div>
-					</div>
-				</div>
-			</div>
-			@shared.Toast()
-		</body>
-	</html>
+	@HomepageLayout("Authors", Page())
 }

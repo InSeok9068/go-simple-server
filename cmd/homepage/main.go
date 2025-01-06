@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/fs"
+	"os"
 	resources "simple-server"
 	"simple-server/internal"
 	"simple-server/projects/homepage/handlers"
@@ -14,6 +15,7 @@ import (
 func main() {
 	/* 환경 설정 */
 	internal.LoadEnv()
+	os.Setenv("APP_NAME", "Homepage")
 	/* 환경 설정 */
 
 	/* 파이어베이스 초기화 */
