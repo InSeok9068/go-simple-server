@@ -10,6 +10,8 @@ import (
 
 	"simple-server/projects/homepage/db"
 
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -45,7 +47,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 	return h
 }
 
-func DatabaseLogInit() {
+func DatabaseLoggerInit() {
 	initOnce.Do(func() {
 		dbCon, err := db.LogDbOpen()
 		if err != nil {
@@ -57,4 +59,8 @@ func DatabaseLogInit() {
 		slog.SetDefault(slog.New(databaseHandler))
 		log.SetOutput(os.Stdout)
 	})
+}
+
+func LogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error {
+	return nil
 }
