@@ -16,7 +16,13 @@ func main() {
 	/* 환경 설정 */
 	internal.LoadEnv()
 	os.Setenv("APP_NAME", "Homepage")
+	os.Setenv("APP_DATABASE_URL", "file:./projects/homepage/pb_data/data.db")
+	os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
 	/* 환경 설정 */
+
+	/* 로깅 초기화 */
+	internal.DatabaseLogInit()
+	/* 로깅 초기화 */
 
 	/* 파이어베이스 초기화 */
 	internal.FirebaseInit()

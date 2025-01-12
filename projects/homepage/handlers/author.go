@@ -9,11 +9,10 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func GetAuthors(c echo.Context) error {
-	queries, ctx := db.DbConnection()
+	queries, ctx := db.DbQueries()
 	authors, err := queries.ListAuthors(ctx)
 	if err != nil {
 		slog.Error(err.Error())
@@ -24,7 +23,7 @@ func GetAuthors(c echo.Context) error {
 func GetAuthor(c echo.Context) error {
 	id := c.QueryParam("id")
 
-	queries, ctx := db.DbConnection()
+	queries, ctx := db.DbQueries()
 	author, err := queries.GetAuthor(ctx, id)
 	if err != nil {
 		slog.Error(err.Error())
@@ -41,7 +40,7 @@ func CreateAuthor(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "이름을 입력해주세요.")
 	}
 
-	queries, ctx := db.DbConnection()
+	queries, ctx := db.DbQueries()
 	author, err := queries.CreateAuthor(ctx, db.CreateAuthorParams{
 		Name: name,
 		Bio:  bio,
@@ -62,7 +61,7 @@ func UpdateAuthor(c echo.Context) error {
 	name := c.FormValue("name")
 	bio := c.FormValue("bio")
 
-	queries, ctx := db.DbConnection()
+	queries, ctx := db.DbQueries()
 	author, err := queries.UpdateAuthor(ctx, db.UpdateAuthorParams{
 		ID:   id,
 		Name: name,
@@ -81,7 +80,7 @@ func UpdateAuthor(c echo.Context) error {
 func DeleteAuthor(c echo.Context) error {
 	id := c.QueryParam("id")
 
-	queries, ctx := db.DbConnection()
+	queries, ctx := db.DbQueries()
 	err := queries.DeleteAuthor(ctx, id)
 	if err != nil {
 		slog.Error(err.Error())
