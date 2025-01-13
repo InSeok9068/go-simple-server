@@ -1,0 +1,10 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "database": "${workspaceFolder:Go-Simple-Server}/projects/homepage/pb_data/data.db",
+      "name": "data"
+    }
+  ]
+}
