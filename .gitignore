@@ -49,3 +49,6 @@ tmp
 
 # Build File
 main
+
+# SQL Tools
+data.session.sql
