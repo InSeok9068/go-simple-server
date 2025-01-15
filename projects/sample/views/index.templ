@@ -1,0 +1,151 @@
+package views
+
+import "simple-server/projects/sample/db"
+
+templ authorName(name ...string) {
+	<div class="field">
+		<label class="label">Name</label>
+		<div class="control">
+			if len(name) > 0 {
+				<input class="input" name="name" value={ name[0] }/>
+			} else {
+				<input class="input" name="name"/>
+			}
+		</div>
+	</div>
+}
+
+templ authorBio(bio ...string) {
+	<div class="field">
+		<label class="label">Bio</label>
+		<div class="control">
+			if len(bio) > 0 {
+				<input class="input" name="bio" value={ bio[0] }/>
+			} else {
+				<input class="input" name="bio"/>
+			}
+		</div>
+	</div>
+}
+
+templ AuthorInsertForm() {
+	<form
+		class="box"
+		hx-post="/author"
+		hx-target="#authors"
+		hx-on::after-request="if(event.detail.successful) this.reset()"
+	>
+		@authorName()
+		@authorBio()
+		<button class="button is-primary">등록</button>
+	</form>
+}
+
+templ AuthorUpdateForm(author db.Author) {
+	<form
+		class="box"
+		hx-put="/author"
+		hx-target="#authors"
+	>
+		<input type="hidden" name="id" value={ author.ID }/>
+		@authorName(author.Name)
+		@authorBio(author.Bio)
+		<button class="button is-link">수정</button>
+	</form>
+}
+
+templ Authors(authors []db.Author) {
+	for _, author := range authors {
+		<li class="my-2">
+			<div class="box">
+				<div class="columns">
+					<div class="column is-2">
+						<div class="field is-horizontal">
+							<div class="field-label is-normal">
+								<label class="label">Name</label>
+							</div>
+							<div class="field-body">
+								<div class="field">
+									<p class="control">
+										<input
+											class="input"
+											value={ author.Name }
+											readonly
+										/>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="column is-2">
+						<div class="field is-horizontal">
+							<div class="field-label is-normal">
+								<label class="label">Bio</label>
+							</div>
+							<div class="field-body">
+								<div class="field">
+									<p class="control">
+										<input
+											class="input"
+											value={ author.Bio }
+											readonly
+										/>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="column is-1">
+						<form
+							hx-get="/author"
+							hx-target=".form"
+						>
+							<input type="hidden" name="id" value={ author.ID }/>
+							<button class="button is-text">
+								선택
+							</button>
+						</form>
+					</div>
+					<div class="column is-1">
+						<form
+							hx-delete="/author"
+							hx-target="#authors"
+							hx-confirm="삭제 하시겠습니까?"
+						>
+							<input type="hidden" name="id" value={ author.ID }/>
+							<button class="delete is-medium"></button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</li>
+	}
+}
+
+templ Page() {
+	<div class="buttons my-2">
+		<button
+			hx-get="/authors"
+			hx-trigger="load, click"
+			hx-target="#authors"
+			class="button"
+		>
+			조회
+		</button>
+		<button
+			hx-get="/reset-form"
+			hx-target=".form"
+			class="button is-primary"
+		>
+			등록
+		</button>
+	</div>
+	<ul class="my-1" id="authors"></ul>
+	<div class="form">
+		@AuthorInsertForm()
+	</div>
+}
+
+templ Index() {
+	@HomepageLayout("Authors", Page())
+}

@@ -1,0 +1,10 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "sample-query.sql"
+    schema: "sample-schema.sql"
+    gen:
+      go:
+        package: "db"
+        out: "db"
+# sqlc generate -f ./projects/sample/sqlc.yaml
