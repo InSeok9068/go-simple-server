@@ -8,6 +8,7 @@ import (
 	"simple-server/projects/sample/handlers"
 	"simple-server/projects/sample/jobs"
 
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -15,9 +16,9 @@ import (
 func main() {
 	/* 환경 설정 */
 	internal.LoadEnv()
-	os.Setenv("APP_NAME", "Sample")
-	os.Setenv("APP_DATABASE_URL", "file:./projects/sample/pb_data/data.db")
-	os.Setenv("LOG_DATABASE_URL", "file:./projects/sample/pb_data/auxiliary.db")
+	_ = os.Setenv("APP_NAME", "Sample")
+	_ = os.Setenv("APP_DATABASE_URL", "file:./projects/sample/pb_data/data.db")
+	_ = os.Setenv("LOG_DATABASE_URL", "file:./projects/sample/pb_data/auxiliary.db")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
@@ -37,6 +38,8 @@ func main() {
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(echoprometheus.NewMiddleware("sample"))
+	e.GET("/metrics", echoprometheus.NewHandler())
 
 	// 공개 그룹
 	public := e.Group("")

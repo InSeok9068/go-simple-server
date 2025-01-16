@@ -60,6 +60,7 @@ go get firebase.google.com/go/v4@latest
 go get github.com/a-h/templ@latest
 go get github.com/go-rod/rod@latest
 go get github.com/joho/godotenv@latest
+go get github.com/labstack/echo-contrib@latest
 go get github.com/labstack/echo/v4@latest
 go get github.com/mattn/go-sqlite3@latest
 go get github.com/robfig/cron/v3@latest
