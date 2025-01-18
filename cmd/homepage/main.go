@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/labstack/echo-contrib/echoprometheus"
-	"github.com/labstack/echo-contrib/jaegertracing"
 	"io/fs"
 	"os"
 	resources "simple-server"
@@ -39,10 +38,6 @@ func main() {
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
-	// Jaeger 미들웨어
-	c := jaegertracing.New(e, nil)
-	defer c.Close()
 
 	// Prometheus 미들웨어
 	e.Use(echoprometheus.NewMiddleware("homepage"))
