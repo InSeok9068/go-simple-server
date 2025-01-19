@@ -3,9 +3,11 @@ package internal
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
+	"net"
 	"os"
 	"simple-server/projects/homepage/db"
 	"sync"
@@ -72,8 +74,17 @@ type DatabaseHandler struct {
 func (h *DatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
 	logMessage := r.Message
 	logLevel := r.Level.Level()
+	data := make(map[string]any)
+	r.Attrs(func(attr slog.Attr) bool {
+		data[attr.Key] = attr.Value.Any()
+		return true
+	})
+	jsonBytes, _ := json.Marshal(data)
 
-	_, _ = h.db.ExecContext(ctx, "INSERT INTO _logs (level, message, data) VALUES (?, ?, ?)", logLevel, logMessage, "{}")
+	_, _ = h.db.ExecContext(ctx, "INSERT INTO _logs (level, message, data) VALUES (?, ?, ?)",
+		logLevel,
+		logMessage,
+		string(jsonBytes))
 
 	return nil
 }
@@ -121,15 +132,22 @@ func LoggerWithDatabase() {
 
 func CustomLogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error {
 	// 요청 정보 로그 기록
-	slog.Info(fmt.Sprintf(
-		`{"time":"%s","remote_ip":"%s","host":"%s","method":"%s","uri":"%s","user_agent":"%s","status":%d}`,
-		v.StartTime,
-		c.RealIP(),
-		c.Request().Host,
-		c.Request().Method,
-		c.Request().RequestURI,
-		c.Request().UserAgent(),
-		c.Response().Status,
-	))
+	method := c.Request().Method
+	requestUri := c.Request().RequestURI
+	remoteIP, _, _ := net.SplitHostPort(v.RemoteIP)
+	userIP, _, _ := net.SplitHostPort(c.RealIP())
+
+	slog.Info(fmt.Sprintf(`%s %s`, method, requestUri),
+		"execTime", v.Latency.Microseconds(),
+		"type", "request",
+		"status", c.Response().Status,
+		"method", method,
+		"url", requestUri,
+		"referer", c.Request().Referer(),
+		"remoteIP", remoteIP,
+		"userIP", userIP,
+		"userAgent", c.Request().UserAgent(),
+		"error", v.Error,
+		"details", "")
 	return nil
 }
