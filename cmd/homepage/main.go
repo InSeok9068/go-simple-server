@@ -22,7 +22,7 @@ func main() {
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
-	internal.DatabaseLoggerInit()
+	internal.LoggerWithDatabase()
 	/* 로깅 초기화 */
 
 	/* 파이어베이스 초기화 */
@@ -36,7 +36,9 @@ func main() {
 	projectStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static")
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
-	e.Use(middleware.Logger())
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogValuesFunc: internal.CustomLogValuesFunc,
+	}))
 	e.Use(middleware.Recover())
 
 	// Prometheus 미들웨어

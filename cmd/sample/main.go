@@ -22,7 +22,7 @@ func main() {
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
-	internal.DatabaseLoggerInit()
+	internal.LoggerWithDatabase()
 	/* 로깅 초기화 */
 
 	/* 파이어베이스 초기화 */
