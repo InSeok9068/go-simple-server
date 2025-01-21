@@ -7,9 +7,9 @@ templ authorName(name ...string) {
 		<label class="label">Name</label>
 		<div class="control">
 			if len(name) > 0 {
-				<input class="input" name="name" value={ name[0] }/>
+				<input class="input" name="name" value={ name[0] } required />
 			} else {
-				<input class="input" name="name"/>
+				<input class="input" name="name" required/>
 			}
 		</div>
 	</div>
