@@ -101,7 +101,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 	return h
 }
 
-func LoggerWithDatabase() {
+func LoggerWithDatabaseInit() {
 	initOnce.Do(func() {
 		dbCon, err := db.LogDbOpen()
 		if err != nil {

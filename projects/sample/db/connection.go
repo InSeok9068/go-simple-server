@@ -13,7 +13,7 @@ func DbQueries() (*Queries, context.Context) {
 	ctx := context.Background()
 	dbCon, err := AppDbOpen()
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("Failed to open database", "error", err.Error())
 	}
 	queries := New(dbCon)
 	return queries, ctx

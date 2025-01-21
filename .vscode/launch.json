@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Main Server",
+      "name": "Debug Homepage Server",
       "type": "go",
       "request": "launch",
       "mode": "auto",
@@ -13,11 +13,11 @@
       "cwd": "${workspaceFolder}"
     },
     {
-      "name": "Debug Etc Server",
+      "name": "Debug Sample Server",
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "cmd/etc/main.go",
+      "program": "cmd/sample/main.go",
       "cwd": "${workspaceFolder}"
     }
   ]

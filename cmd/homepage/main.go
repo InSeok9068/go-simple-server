@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/labstack/echo-contrib/echoprometheus"
 	"io/fs"
 	"os"
 	resources "simple-server"
 	"simple-server/internal"
 	"simple-server/projects/homepage/handlers"
 	"simple-server/projects/homepage/jobs"
+
+	"github.com/labstack/echo-contrib/echoprometheus"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -16,13 +17,13 @@ import (
 func main() {
 	/* 환경 설정 */
 	internal.LoadEnv()
-	_ = os.Setenv("APP_NAME", "Homepage")
-	_ = os.Setenv("APP_DATABASE_URL", "file:./projects/homepage/pb_data/data.db")
-	_ = os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
+	os.Setenv("APP_NAME", "Homepage")
+	os.Setenv("APP_DATABASE_URL", "file:./projects/homepage/pb_data/data.db")
+	os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
-	internal.LoggerWithDatabase()
+	internal.LoggerWithDatabaseInit()
 	/* 로깅 초기화 */
 
 	/* 파이어베이스 초기화 */
@@ -36,13 +37,13 @@ func main() {
 	projectStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static")
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
+	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogLatency:    true,
 		LogError:      true,
 		LogRemoteIP:   true,
 		LogValuesFunc: internal.CustomLogValuesFunc,
 	}))
-	e.Use(middleware.Recover())
 
 	// Prometheus 미들웨어
 	e.Use(echoprometheus.NewMiddleware("homepage"))
@@ -53,7 +54,6 @@ func main() {
 
 	// 인증 그룹
 	private := e.Group("")
-
 	private.Use(middleware.KeyAuthWithConfig(internal.FirebaseAuth()))
 	/* 미들 웨어 */
 

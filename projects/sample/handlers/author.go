@@ -15,7 +15,7 @@ func GetAuthors(c echo.Context) error {
 	queries, ctx := db.DbQueries()
 	authors, err := queries.ListAuthors(ctx)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("저자 목록 조회 오류", "error", err.Error())
 	}
 	return templ.Handler(views.Authors(authors)).Component.Render(c.Request().Context(), c.Response().Writer)
 }
@@ -26,7 +26,7 @@ func GetAuthor(c echo.Context) error {
 	queries, ctx := db.DbQueries()
 	author, err := queries.GetAuthor(ctx, id)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("저자 조회 오류", "error", err.Error())
 	}
 
 	return templ.Handler(views.AuthorUpdateForm(author)).Component.Render(c.Request().Context(), c.Response().Writer)
@@ -46,7 +46,7 @@ func CreateAuthor(c echo.Context) error {
 		Bio:  bio,
 	})
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("저자 등록 오류", "error", err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "등록 오류")
 	}
 
@@ -68,7 +68,7 @@ func UpdateAuthor(c echo.Context) error {
 		Bio:  bio,
 	})
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("저자 수정 오류", "error", err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "수정 오류")
 	}
 
@@ -83,7 +83,7 @@ func DeleteAuthor(c echo.Context) error {
 	queries, ctx := db.DbQueries()
 	err := queries.DeleteAuthor(ctx, id)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("저자 삭제 오류", "error", err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "삭제 오류")
 	}
 

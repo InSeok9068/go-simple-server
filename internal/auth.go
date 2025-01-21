@@ -17,7 +17,7 @@ func FirebaseInit() {
 
 	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(config)))
 	if err != nil {
-		slog.Error("파이어베이스 초기화 실패", "err", err)
+		slog.Error("파이어베이스 초기화 실패", "error", err.Error())
 	}
 
 	App = app
