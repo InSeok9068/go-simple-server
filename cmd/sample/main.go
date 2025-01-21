@@ -36,10 +36,10 @@ func main() {
 	var projectStaticFS fs.FS
 	if internal.IsProdEnv() {
 		sharedStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "shared/static")
-		projectStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "projects/homepage/static")
+		projectStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "projects/sample/static")
 	} else {
 		sharedStaticFS = os.DirFS("./shared/static")
-		projectStaticFS = os.DirFS("./projects/homepage/static")
+		projectStaticFS = os.DirFS("./projects/sample/static")
 	}
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
@@ -52,7 +52,7 @@ func main() {
 	}))
 
 	// Prometheus 미들웨어
-	e.Use(echoprometheus.NewMiddleware("homepage"))
+	e.Use(echoprometheus.NewMiddleware("sample"))
 	e.GET("/metrics", echoprometheus.NewHandler())
 
 	// 공개 그룹
