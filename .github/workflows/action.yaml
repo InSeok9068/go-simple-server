@@ -36,8 +36,9 @@ jobs:
       - name: Generate .env File
         run: |
           cat <<EOF > .env
+            ENV=prod
+            CHROMEDP_HEADLESS=true
             FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
-            CHROMEDP_HEADLESS="true"
           EOF
 
       # 6. 환경 변수 설정 및 빌드

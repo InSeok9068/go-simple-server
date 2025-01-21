@@ -32,8 +32,15 @@ func main() {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	sharedStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "shared/static")
-	projectStaticFS, _ := fs.Sub(resources.EmbeddedFiles, "projects/sample/static")
+	var sharedStaticFS fs.FS
+	var projectStaticFS fs.FS
+	if internal.IsProdEnv() {
+		sharedStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "shared/static")
+		projectStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "projects/homepage/static")
+	} else {
+		sharedStaticFS = os.DirFS("./shared/static")
+		projectStaticFS = os.DirFS("./projects/homepage/static")
+	}
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
 	e.Use(middleware.Recover())
