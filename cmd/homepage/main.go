@@ -17,7 +17,7 @@ import (
 func main() {
 	/* 환경 설정 */
 	internal.LoadEnv()
-	os.Setenv("APP_NAME", "Homepage")
+	os.Setenv("APP_NAME", "🕵️‍♀️ AI 공부 길잡이")
 	os.Setenv("APP_DATABASE_URL", "file:./projects/homepage/pb_data/data.db")
 	os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
 	/* 환경 설정 */
@@ -73,7 +73,12 @@ func main() {
 		return c.String(200, "Squash 실행")
 	})
 
-	public.POST("/ai-study", handlers.AIStudy)
+	public.POST("/ai-study", func(c echo.Context) error {
+		return handlers.AIStudy(c, false)
+	})
+	public.POST("/ai-study-ramdom", func(c echo.Context) error {
+		return handlers.AIStudy(c, true)
+	})
 	/* 라우터  */
 
 	/* 크론 잡 */
