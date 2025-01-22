@@ -14,20 +14,11 @@ templ HomepageLayout(title string, content templ.Component) {
 		</head>
 		<body>
 			<style>
-			 
 			</style>
 			@shared.FirebaseInit()
-			<div>
-				@shared.Navi(os.Getenv("APP_NAME"))
+			<div class="container is-max-tablet">
+				@shared.Navi(os.Getenv("APP_NAME"), nil)
 				<div class="columns">
-					<div class="column is-2">
-						<aside class="menu">
-							<p class="menu-label">General</p>
-							<ul class="menu-list">
-								<li><a href="/">Authors</a></li>
-							</ul>
-						</aside>
-					</div>
 					<div class="column">
 						<h1 class="subtitle is-4">{ title }</h1>
 						@content

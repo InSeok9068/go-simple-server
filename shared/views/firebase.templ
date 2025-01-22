@@ -67,23 +67,23 @@ templ FirebaseInit() {
               토큰이 준비된 뒤에 issueRequest()로 재개.
       */
     htmx.on("htmx:confirm", (e) => {
-      // authPromise가 없거나, 아직 user가 null이면
-      if (!authPromise) {
-        console.warn("아직 로그인 안 됐으므로 HTMX 요청 중단");
-        e.preventDefault();
-        return;
-      }
+      // // authPromise가 없거나, 아직 user가 null이면
+      // if (!authPromise) {
+      //   console.warn("아직 로그인 안 됐으므로 HTMX 요청 중단");
+      //   e.preventDefault();
+      //   return;
+      // }
 
-      // authPromise가 완료될 때까지 대기
-      // (이 시점에서 토큰이 준비됨)
-      if (authToken === null) {
-        // 이미 Promise는 존재하지만, 토큰이 아직 안 왔을 수도 있으니
-        e.preventDefault();
-        authPromise.then(() => {
-          console.log("토큰이 준비되었으므로 요청 재개");
-          e.detail.issueRequest(); // 다시 요청을 보냄
-        });
-      }
+      // // authPromise가 완료될 때까지 대기
+      // // (이 시점에서 토큰이 준비됨)
+      // if (authToken === null) {
+      //   // 이미 Promise는 존재하지만, 토큰이 아직 안 왔을 수도 있으니
+      //   e.preventDefault();
+      //   authPromise.then(() => {
+      //     console.log("토큰이 준비되었으므로 요청 재개");
+      //     e.detail.issueRequest(); // 다시 요청을 보냄
+      //   });
+      // }
     });
 
     /*

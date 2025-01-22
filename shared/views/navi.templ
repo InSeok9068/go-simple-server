@@ -1,13 +1,19 @@
 package shared
 
-templ Navi(title string) {
-	<nav class="navbar is-light mb-3" role="navigation" aria-label="main navigation">
-		<div class="navbar-menu is-active">
-			<div class="navbar-start">
-				<a class="navbar-item" href="/">
-					<h1 class="title">{ title }</h1>
-				</a>
+templ Navi(title string, menus templ.Component) {
+	<nav class="navbar is-transparent" x-data="{ open: false }">
+		<div class="navbar-brand">
+			<a class="navbar-item" href="/">
+				<h1 class="title">{ title }</h1>
+			</a>
+			<div class="navbar-burger js-burger" :class="open ? 'is-active' : ''" @click="open = !open">
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
 			</div>
+		</div>
+		<div class="navbar-menu" :class="open ? 'is-active' : ''">
 			<div class="navbar-end">
 				<div class="navbar-item">
 					<div class="buttons">
@@ -16,6 +22,9 @@ templ Navi(title string) {
 						<a id="logout" class="button is-hidden">Logout</a>
 					</div>
 				</div>
+				if menus != nil {
+					@menus
+				}
 			</div>
 		</div>
 	</nav>

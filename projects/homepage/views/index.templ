@@ -59,7 +59,7 @@ templ Authors(authors []db.Author) {
 		<li class="my-2">
 			<div class="box">
 				<div class="columns">
-					<div class="column is-2">
+					<div class="column">
 						<div class="field is-horizontal">
 							<div class="field-label is-normal">
 								<label class="label">Name</label>
@@ -77,7 +77,7 @@ templ Authors(authors []db.Author) {
 							</div>
 						</div>
 					</div>
-					<div class="column is-2">
+					<div class="column">
 						<div class="field is-horizontal">
 							<div class="field-label is-normal">
 								<label class="label">Bio</label>
@@ -95,7 +95,7 @@ templ Authors(authors []db.Author) {
 							</div>
 						</div>
 					</div>
-					<div class="column is-1">
+					<div class="column">
 						<form
 							hx-get="/author"
 							hx-target=".form"
@@ -106,7 +106,7 @@ templ Authors(authors []db.Author) {
 							</button>
 						</form>
 					</div>
-					<div class="column is-1">
+					<div class="column">
 						<form
 							hx-delete="/author"
 							hx-target="#authors"
