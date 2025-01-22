@@ -78,8 +78,6 @@ func main() {
 	public.POST("/author", handlers.CreateAuthor)   // 저자 등록
 	public.PUT("/author", handlers.UpdateAuthor)    // 저자 수정
 	public.DELETE("/author", handlers.DeleteAuthor) // 저자 삭제
-
-	public.GET("/reset-form", handlers.ResetForm) // 저자 등록폼 리셋
 	/* 라우터  */
 
 	/* 크론 잡 */

@@ -4,29 +4,28 @@ import (
 	"log/slog"
 	"net/http"
 	"simple-server/projects/homepage/services"
-	"simple-server/projects/homepage/views"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
 func GetAuthors(c echo.Context) error {
-	authors, err := services.GetAuthors()
+	_, err := services.GetAuthors()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "목록 조회 오류")
 	}
-	return templ.Handler(views.Authors(authors)).Component.Render(c.Request().Context(), c.Response().Writer)
+
+	return nil
 }
 
 func GetAuthor(c echo.Context) error {
 	id := c.QueryParam("id")
 
-	author, err := services.GetAuthor(id)
+	_, err := services.GetAuthor(id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "조회 오류")
 	}
 
-	return templ.Handler(views.AuthorUpdateForm(author)).Component.Render(c.Request().Context(), c.Response().Writer)
+	return nil
 }
 
 func CreateAuthor(c echo.Context) error {
@@ -70,8 +69,4 @@ func DeleteAuthor(c echo.Context) error {
 	}
 
 	return GetAuthors(c)
-}
-
-func ResetForm(c echo.Context) error {
-	return templ.Handler(views.AuthorInsertForm()).Component.Render(c.Request().Context(), c.Response().Writer)
 }
