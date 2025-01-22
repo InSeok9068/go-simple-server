@@ -89,6 +89,14 @@ go mod tidy
 go env -w CGO_ENABLED=1
 ```
 
+---
+
+## 오류 검증
+
+```shell
+go vet ./...
+```
+
 Window : [tdm-gcc](https://jmeubank.github.io/tdm-gcc/)
 
 ---
