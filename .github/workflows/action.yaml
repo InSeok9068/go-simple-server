@@ -12,11 +12,11 @@ jobs:
     steps:
       # 1. 코드 체크아웃
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2. Go 설치
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: 1.23.1
 
