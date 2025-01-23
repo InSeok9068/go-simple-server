@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/fs"
+	"net/http"
 	"os"
 
 	resources "simple-server"
@@ -70,7 +71,7 @@ func main() {
 	public.GET("/login", handlers.LoginPageHanlder)
 	public.GET("/squash", func(c echo.Context) error { // 스쿼시 잡 실행
 		jobs.SquashExecute()
-		return c.String(200, "Squash 실행")
+		return c.String(http.StatusOK, "Squash 실행")
 	})
 
 	public.POST("/ai-study", func(c echo.Context) error {

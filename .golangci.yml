@@ -14,15 +14,40 @@ linters:
     - unused
 
     ## disabled by default
+    - asasalint
     - asciicheck
     - bidichk
     - bodyclose
-    - contextcheck
+    - canonicalheader
+    - copyloopvar
+    - cyclop
+    - dupl
+    - durationcheck
     - errname
     - errorlint
+    - exhaustive
+    - exptostd
+    - fatcontext
+    - goconst
+    - gocritic
+    - gosec
+    - iface
+    - makezero
+    - mirror
+    - musttag
+    - nestif
     - nilerr
+    - nilnesserr
     - nilnil
+    - noctx
+    - nonamedreturns
+    - nosprintfhostport
+    - protogetter
     - sloglint
     - stylecheck
+    - tenv
     - unconvert
     - unparam
+    - usestdlibvars
+    - wastedassign
+    - whitespace

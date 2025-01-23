@@ -113,13 +113,13 @@ func LoggerWithDatabaseInit() {
 		// Database Handler
 		databaseHandler := &DatabaseHandler{db: dbCon}
 
-		//// File Handler
-		//file, err := os.OpenFile("app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		//if err != nil {
-		//	slog.Error("Failed to open log file", "error", err)
-		//	return
-		//}
-		//fileHandler := slog.NewTextHandler(file, &slog.HandlerOptions{})
+		// // File Handler
+		// file, err := os.OpenFile("app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		// if err != nil {
+		// 	slog.Error("Failed to open log file", "error", err)
+		// 	return
+		// }
+		// fileHandler := slog.NewTextHandler(file, &slog.HandlerOptions{})
 
 		// Console Handler
 		consoleHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})
