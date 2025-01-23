@@ -65,6 +65,7 @@ go get github.com/labstack/echo/v4@latest
 go get github.com/mattn/go-sqlite3@latest
 go get github.com/robfig/cron/v3@latest
 go get google.golang.org/api@latest
+go get google.golang.org/genai@latest
 ```
 
 ### 개발 도구 종속성 최신화
