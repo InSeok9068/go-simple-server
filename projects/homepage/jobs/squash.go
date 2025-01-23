@@ -9,7 +9,7 @@ import (
 )
 
 func SquashJob(c *cron.Cron) {
-	_, _ = c.AddFunc("* * * * *", SquashExecute)
+	c.AddFunc("* * * * *", SquashExecute)
 }
 
 func SquashExecute() {
