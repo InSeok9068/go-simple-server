@@ -28,6 +28,9 @@ linters:
     - exhaustive
     - exptostd
     - fatcontext
+    - funlen
+    - gochecknoinits
+    - gochecksumtype
     - goconst
     - gocritic
     - gosec
@@ -43,7 +46,9 @@ linters:
     - nonamedreturns
     - nosprintfhostport
     - protogetter
+    - reassign
     - sloglint
+    - sqlclosecheck
     - stylecheck
     - tenv
     - unconvert
