@@ -5,12 +5,15 @@ import (
 	"database/sql"
 	"log/slog"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func DbQueries() (*Queries, context.Context) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	dbCon, err := AppDbOpen()
 	if err != nil {
 		slog.Error("Failed to open database", "error", err.Error())
