@@ -1,2 +1,28 @@
 run:
   timeout: 5m
+
+# https://golangci-lint.run/usage/linters/
+linters:
+  disable-all: true
+  enable:
+    ## enabled by default
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+    ## disabled by default
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - contextcheck
+    - errname
+    - errorlint
+    - nilerr
+    - nilnil
+    - sloglint
+    - stylecheck
+    - unconvert
+    - unparam

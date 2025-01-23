@@ -10,11 +10,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func DbQueries() (*Queries, context.Context) {
+func DBQueries() (*Queries, context.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	dbCon, err := AppDbOpen()
+	dbCon, err := AppDBOpen()
 	if err != nil {
 		slog.Error("Failed to open database", "error", err.Error())
 	}
@@ -22,10 +22,10 @@ func DbQueries() (*Queries, context.Context) {
 	return queries, ctx
 }
 
-func AppDbOpen() (*sql.DB, error) {
+func AppDBOpen() (*sql.DB, error) {
 	return sql.Open("sqlite3", os.Getenv("APP_DATABASE_URL"))
 }
 
-func LogDbOpen() (*sql.DB, error) {
+func LogDBOpen() (*sql.DB, error) {
 	return sql.Open("sqlite3", os.Getenv("LOG_DATABASE_URL"))
 }

@@ -9,8 +9,9 @@ import (
 	"log/slog"
 	"net"
 	"os"
-	"simple-server/projects/homepage/db"
 	"sync"
+
+	"simple-server/projects/homepage/db"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -103,7 +104,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 
 func LoggerWithDatabaseInit() {
 	initOnce.Do(func() {
-		dbCon, err := db.LogDbOpen()
+		dbCon, err := db.LogDBOpen()
 		if err != nil {
 			slog.Error("Failed to open database", "error", err)
 			return
@@ -133,16 +134,16 @@ func LoggerWithDatabaseInit() {
 func CustomLogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error {
 	// 요청 정보 로그 기록
 	method := c.Request().Method
-	requestUri := c.Request().RequestURI
+	requestURI := c.Request().RequestURI
 	remoteIP, _, _ := net.SplitHostPort(v.RemoteIP)
 	userIP, _, _ := net.SplitHostPort(c.RealIP())
 
-	slog.Info(fmt.Sprintf(`%s %s`, method, requestUri),
+	slog.Info(fmt.Sprintf(`%s %s`, method, requestURI),
 		"execTime", v.Latency.Microseconds(),
 		"type", "request",
 		"status", c.Response().Status,
 		"method", method,
-		"url", requestUri,
+		"url", requestURI,
 		"referer", c.Request().Referer(),
 		"remoteIP", remoteIP,
 		"userIP", userIP,

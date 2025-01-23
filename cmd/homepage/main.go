@@ -3,13 +3,13 @@ package main
 import (
 	"io/fs"
 	"os"
+
 	resources "simple-server"
 	"simple-server/internal"
 	"simple-server/projects/homepage/handlers"
 	"simple-server/projects/homepage/jobs"
 
 	"github.com/labstack/echo-contrib/echoprometheus"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

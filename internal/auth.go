@@ -30,12 +30,12 @@ func FirebaseAuth() middleware.KeyAuthConfig {
 		Validator: func(key string, c echo.Context) (bool, error) {
 			auth, err := App.Auth(context.Background())
 			if err != nil {
-				return false, nil
+				return false, err
 			}
 
 			user, err := auth.VerifyIDToken(context.Background(), key)
 			if err != nil {
-				return false, nil
+				return false, err
 			}
 
 			c.Set("user", user)
