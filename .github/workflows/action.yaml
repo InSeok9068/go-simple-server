@@ -102,11 +102,13 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: markdown
           message: |
+            Repository: ${{ github.repository }}
+
             Author: ${{github.actor}}
 
             Status: 😚 **Success**
 
-            Commit message: ${{ github.event.commits.message }}
+            Commit message: ${{ github.event.head_commit.message }}
 
             [See changes](https://github.com/${{ github.repository }}/commit/${{github.sha}})
 
@@ -119,10 +121,12 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: markdown
           message: |
+            Repository: ${{ github.repository }}
+
             Author: ${{github.actor}}
 
             Status: 😱 **Failure**
 
-            Commit message: ${{ github.event.commits.message }}
+            Commit message: ${{ github.event.head_commit.message }}
 
             [link](https://github.com/${{ github.repository }}/actions)
