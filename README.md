@@ -86,6 +86,8 @@ go mod tidy
 
 ## GCC 활성화
 
+Window : [tdm-gcc](https://jmeubank.github.io/tdm-gcc/)
+
 ```shell
 go env -w CGO_ENABLED=1
 ```
@@ -101,8 +103,6 @@ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/insta
 ```shell
 golangci-lint run
 ```
-
-Window : [tdm-gcc](https://jmeubank.github.io/tdm-gcc/)
 
 ---
 
