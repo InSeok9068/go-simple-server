@@ -13,17 +13,10 @@ templ Login() {
 			<link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css"/>
 		</head>
 		<body>
-			<div>
+			<div class="container is-max-tablet">
 				@Navi(os.Getenv("APP_NAME"), nil)
+				<hr/>
 				<div class="card">
-					<header class="card-header">
-						<p class="card-header-title">로그인</p>
-						<button class="card-header-icon" aria-label="more options">
-							<span class="icon">
-								<i class="fas fa-angle-down" aria-hidden="true"></i>
-							</span>
-						</button>
-					</header>
 					<div class="p-5" id="firebaseui-auth-container"></div>
 					<div class="p-5" id="loader">Loading...</div>
 				</div>
@@ -36,7 +29,7 @@ templ Login() {
 script FirebaseWebUI() {
     const firebaseConfig = {
       apiKey: "AIzaSyCWIebyvcBiwWchfYGUegHf22c9nlBEOWQ",
-      authDomain: "warm-braid-383411.firebaseapp.com",
+      authDomain: "warm-braid-383411.firebaseapp.com", 
       projectId: "warm-braid-383411",
       storageBucket: "warm-braid-383411.firebasestorage.app",
       messagingSenderId: "1001293129594",
