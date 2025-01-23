@@ -55,6 +55,7 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.60
+          only-new-issues: true
 
       # 8. 환경 변수 설정 및 빌드
       - name: Build for Linux
