@@ -46,8 +46,11 @@ func main() {
 
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
+	e.Use(middleware.Secure())
 	e.Use(middleware.Recover())
+	e.Use(middleware.RequestID())
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogRequestID:  true,
 		LogLatency:    true,
 		LogError:      true,
 		LogRemoteIP:   true,

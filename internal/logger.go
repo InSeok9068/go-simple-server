@@ -140,6 +140,7 @@ func CustomLogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error
 
 	slog.Info(fmt.Sprintf(`%s %s`, method, requestURI),
 		"execTime", v.Latency.Microseconds(),
+		"id", v.RequestID,
 		"type", "request",
 		"status", c.Response().Status,
 		"method", method,
