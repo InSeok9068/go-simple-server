@@ -17,47 +17,46 @@
 ##
 
 # Default server configuration
-#
+
 server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
+    listen 443 ssl default_server;
+    listen [::]:443 ssl ipv6only=on;
 
-	# SSL configuration
-	#
-	# listen 443 ssl default_server;
-	# listen [::]:443 ssl default_server;
+    server_name *.toy-project.n-e.kr toy-project.n-e.kr;
 
-	#server_name _;
-	server_name toy-project.n-e.kr;
+    ssl_certificate /etc/letsencrypt/live/toy-project.n-e.kr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/toy-project.n-e.kr/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-	# 기본 경로 (/) 요청 처리
-        location / {
-            proxy_pass http://127.0.0.1:8000; # localhost:8000으로 요청 전달
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    location / {
+        set $backend "";
+
+        if ($host ~* ^service1\.toy-project\.n-e\.kr$) {
+            set $backend "http://127.0.0.1:8000";
         }
+
+        if ($host ~* ^admin1\.toy-project\.n-e\.kr$) {
+            set $backend "http://127.0.0.1:8090";
+        }
+
+        if ($backend = "") {
+            return 404;
+        }
+
+        proxy_pass $backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
 }
 
 server {
-        listen 9000 default_server;
-        listen [::]:9000 default_server;
+    listen 80;
+    listen [::]:80;
 
-        # SSL configuration
-        #
-        # listen 443 ssl default_server;
-        # listen [::]:443 ssl default_server;
+    server_name *.toy-project.n-e.kr toy-project.n-e.kr;
 
-        #server_name _;
-        server_name toy-project.n-e.kr;
-
-        # 기본 경로 (/) 요청 처리
-        location / {
-            proxy_pass http://127.0.0.1:8090; # localhost:8090으로 요청 전달
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
+    return 301 https://$host$request_uri;
 }
-
-

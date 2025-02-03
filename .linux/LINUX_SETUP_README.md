@@ -90,6 +90,14 @@ sudo certbot renew --dry-run
 # 0 0 1 * * certbot renew --renew-hook "sudo systemctl reload nginx" || echo "Certbot failed!" | mail -s "SSL Renew Failed" dlstjr9068@gmail.com
 ```
 
+### 서브 도메인 발급 & 갱신 방법
+
+```shell
+sudo certbot certonly --manual --preferred-challenges=dns -d "*.toy-project.n-e.kr" -d "toy-project.n-e.kr"
+```
+
+출력 값 => [내 도메인](https://xn--220b31d95hq8o.xn--3e0b707e/) TXT에 추가
+
 ## Chromium 설치
 
 ```shell
