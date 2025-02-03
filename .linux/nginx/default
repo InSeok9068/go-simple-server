@@ -33,11 +33,17 @@ server {
     location / {
         set $backend "";
 
-        if ($host ~* ^service1\.toy-project\.n-e\.kr$) {
+        # 홈페이지
+        if ($host ~* ^toy-project\.n-e\.kr$) {
             set $backend "http://127.0.0.1:8000";
         }
 
-        if ($host ~* ^admin1\.toy-project\.n-e\.kr$) {
+        # AI 도우미
+        if ($host ~* ^ai-study\.toy-project\.n-e\.kr$) {
+            set $backend "http://127.0.0.1:8001";
+        }
+
+        if ($host ~* ^admin\.toy-project\.n-e\.kr$) {
             set $backend "http://127.0.0.1:8090";
         }
 
