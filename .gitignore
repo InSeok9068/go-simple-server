@@ -49,6 +49,8 @@ tmp
 
 # Build File
 main
+homepage
+ai-study
 
 # SQL Tools
 data.session.sql

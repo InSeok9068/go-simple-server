@@ -8,7 +8,6 @@ import (
 	"simple-server/internal"
 	"simple-server/projects/homepage/handlers"
 
-	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -17,7 +16,6 @@ func main() {
 	/* 환경 설정 */
 	internal.LoadEnv()
 	os.Setenv("APP_NAME", "홈페이지")
-	os.Setenv("APP_DATABASE_URL", "file:./projects/homepage/pb_data/data.db")
 	os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
 	/* 환경 설정 */
 
@@ -54,10 +52,6 @@ func main() {
 		LogRemoteIP:   true,
 		LogValuesFunc: internal.CustomLogValuesFunc,
 	}))
-
-	// Prometheus 미들웨어
-	e.Use(echoprometheus.NewMiddleware("homepage"))
-	e.GET("/metrics", echoprometheus.NewHandler())
 
 	// 공개 그룹
 	public := e.Group("")

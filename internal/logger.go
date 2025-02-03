@@ -102,7 +102,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 
 func LoggerWithDatabaseInit() {
 	initOnce.Do(func() {
-		dbCon, err := Log()
+		dbCon, err := LogDBOpen()
 		if err != nil {
 			slog.Error("Failed to open database", "error", err)
 			return
