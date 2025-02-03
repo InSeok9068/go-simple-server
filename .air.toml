@@ -3,8 +3,8 @@ tmp_dir = "tmp"
 
 [build]
 bin = "./main"
-cmd = "templ generate && go build -o ./main.exe ./cmd/homepage" # 홈페이지 서버
-#cmd = "templ generate && go build -o ./main.exe ./cmd/main"
+cmd = "templ generate && go build -o ./main.exe ./cmd/homepage"
+# cmd = "templ generate && go build -o ./main.exe ./cmd/ai-study"
 delay = 1000
 exclude_dir = ["static", "tmp", "vendor", "pb_data"]
 exclude_file = ["cmd\\playground.go"]
