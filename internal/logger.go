@@ -11,8 +11,6 @@ import (
 	"os"
 	"sync"
 
-	"simple-server/projects/homepage/db"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/mattn/go-sqlite3"
@@ -104,7 +102,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 
 func LoggerWithDatabaseInit() {
 	initOnce.Do(func() {
-		dbCon, err := db.LogDBOpen()
+		dbCon, err := Log()
 		if err != nil {
 			slog.Error("Failed to open database", "error", err)
 			return

@@ -6,9 +6,8 @@ import (
 
 	resources "simple-server"
 	"simple-server/internal"
-	"simple-server/projects/homepage/handlers"
+	"simple-server/projects/ai-study/handlers"
 
-	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -16,7 +15,7 @@ import (
 func main() {
 	/* 환경 설정 */
 	internal.LoadEnv()
-	os.Setenv("APP_NAME", "홈페이지")
+	os.Setenv("APP_NAME", "🕵️‍♀️ AI 공부 길잡이")
 	os.Setenv("APP_DATABASE_URL", "file:./projects/homepage/pb_data/data.db")
 	os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
 	/* 환경 설정 */
@@ -25,10 +24,6 @@ func main() {
 	internal.LoggerWithDatabaseInit()
 	/* 로깅 초기화 */
 
-	/* 파이어베이스 초기화 */
-	internal.FirebaseInit()
-	/* 파이어베이스 초기화 */
-
 	e := echo.New()
 
 	/* 미들 웨어 */
@@ -36,10 +31,10 @@ func main() {
 	var projectStaticFS fs.FS
 	if internal.IsProdEnv() {
 		sharedStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "shared/static")
-		projectStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "projects/homepage/static")
+		projectStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "projects/ai-study/static")
 	} else {
 		sharedStaticFS = os.DirFS("./shared/static")
-		projectStaticFS = os.DirFS("./projects/homepage/static")
+		projectStaticFS = os.DirFS("./projects/ai-study/static")
 	}
 
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
@@ -55,21 +50,19 @@ func main() {
 		LogValuesFunc: internal.CustomLogValuesFunc,
 	}))
 
-	// Prometheus 미들웨어
-	e.Use(echoprometheus.NewMiddleware("homepage"))
-	e.GET("/metrics", echoprometheus.NewHandler())
-
 	// 공개 그룹
 	public := e.Group("")
 
-	// 인증 그룹
-	private := e.Group("")
-	private.Use(middleware.KeyAuthWithConfig(internal.FirebaseAuth()))
-	/* 미들 웨어 */
-
 	/* 라우터  */
 	public.GET("/", handlers.IndexPageHandler)
+
+	public.POST("/ai-study", func(c echo.Context) error {
+		return handlers.AIStudy(c, false)
+	})
+	public.POST("/ai-study-ramdom", func(c echo.Context) error {
+		return handlers.AIStudy(c, true)
+	})
 	/* 라우터  */
 
-	e.Logger.Fatal(e.Start(":8000"))
+	e.Logger.Fatal(e.Start(":8001"))
 }
