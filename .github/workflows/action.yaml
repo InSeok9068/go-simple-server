@@ -17,6 +17,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Extract Release Name
+        run: echo "SERVICE_NAME=$(echo ${GITHUB_REF#refs/heads/release/})" >> $GITHUB_ENV
+
       # 2. Go 설치
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -63,12 +66,12 @@ jobs:
           GOOS: linux
           GOARCH: amd64
         run: |
-          go build -ldflags "-s -w" -o ./main ./cmd/homepage
+          go build -ldflags "-s -w" -o ./${SERVICE_NAME} ./cmd/${SERVICE_NAME}
 
       # 9. 바이너리 압축
       - name: Compress Binary
         run: |
-          tar -czvf main.tar.gz main
+          tar -czvf ${SERVICE_NAME}.tar.gz ${SERVICE_NAME}
 
       # 10. SCP 파일 전송 (직접 SCP 사용)
       - name: Transfer File
@@ -76,7 +79,7 @@ jobs:
           echo -e "${{ secrets.REMOTE_SSH_KEY }}" > ssh_key.pem
           chmod 600 ssh_key.pem
 
-          scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./main.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:./app
+          scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./${SERVICE_NAME}.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:./app
 
           rm ssh_key.pem
 
@@ -101,10 +104,10 @@ jobs:
           port: 22
           script: |
             cd ./app
-            tar -xzvf main.tar.gz
-            chmod +x main
-            rm main.tar.gz
-            sudo systemctl restart main.service
+            tar -xzvf ${SERVICE_NAME}.tar.gz
+            chmod +x ${SERVICE_NAME}
+            rm ${SERVICE_NAME}.tar.gz
+            sudo systemctl restart ${SERVICE_NAME}.service
 
       # 12-1. 빌드 성공 메세지 발송
       - name: Send Build Success Message
