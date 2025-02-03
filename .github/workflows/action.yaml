@@ -103,6 +103,7 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
           script: |
+            SERVICE_NAME=${{ env.SERVICE_NAME }}
             cd ./app
             tar -xzvf ${SERVICE_NAME}.tar.gz
             chmod +x ${SERVICE_NAME}
