@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	firebase.google.com/go/v4 v4.15.1
-	github.com/a-h/templ v0.3.819
+	github.com/a-h/templ v0.3.833
 	github.com/go-rod/rod v0.116.2
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-contrib v0.17.2
@@ -12,7 +12,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/robfig/cron/v3 v3.0.1
 	google.golang.org/api v0.219.0
-	google.golang.org/genai v0.0.1
+	google.golang.org/genai v0.1.0
 )
 
 require (
