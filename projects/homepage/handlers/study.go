@@ -17,7 +17,7 @@ func AIStudy(c echo.Context, random bool) error {
 	input := c.Request().FormValue("input")
 	client, _ := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  internal.EnvMap["GEMINI_AI_KEY"],
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 
 	if random {
