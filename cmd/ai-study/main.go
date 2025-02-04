@@ -14,8 +14,6 @@ func main() {
 	internal.LoadEnv()
 	os.Setenv("SERVICE_NAME", "ai-study")
 	os.Setenv("APP_TITLE", "🕵️‍♀️ AI 공부 길잡이")
-	os.Setenv("APP_DATABASE_URL", "file:./projects/homepage/pb_data/data.db")
-	os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */

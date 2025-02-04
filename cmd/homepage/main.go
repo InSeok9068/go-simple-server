@@ -16,7 +16,7 @@ func main() {
 	internal.LoadEnv()
 	os.Setenv("SERVICE_NAME", "homepage")
 	os.Setenv("APP_TITLE", "홈페이지")
-	os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
+	// os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */

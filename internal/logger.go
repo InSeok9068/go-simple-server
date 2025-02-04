@@ -78,6 +78,7 @@ func (h *DatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
 		data[attr.Key] = attr.Value.Any()
 		return true
 	})
+	data["service"] = os.Getenv("SERVICE_NAME")
 	jsonBytes, _ := json.Marshal(data)
 
 	_, _ = h.db.ExecContext(ctx, "INSERT INTO _logs (level, message, data) VALUES (?, ?, ?)",
@@ -102,6 +103,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 
 func LoggerWithDatabaseInit() {
 	initOnce.Do(func() {
+		os.Setenv("LOG_DATABASE_URL", "file:./shared/log_data/auxiliary.db")
 		dbCon, err := LogDBOpen()
 		if err != nil {
 			slog.Error("Failed to open database", "error", err)

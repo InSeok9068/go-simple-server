@@ -43,7 +43,8 @@ server {
             set $backend "http://127.0.0.1:8001";
         }
 
-        if ($host ~* ^admin\.toy-project\.n-e\.kr$) {
+        # 로그 어드민
+        if ($host ~* ^log\.toy-project\.n-e\.kr$) {
             set $backend "http://127.0.0.1:8090";
         }
 

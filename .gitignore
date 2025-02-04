@@ -38,6 +38,7 @@ pb_data
 pb_migrations
 !pocketbase.exe
 !pocketbase
+log_data
 
 # air
 tmp
