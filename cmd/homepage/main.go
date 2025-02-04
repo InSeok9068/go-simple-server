@@ -8,6 +8,7 @@ import (
 	"simple-server/internal"
 	"simple-server/projects/homepage/handlers"
 
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -52,6 +53,10 @@ func main() {
 		LogRemoteIP:   true,
 		LogValuesFunc: internal.CustomLogValuesFunc,
 	}))
+
+	// Prometheus 미들웨어
+	e.Use(echoprometheus.NewMiddleware("homepage"))
+	e.GET("/metrics", echoprometheus.NewHandler())
 
 	// 공개 그룹
 	public := e.Group("")
