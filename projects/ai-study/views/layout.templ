@@ -17,7 +17,7 @@ templ HomepageLayout(title string, content templ.Component) {
 			</style>
 			@shared.FirebaseInit()
 			<div class="container is-max-tablet">
-				@shared.Navi(os.Getenv("APP_NAME"), nil)
+				@shared.Navi(os.Getenv("APP_TITLE"), nil)
 				<hr/>
 				<div class="columns">
 					<div class="column">
