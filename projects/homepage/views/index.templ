@@ -2,6 +2,27 @@ package views
 
 import shared "simple-server/shared/views"
 
+templ ServiceCard(name string, desc string, url string) {
+	<div class="card">
+		<header class="card-header">
+			<p class="card-header-title">{ name }</p>
+			<button class="card-header-icon" aria-label="more options">
+				<span class="icon">
+					<i class="fas fa-angle-down" aria-hidden="true"></i>
+				</span>
+			</button>
+		</header>
+		<div class="card-content">
+			<div class="content">
+				{ desc }
+			</div>
+		</div>
+		<footer class="card-footer">
+			<a class="card-footer-item" href={ templ.URL(url) }>서비스로 이동</a>
+		</footer>
+	</div>
+}
+
 templ Index(title string) {
 	<!DOCTYPE html>
 	<html lang="ko">
@@ -17,31 +38,9 @@ templ Index(title string) {
 						<a class="navbar-item is-size-3" href="/">홈페이지</a>
 					</div>
 				</nav>
-				<div class="card">
-					<header class="card-header">
-						<p class="card-header-title">AI 공부 도우미</p>
-						<button class="card-header-icon" aria-label="more options">
-							<span class="icon">
-								<i class="fas fa-angle-down" aria-hidden="true"></i>
-							</span>
-						</button>
-					</header>
-					<div class="card-content">
-						<div class="content">
-							AI가 공부 주제를 던져줘요!
-						</div>
-					</div>
-					<footer class="card-footer">
-						<a class="card-footer-item" href="https://ai-study.toy-project.n-e.kr">서비스로 이동</a>
-					</footer>
-				</div>
-				// <section class="section"> 
-				// 	<h1 class="title">AI 공부 도우미</h1>
-				// 	<h2 class="subtitle">
-				// 		AI가 공부 주제를 던져줘요!
-				// 	</h2>
-				// 	<a href="https://ai-study.toy-project.n-e.kr">서비스로 이동</a>
-				// </section>
+				@ServiceCard("AI 공부 도우미",
+					"AI가 공부 주제를 던져줘요!",
+					"https://ai-study.toy-project.n-e.kr")
 			</div>
 			@shared.Script()
 		</body>
