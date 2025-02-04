@@ -18,7 +18,10 @@ templ ServiceCard(name string, desc string, url string) {
 			</div>
 		</div>
 		<footer class="card-footer">
-			<a class="card-footer-item" href={ templ.URL(url) }>서비스로 이동</a>
+			<a class="card-footer-item has-text-weight-bold" href={ templ.URL(url) }>
+				서비스로 이동
+				<img src="/static/paper-airplane.svg" width="20px"/>
+			</a>
 		</footer>
 	</div>
 }
