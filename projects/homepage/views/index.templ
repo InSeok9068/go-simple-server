@@ -3,7 +3,7 @@ package views
 import shared "simple-server/shared/views"
 
 templ ServiceCard(name string, desc string, url string) {
-	<div class="card">
+	<div class="card p-3">
 		<header class="card-header">
 			<p class="card-header-title">{ name }</p>
 			<button class="card-header-icon" aria-label="more options">
@@ -39,8 +39,11 @@ templ Index(title string) {
 					</div>
 				</nav>
 				@ServiceCard("AI 공부 도우미",
-					"AI가 공부 주제를 던져줘요!",
+					"AI가 공부 주제를 던져줘요",
 					"https://ai-study.toy-project.n-e.kr")
+				@ServiceCard("나만의 TODO 앱",
+					"나만의 할 일을 기록해보세요",
+					"https://development-support.p-e.kr")
 			</div>
 			@shared.Script()
 		</body>
