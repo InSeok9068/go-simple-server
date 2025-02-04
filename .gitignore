@@ -49,9 +49,9 @@ tmp
 !mingw-get-setup.exe
 
 # Build File
-main
-homepage
-ai-study
+main.exe
+homepage.exe
+ai-study.exe
 
 # SQL Tools
 data.session.sql
