@@ -45,7 +45,7 @@ server {
 
         # 로그 어드민
         if ($host ~* ^log\.toy-project\.n-e\.kr$) {
-            set $backend "http://127.0.0.1:8090";
+            set $backend "http://127.0.0.1:9000";
         }
 
         if ($backend = "") {

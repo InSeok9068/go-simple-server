@@ -1,5 +1,5 @@
 [Unit]
-Description=Homepage Admin Service
+Description=Log Admin Service
 After=network.target
 
 [Service]
