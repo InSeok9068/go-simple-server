@@ -26,17 +26,15 @@ func main() {
 
 	/* 미들 웨어 */
 	internal.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
-
-	// 공개 그룹
-	public := e.Group("")
+	/* 미들 웨어 */
 
 	/* 라우터  */
-	public.GET("/", handlers.IndexPageHandler)
+	e.GET("/", handlers.IndexPageHandler)
 
-	public.POST("/ai-study", func(c echo.Context) error {
+	e.POST("/ai-study", func(c echo.Context) error {
 		return handlers.AIStudy(c, false)
 	})
-	public.POST("/ai-study-ramdom", func(c echo.Context) error {
+	e.POST("/ai-study-ramdom", func(c echo.Context) error {
 		return handlers.AIStudy(c, true)
 	})
 	/* 라우터  */

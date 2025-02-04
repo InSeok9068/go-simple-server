@@ -9,7 +9,6 @@ import (
 	"github.com/a-h/templ"
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -24,10 +23,6 @@ func main() {
 	internal.LoggerWithDatabaseInit()
 	/* 로깅 초기화 */
 
-	/* 파이어베이스 초기화 */
-	internal.FirebaseInit()
-	/* 파이어베이스 초기화 */
-
 	e := echo.New()
 
 	/* 미들 웨어 */
@@ -36,17 +31,10 @@ func main() {
 	// Prometheus 미들웨어
 	e.Use(echoprometheus.NewMiddleware("homepage"))
 	e.GET("/metrics", echoprometheus.NewHandler())
-
-	// 공개 그룹
-	public := e.Group("")
-
-	// 인증 그룹
-	private := e.Group("")
-	private.Use(middleware.KeyAuthWithConfig(internal.FirebaseAuth()))
 	/* 미들 웨어 */
 
 	/* 라우터  */
-	public.GET("/", func(c echo.Context) error {
+	e.GET("/", func(c echo.Context) error {
 		return templ.Handler(views.Index(os.Getenv("APP_NAME"))).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
 	/* 라우터  */
