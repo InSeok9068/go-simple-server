@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"os"
 	"simple-server/projects/homepage/views"
 	shared "simple-server/shared/views"
 
@@ -9,7 +10,7 @@ import (
 )
 
 func IndexPageHandler(c echo.Context) error {
-	return templ.Handler(views.Index()).Component.Render(c.Request().Context(), c.Response().Writer)
+	return templ.Handler(views.Index(os.Getenv("APP_NAME"))).Component.Render(c.Request().Context(), c.Response().Writer)
 }
 
 func LoginPageHanlder(c echo.Context) error {
