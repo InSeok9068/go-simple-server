@@ -1,6 +1,10 @@
 {
   "go.lintTool": "golangci-lint",
   "go.lintFlags": ["--fast"],
+  "css.styleSheets": [
+    "https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css",
+    "src/**/*.css"
+  ],
   "cssvar.files": ["./shared/static/open-props.min.css"],
-  "cssvar.extensions": ["css", "postcss", "html"]
+  "cssvar.extensions": ["css", "html"]
 }
