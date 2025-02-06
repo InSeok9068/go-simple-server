@@ -27,6 +27,8 @@ func main() {
 
 	/* 미들 웨어 */
 	internal.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
+	// PWA 파일
+	e.StaticFS("/manifest.json", os.DirFS("projects/homepage/static/manifest.json"))
 
 	// Prometheus 미들웨어
 	e.Use(echoprometheus.NewMiddleware("homepage"))
