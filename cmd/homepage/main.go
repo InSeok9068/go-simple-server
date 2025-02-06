@@ -1,7 +1,9 @@
 package main
 
 import (
+	"io/fs"
 	"os"
+	resources "simple-server"
 
 	"simple-server/internal"
 	"simple-server/projects/homepage/views"
@@ -28,7 +30,8 @@ func main() {
 	/* 미들 웨어 */
 	internal.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
 	// PWA 파일
-	e.StaticFS("/manifest.json", os.DirFS("projects/homepage/static/manifest.json"))
+	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static/manifest.json")
+	e.StaticFS("/manifest.json", manifest)
 
 	// Prometheus 미들웨어
 	e.Use(echoprometheus.NewMiddleware("homepage"))
