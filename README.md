@@ -11,7 +11,10 @@
 | Template 엔진         | Templ            |
 | 데이터베이스          | SQLite3          |
 
-※ 어드민과 같이 PC에서 사용하는 웹사이트라면 **Tabler** CSS 프레임워크도 고려
+### 추가 구성 고려
+
+- surreal.js : [surreal.js](https://cdn.jsdelivr.net/gh/gnat/surreal@main/surreal.js)
+- Tabler : 어드민과 같이 PC에서 사용하는 웹사이트라면 **Tabler** CSS 프레임워크도 고려
 
 ---
 
