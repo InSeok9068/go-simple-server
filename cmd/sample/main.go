@@ -18,5 +18,9 @@ func main() {
 		return templ.Handler(views.Radio()).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
 
+	e.GET("/radio2", func(c echo.Context) error {
+		return templ.Handler(views.Radio2()).Component.Render(c.Request().Context(), c.Response().Writer)
+	})
+
 	e.Logger.Fatal(e.Start(":8002"))
 }

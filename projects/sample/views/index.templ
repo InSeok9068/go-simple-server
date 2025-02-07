@@ -9,8 +9,13 @@ templ Radio() {
 		<button @click="selected = 3">3</button>
 		<p x-text="selected"></p>
 	</div>
-	<script>
-	</script>
+}
+
+templ Radio2() {
+	<input type="radio" name="radio" x-model="selected" value="1"/>
+	<input type="radio" name="radio" x-model="selected" value="2"/>
+	<button @click="selected = 3">3</button>
+	<p x-text="selected"></p>
 }
 
 templ Index(title string) {
@@ -20,8 +25,10 @@ templ Index(title string) {
 			<link rel="stylesheet" href="/static/style.css"/>
 		</head>
 		<body>
-			<button class="button" hx-get="/radio" hx-target=".box">Click me</button>
-			<div class="box"></div>
+			<button class="button" hx-get="/radio" hx-target="#box1">Click me 1</button>
+			<button class="button" hx-get="/radio2" hx-target="#box2">Click me 2</button>
+			<div class="box" id="box1"></div>
+			<div class="box" id="box2" x-data="{ selected: 1 }"></div>
 		</body>
 	</html>
 }
