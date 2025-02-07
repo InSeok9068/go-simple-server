@@ -103,7 +103,7 @@ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/insta
 ```
 
 ```shell
-golangci-lint run
+golangci-lint run ./...
 ```
 
 ---
