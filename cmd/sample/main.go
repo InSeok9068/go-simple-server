@@ -1,6 +1,7 @@
 package main
 
 import (
+	"simple-server/internal"
 	"simple-server/projects/sample/views"
 
 	"github.com/a-h/templ"
@@ -9,6 +10,8 @@ import (
 
 func main() {
 	e := echo.New()
+
+	internal.RegisterCommonMiddleware(e, "sample")
 
 	e.GET("/", func(c echo.Context) error {
 		return templ.Handler(views.Index("Sample")).Component.Render(c.Request().Context(), c.Response().Writer)
