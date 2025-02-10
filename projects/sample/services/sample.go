@@ -1,5 +1,5 @@
 package services
 
-func Plus(a int, b int) int {
+func plus(a int, b int) int {
 	return a + b
 }
