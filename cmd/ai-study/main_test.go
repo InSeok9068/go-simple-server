@@ -30,7 +30,7 @@ func TestAIStudy(t *testing.T) {
 
 		// ✅ 응답 출력
 		if code != http.StatusOK {
-			t.Fatalf("예상한 응답 코드가 아닙니다. 예상: %d, 결과: %d", http.StatusOK, code)
+			t.Errorf("예상한 응답 코드가 아닙니다. 예상: %d, 결과: %d", http.StatusOK, code)
 		}
 
 		t.Log("응답 바디:", body)
@@ -41,7 +41,7 @@ func TestAIStudy(t *testing.T) {
 
 		// ✅ 응답 출력
 		if code != http.StatusOK {
-			t.Fatalf("예상한 응답 코드가 아닙니다. 예상: %d, 결과: %d", http.StatusOK, code)
+			t.Errorf("예상한 응답 코드가 아닙니다. 예상: %d, 결과: %d", http.StatusOK, code)
 		}
 
 		t.Log("응답 바디:", body)
