@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"simple-server/internal"
 	"simple-server/projects/sample/views"
 
@@ -9,10 +10,25 @@ import (
 )
 
 func main() {
+	/* 환경 설정 */
+	internal.LoadEnv()
+	os.Setenv("SERVICE_NAME", "sample")
+	os.Setenv("APP_TITLE", "샘플")
+	/* 환경 설정 */
+
+	e := setUpServer()
+
+	e.Logger.Fatal(e.Start(":8002"))
+}
+
+func setUpServer() *echo.Echo {
 	e := echo.New()
 
-	internal.RegisterCommonMiddleware(e, "sample")
+	/* 미들 웨어 */
+	internal.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
+	/* 미들 웨어 */
 
+	/* 라우터  */
 	e.GET("/", func(c echo.Context) error {
 		return templ.Handler(views.Index("Sample")).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
@@ -24,6 +40,7 @@ func main() {
 	e.GET("/radio2", func(c echo.Context) error {
 		return templ.Handler(views.Radio2()).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
+	/* 라우터  */
 
-	e.Logger.Fatal(e.Start(":8002"))
+	return e
 }

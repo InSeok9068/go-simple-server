@@ -18,13 +18,18 @@ func main() {
 	internal.LoadEnv()
 	os.Setenv("SERVICE_NAME", "homepage")
 	os.Setenv("APP_TITLE", "홈페이지")
-	// os.Setenv("LOG_DATABASE_URL", "file:./projects/homepage/pb_data/auxiliary.db")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
 	internal.LoggerWithDatabaseInit()
 	/* 로깅 초기화 */
 
+	e := setUpServer()
+
+	e.Logger.Fatal(e.Start(":8000"))
+}
+
+func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
@@ -44,5 +49,5 @@ func main() {
 	})
 	/* 라우터  */
 
-	e.Logger.Fatal(e.Start(":8000"))
+	return e
 }

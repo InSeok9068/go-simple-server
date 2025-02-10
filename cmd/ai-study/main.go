@@ -20,6 +20,12 @@ func main() {
 	internal.LoggerWithDatabaseInit()
 	/* 로깅 초기화 */
 
+	e := setUpServer()
+
+	e.Logger.Fatal(e.Start(":8001"))
+}
+
+func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
@@ -32,10 +38,10 @@ func main() {
 	e.POST("/ai-study", func(c echo.Context) error {
 		return handlers.AIStudy(c, false)
 	})
-	e.POST("/ai-study-ramdom", func(c echo.Context) error {
+	e.POST("/ai-study-random", func(c echo.Context) error {
 		return handlers.AIStudy(c, true)
 	})
 	/* 라우터  */
 
-	e.Logger.Fatal(e.Start(":8001"))
+	return e
 }
