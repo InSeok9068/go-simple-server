@@ -4,8 +4,6 @@ tmp_dir = "tmp"
 [build]
 bin = "./main"
 cmd = "templ generate && go build -o ./main.exe ./cmd/homepage"
-# cmd = "templ generate && go build -o ./main.exe ./cmd/ai-study"
-# cmd = "templ generate && go build -o ./main.exe ./cmd/sample"
 delay = 1000
 exclude_dir = ["static", "tmp", "vendor", "pb_data"]
 exclude_file = ["cmd\\playground.go"]
@@ -40,5 +38,3 @@ clear_on_rebuild = false
 enabled = true
 proxy_port = 8080
 app_port = 8000
-# app_port = 8001
-# app_port = 8002

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# 사용법 안내
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 {homepage|ai-study|sample}"
+  exit 1
+fi
+
+SERVICE="$1"
+PORT="$2"
+CONFIG_FILE=".air.toml"
+
+# 서비스명에 따른 포트 자동 설정
+case "$SERVICE" in
+  homepage)
+    PORT=8000
+    ;;
+  ai-study)
+    PORT=8001
+    ;;
+  sample)
+    PORT=8002
+    ;;
+  *)
+    echo "❌ Unknown service: $SERVICE"
+    exit 1
+    ;;
+esac
+
+# `cmd` 라인을 정확히 한 번만 변경 (중복 방지)
+sed -i'' -E 's|(cmd = "templ generate && go build -o ./main.exe ./cmd/)[^"]+(")|\1'"$SERVICE"'\2|' "$CONFIG_FILE"
+
+# `app_port` 값을 정확히 변경
+sed -i'' -E 's|^(app_port = )[0-9]+$|\1'"$PORT"'|' "$CONFIG_FILE"
+
+echo "✅ air.toml 업데이트 완료 (cmd: $SERVICE, app_port: $PORT)"
