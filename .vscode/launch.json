@@ -11,6 +11,14 @@
       "mode": "auto",
       "program": "cmd/homepage/main.go",
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Debug AI Study Server",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "cmd/ai-study/main.go",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
