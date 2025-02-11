@@ -45,6 +45,7 @@ jobs:
             ENV=prod
             CHROMEDP_HEADLESS=true
             GEMINI_AI_KEY=${{ secrets.GEMINI_AI_KEY }}
+            OPEN_AI_KEY=${{ secrets.OPEN_AI_KEY }}
             FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
           EOF
 

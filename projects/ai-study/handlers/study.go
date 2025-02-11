@@ -9,6 +9,7 @@ import (
 	"simple-server/internal"
 
 	"github.com/labstack/echo/v4"
+	_ "github.com/openai/openai-go"
 	"google.golang.org/genai"
 )
 
