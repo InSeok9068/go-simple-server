@@ -68,6 +68,7 @@ go get github.com/joho/godotenv@latest
 go get github.com/labstack/echo-contrib@latest
 go get github.com/labstack/echo/v4@latest
 go get github.com/mattn/go-sqlite3@latest
+go get github.com/openai/openai-go@latest
 go get github.com/robfig/cron/v3@latest
 go get google.golang.org/api@latest
 go get google.golang.org/genai@latest
