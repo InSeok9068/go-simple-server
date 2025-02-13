@@ -24,7 +24,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.23.1
+          go-version: 1.24
 
       # 3. 필요한 패키지 설치 (GCC 등)
       - name: Install GCC Dependencies
