@@ -10,9 +10,8 @@ import (
 )
 
 const createAuthor = `-- name: CreateAuthor :one
-INSERT INTO authors (name, bio, created, updated)
-VALUES (?, ?, datetime('now'), datetime('now'))
-RETURNING bio, created, id, name, updated
+INSERT    INTO authors (name, bio, created, updated)
+VALUES    (?, ?, datetime ('now'), datetime ('now')) RETURNING bio, created, id, name, updated
 `
 
 type CreateAuthorParams struct {
@@ -34,9 +33,8 @@ func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Aut
 }
 
 const deleteAuthor = `-- name: DeleteAuthor :exec
-DELETE
-FROM authors
-WHERE id = ?
+DELETE    FROM authors
+WHERE     id = ?
 `
 
 func (q *Queries) DeleteAuthor(ctx context.Context, id string) error {
@@ -45,10 +43,10 @@ func (q *Queries) DeleteAuthor(ctx context.Context, id string) error {
 }
 
 const getAuthor = `-- name: GetAuthor :one
-SELECT bio, created, id, name, updated
-FROM authors
-WHERE id = ?
-LIMIT 1
+SELECT    bio, created, id, name, updated
+FROM      authors
+WHERE     id = ?
+LIMIT     1
 `
 
 func (q *Queries) GetAuthor(ctx context.Context, id string) (Author, error) {
@@ -65,9 +63,9 @@ func (q *Queries) GetAuthor(ctx context.Context, id string) (Author, error) {
 }
 
 const listAuthors = `-- name: ListAuthors :many
-SELECT bio, created, id, name, updated
-FROM authors
-ORDER BY name
+SELECT    bio, created, id, name, updated
+FROM      authors
+ORDER BY  name
 `
 
 func (q *Queries) ListAuthors(ctx context.Context) ([]Author, error) {
@@ -100,12 +98,11 @@ func (q *Queries) ListAuthors(ctx context.Context) ([]Author, error) {
 }
 
 const updateAuthor = `-- name: UpdateAuthor :one
-UPDATE authors
-set name    = ?,
-    bio     = ?,
-    updated = datetime('now')
-WHERE id = ?
-RETURNING bio, created, id, name, updated
+UPDATE    authors
+set       name = ?,
+          bio = ?,
+          updated = datetime ('now')
+WHERE     id = ? RETURNING bio, created, id, name, updated
 `
 
 type UpdateAuthorParams struct {
