@@ -1,0 +1,19 @@
+{
+    # 전역 설정
+    email dlstjr9068@gmail.com  # Let's Encrypt SSL 인증서 발급을 위한 이메일 설정
+}
+
+# 기본 도메인 (HTTPS 자동 적용)
+toy-project.n-e.kr {
+    reverse_proxy 127.0.0.1:8000
+}
+
+# AI 도우미 서브도메인
+ai-study.toy-project.n-e.kr {
+    reverse_proxy 127.0.0.1:8001
+}
+
+# 로그 어드민 서브도메인
+log.toy-project.n-e.kr {
+    reverse_proxy 127.0.0.1:9000
+}
