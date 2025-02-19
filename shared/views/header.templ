@@ -1,5 +1,7 @@
 package shared
 
+import "simple-server/internal"
+
 templ Header(title string) {
 	<meta charset="UTF-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -10,4 +12,7 @@ templ Header(title string) {
 	<script src="https://unpkg.com/htmx.org@2.0.4" onerror="this.onerror=null;this.src='/shared/static/htmx.min.js'"></script>
 	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" onerror="this.onerror=null;this.src='/shared/static/cdn.min.js'" defer></script>
 	<title>{ title }</title>
+	if internal.IsDevEnv() {
+		<script>htmx.logAll();</script>
+	}
 }
