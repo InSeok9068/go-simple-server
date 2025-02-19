@@ -29,6 +29,7 @@ go.work.sum
 
 # Visual Studio Code
 .vscode/!launch.json
+.vscode/!settings.json
 
 # Log files
 *.log
@@ -46,12 +47,8 @@ tmp
 
 # GCC
 !tdm-gcc-webdl.exe
-!mingw-get-setup.exe
 
 # Build File
 main.exe
 homepage.exe
 ai-study.exe
-
-# SQL Tools
-data.session.sql
