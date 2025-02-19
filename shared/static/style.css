@@ -1,9 +1,3 @@
-@import "https://unpkg.com/open-props";
-
 .columns {
   margin: 0;
-}
-
-.inseok {
-  color: red;
 }
