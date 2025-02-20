@@ -18,7 +18,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/openai/openai-go v0.1.0-alpha.59
 	github.com/robfig/cron/v3 v3.0.1
-	google.golang.org/api v0.221.0
+	google.golang.org/api v0.222.0
 	google.golang.org/genai v0.3.0
 )
 
@@ -152,7 +152,7 @@ require (
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20241118233622-e639e219e697 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241209162323-e6fa225c2576 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250207221924-e9438ea467c6 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250212204824-5a70512c5d8b // indirect
 	google.golang.org/grpc v1.70.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
