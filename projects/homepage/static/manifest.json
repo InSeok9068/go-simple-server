@@ -1,19 +1,43 @@
 {
-  "name": "homepage",
-  "theme_color": "#000000",
-  "background_color": "#000000",
-  "short_name": "homepage",
-  "id": "homepage",
+  "name": "홈페이지",
+  "short_name": "홈페이지",
   "description": "홈페이지",
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
+  "id": "./",
   "start_url": "./",
   "scope": ".",
   "display": "standalone",
   "icons": [
     {
-      "src": "static/icon.png",
+      "src": "static/icon/android/android-launchericon-192-192.png",
+      "sizes": "192x192",
       "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "static/iconandroid/android-launchericon-512-512.png",
       "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "static/icon/ios/180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "static/icon/ios/512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "static/icon/ios/1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
