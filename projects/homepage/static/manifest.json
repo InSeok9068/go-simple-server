@@ -4,5 +4,7 @@
   "background_color": "#000000",
   "short_name": "homepage",
   "id": "homepage",
-  "description": "홈페이지"
+  "description": "홈페이지",
+  "start_url": "./",
+  "scope": "."
 }
