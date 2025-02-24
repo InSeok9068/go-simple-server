@@ -1,4 +1,4 @@
-package internal
+package config
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"simple-server/internal/db"
 	"sync"
 
 	"github.com/labstack/echo/v4"
@@ -104,7 +105,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 func LoggerWithDatabaseInit() {
 	initOnce.Do(func() {
 		os.Setenv("LOG_DATABASE_URL", "file:./shared/log_data/auxiliary.db")
-		dbCon, err := LogDBOpen()
+		dbCon, err := db.LogDBOpen()
 		if err != nil {
 			slog.Error("Failed to open database", "error", err)
 			return

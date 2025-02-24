@@ -50,7 +50,7 @@ linters:
     - sloglint
     - sqlclosecheck
     - stylecheck
-    - tenv
+    - usetesting
     - unconvert
     - unparam
     - usestdlibvars

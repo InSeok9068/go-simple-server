@@ -1,10 +1,11 @@
-package internal
+package middleware
 
 import (
 	"fmt"
 	"io/fs"
 	"os"
 	resources "simple-server"
+	"simple-server/internal/config"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -14,7 +15,7 @@ func RegisterCommonMiddleware(e *echo.Echo, serviceName string) {
 	var sharedStaticFS fs.FS
 	var projectStaticFS fs.FS
 	projectStaticDir := fmt.Sprintf("projects/%s/static", serviceName)
-	if IsProdEnv() {
+	if config.IsProdEnv() {
 		sharedStaticFS, _ = fs.Sub(resources.EmbeddedFiles, "shared/static")
 		projectStaticFS, _ = fs.Sub(resources.EmbeddedFiles, projectStaticDir)
 	} else {
@@ -32,6 +33,6 @@ func RegisterCommonMiddleware(e *echo.Echo, serviceName string) {
 		LogLatency:    true,
 		LogError:      true,
 		LogRemoteIP:   true,
-		LogValuesFunc: CustomLogValuesFunc,
+		LogValuesFunc: config.CustomLogValuesFunc,
 	}))
 }

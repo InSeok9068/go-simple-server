@@ -3,7 +3,8 @@ package main
 import (
 	"os"
 
-	"simple-server/internal"
+	"simple-server/internal/config"
+	"simple-server/internal/middleware"
 	"simple-server/projects/ai-study/handlers"
 
 	"github.com/labstack/echo/v4"
@@ -11,13 +12,13 @@ import (
 
 func main() {
 	/* 환경 설정 */
-	internal.LoadEnv()
+	config.LoadEnv()
 	os.Setenv("SERVICE_NAME", "ai-study")
 	os.Setenv("APP_TITLE", "🕵️‍♀️ AI 공부 길잡이")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
-	internal.LoggerWithDatabaseInit()
+	config.LoggerWithDatabaseInit()
 	/* 로깅 초기화 */
 
 	e := setUpServer()
@@ -29,7 +30,7 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	internal.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
+	middleware.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
 	/* 미들 웨어 */
 
 	/* 라우터  */

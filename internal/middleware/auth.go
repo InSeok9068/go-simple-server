@@ -1,8 +1,9 @@
-package internal
+package middleware
 
 import (
 	"context"
 	"log/slog"
+	"simple-server/internal/config"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/labstack/echo/v4"
@@ -13,7 +14,7 @@ import (
 var App *firebase.App
 
 func FirebaseInit() {
-	config := EnvMap["FIREBASE_CONFIG"]
+	config := config.EnvMap["FIREBASE_CONFIG"]
 
 	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(config)))
 	if err != nil {

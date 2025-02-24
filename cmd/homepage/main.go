@@ -5,7 +5,8 @@ import (
 	"os"
 	resources "simple-server"
 
-	"simple-server/internal"
+	"simple-server/internal/config"
+	"simple-server/internal/middleware"
 	"simple-server/projects/homepage/views"
 
 	"github.com/a-h/templ"
@@ -15,13 +16,13 @@ import (
 
 func main() {
 	/* 환경 설정 */
-	internal.LoadEnv()
+	config.LoadEnv()
 	os.Setenv("SERVICE_NAME", "homepage")
 	os.Setenv("APP_TITLE", "홈페이지")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
-	internal.LoggerWithDatabaseInit()
+	config.LoggerWithDatabaseInit()
 	/* 로깅 초기화 */
 
 	e := setUpServer()
@@ -33,7 +34,7 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	internal.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
+	middleware.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
 	// PWA 파일
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)

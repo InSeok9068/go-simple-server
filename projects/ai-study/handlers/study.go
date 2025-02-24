@@ -5,8 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"regexp"
-
-	"simple-server/internal"
+	"simple-server/internal/config"
 
 	"github.com/labstack/echo/v4"
 	_ "github.com/openai/openai-go"
@@ -17,7 +16,7 @@ func AIStudy(c echo.Context, random bool) error {
 	ctx := c.Request().Context()
 	input := c.Request().FormValue("input")
 	client, _ := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  internal.EnvMap["GEMINI_AI_KEY"],
+		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
 	})
 

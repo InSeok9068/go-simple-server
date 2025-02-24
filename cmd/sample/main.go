@@ -2,7 +2,8 @@ package main
 
 import (
 	"os"
-	"simple-server/internal"
+	"simple-server/internal/config"
+	"simple-server/internal/middleware"
 	"simple-server/projects/sample/views"
 
 	"github.com/a-h/templ"
@@ -11,7 +12,7 @@ import (
 
 func main() {
 	/* 환경 설정 */
-	internal.LoadEnv()
+	config.LoadEnv()
 	os.Setenv("SERVICE_NAME", "sample")
 	os.Setenv("APP_TITLE", "샘플")
 	/* 환경 설정 */
@@ -25,7 +26,7 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	internal.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
+	middleware.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
 	/* 미들 웨어 */
 
 	/* 라우터  */

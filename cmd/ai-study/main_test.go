@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"simple-server/internal"
+	"simple-server/internal/config"
 	"simple-server/pkg/test"
 	"testing"
 )
 
 func runTestServer() *httptest.Server {
 	/* 환경 설정 */
-	internal.LoadEnv()
+	config.LoadEnv()
 	os.Setenv("SERVICE_NAME", "ai-study")
 	os.Setenv("APP_TITLE", "🕵️‍♀️ AI 공부 길잡이")
 	/* 환경 설정 */

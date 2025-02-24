@@ -1,7 +1,7 @@
 package jobs
 
 import (
-	"simple-server/internal"
+	"simple-server/internal/config"
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
@@ -13,7 +13,7 @@ func SquashJob(c *cron.Cron) {
 }
 
 func SquashExecute() {
-	on := internal.EnvMap["CHROMEDP_HEADLESS"]
+	on := config.EnvMap["CHROMEDP_HEADLESS"]
 
 	u := launcher.New().
 		Headless(on == "true").
