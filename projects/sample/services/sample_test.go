@@ -18,8 +18,8 @@ func (r *TestUserRepository) Name() string {
 
 func TestUser(t *testing.T) {
 	u := &UserService{
-		repo: &StringUserRepository{},
-		// repo: &TestUserRepository{},
+		// repo: &StringUserRepository{},
+		repo: &TestUserRepository{},
 	}
 
 	if u.Name() != "User" {
