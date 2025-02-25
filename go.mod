@@ -19,7 +19,7 @@ require (
 	github.com/openai/openai-go v0.1.0-alpha.59
 	github.com/robfig/cron/v3 v3.0.1
 	google.golang.org/api v0.222.0
-	google.golang.org/genai v0.3.0
+	google.golang.org/genai v0.4.0
 )
 
 require (
