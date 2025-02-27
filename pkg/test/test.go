@@ -33,7 +33,7 @@ func TestRequest(
 
 	// ✅ 요청 생성
 	req, err := http.NewRequestWithContext(
-		// t.Context(),
+		// t.Context(), // 재요청
 		context.Background(),
 		method,
 		reqURL,
