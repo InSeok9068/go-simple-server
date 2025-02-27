@@ -31,6 +31,7 @@ func setUpServer() *echo.Echo {
 
 	/* 라우터  */
 	e.GET("/", func(c echo.Context) error {
+		// 코드 리뷰 테스트
 		return templ.Handler(views.Index("Sample")).Component.Render(c.Request().Context(), c.Response().Writer)
 	})
 
