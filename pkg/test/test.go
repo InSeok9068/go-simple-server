@@ -2,6 +2,7 @@ package test
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -32,7 +33,8 @@ func TestRequest(
 
 	// ✅ 요청 생성
 	req, err := http.NewRequestWithContext(
-		t.Context(),
+		// t.Context(),
+		context.Background(),
 		method,
 		reqURL,
 		bytes.NewBuffer(body),
