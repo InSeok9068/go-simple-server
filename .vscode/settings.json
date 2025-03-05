@@ -4,6 +4,7 @@
   "css.styleSheets": ["shared/static/bulma.min.css", "**/style.css"],
   "cssvar.files": ["shared/static/open-props.min.css"],
   "cssvar.extensions": ["css", "html"],
+  "SQL-Formatter-VSCode.dialect": "sqlite",
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
     "pocketbase": "pocketbase*"
