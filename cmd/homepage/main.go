@@ -9,7 +9,6 @@ import (
 	"simple-server/internal/middleware"
 	"simple-server/projects/homepage/views"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 )
@@ -46,7 +45,7 @@ func setUpServer() *echo.Echo {
 
 	/* 라우터  */
 	e.GET("/", func(c echo.Context) error {
-		return templ.Handler(views.Index(os.Getenv("APP_NAME"))).Component.Render(c.Request().Context(), c.Response().Writer)
+		return views.Index(os.Getenv("APP_TITLE")).Render(c.Response().Writer)
 	})
 	/* 라우터  */
 

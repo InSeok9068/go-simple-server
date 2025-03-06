@@ -1,17 +1,11 @@
 package handlers
 
 import (
-	"simple-server/projects/ai-study/views"
-	shared "simple-server/shared/views"
-
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
+	"os"
+	"simple-server/projects/ai-study/views"
 )
 
 func IndexPageHandler(c echo.Context) error {
-	return templ.Handler(views.Index()).Component.Render(c.Request().Context(), c.Response().Writer)
-}
-
-func LoginPageHanlder(c echo.Context) error {
-	return templ.Handler(shared.Login()).Component.Render(c.Request().Context(), c.Response().Writer)
+	return views.Index(os.Getenv("APP_TITLE")).Render(c.Response().Writer)
 }

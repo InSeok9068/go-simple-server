@@ -1,5 +1,36 @@
 package shared
 
+import (
+	x "github.com/glsubri/gomponents-alpine"
+	b "github.com/willoma/bulma-gomponents"
+	. "maragu.dev/gomponents"
+	. "maragu.dev/gomponents/html"
+)
+
+func NaviShare(title string) Node {
+	return b.Navbar(
+		b.Transparent,
+		x.Data("{ open : false }"),
+		b.NavbarBrand(
+			b.NavbarAHref("/"),
+		),
+		b.NavbarEnd(
+			b.NavbarItem(
+				P(ID("username")),
+			),
+			b.NavbarItem(
+				b.Buttons(
+					b.ButtonA(Href("/login"), b.Hidden, Text("Login")),
+					b.ButtonA(Href("/logout"), b.Hidden, Text("Logout")),
+				),
+			),
+		),
+	)
+}
+
+/*
+package shared
+
 templ Navi(title string, menus templ.Component) {
 	<nav class="navbar is-transparent" x-data="{ open: false }">
 		<div class="navbar-brand">
@@ -31,3 +62,5 @@ templ Navi(title string, menus templ.Component) {
 		</div>
 	</nav>
 }
+
+*/

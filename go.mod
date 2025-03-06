@@ -11,6 +11,8 @@ tool github.com/sqlc-dev/sqlc/cmd/sqlc
 require (
 	firebase.google.com/go/v4 v4.15.2
 	github.com/a-h/templ v0.3.833
+	github.com/eduardolat/gomponents-lucide v1.4.0
+	github.com/glsubri/gomponents-alpine v0.2.2
 	github.com/go-rod/rod v0.116.2
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-contrib v0.17.2
@@ -18,8 +20,11 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/openai/openai-go v0.1.0-alpha.62
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/willoma/bulma-gomponents v0.13.0
 	google.golang.org/api v0.223.0
 	google.golang.org/genai v0.4.0
+	maragu.dev/gomponents v1.1.0
+	maragu.dev/gomponents-htmx v0.6.1
 )
 
 require (
@@ -122,6 +127,7 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/wasilibs/go-pgquery v0.0.0-20240606042535-c0843d6592cc // indirect
 	github.com/wasilibs/wazero-helpers v0.0.0-20240604052452-61d7981e9a38 // indirect
+	github.com/willoma/gomplements v0.8.0 // indirect
 	github.com/ysmood/fetchup v0.2.3 // indirect
 	github.com/ysmood/goob v0.4.0 // indirect
 	github.com/ysmood/got v0.40.0 // indirect

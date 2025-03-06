@@ -1,5 +1,8 @@
 package shared
 
+/*
+package shared
+
 import "os"
 
 templ Login() {
@@ -29,7 +32,7 @@ templ Login() {
 script FirebaseWebUI() {
     const firebaseConfig = {
       apiKey: "AIzaSyCWIebyvcBiwWchfYGUegHf22c9nlBEOWQ",
-      authDomain: "warm-braid-383411.firebaseapp.com", 
+      authDomain: "warm-braid-383411.firebaseapp.com",
       projectId: "warm-braid-383411",
       storageBucket: "warm-braid-383411.firebasestorage.app",
       messagingSenderId: "1001293129594",
@@ -68,9 +71,10 @@ script FirebaseWebUI() {
                 document.getElementById('loader').style.display = 'none';
             }
         },
-    }; 
+    };
 
     // (7) FirebaseUI 인스턴스 생성 및 초기화
     const ui = new firebaseui.auth.AuthUI(firebase.auth());
     ui.start("#firebaseui-auth-container", uiConfig);
 }
+*/
