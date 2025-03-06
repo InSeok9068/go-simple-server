@@ -3,6 +3,7 @@ package views
 import (
 	x "github.com/glsubri/gomponents-alpine"
 	b "github.com/willoma/bulma-gomponents"
+	e "github.com/willoma/gomplements"
 	. "maragu.dev/gomponents"
 	h "maragu.dev/gomponents-htmx"
 	. "maragu.dev/gomponents/components"
@@ -44,7 +45,7 @@ func Index(title string) Node {
 							),
 						),
 						P(Text("⏬ 결과 확인")),
-						Div(Class("box content"),
+						b.Box(e.Class("content"),
 							Div(ID("result")),
 						),
 					),

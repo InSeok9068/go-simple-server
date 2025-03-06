@@ -3,7 +3,7 @@ tmp_dir = "tmp"
 
 [build]
 bin = "./main"
-cmd = "templ generate && go build -o ./main.exe ./cmd/sample"
+cmd = "go build -o ./main.exe ./cmd/ai-study"
 delay = 1000
 exclude_dir = ["static", "tmp", "vendor", "pb_data"]
 exclude_file = []
@@ -37,4 +37,4 @@ clear_on_rebuild = false
 [proxy]
 enabled = true
 proxy_port = 8080
-app_port = 8002
+app_port = 8001
