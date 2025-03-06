@@ -56,3 +56,10 @@ linters:
     - usestdlibvars
     - wastedassign
     - whitespace
+
+linters-settings:
+  stylecheck:
+    dot-import-whitelist:
+      - maragu.dev/gomponents
+      - maragu.dev/gomponents/html
+      - maragu.dev/gomponents/components

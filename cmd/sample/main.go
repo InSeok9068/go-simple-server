@@ -6,7 +6,6 @@ import (
 	"simple-server/internal/middleware"
 	"simple-server/projects/sample/views"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -32,15 +31,15 @@ func setUpServer() *echo.Echo {
 	/* 라우터  */
 	e.GET("/", func(c echo.Context) error {
 		// 코드 리뷰 한번 해주세요
-		return templ.Handler(views.Index("Sample")).Component.Render(c.Request().Context(), c.Response().Writer)
+		return views.Index("Sample").Render(c.Response().Writer)
 	})
 
 	e.GET("/radio", func(c echo.Context) error {
-		return templ.Handler(views.Radio()).Component.Render(c.Request().Context(), c.Response().Writer)
+		return views.Radio().Render(c.Response().Writer)
 	})
 
 	e.GET("/radio2", func(c echo.Context) error {
-		return templ.Handler(views.Radio2()).Component.Render(c.Request().Context(), c.Response().Writer)
+		return views.Radio2().Render(c.Response().Writer)
 	})
 	/* 라우터  */
 
