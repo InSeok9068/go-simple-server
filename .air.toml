@@ -3,7 +3,7 @@ tmp_dir = "tmp"
 
 [build]
 bin = "./main"
-cmd = "go build -o ./main.exe ./cmd/ai-study"
+cmd = "go build -o ./main.exe ./cmd/homepage"
 delay = 1000
 exclude_dir = ["static", "tmp", "vendor", "pb_data"]
 exclude_file = []
