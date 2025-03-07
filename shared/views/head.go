@@ -24,6 +24,7 @@ func HeadsWithPicoAndTailwind(title string) []Node {
 		Link(Rel("stylesheet"), Href("/shared/static/tailwindcss.css")),
 		Link(Rel("stylesheet"), Href("https://unpkg.com/open-props")),
 		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css")),
+		//Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css")),
 		Script(Src("https://unpkg.com/htmx.org@2.0.4")),
 		Script(Src("https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"), Defer()),
 		Title(title),
