@@ -17,28 +17,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 2. 서비스명 환경변수 저장
       - name: Extract Release Name
         run: echo "SERVICE_NAME=$(echo ${GITHUB_REF#refs/heads/release/})" >> $GITHUB_ENV
 
-      # 2. Go 설치
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.24
-
-      # 3. 필요한 패키지 설치 (GCC 등)
-      - name: Install GCC Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential gcc-multilib
-
-      # 4. Tailwindcss CLI 설치
-      - name: Install TailwindCSS CLI Dependencies
-        run: |
-          chmod +x ./tailwindcss-install.sh
-          ./tailwindcss-install.sh linux
-
-      # 5. .env 파일 생성
+      # 3. .env 환경변수 파일 생성
       - name: Generate .env File
         run: |
           cat <<EOF > .env
@@ -48,6 +31,24 @@ jobs:
             OPEN_AI_KEY=${{ secrets.OPEN_AI_KEY }}
             FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
           EOF
+
+      # 4. Go 설치
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      # 5. GCC 패키지 설치
+      - name: Install GCC Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential gcc-multilib
+          
+      # 5. Tailwindcss CLI 설치
+      - name: Install Tailwindcss CLI Dependencies
+        run: |
+          chmod +x ./tailwindcss-install.sh
+          ./tailwindcss-install.sh linux          
 
       # 6. Tailwindcss Out 파일 생성
       - name: Tailwindcss Generate
