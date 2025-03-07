@@ -32,11 +32,10 @@ jobs:
           sudo apt update
           sudo apt install -y build-essential gcc-multilib
 
-      # 4. Templ 패키지 설치
-      - name: Install Templ Dependencies
+      # 4. Tailwindcss CLI 설치
+      - name: Install TailwindCSS CLI Dependencies
         run: |
-          export PATH=$PATH:$HOME/go/bin
-          go install github.com/a-h/templ/cmd/templ@latest
+          ./tailwindcss-install.sh linux
 
       # 5. .env 파일 생성
       - name: Generate .env File
@@ -49,10 +48,10 @@ jobs:
             FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
           EOF
 
-      # 6. Templ 실행
+      # 6. Tailwindcss Out 파일 생성
       - name: Templ Generate
         run: |
-          templ generate
+          ./tailwindcss -i tailwindcss.css -o shared/static/tailwindcss.css  --minify
 
       # # 7. Lint 실행
       # - name: golangci-lint

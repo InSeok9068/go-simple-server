@@ -15,7 +15,7 @@ func ServiceCard(name string, desc string, url string) Node {
 		Header(Text(name)),
 		Text(desc),
 		Footer(
-			A(Href(url), Class("card-footer-item"),
+			A(Href(url),
 				Text("서비스 이동"),
 				lucide.ArrowUpRight(),
 			),
