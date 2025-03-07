@@ -8,5 +8,11 @@
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
     "pocketbase": "pocketbase*"
-  }
+  },
+  "tailwindCSS.includeLanguages": {
+    "go": "html"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["Class(?:es)?[({]([^)}]*)[)}]", "[\"`]([^\"`]*)[\"`]"]
+  ]
 }
