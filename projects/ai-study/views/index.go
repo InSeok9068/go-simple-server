@@ -15,7 +15,7 @@ func Index(title string) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
-		Head:     shared.Heads(title),
+		Head:     shared.HeadsWithBulma(title),
 		Body: []Node{
 			b.Container(b.MaxTablet, b.MarginTop(3),
 				b.Columns(

@@ -6,6 +6,7 @@ import (
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/components"
 	. "maragu.dev/gomponents/html"
+	shared "simple-server/shared/views"
 )
 
 func Radio() Node {
@@ -30,11 +31,7 @@ func Index(title string) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
-		//Head:     shared.Heads(title),
-		Head: []Node{
-			Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css")),
-			Link(Rel("stylesheet"), Href("/shared/static/tailwindcss.css")),
-		},
+		Head:     shared.HeadsWithPicoAndTailwind(title),
 		Body: []Node{
 			Div(Class("container"),
 				Input(Type("text"))),
