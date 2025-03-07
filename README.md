@@ -2,14 +2,14 @@
 
 **Host** : https://toy-project.n-e.kr
 
-| 구성                  | 사용 기술        |
-| --------------------- | ---------------- |
-| 언어                  | Go               |
-| 백엔드 프레임워크     | Echo             |
-| 프론트엔드 프레임워크 | Htmx + Alpine.js |
-| CSS 프레임워크        | Bulma            |
-| Template 엔진         | Templ            |
-| 데이터베이스          | SQLite3          |
+| 구성          | 사용 기술                 |
+|-------------|-----------------------|
+| 언어          | Go                    |
+| 백엔드 프레임워크   | Echo                  |
+| 프론트엔드 프레임워크 | Htmx + Alpine.js      |
+| CSS 프레임워크   | PicoCSS + TailwindCSS |
+| Template 엔진 | Gomponents            |
+| 데이터베이스      | SQLite3               |
 
 ### 추가 구성 고려
 
