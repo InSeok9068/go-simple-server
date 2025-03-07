@@ -29,7 +29,7 @@ func Index(title string) Node {
 		Language: "ko",
 		Head:     shared.HeadsWithPicoAndTailwind(title),
 		Body: []Node{
-			Div(Class("container"),
+			Main(
 				Nav(
 					Ul(
 						Li(

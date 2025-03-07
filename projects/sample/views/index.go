@@ -37,7 +37,7 @@ func Index(title string) Node {
 		Language: "ko",
 		Head:     shared.HeadsWithPicoAndTailwind(title),
 		Body: []Node{
-			Div(Class("container"),
+			Main(
 				Button(h.Get("/radio"), h.Target("#box1"),
 					Text("Click Me 1"),
 				),
