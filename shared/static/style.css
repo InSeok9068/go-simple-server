@@ -1,0 +1,39 @@
+/*:root {*/
+/*    --pico-line-height: var(--font-lineheight-1);*/
+/*    !* Original: 1.5 /*/
+/*    --pico-form-element-spacing-vertical: var(--size-2.5);*/
+/*    / Original: 1rem /*/
+/*    --pico-form-element-spacing-horizontal: var(--size-3);*/
+/*    / Original: 1.25rem /*/
+/*    --pico-border-radius: var(--radius-2);*/
+/*    / Original: 0.25rem *!*/
+
+/*    !* 모바일 사이즈 /*/
+/*    --pico-font-size: var(--font-size-fluid-0);*/
+/*    / INPUT 그룹 포커스 OFF /*/
+/*    --pico-group-box-shadow-focus-with-input: none;*/
+/*    / 모바일 Grid Row 간격 제거 *!*/
+/*    --pico-grid-row-gap: none;*/
+/*}*/
+
+/*h1,*/
+/*h2,*/
+/*h3,*/
+/*h4,*/
+/*h5,*/
+/*h6 {*/
+/*    --pico-font-weight: var(--font-weight-6);*/
+/*    !* Original: 700 *!*/
+/*}*/
+
+/*article {*/
+/*    border: 1px solid var(--pico-muted-border-color);*/
+/*    !* Original doesn't have a border /*/
+/*    border-radius: calc(var(--pico-border-radius) * 2);*/
+/*    / Original: var(--pico-border-radius) *!*/
+/*}*/
+
+/*article > footer {*/
+/*    border-radius: calc(var(--pico-border-radius) * 2);*/
+/*    !* Original: var(--pico-border-radius) *!*/
+/*}*/
