@@ -30,7 +30,7 @@ if [ ! -f "tailwindcss$EXE" ]; then
   chmod a+x "tailwindcss$EXE"
   mkdir -p node_modules/tailwindcss/lib
   echo '{"devDependencies": {"tailwindcss": "latest"}}' >package.json
-  echo ""
+  echo "Setup Finish tailwindcss"
 else
   echo "tailwindcss$EXE already exists. Skipping download."
 fi
