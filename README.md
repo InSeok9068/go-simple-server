@@ -62,7 +62,6 @@ chmod +x pocketbase
 
 ```shell
 go get firebase.google.com/go/v4@latest
-go get github.com/a-h/templ@latest
 go get github.com/eduardolat/gomponents-lucide@latest
 go get github.com/glsubri/gomponents-alpine@latest
 go get github.com/go-rod/rod@latest
@@ -73,6 +72,7 @@ go get github.com/mattn/go-sqlite3@latest
 go get github.com/openai/openai-go@latest
 go get github.com/robfig/cron/v3@latest
 go get github.com/willoma/bulma-gomponents@latest
+go get github.com/willoma/gomplements@latest
 go get google.golang.org/api@latest
 go get google.golang.org/genai@latest
 go get maragu.dev/gomponents@latest
@@ -82,7 +82,8 @@ go get maragu.dev/gomponents-htmx@latest
 ### 개발 도구 종속성 최신화
 
 ```shell
-go install github.com/a-h/templ/cmd/templ@latest
+#go install github.com/a-h/templ/cmd/templ@latest
+go install github.com/air-verse/air@latest
 go install github.com/air-verse/air@latest
 CGO_ENABLED=0 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```

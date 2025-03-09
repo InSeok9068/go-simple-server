@@ -1,9 +1,8 @@
 package views
 
 import (
-	_ "github.com/glsubri/gomponents-alpine"
+	lucide "github.com/eduardolat/gomponents-lucide"
 	. "maragu.dev/gomponents"
-	_ "maragu.dev/gomponents-htmx"
 	. "maragu.dev/gomponents/components"
 	. "maragu.dev/gomponents/html"
 	shared "simple-server/shared/views"
@@ -15,6 +14,7 @@ func ServiceCard(name string, desc string, url string) Node {
 		Text(desc),
 		Footer(Class("text-center"),
 			A(Href(url),
+				lucide.ExternalLink(),
 				Text("서비스 이동"),
 			),
 		),
