@@ -1,7 +1,6 @@
 package views
 
 import (
-	lucide "github.com/eduardolat/gomponents-lucide"
 	_ "github.com/glsubri/gomponents-alpine"
 	. "maragu.dev/gomponents"
 	_ "maragu.dev/gomponents-htmx"
@@ -12,12 +11,11 @@ import (
 
 func ServiceCard(name string, desc string, url string) Node {
 	return Article(
-		Header(Text(name)),
+		H3(Text(name)),
 		Text(desc),
-		Footer(
+		Footer(Class("text-center"),
 			A(Href(url),
 				Text("서비스 이동"),
-				lucide.ArrowUpRight(),
 			),
 		),
 	)
@@ -33,7 +31,7 @@ func Index(title string) Node {
 				Nav(
 					Ul(
 						Li(
-							Strong(A(Href("/"), Text(title))),
+							H2(A(Href("/"), Text(title))),
 						),
 					),
 				),
