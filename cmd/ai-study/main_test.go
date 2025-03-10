@@ -26,7 +26,7 @@ func TestAIStudy(t *testing.T) {
 	t.Run("AI Study API 호출", func(t *testing.T) {
 		input := "Go 언어"
 
-		code, body := test.TestRequest(t, http.MethodPost, server.URL, "/ai-study", map[string]string{"input": input}, nil)
+		code, body := test.Request(t, http.MethodPost, server.URL, "/ai-study", map[string]string{"input": input}, nil)
 
 		// ✅ 응답 출력
 		if code != http.StatusOK {
@@ -37,7 +37,7 @@ func TestAIStudy(t *testing.T) {
 	})
 
 	t.Run("AI Study API 호출 랜덤", func(t *testing.T) {
-		code, body := test.TestRequest(t, http.MethodPost, server.URL, "/ai-study-random", nil, nil)
+		code, body := test.Request(t, http.MethodPost, server.URL, "/ai-study-random", nil, nil)
 
 		// ✅ 응답 출력
 		if code != http.StatusOK {

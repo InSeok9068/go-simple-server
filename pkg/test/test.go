@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 
-// ✅ 공통 HTTP 요청 실행 함수
-func TestRequest(
+// Request ✅ 공통 HTTP 요청 실행 함수
+func Request(
 	t *testing.T,
 	method string,
 	serverURL string,
