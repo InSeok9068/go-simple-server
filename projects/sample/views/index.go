@@ -35,7 +35,10 @@ func Index(title string) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
-		Head:     shared.HeadsWithPicoAndTailwind(title),
+		Head: append(
+			shared.HeadsWithPicoAndTailwind(title),
+			Script(Src("./static/index.js")),
+		),
 		Body: []Node{
 			Main(
 				Div(Class("flex flex-col gap-2"),
