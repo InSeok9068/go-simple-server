@@ -2,23 +2,23 @@
 
 **Host** : https://toy-project.n-e.kr
 
-| 구성              | 사용 기술                   |
-|-----------------|-------------------------|
-| 언어              | Go                      |
+| 구성                    | 사용 기술               |
+| ----------------------- | ----------------------- |
+| 언어                    | Go                      |
 | 백엔드 프레임워크       | Echo                    |
-| 프론트엔드 프레임워크     | Htmx + Alpine.js        |
+| 프론트엔드 프레임워크   | Htmx + Alpine.js        |
 | CSS 프레임워크 선택지 1 | Pico CSS + Tailwind CSS |
 | CSS 프레임워크 선택지 2 | Beer CSS                |
-| CSS 프레임워크 선택지 3 | Bulma CSS               | 
-| Template 엔진     | Gomponents              | 
-| 데이터베이스          | SQLite3                 | 
+| CSS 프레임워크 선택지 3 | Bulma CSS               |
+| Template 엔진           | Gomponents              |
+| 데이터베이스            | SQLite3                 |
 
 ### 추가 구성 고려
 
-- Pico CSS + Tailwind CSS : CSS 프레임워크 (커스터마이징)  
-- Beer CSS : CSS 프레임워크 (Material)
-- Bulma CSS : CSS 프레임워크 (데스크톱 ?)
-- Tabler : 어드민과 같이 PC에서 사용하는 웹사이트라면 **Tabler** CSS 프레임워크도 고려
+- Pico CSS + Tailwind CSS : CSS 프레임워크 (커스터마이징 용이)
+- Beer CSS : CSS 프레임워크 (Material 모바일 우선)
+- Bulma CSS : CSS 프레임워크 (심플한 관리자 UI)
+- Tabler : CSS 프레임워크 (복잡한 관리자 UI) - PC 환경
 - ~~surreal.js : [surreal.js](https://cdn.jsdelivr.net/gh/gnat/surreal@main/surreal.js)~~
 
 ---
