@@ -29,12 +29,21 @@ func Index(title string) Node {
 		Language: "ko",
 		Head:     shared.HeadsWithBeer(title),
 		Body: []Node{
+			Nav(Class("bottom s"),
+				A(I(Text("home"))),
+				A(I(Text("search"))),
+				A(I(Text("share"))),
+				A(I(Text("more_vert"))),
+			),
+
 			Header(Class("fixed responsive yellow4"),
 				A(Href("/"),
 					H3(Text(title)),
 				),
 			),
+
 			Div(Class("space")),
+
 			Main(Class("responsive"),
 				ServiceCard("AI 공부 도우미", "AI가 공부 주제를 던져줘요", "https://ai-study.toy-project.n-e.kr"),
 				ServiceCard("나만의 TODO 앱", "나만의 할 일을 기록해보세요", "https://development-support.p-e.kr"),
