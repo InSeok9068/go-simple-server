@@ -1,12 +1,13 @@
 package views
 
 import (
+	shared "simple-server/shared/views"
+
 	x "github.com/glsubri/gomponents-alpine"
 	. "maragu.dev/gomponents"
 	h "maragu.dev/gomponents-htmx"
 	. "maragu.dev/gomponents/components"
 	. "maragu.dev/gomponents/html"
-	shared "simple-server/shared/views"
 )
 
 func Radio() Node {
