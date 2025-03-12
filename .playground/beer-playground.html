@@ -15,6 +15,15 @@
 DOCS : https://www.beercss.com
 -->
 <body>
-<div>안녕</div>
+    <div x-data="{ open : false }">
+        <dialog id="dialog-right" class="right" :class="{ 'active' : open }">
+
+        </dialog>
+        <main class="responsive">
+            <button @click="open = !open" data-ui="#dialog-right">
+                클릭
+            </button>
+        </main>
+    </div>
 </body>
 </html>
