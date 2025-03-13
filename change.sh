@@ -28,7 +28,7 @@ case "$SERVICE" in
 esac
 
 # `cmd` 라인을 정확히 한 번만 변경 (중복 방지)
-sed -i'' -E 's|(cmd = "tailwindcss.exe -i tailwindcss.css -o shared/static/tailwindcss.css  --minify && go build -o ./main.exe ./cmd/)[^"]+(")|\1'"$SERVICE"'\2|' "$CONFIG_FILE"
+sed -i'' -E 's|(cmd = "go build -o ./main.exe ./cmd/)[^"]+(")|\1'"$SERVICE"'\2|' "$CONFIG_FILE"
 
 # `app_port` 값을 정확히 변경
 sed -i'' -E 's|^(app_port = )[0-9]+$|\1'"$PORT"'|' "$CONFIG_FILE"
