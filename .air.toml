@@ -3,8 +3,8 @@ tmp_dir = "tmp"
 
 [build]
 bin = "./main"
-#cmd = "tailwindcss.exe -i tailwindcss.css -o shared/static/tailwindcss.css  --minify && go build -o ./main.exe ./cmd/homepage"
 cmd = "go build -o ./main.exe ./cmd/homepage"
+#cmd = "tailwindcss.exe -i tailwindcss.css -o shared/static/tailwindcss.css  --minify && go build -o ./main.exe ./cmd/homepage"
 delay = 1000
 exclude_dir = ["static", "tmp", "vendor", "pb_data"]
 exclude_file = []
