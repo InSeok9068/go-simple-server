@@ -1,6 +1,15 @@
 {
   "go.lintTool": "golangci-lint",
   "go.lintFlags": ["--fast"],
+  // "go.formatTool": "goimports",
+  /* InlayHints On */
+  // "go.inlayHints.compositeLiteralFields": true,
+  // "go.inlayHints.compositeLiteralTypes": true,
+  // "go.inlayHints.functionTypeParameters": true,
+  // "go.inlayHints.parameterNames": true,
+  // "go.inlayHints.rangeVariableTypes": true,
+  // "go.inlayHints.constantValues": true,
+  /* InlayHints On */
   "css.styleSheets": [
     "shared/static/bulma.min.css",
     "shared/static/beer.min.css",
