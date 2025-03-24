@@ -42,7 +42,14 @@ func Index(title string, diary *db.Diary) Node {
 					I(Text("save")),
 				),
 				Hr(Class("medium")),
-				Diary(diary),
+
+				Div(
+					h.Post("/diary"),
+					h.Trigger("load delay:1s"),
+					h.Target("#content"),
+
+					Diary(diary),
+				),
 			),
 			/* Body */
 
@@ -66,9 +73,6 @@ func Index(title string, diary *db.Diary) Node {
 
 func Diary(diary *db.Diary) Node {
 	return Div(ID("content"),
-		h.Post("/diary"),
-		h.Target("#content"),
-		h.Trigger("load delay:1s"),
 		Iff(diary != nil, func() Node {
 			return Input(Type("hidden"), ID("id"), Value(diary.ID))
 		}),
