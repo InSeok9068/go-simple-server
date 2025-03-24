@@ -62,3 +62,19 @@ func HeadsWithBeer(title string) []Node {
 		beer...,
 	)
 }
+
+func HeadWithFirebaseLogin() []Node {
+	return []Node{
+		Link(Rel("stylesheet"), Href("https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css")),
+		Script(Src("https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js")),
+		Script(Src("https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js")),
+		Script(Src("https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.js")),
+		Script(Src("/shared/static/firebase_login.js"), Defer()),
+	}
+}
+
+func HeadWithFirebaseAuth() []Node {
+	return []Node{
+		Script(Src("/shared/static/firebase_auth.js")),
+	}
+}

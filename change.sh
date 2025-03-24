@@ -18,8 +18,11 @@ case "$SERVICE" in
   ai-study)
     PORT=8001
     ;;
-  sample)
+  deario)
     PORT=8002
+    ;;
+  sample)
+    PORT=8999
     ;;
   *)
     echo "❌ Unknown service: $SERVICE"

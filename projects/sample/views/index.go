@@ -38,7 +38,7 @@ func Index(title string) Node {
 		Language: "ko",
 		Head: append(
 			shared.HeadsWithPicoAndTailwind(title),
-			Script(Src("./static/index.js")),
+			Script(Src("/static/index.js")),
 		),
 		Body: []Node{
 			Main(

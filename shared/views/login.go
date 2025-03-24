@@ -1,80 +1,24 @@
 package shared
 
-/*
-package shared
+import (
+	. "maragu.dev/gomponents"
+	. "maragu.dev/gomponents/components"
+	. "maragu.dev/gomponents/html"
+)
 
-import "os"
-
-templ Login() {
-	<!DOCTYPE html>
-	<html lang="ko">
-		<head>
-			@Header("로그인")
-			<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
-			<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
-			<script src="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.js"></script>
-			<link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css"/>
-		</head>
-		<body>
-			<div class="container is-max-tablet">
-				@Navi(os.Getenv("APP_TITLE"), nil)
-				<hr/>
-				<div class="card">
-					<div class="p-5" id="firebaseui-auth-container"></div>
-					<div class="p-5" id="loader">Loading...</div>
-				</div>
-				@FirebaseWebUI()
-			</div>
-		</body>
-	</html>
+func Login() Node {
+	return HTML5(HTML5Props{
+		Title:    "로그인",
+		Language: "ko",
+		Head: append(
+			HeadsWithBeer("로그인"),
+			HeadWithFirebaseLogin()...,
+		),
+		Body: []Node{
+			Main(Class("responsive"),
+				Div(ID("firebaseui-auth-container")),
+				Div(ID("loader")),
+			),
+		}},
+	)
 }
-
-script FirebaseWebUI() {
-    const firebaseConfig = {
-      apiKey: "AIzaSyCWIebyvcBiwWchfYGUegHf22c9nlBEOWQ",
-      authDomain: "warm-braid-383411.firebaseapp.com",
-      projectId: "warm-braid-383411",
-      storageBucket: "warm-braid-383411.firebasestorage.app",
-      messagingSenderId: "1001293129594",
-      appId: "1:1001293129594:web:a579e07714a18ec3b598c3"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-
-    const uiConfig = {
-        // 로그인 성공 시 이동할 URL, 혹은 자동 리다이렉트를 막을 수도 있음
-        signInFlow : "popup",
-        signInSuccessUrl: "/",
-        signInOptions: [
-            // 이메일 + 비밀번호 로그인
-            firebase.auth.EmailAuthProvider.PROVIDER_ID,
-            // 소셜 로그인 예시 (Google)
-            firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        ],
-        callbacks: {
-            signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-                console.log("로그인 성공:", authResult.user);
-                // return false로 하면 signInSuccessUrl로 리다이렉트 안 함
-                return true;
-            },
-            signInFailure: function(error) {
-                // Some unrecoverable error occurred during sign-in.
-                // Return a promise when error handling is completed and FirebaseUI
-                // will reset, clearing any UI. This commonly occurs for error code
-                // 'firebaseui/anonymous-upgrade-merge-conflict' when merge conflict
-                // occurs. Check below for more details on this.
-                return handleUIError(error);
-            },
-            uiShown: function() {
-                // The widget is rendered.
-                // Hide the loader.
-                document.getElementById('loader').style.display = 'none';
-            }
-        },
-    };
-
-    // (7) FirebaseUI 인스턴스 생성 및 초기화
-    const ui = new firebaseui.auth.AuthUI(firebase.auth());
-    ui.start("#firebaseui-auth-container", uiConfig);
-}
-*/
