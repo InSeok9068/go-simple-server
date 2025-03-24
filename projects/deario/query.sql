@@ -2,6 +2,7 @@
 SELECT *
 FROM diarys
 WHERE date = ?
+  AND uid = ?
 LIMIT 1;
 
 -- name: CreateDiary :one

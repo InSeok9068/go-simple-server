@@ -30,9 +30,8 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	middleware.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
-
 	middleware.FirebaseInit()
+	middleware.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
 	e.Use(echoMiddleware.KeyAuthWithConfig(middleware.FirebaseAuth()))
 
 	// PWA 파일
@@ -43,6 +42,7 @@ func setUpServer() *echo.Echo {
 	/* 라우터  */
 	e.GET("/", handlers.Index)
 	e.GET("/login", handlers.Login)
+	e.POST("/diary", handlers.Diary)
 	e.GET("/save", handlers.Save)
 	/* 라우터  */
 

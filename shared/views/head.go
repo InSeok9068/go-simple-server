@@ -75,6 +75,6 @@ func HeadWithFirebaseLogin() []Node {
 
 func HeadWithFirebaseAuth() []Node {
 	return []Node{
-		Script(Src("/shared/static/firebase_auth.js")),
+		Script(Type("module"), Src("/shared/static/firebase_auth.js")),
 	}
 }

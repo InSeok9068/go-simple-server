@@ -1,6 +1,8 @@
 package views
 
 import (
+	h "maragu.dev/gomponents-htmx"
+	"simple-server/projects/deario/db"
 	// x "github.com/glsubri/gomponents-alpine"
 	shared "simple-server/shared/views"
 
@@ -9,7 +11,7 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func Index(title string) Node {
+func Index(title string, diary *db.Diary) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
@@ -40,10 +42,7 @@ func Index(title string) Node {
 					I(Text("save")),
 				),
 				Hr(Class("medium")),
-				Div(
-					Class("field textarea border"),
-					Textarea(Style("height : 200px")),
-				),
+				Diary(diary),
 			),
 			/* Body */
 
@@ -63,4 +62,21 @@ func Index(title string) Node {
 			/* Footer */
 		},
 	})
+}
+
+func Diary(diary *db.Diary) Node {
+	return Div(ID("content"),
+		h.Post("/diary"),
+		h.Target("#content"),
+		h.Trigger("load delay:1s"),
+		Iff(diary != nil, func() Node {
+			return Input(Type("hidden"), ID("id"), Value(diary.ID))
+		}),
+		Class("field textarea border"),
+		Textarea(Style("height : 200px"),
+			Iff(diary != nil, func() Node {
+				return Text(diary.Content)
+			}),
+		),
+	)
 }

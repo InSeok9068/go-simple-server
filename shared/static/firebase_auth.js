@@ -24,9 +24,9 @@ let authPromise = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         console.log("로그인됨:", user);
-        document.getElementById("username").textContent = `${user.displayName} 님 환영합니다!`;
-        document.getElementById("login").classList.add("is-hidden");
-        document.getElementById("logout").classList.remove("is-hidden");
+        // document.getElementById("username").textContent = `${user.displayName} 님 환영합니다!`;
+        // document.getElementById("login").classList.add("is-hidden");
+        // document.getElementById("logout").classList.remove("is-hidden");
 
         // user가 존재하면, 토큰 가져오는 Promise를 만들어 둠
         authPromise = user
@@ -42,9 +42,9 @@ onAuthStateChanged(auth, (user) => {
     } else {
         // 로그아웃 상태
         console.log("로그아웃 상태");
-        document.getElementById("username").textContent = "";
-        document.getElementById("login").classList.remove("is-hidden");
-        document.getElementById("logout").classList.add("is-hidden");
+        // document.getElementById("username").textContent = "";
+        // document.getElementById("login").classList.remove("is-hidden");
+        // document.getElementById("logout").classList.add("is-hidden");
 
         // token/Promise 초기화
         authToken = null;

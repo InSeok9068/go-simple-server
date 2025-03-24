@@ -10,14 +10,35 @@ import (
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
 	shared "simple-server/shared/views"
+	"time"
 )
 
 func Index(c echo.Context) error {
-	return views.Index(os.Getenv("APP_TITLE")).Render(c.Response().Writer)
+	return views.Index(os.Getenv("APP_TITLE"), nil).Render(c.Response().Writer)
 }
 
 func Login(c echo.Context) error {
 	return shared.Login().Render(c.Response().Writer)
+}
+
+func Diary(c echo.Context) error {
+	user, ok := c.Get("user").(*auth.Token)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+	}
+
+	dbCon, err := connection.AppDBOpen()
+	if err != nil {
+		slog.Error("Failed to open database", "error", err.Error())
+	}
+	queries := db.New(dbCon)
+
+	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
+		Uid:  user.UID,
+		Date: time.Now().Format("20060102"),
+	})
+
+	return views.Diary(&diary).Render(c.Response().Writer)
 }
 
 func Save(c echo.Context) error {
