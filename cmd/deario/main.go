@@ -4,10 +4,11 @@ import (
 	"os"
 	"simple-server/projects/deario/handlers"
 
-	"github.com/labstack/echo/v4"
-	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"simple-server/internal/config"
 	"simple-server/internal/middleware"
+
+	"github.com/labstack/echo/v4"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
 
 func main() {

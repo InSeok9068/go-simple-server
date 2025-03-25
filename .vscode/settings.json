@@ -19,7 +19,11 @@
   "cssvar.extensions": ["css", "html"],
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
-    "pocketbase": "pocketbase*"
+    "pocketbase": "pocketbase*",
+    "tailwind.config.js": "tailwindcss*"
+  },
+  "files.exclude": {
+    "tmp": true
   },
   "tailwindCSS.includeLanguages": {
     "go": "html"

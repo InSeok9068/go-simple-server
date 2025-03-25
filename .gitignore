@@ -58,3 +58,6 @@ tailwindcss
 node_modules
 package.json
 shared/static/tailwindcss.css
+
+# Local Histroy
+.history
