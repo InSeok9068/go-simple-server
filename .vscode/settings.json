@@ -23,7 +23,10 @@
     "tailwind.config.js": "tailwindcss*"
   },
   "files.exclude": {
-    "tmp": true
+    "tmp": true,
+    ".idea": true,
+    "node_modules": true,
+    "package.json": true
   },
   "tailwindCSS.includeLanguages": {
     "go": "html"
