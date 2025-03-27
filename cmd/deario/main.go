@@ -16,6 +16,7 @@ func main() {
 	config.LoadEnv()
 	os.Setenv("SERVICE_NAME", "deario")
 	os.Setenv("APP_TITLE", "Deario")
+	os.Setenv("APP_DATABASE_URL", "file:./projects/deario/pb_data/data.db")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
@@ -43,8 +44,8 @@ func setUpServer() *echo.Echo {
 	/* 라우터  */
 	e.GET("/", handlers.Index)
 	e.GET("/login", handlers.Login)
-	e.POST("/diary", handlers.Diary)
-	e.GET("/save", handlers.Save)
+	e.GET("/diary", handlers.Diary)
+	e.POST("/save", handlers.Save)
 	/* 라우터  */
 
 	return e

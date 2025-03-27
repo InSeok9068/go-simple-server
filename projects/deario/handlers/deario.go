@@ -14,7 +14,7 @@ import (
 )
 
 func Index(c echo.Context) error {
-	return views.Index(os.Getenv("APP_TITLE"), nil).Render(c.Response().Writer)
+	return views.Index(os.Getenv("APP_TITLE")).Render(c.Response().Writer)
 }
 
 func Login(c echo.Context) error {
@@ -38,7 +38,11 @@ func Diary(c echo.Context) error {
 		Date: time.Now().Format("20060102"),
 	})
 
-	return views.Diary(&diary).Render(c.Response().Writer)
+	if err != nil {
+		return views.NewDiary().Render(c.Response().Writer)
+	} else {
+		return views.GetDiary(diary).Render(c.Response().Writer)
+	}
 }
 
 func Save(c echo.Context) error {
@@ -56,8 +60,9 @@ func Save(c echo.Context) error {
 	}
 	queries := db.New(dbCon)
 
-	if id != "" {
-		_, err = queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
+	var diary db.Diary
+	if id == "" {
+		diary, err = queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
 			Uid:     user.UID,
 			Content: content,
 		})
@@ -66,8 +71,9 @@ func Save(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError, "등록 실패")
 		}
 	} else {
-		_, err = queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
+		diary, err = queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
 			Content: content,
+			ID:      id,
 		})
 
 		if err != nil {
@@ -75,5 +81,5 @@ func Save(c echo.Context) error {
 		}
 	}
 
-	return nil
+	return views.DiaryID(diary.ID).Render(c.Response().Writer)
 }
