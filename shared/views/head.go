@@ -16,6 +16,7 @@ func HeadsDefault(title string) []Node {
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/htmx.min.js';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"), Defer(),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/cdn.min.js';")),
+		Script(Src("/shared/static/app.js")),
 		Title(title),
 	}
 }

@@ -30,7 +30,7 @@ onAuthStateChanged(auth, (user) => {
 
                 const el = document.querySelector('[hx-trigger="firebase:authed"]');
                 htmx.trigger(el, 'firebase:authed');
-                // Alpine.store('auth').login(user, token);
+                Alpine.store('auth').login(user, token);
                 return token;
             })
             .catch((err) => {
@@ -45,7 +45,7 @@ onAuthStateChanged(auth, (user) => {
         authToken = null;
         authPromise = null;
 
-        // Alpine.store('auth').logout();
+        Alpine.store('auth').logout();
 
         const el = document.querySelector('[hx-trigger="firebase:unauthed"]');
         htmx.trigger(el, 'firebase:unauthed');
