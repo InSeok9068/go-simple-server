@@ -47,7 +47,7 @@ func Index(title string) Node {
 
 				Div(h.Get("/diary"),
 					h.Target("#diary"),
-					h.Trigger("load delay:1s"),
+					h.Trigger("firebase:authed"),
 					h.Swap("outerHTML"),
 					NewDiary(),
 				),

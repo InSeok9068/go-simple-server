@@ -1,6 +1,4 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-
-// Add Firebase products that you want to use
 import {getAuth, onAuthStateChanged,} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
 // 1. Firebase 초기화
@@ -15,24 +13,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// 2. 토큰을 저장할 변수와 Promise
+// 3. Firebase 로그인 상태 감지 및 반영
 // - authPromise는 "토큰이 준비되기를 기다리는" Promise
 let authToken = null;
 let authPromise = null;
 
-// 3. onAuthStateChanged로 로그인 / 로그아웃 감지
+// 4. onAuthStateChanged로 로그인 / 로그아웃 감지
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        console.log("로그인됨:", user);
-        // document.getElementById("username").textContent = `${user.displayName} 님 환영합니다!`;
-        // document.getElementById("login").classList.add("is-hidden");
-        // document.getElementById("logout").classList.remove("is-hidden");
+        console.log("✅ 로그인됨:", user);
 
         // user가 존재하면, 토큰 가져오는 Promise를 만들어 둠
-        authPromise = user
-            .getIdToken(/* forceRefresh */ false)
+        authPromise = user.getIdToken(/* forceRefresh */ false)
             .then((token) => {
                 authToken = token; // 이후 htmx 요청 때 이 token을 쓰면 됨
+
+                const el = document.querySelector('[hx-trigger="firebase:authed"]');
+                htmx.trigger(el, 'firebase:authed');
+                // Alpine.store('auth').login(user, token);
                 return token;
             })
             .catch((err) => {
@@ -41,14 +39,16 @@ onAuthStateChanged(auth, (user) => {
             });
     } else {
         // 로그아웃 상태
-        console.log("로그아웃 상태");
-        // document.getElementById("username").textContent = "";
-        // document.getElementById("login").classList.remove("is-hidden");
-        // document.getElementById("logout").classList.add("is-hidden");
+        console.log("🚪 로그아웃됨");
 
         // token/Promise 초기화
         authToken = null;
         authPromise = null;
+
+        // Alpine.store('auth').logout();
+
+        const el = document.querySelector('[hx-trigger="firebase:unauthed"]');
+        htmx.trigger(el, 'firebase:unauthed');
     }
 })
 
@@ -95,6 +95,6 @@ htmx.on("htmx:configRequest", (e) => {
     }
 });
 
-document.getElementById("logout").addEventListener("click", () => {
-    auth.signOut();
-});
+// document.getElementById("logout").addEventListener("click", () => {
+//     auth.signOut();
+// });
