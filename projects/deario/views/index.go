@@ -85,7 +85,7 @@ func GetDiaryContent(diary db.Diary) Node {
 	return Form(ID("diary"),
 		Input(Type("hidden"), Name("date"), Value(diary.Date)),
 		Div(Class("field textarea border"),
-			Textarea(Name("content"), h.Post("/save"), h.Swap("none"), h.Trigger("input delay:0.5s"), Style("height : 200px"),
+			Textarea(Name("content"), h.Post("/save"), h.Swap("none"), h.Trigger("input delay:0.5s"), Style("height : 350px"),
 				Text(diary.Content),
 			),
 		),
@@ -96,7 +96,7 @@ func NewDiaryContent(date string) Node {
 	return Form(ID("diary"),
 		Input(Type("hidden"), Name("date"), Value(date)),
 		Div(Class("field textarea border"),
-			Textarea(Name("content"), h.Post("/save"), h.Swap("none"), h.Trigger("input delay:0.5s"), Style("height : 200px")),
+			Textarea(Name("content"), h.Post("/save"), h.Swap("none"), h.Trigger("input delay:0.5s"), Style("height : 350px")),
 		),
 	)
 }
