@@ -38,9 +38,6 @@ func Index(title string) Node {
 					A(
 						I(Text("search")),
 					),
-					A(
-						I(Text("share")),
-					),
 					A(x.On("click", "open = !open"), Attr("data-ui", "#dialog-right"),
 						I(Text("more_vert")),
 					),
