@@ -104,17 +104,17 @@ go mod tidy
 
 #### CSS
 
-[bulma.min.css](https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css) </br>
-[beer.min.css](https://cdn.jsdelivr.net/npm/beercss@3.9.7/dist/cdn/beer.min.css) </br>
-[open-props.min.css](https://cdn.jsdelivr.net/npm/open-props@1.7.13/open-props.min.css) </br>
-[pico.classless.min.css](https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css)
+[bulma.min.css](https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css) </br>
+[beer.min.css](https://cdn.jsdelivr.net/npm/beercss/dist/cdn/beer.min.css) </br>
+[open-props.min.css](https://cdn.jsdelivr.net/npm/open-props/open-props.min.css) </br>
+[pico.classless.min.css](https://cdn.jsdelivr.net/npm/@picocss/pico/css/pico.classless.min.css)
 
 #### JS
 
-[cdn.min.js](https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js) </br>
-[htmx.min.js](https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js) </br>
-[beer.min.js](https://cdn.jsdelivr.net/npm/beercss@3.9.7/dist/cdn/beer.min.js) </br>
-[material-dynamic-colors.min.js](https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js)
+[cdn.min.js](https://cdn.jsdelivr.net/npm/alpinejs/dist/cdn.min.js) </br>
+[htmx.min.js](https://cdn.jsdelivr.net/npm/htmx.org/dist/htmx.min.js) </br>
+[beer.min.js](https://cdn.jsdelivr.net/npm/beercss/dist/cdn/beer.min.js) </br>
+[material-dynamic-colors.min.js](https://cdn.jsdelivr.net/npm/material-dynamic-colors/dist/cdn/material-dynamic-colors.min.js)
 
 ---
 
