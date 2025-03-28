@@ -63,6 +63,7 @@ func Index(title string) Node {
 
 				Main(Class("responsive"),
 					ServiceCard("AI 공부 도우미", "AI가 공부 주제를 던져줘요", "https://ai-study.toy-project.n-e.kr"),
+					ServiceCard("나만의 일기장", "일기를 CBT, AI 등과 함께 상호작용해요", "https://deario.toy-project.n-e.kr"),
 					ServiceCard("나만의 TODO 앱", "나만의 할 일을 기록해보세요", "https://development-support.p-e.kr"),
 				),
 			),
