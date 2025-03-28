@@ -53,6 +53,18 @@ func Index(title string, date string) Node {
 				),
 
 				DiaryContentForm(date, ""),
+
+				Nav(
+					Div(Class("max")),
+					Button(Attr("data-ui", "#ai-feedback"),
+						Span(Text("AI 피드백")),
+						Menu(Class("top no-wrap"), ID("ai-feedback"), Attr("data-ui", "#ai-feedback"),
+							Li(Text("칭찬받기 ^^")),
+							Li(Text("위로받기 ㅜㅜ")),
+							Li(Text("충고받기 !!")),
+						),
+					),
+				),
 			),
 			/* Body */
 
@@ -83,14 +95,14 @@ func DateView(date string) string {
 func DiaryContentForm(date string, content string) Node {
 	return Form(ID("diary"),
 		Input(Type("hidden"), Name("date"), Value(date)),
-		Div(Class("field textarea border"),
+		Div(Class("field textarea border medium-height"),
 			Textarea(
 				Name("content"),
 				h.Post("/save"),
 				h.Swap("none"),
 				h.Trigger("input delay:0.5s"),
 				h.Indicator("#indicator"),
-				Style("height : 350px"),
+				Style("height : 400px"),
 				Text(content),
 			),
 			Img(ID("indicator"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
