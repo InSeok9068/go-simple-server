@@ -43,7 +43,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential gcc-multilib
-          
+
       # 5. Tailwindcss CLI 설치
       - name: Install Tailwindcss CLI Dependencies
         run: |
@@ -121,11 +121,9 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: markdown
           message: |
-            Repository: ${{ github.repository }}
-
-            Author: ${{github.actor}}
-
             Status: 😚 **Success**
+            
+            Branch: ${{ github.ref_name }}
 
             Commit message: ${{ github.event.head_commit.message }}
 
@@ -140,12 +138,13 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: markdown
           message: |
-            Repository: ${{ github.repository }}
-
-            Author: ${{github.actor}}
-
             Status: 😱 **Failure**
+            
+            Branch: ${{ github.ref_name }}
 
             Commit message: ${{ github.event.head_commit.message }}
 
             [link](https://github.com/${{ github.repository }}/actions)
+
+# Repository: ${{ github.repository }}
+# Author: ${{github.actor}}
