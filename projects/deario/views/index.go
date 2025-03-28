@@ -1,6 +1,7 @@
 package views
 
 import (
+	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
 	"simple-server/projects/deario/db"
 	"time"
@@ -27,8 +28,11 @@ func Index(title string, date string) Node {
 					A(Href("/"), Class("max"),
 						H3(Text(title)),
 					),
-					A(Href("/login"),
+					A(ID("login"), Href("/login"), x.Data(""), x.Show("!$store.auth.isAuthed"),
 						I(Text("login")),
+					),
+					A(ID("logout"), x.Data(""), x.Show("$store.auth.isAuthed"),
+						I(Text("logout")),
 					),
 				),
 			),
@@ -40,6 +44,7 @@ func Index(title string, date string) Node {
 					Div(Class("max"),
 						Text(DateView(date)),
 					),
+					P(Class("bold"), x.Data(""), x.Show("$store.auth.isAuthed"), x.Text("$store.auth?.user?.displayName")),
 				),
 				Hr(Class("medium")),
 
