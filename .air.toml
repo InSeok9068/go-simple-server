@@ -3,7 +3,7 @@ tmp_dir = "tmp"
 
 [build]
 bin = "./main"
-cmd = "go build -o ./main.exe ./cmd/homepage"
+cmd = "go build -o ./main.exe ./cmd/ai-study"
 #cmd = "tailwindcss.exe -i tailwindcss.css -o shared/static/tailwindcss.css  --minify && go build -o ./main.exe ./cmd/homepage"
 delay = 1000
 exclude_dir = ["static", "tmp", "vendor", "pb_data"]
@@ -38,4 +38,4 @@ clear_on_rebuild = false
 [proxy]
 enabled = true
 proxy_port = 8080
-app_port = 8000
+app_port = 8001

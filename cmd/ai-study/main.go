@@ -14,7 +14,7 @@ func main() {
 	/* 환경 설정 */
 	config.LoadEnv()
 	os.Setenv("SERVICE_NAME", "ai-study")
-	os.Setenv("APP_TITLE", "🕵️‍♀️ AI 공부 길잡이")
+	os.Setenv("APP_TITLE", "AI 공부 길잡이")
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */
