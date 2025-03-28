@@ -13,7 +13,7 @@ const createDiary = `-- name: CreateDiary :one
 INSERT INTO diarys (uid, content, date, created, updated)
 VALUES (?,
         ?,
-        strftime('%Y%m%d', 'now', 'localtime'),
+        ?,
         datetime('now', 'localtime'),
         datetime('now', 'localtime'))
 RETURNING content, created, date, id, uid, updated
@@ -22,10 +22,12 @@ RETURNING content, created, date, id, uid, updated
 type CreateDiaryParams struct {
 	Uid     string
 	Content string
+	Date    string
 }
 
+// strftime('%Y%m%d', 'now', 'localtime'),
 func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary, error) {
-	row := q.db.QueryRowContext(ctx, createDiary, arg.Uid, arg.Content)
+	row := q.db.QueryRowContext(ctx, createDiary, arg.Uid, arg.Content, arg.Date)
 	var i Diary
 	err := row.Scan(
 		&i.Content,

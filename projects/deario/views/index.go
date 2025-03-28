@@ -5,7 +5,6 @@ import (
 	"simple-server/projects/deario/db"
 	"time"
 
-	// x "github.com/glsubri/gomponents-alpine"
 	shared "simple-server/shared/views"
 
 	. "maragu.dev/gomponents"
@@ -13,7 +12,7 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func Index(title string) Node {
+func Index(title string, date string) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
@@ -39,18 +38,17 @@ func Index(title string) Node {
 			Main(Class("responsive"),
 				Nav(
 					Div(Class("max"),
-						Text(time.Now().Format("2006년 1월 2일")),
+						Text(DateView(date)),
 					),
-					I(Text("save")),
 				),
 				Hr(Class("medium")),
 
-				Div(h.Get("/diary"),
-					h.Target("#diary"),
-					h.Trigger("firebase:authed"),
-					h.Swap("outerHTML"),
-					NewDiary(),
+				// 일기장 조회
+				Form(h.Get("/diary"), h.Target("#diary"), h.Trigger("firebase:authed"), h.Swap("outerHTML"),
+					Input(Type("hidden"), Name("date"), Value(date)),
 				),
+
+				NewDiaryContent(date),
 			),
 			/* Body */
 
@@ -58,9 +56,9 @@ func Index(title string) Node {
 			Nav(Class("bottom s"),
 				A(
 					I(Text("calendar_month")),
-					Input(Type("date")),
+					Input(Type("date"), Name("date"), Attr("onchange", "location.href='/?date=' + this.value")),
 				),
-				A(Href("/"),
+				A(Href(""),
 					I(Text("home")),
 				),
 				A(
@@ -72,36 +70,28 @@ func Index(title string) Node {
 	})
 }
 
-func DiaryID(id string) Node {
-	return Input(Type("hidden"), ID("id"), Name("id"), Value(id))
+func DateView(date string) string {
+	parsed, _ := time.Parse("20060102", date)
+	dateStr := parsed.Format("2006년 1월 2일")
+	return dateStr
 }
 
-func GetDiary(diary db.Diary) Node {
+func GetDiaryContent(diary db.Diary) Node {
 	return Form(ID("diary"),
-		h.Post("/save"),
-		h.Trigger("every 5s"),
-		h.Target("#id"),
-		h.Swap("outerHTML"),
-		Div(ID("content"),
-			DiaryID(diary.ID),
-			Class("field textarea border"),
-			Textarea(Name("content"), Style("height : 200px"),
+		Input(Type("hidden"), Name("date"), Value(diary.Date)),
+		Div(Class("field textarea border"),
+			Textarea(Name("content"), h.Post("/save"), h.Swap("none"), h.Trigger("input delay:0.5s"), Style("height : 200px"),
 				Text(diary.Content),
 			),
 		),
 	)
 }
 
-func NewDiary() Node {
+func NewDiaryContent(date string) Node {
 	return Form(ID("diary"),
-		h.Post("/save"),
-		h.Trigger("every 5s"),
-		h.Target("#id"),
-		h.Swap("outerHTML"),
-		Div(ID("content"),
-			DiaryID(""),
-			Class("field textarea border"),
-			Textarea(Name("content"), Style("height : 200px")),
+		Input(Type("hidden"), Name("date"), Value(date)),
+		Div(Class("field textarea border"),
+			Textarea(Name("content"), h.Post("/save"), h.Swap("none"), h.Trigger("input delay:0.5s"), Style("height : 200px")),
 		),
 	)
 }

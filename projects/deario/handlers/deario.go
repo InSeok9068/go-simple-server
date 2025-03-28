@@ -10,11 +10,18 @@ import (
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
 	shared "simple-server/shared/views"
+	"strings"
 	"time"
 )
 
 func Index(c echo.Context) error {
-	return views.Index(os.Getenv("APP_TITLE")).Render(c.Response().Writer)
+	date := c.QueryParam("date")
+	if date == "" {
+		date = time.Now().Format("20060102")
+	} else {
+		date = strings.ReplaceAll(date, "-", "")
+	}
+	return views.Index(os.Getenv("APP_TITLE"), date).Render(c.Response().Writer)
 }
 
 func Login(c echo.Context) error {
@@ -27,6 +34,13 @@ func Diary(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 	}
 
+	date := c.FormValue("date")
+	if date == "" {
+		date = time.Now().Format("20060102")
+	} else {
+		date = strings.ReplaceAll(date, "-", "")
+	}
+
 	dbCon, err := connection.AppDBOpen()
 	if err != nil {
 		slog.Error("Failed to open database", "error", err.Error())
@@ -35,13 +49,13 @@ func Diary(c echo.Context) error {
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  user.UID,
-		Date: time.Now().Format("20060102"),
+		Date: date,
 	})
 
 	if err != nil {
-		return views.NewDiary().Render(c.Response().Writer)
+		return views.NewDiaryContent(date).Render(c.Response().Writer)
 	} else {
-		return views.GetDiary(diary).Render(c.Response().Writer)
+		return views.GetDiaryContent(diary).Render(c.Response().Writer)
 	}
 }
 
@@ -51,7 +65,7 @@ func Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 	}
 
-	id := c.FormValue("id")
+	date := c.FormValue("date")
 	content := c.FormValue("content")
 
 	dbCon, err := connection.AppDBOpen()
@@ -60,20 +74,25 @@ func Save(c echo.Context) error {
 	}
 	queries := db.New(dbCon)
 
-	var diary db.Diary
-	if id == "" {
-		diary, err = queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
+	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
+		Uid:  user.UID,
+		Date: date,
+	})
+
+	if err != nil {
+		_, err = queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
 			Uid:     user.UID,
 			Content: content,
+			Date:    date,
 		})
 
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "등록 실패")
 		}
 	} else {
-		diary, err = queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
+		_, err = queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
 			Content: content,
-			ID:      id,
+			ID:      diary.ID,
 		})
 
 		if err != nil {
@@ -81,5 +100,5 @@ func Save(c echo.Context) error {
 		}
 	}
 
-	return views.DiaryID(diary.ID).Render(c.Response().Writer)
+	return nil
 }

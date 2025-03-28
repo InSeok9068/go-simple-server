@@ -9,7 +9,8 @@ LIMIT 1;
 INSERT INTO diarys (uid, content, date, created, updated)
 VALUES (?,
         ?,
-        strftime('%Y%m%d', 'now', 'localtime'),
+        ?,
+--         strftime('%Y%m%d', 'now', 'localtime'),
         datetime('now', 'localtime'),
         datetime('now', 'localtime'))
 RETURNING *;
