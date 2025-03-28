@@ -1,9 +1,9 @@
 [Unit]
-Description=AI Study Service
+Description=Deario Service
 After=network.target
 
 [Service]
-ExecStart=/home/ubuntu/app/ai-study
+ExecStart=/home/ubuntu/app/deario
 WorkingDirectory=/home/ubuntu/app
 Restart=always
 User=root
