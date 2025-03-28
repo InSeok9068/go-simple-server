@@ -2,23 +2,16 @@ package handlers
 
 import (
 	"fmt"
-	"log/slog"
-	"net/http"
-	"regexp"
-	"simple-server/internal/config"
-
 	"github.com/labstack/echo/v4"
 	_ "github.com/openai/openai-go"
-	"google.golang.org/genai"
+	"net/http"
+	"regexp"
+	"simple-server/internal/ai"
 )
 
 func AIStudy(c echo.Context, random bool) error {
 	ctx := c.Request().Context()
 	input := c.Request().FormValue("input")
-	client, _ := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
-		Backend: genai.BackendGeminiAPI,
-	})
 
 	if random {
 		input = "너가 정해줘"
@@ -38,19 +31,13 @@ func AIStudy(c echo.Context, random bool) error {
 	</ol>
 	`, input)
 
-	slog.Info(fmt.Sprintf(`프롬프트 요청 : %s`, prompt))
-
-	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash", genai.Text(prompt), nil)
+	result, err := aiclient.Request(ctx, prompt)
 	if err != nil {
-		slog.Error("AI 요청 실패", "error", err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, "AI 요청 실패")
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	resultText := result.Candidates[0].Content.Parts[0].Text
 	re := regexp.MustCompile(`(?s)<ol>.*?</ol>`)
-	resultText = re.FindString(resultText)
+	result = re.FindString(result)
 
-	slog.Info(fmt.Sprintf(`프롬프트 응답 : %s`, resultText))
-
-	return c.HTML(http.StatusOK, resultText)
+	return c.HTML(http.StatusOK, result)
 }
