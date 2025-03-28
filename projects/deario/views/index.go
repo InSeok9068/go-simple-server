@@ -3,7 +3,6 @@ package views
 import (
 	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
-	"simple-server/projects/deario/db"
 	"time"
 
 	shared "simple-server/shared/views"
@@ -53,7 +52,7 @@ func Index(title string, date string) Node {
 					Input(Type("hidden"), Name("date"), Value(date)),
 				),
 
-				NewDiaryContent(date),
+				DiaryContentForm(date, ""),
 			),
 			/* Body */
 
@@ -81,22 +80,20 @@ func DateView(date string) string {
 	return dateStr
 }
 
-func GetDiaryContent(diary db.Diary) Node {
-	return Form(ID("diary"),
-		Input(Type("hidden"), Name("date"), Value(diary.Date)),
-		Div(Class("field textarea border"),
-			Textarea(Name("content"), h.Post("/save"), h.Swap("none"), h.Trigger("input delay:0.5s"), Style("height : 350px"),
-				Text(diary.Content),
-			),
-		),
-	)
-}
-
-func NewDiaryContent(date string) Node {
+func DiaryContentForm(date string, content string) Node {
 	return Form(ID("diary"),
 		Input(Type("hidden"), Name("date"), Value(date)),
 		Div(Class("field textarea border"),
-			Textarea(Name("content"), h.Post("/save"), h.Swap("none"), h.Trigger("input delay:0.5s"), Style("height : 350px")),
+			Textarea(
+				Name("content"),
+				h.Post("/save"),
+				h.Swap("none"),
+				h.Trigger("input delay:0.5s"),
+				h.Indicator("#indicator"),
+				Style("height : 350px"),
+				Text(content),
+			),
+			Img(ID("indicator"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
 		),
 	)
 }

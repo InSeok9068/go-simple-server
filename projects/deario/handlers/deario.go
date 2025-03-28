@@ -53,9 +53,9 @@ func Diary(c echo.Context) error {
 	})
 
 	if err != nil {
-		return views.NewDiaryContent(date).Render(c.Response().Writer)
+		return views.DiaryContentForm(date, "").Render(c.Response().Writer)
 	} else {
-		return views.GetDiaryContent(diary).Render(c.Response().Writer)
+		return views.DiaryContentForm(diary.Date, diary.Content).Render(c.Response().Writer)
 	}
 }
 
