@@ -1,7 +1,9 @@
 package main
 
 import (
+	"io/fs"
 	"os"
+	resources "simple-server"
 	"simple-server/projects/deario/handlers"
 
 	"simple-server/internal/config"
@@ -37,8 +39,8 @@ func setUpServer() *echo.Echo {
 	e.Use(echoMiddleware.KeyAuthWithConfig(middleware.FirebaseAuth()))
 
 	// PWA 파일
-	// manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static/manifest.json")
-	// e.StaticFS("/manifest.json", manifest)
+	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/static/manifest.json")
+	e.StaticFS("/manifest.json", manifest)
 	/* 미들 웨어 */
 
 	/* 라우터  */

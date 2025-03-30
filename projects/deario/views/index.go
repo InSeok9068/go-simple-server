@@ -19,9 +19,10 @@ func Index(title string, date string) Node {
 		Title:    title,
 		Language: "ko",
 		Head: append(
-			shared.HeadsWithBeer(title),
-			shared.HeadWithFirebaseAuth()...,
-		),
+			append(
+				shared.HeadsWithBeer(title),
+				shared.HeadWithFirebaseAuth()...,
+			), Link(Rel("manifest"), Href("/manifest.json"))),
 		Body: []Node{
 			/* Header */
 			Header(Class("fixed responsive yellow4"),
