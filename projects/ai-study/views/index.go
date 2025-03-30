@@ -1,6 +1,9 @@
 package views
 
 import (
+	lucide "github.com/eduardolat/gomponents-lucide"
+	shared "simple-server/shared/views"
+
 	x "github.com/glsubri/gomponents-alpine"
 	b "github.com/willoma/bulma-gomponents"
 	e "github.com/willoma/gomplements"
@@ -8,7 +11,6 @@ import (
 	h "maragu.dev/gomponents-htmx"
 	. "maragu.dev/gomponents/components"
 	. "maragu.dev/gomponents/html"
-	shared "simple-server/shared/views"
 )
 
 func Index(title string) Node {
@@ -51,14 +53,15 @@ func Index(title string) Node {
 											x.Data("{ loading : false }"),
 											x.On("htmx:before-request", "loading = true"),
 											x.On("htmx:after-on-load", "loading = false"),
-											Text("❔ 랜덤 주제로 시작하기"),
+											lucide.Dices(),
+											Text("랜덤 주제로 시작하기"),
 											Img(x.Show("loading"), Class("htmx-indicator"), Src("/static/spinner.svg")),
 										),
 									),
 								),
 							),
 						),
-						P(Text("⏬ 결과 확인")),
+						B(Text("결과 확인")),
 						b.Box(e.Class("content"),
 							b.Columns(b.Mobile,
 								b.Column(
