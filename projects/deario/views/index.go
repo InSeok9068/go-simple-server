@@ -54,7 +54,7 @@ func Index(title string, date string) Node {
 					Div(Class("max"),
 						Text(DateView(date)),
 					),
-					P(Class("bold"), x.Data(""), x.Show("$store.auth.isAuthed"), x.Text("$store.auth?.user?.displayName")),
+					P(Class("max bold"), x.Data(""), x.Show("$store.auth.isAuthed"), x.Text("$store.auth?.user?.displayName")),
 				),
 				Hr(Class("medium")),
 
@@ -65,14 +65,29 @@ func Index(title string, date string) Node {
 
 				DiaryContentForm(date, ""),
 
-				Nav(
+				Nav(x.Data("{ loading = false }"),
 					Div(Class("max")),
+					Img(ID("feedback-loading"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
 					Button(Attr("data-ui", "#ai-feedback"),
-						Span(Text("AI 피드백")),
+						Span(
+							Text("AI 피드백"),
+						),
 						Menu(Class("left no-wrap"), ID("ai-feedback"), Attr("data-ui", "#ai-feedback"),
-							Li(Text("칭찬받기 ^^")),
-							Li(Text("위로받기 ㅜㅜ")),
-							Li(Text("충고받기 !!")),
+							Li(h.Post("/ai-feedback?type=1"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
+								h.Indicator("#feedback-loading"),
+								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
+								Text("칭찬받기 ^^"),
+							),
+							Li(h.Post("/ai-feedback?type=2"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
+								h.Indicator("#feedback-loading"),
+								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
+								Text("위로받기 ㅜㅜ"),
+							),
+							Li(h.Post("/ai-feedback?type=3"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
+								h.Indicator("#feedback-loading"),
+								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
+								Text("충고받기 !!"),
+							),
 						),
 					),
 				),
@@ -93,13 +108,26 @@ func Index(title string, date string) Node {
 				),
 			),
 			/* Footer */
+
+			/* Dialog */
+			Dialog(ID("ai-feedback-modal"), Class("max"),
+				H5(Text("AI 피드백")),
+				Div(ID("ai-feedback-content"),
+					Text("안녕"),
+				),
+				Nav(Class("right-align"),
+					Button(Attr("onclick", "document.querySelector('#ai-feedback-modal').close()"),
+						Text("확인"),
+					),
+				),
+			),
 		},
 	})
 }
 
 func DateView(date string) string {
 	parsed, _ := time.Parse("20060102", date)
-	dateStr := parsed.Format("2006년 1월 2일")
+	dateStr := parsed.Format("1월 2일")
 	return dateStr
 }
 
@@ -109,6 +137,7 @@ func DiaryContentForm(date string, content string) Node {
 		Div(Class("field textarea border medium-height"),
 			Textarea(
 				Name("content"),
+				AutoFocus(),
 				h.Post("/save"),
 				h.Swap("none"),
 				h.Trigger("input delay:0.5s"),

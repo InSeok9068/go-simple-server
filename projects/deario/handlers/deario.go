@@ -2,10 +2,14 @@ package handlers
 
 import (
 	"firebase.google.com/go/v4/auth"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"log/slog"
+	. "maragu.dev/gomponents"
+	. "maragu.dev/gomponents/html"
 	"net/http"
 	"os"
+	aiclient "simple-server/internal/ai"
 	"simple-server/internal/connection"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
@@ -101,4 +105,41 @@ func Save(c echo.Context) error {
 	}
 
 	return nil
+}
+
+func AiFeedback(c echo.Context) error {
+	user, ok := c.Get("user").(*auth.Token)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+	}
+
+	content := c.FormValue("content")
+	typeValue := c.QueryParam("type")
+
+	slog.Info("AiFeedback", "user", user.UID, "content", content, "type", typeValue)
+
+	var typeStr string
+	switch typeValue {
+	case "1":
+		typeStr = "칭찬을 해줘"
+	case "2":
+		typeStr = "위로를 해줘"
+	case "3":
+		typeStr = "충고를 해줘"
+	}
+
+	prompt := fmt.Sprintf(`아래의 내용은 나의 오늘 하루의 일기야
+	내용 : %s
+
+	※ 감정을 깊게 공감하고 나서 %s
+	
+	이해했다는말이나 이런거 하지말고 바로 답변해줘
+	`, content, typeStr)
+
+	result, err := aiclient.Request(c.Request().Context(), prompt)
+	if err != nil {
+		return err
+	}
+
+	return Div(Text(result)).Render(c.Response().Writer)
 }
