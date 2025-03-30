@@ -66,7 +66,7 @@ func Index(title string, date string) Node {
 
 				DiaryContentForm(date, ""),
 
-				Nav(x.Data("{ loading = false }"),
+				Nav(
 					Div(Class("max")),
 					Img(ID("feedback-loading"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
 					Button(Attr("data-ui", "#ai-feedback"),
