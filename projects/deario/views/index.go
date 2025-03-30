@@ -1,8 +1,10 @@
 package views
 
 import (
+	"fmt"
 	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
+	"simple-server/pkg/util"
 	"time"
 
 	shared "simple-server/shared/views"
@@ -40,6 +42,12 @@ func Index(title string, date string) Node {
 			/* Body */
 			Main(Class("responsive"),
 				Nav(
+					A(Href(fmt.Sprintf("/?date=%s", util.MustAddDaysToDate(date, -1))),
+						I(Text("arrow_left")),
+					),
+					A(Href(fmt.Sprintf("/?date=%s", util.MustAddDaysToDate(date, 1))),
+						I(Text("arrow_right")),
+					),
 					Div(Class("max"),
 						Text(DateView(date)),
 					),
