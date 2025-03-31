@@ -82,7 +82,7 @@ func Index(title string, date string) Node {
 					Img(ID("feedback-loading"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
 					Button(Attr("data-ui", "#ai-feedback"),
 						Span(
-							Text("AI 피드백"),
+							Text("일기 요정"),
 						),
 						Menu(Class("top no-wrap"), ID("ai-feedback"), Attr("data-ui", "#ai-feedback"),
 							Li(h.Post("/ai-feedback?type=1"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
@@ -99,6 +99,11 @@ func Index(title string, date string) Node {
 								h.Indicator("#feedback-loading"),
 								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
 								Text("충고받기"),
+							),
+							Li(h.Post("/ai-feedback?type=4"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
+								h.Indicator("#feedback-loading"),
+								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
+								Text("그림일기"),
 							),
 						),
 					),
@@ -123,7 +128,7 @@ func Index(title string, date string) Node {
 
 			/* Dialog */
 			Dialog(ID("ai-feedback-modal"), Class("max"),
-				H5(Text("AI 피드백")),
+				H5(Text("일기 요정")),
 				Div(ID("ai-feedback-content"),
 					Text("안녕"),
 				),
@@ -154,7 +159,6 @@ func DiaryContentForm(date string, content string) Node {
 				h.Swap("none"),
 				h.Trigger("input delay:0.5s"),
 				h.Indicator("#indicator"),
-				Style("height : 400px"),
 				Text(content),
 			),
 			Img(ID("indicator"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),

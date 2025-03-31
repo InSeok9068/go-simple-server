@@ -126,20 +126,45 @@ func AiFeedback(c echo.Context) error {
 		typeStr = "위로를 해줘"
 	case "3":
 		typeStr = "충고를 해줘"
+	case "4":
+		typeStr = `
+		Create a single illustrated image that represents an emotional or meaningful moment from someone's day.
+		
+		Do not include any text, captions, signs, labels, handwriting, or words in any language in the image.  
+		Absolutely no text or characters should appear anywhere.
+		
+		Just imagine a beautiful or reflective scene like a page from a wordless picture book, using only colors, lighting, composition, and elements to tell the story.
+		
+		You will be given some context in the 'contents' field, but this is for inspiration only.  
+		**Do not copy, draw, or include any part of the content text in the image.**  
+		Use it only to understand the mood and setting.
+		
+		Only return an image. Do not generate or show any text in the picture.
+		`
 	}
+	if typeValue == "4" {
+		prompt := fmt.Sprintf(`
+		%s
 
-	prompt := fmt.Sprintf(`아래의 내용은 나의 오늘 하루의 일기야
-	내용 : %s
-
-	※ 감정을 깊게 공감하고 나서 %s
+		content : %s
+		`, typeStr, content)
+		result, err := aiclient.ImageRequest(c.Request().Context(), prompt)
+		if err != nil {
+			return err
+		}
+		return Div(Img(Style("width:320px"), Src(fmt.Sprintf("data:image/png;base64,%s", result)))).Render(c.Response().Writer)
+	} else {
+		prompt := fmt.Sprintf(`아래의 내용은 나의 오늘 하루의 일기야
+		내용 : %s
 	
-	이해했다는말이나 이런거 하지말고 바로 답변해줘
-	`, content, typeStr)
-
-	result, err := aiclient.Request(c.Request().Context(), prompt)
-	if err != nil {
-		return err
+		※ 감정을 깊게 공감하고 나서 %s
+		
+		이해했다는말이나 이런거 하지말고 바로 답변해줘
+		`, content, typeStr)
+		result, err := aiclient.Request(c.Request().Context(), prompt)
+		if err != nil {
+			return err
+		}
+		return Div(Text(result)).Render(c.Response().Writer)
 	}
-
-	return Div(Text(result)).Render(c.Response().Writer)
 }
