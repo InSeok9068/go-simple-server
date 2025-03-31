@@ -69,6 +69,15 @@ func Index(title string, date string) Node {
 				DiaryContentForm(date, ""),
 
 				Nav(
+					Button(Class("chip circle"),
+						I(Text("psychology_alt")),
+						Div(Class("tooltip right"),
+							Ul(Class("list no-space"),
+								Li(Text("- 짧게라도 하루를 되돌아보기")),
+								Li(Text("- 감정을 솔직하게 작성")),
+							),
+						),
+					),
 					Div(Class("max")),
 					Img(ID("feedback-loading"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
 					Button(Attr("data-ui", "#ai-feedback"),
