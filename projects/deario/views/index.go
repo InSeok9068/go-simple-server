@@ -5,9 +5,8 @@ import (
 	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
 	"simple-server/pkg/util"
-	"time"
-
 	shared "simple-server/shared/views"
+	"time"
 
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/components"
@@ -18,11 +17,14 @@ func Index(title string, date string) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
-		Head: append(
-			append(
-				shared.HeadsWithBeer(title),
-				shared.HeadWithFirebaseAuth()...,
-			), Link(Rel("manifest"), Href("/manifest.json"))),
+		Head: util.MergeHeads(
+			shared.HeadsWithBeer(title),
+			shared.HeadWithFirebaseAuth(),
+			[]Node{
+				Link(Rel("manifest"), Href("/manifest.json")),
+				Script(Src("/static/deario.js")),
+			},
+		),
 		Body: []Node{
 			/* Header */
 			Header(Class("fixed responsive yellow4"),
