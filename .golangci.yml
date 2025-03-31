@@ -28,7 +28,8 @@ linters:
     - exhaustive
     - exptostd
     - fatcontext
-    - funlen
+    # gomponents로 인해 함수가 길어지는 경향이 존재
+    # - funlen
     - gochecknoinits
     - gochecksumtype
     - goconst

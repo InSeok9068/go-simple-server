@@ -17,7 +17,7 @@ require (
 	github.com/labstack/echo-contrib v0.17.3
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/mattn/go-sqlite3 v1.14.24
-	github.com/openai/openai-go v0.1.0-beta.2
+	github.com/openai/openai-go v0.1.0-beta.3
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/willoma/bulma-gomponents v0.13.0
 	github.com/willoma/gomplements v0.8.0
