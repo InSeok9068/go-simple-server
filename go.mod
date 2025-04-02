@@ -16,13 +16,13 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-contrib v0.17.3
 	github.com/labstack/echo/v4 v4.13.3
-	github.com/mattn/go-sqlite3 v1.14.24
+	github.com/mattn/go-sqlite3 v1.14.25
 	github.com/openai/openai-go v0.1.0-beta.3
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/willoma/bulma-gomponents v0.13.0
 	github.com/willoma/gomplements v0.8.0
 	google.golang.org/api v0.228.0
-	google.golang.org/genai v0.6.0
+	google.golang.org/genai v0.7.0
 	maragu.dev/gomponents v1.1.0
 	maragu.dev/gomponents-htmx v0.6.1
 )
