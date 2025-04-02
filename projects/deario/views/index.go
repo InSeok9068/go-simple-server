@@ -120,8 +120,8 @@ func Index(title string, date string) Node {
 				A(Href(""),
 					I(Text("home")),
 				),
-				A(
-					I(Text("settings")),
+				A(Attr("onclick", "location.reload()"),
+					I(Text("refresh")),
 				),
 			),
 			/* Footer */
