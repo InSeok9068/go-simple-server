@@ -19,6 +19,14 @@
       "mode": "auto",
       "program": "cmd/ai-study/main.go",
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Debug Deario Server",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "cmd/deario/main.go",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
