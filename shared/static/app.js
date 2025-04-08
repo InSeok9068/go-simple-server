@@ -37,16 +37,3 @@ htmx.on("htmx:afterRequest", (event) => {
         alert(parsedResponse.message);
     }
 });
-
-function blockBackAndExit() {
-    history.pushState(null, '', location.href); // 현재 상태 복사
-    window.addEventListener('popstate', () => {
-        // 사용자가 뒤로가기를 시도하면 강제로 종료 페이지로 보냄
-        location.replace('about:blank');
-    });
-
-    // 앱 종료 느낌 주기
-    document.body.innerHTML = '';
-    window.close()
-    location.replace('about:blank');
-}

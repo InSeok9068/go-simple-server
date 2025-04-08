@@ -47,6 +47,7 @@ func setUpServer() *echo.Echo {
 	e.GET("/", handlers.Index)
 	e.GET("/login", handlers.Login)
 	e.GET("/diary", handlers.Diary)
+	e.GET("/diary/random", handlers.DiaryRandom)
 	e.POST("/save", handlers.Save)
 	e.POST("/ai-feedback", handlers.AiFeedback)
 	/* 라우터  */

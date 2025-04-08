@@ -63,6 +63,27 @@ func Diary(c echo.Context) error {
 	}
 }
 
+func DiaryRandom(c echo.Context) error {
+	user, ok := c.Get("user").(*auth.Token)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+	}
+
+	dbCon, err := connection.AppDBOpen()
+	if err != nil {
+		slog.Error("Failed to open database", "error", err.Error())
+	}
+	queries := db.New(dbCon)
+
+	diary, err := queries.GetDiaryRandom(c.Request().Context(), user.UID)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "작성한 일기장이 없습니다.")
+	}
+
+	return c.HTML(http.StatusOK, fmt.Sprintf(`<script>location.href = "/?date=%s";</script>`, diary.Date))
+}
+
 func Save(c echo.Context) error {
 	user, ok := c.Get("user").(*auth.Token)
 	if !ok {

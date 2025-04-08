@@ -41,6 +41,7 @@ func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary
 }
 
 const getDiary = `-- name: GetDiary :one
+    
 SELECT content, created, date, id, uid, updated
 FROM diarys
 WHERE date = ?
@@ -53,8 +54,32 @@ type GetDiaryParams struct {
 	Uid  string
 }
 
+// sqlc generate -f ./projects/deario/sqlc.yaml
 func (q *Queries) GetDiary(ctx context.Context, arg GetDiaryParams) (Diary, error) {
 	row := q.db.QueryRowContext(ctx, getDiary, arg.Date, arg.Uid)
+	var i Diary
+	err := row.Scan(
+		&i.Content,
+		&i.Created,
+		&i.Date,
+		&i.ID,
+		&i.Uid,
+		&i.Updated,
+	)
+	return i, err
+}
+
+const getDiaryRandom = `-- name: GetDiaryRandom :one
+SELECT content, created, date, id, uid, updated
+FROM diarys
+WHERE date IS NOT NULL
+  AND uid = ?
+ORDER BY RANDOM()
+LIMIT 1
+`
+
+func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error) {
+	row := q.db.QueryRowContext(ctx, getDiaryRandom, uid)
 	var i Diary
 	err := row.Scan(
 		&i.Content,

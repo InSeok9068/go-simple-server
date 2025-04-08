@@ -2,6 +2,7 @@ package views
 
 import (
 	"fmt"
+	lucide "github.com/eduardolat/gomponents-lucide"
 	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
 	"simple-server/pkg/util"
@@ -120,8 +121,8 @@ func Index(title string, date string) Node {
 				A(Attr("onclick", "location.reload()"),
 					I(Text("refresh")),
 				),
-				A(Attr("onclick", "blockBackAndExit()"),
-					I(Text("close")),
+				A(h.Get("/diary/random"),
+					lucide.Dices(),
 				),
 			),
 			/* Footer */
