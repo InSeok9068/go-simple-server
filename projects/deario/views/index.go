@@ -34,11 +34,8 @@ func Index(title string, date string) Node {
 						H3(Text(title)),
 					),
 					A(ID("login"), Href("/login"), x.Data(""), /*, x.Show("!$store.auth.isAuthed")*/
-						I(Text("login")),
+						Text("Login"),
 					),
-					//A(ID("logout"), x.Data(""), x.Show("$store.auth.isAuthed"),
-					//	I(Text("logout")),
-					//),
 				),
 			),
 			/* Header */
@@ -113,7 +110,7 @@ func Index(title string, date string) Node {
 			/* Body */
 
 			/* Footer */
-			Nav(Class("bottom s"),
+			Nav(Class("bottom"),
 				A(
 					I(Text("calendar_month")),
 					Input(Type("date"), Name("date"), Attr("onchange", "location.href='/?date=' + this.value")),
