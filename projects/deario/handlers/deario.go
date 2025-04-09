@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"firebase.google.com/go/v4/auth"
 	"fmt"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"log/slog"
 	. "maragu.dev/gomponents"
@@ -33,10 +33,11 @@ func Login(c echo.Context) error {
 }
 
 func Diary(c echo.Context) error {
-	user, ok := c.Get("user").(*auth.Token)
-	if !ok {
+	sess, err := session.Get("session", c)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 	}
+	uid := sess.Values["uid"].(string)
 
 	date := c.FormValue("date")
 	if date == "" {
@@ -52,7 +53,7 @@ func Diary(c echo.Context) error {
 	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
-		Uid:  user.UID,
+		Uid:  uid,
 		Date: date,
 	})
 
@@ -64,10 +65,11 @@ func Diary(c echo.Context) error {
 }
 
 func DiaryRandom(c echo.Context) error {
-	user, ok := c.Get("user").(*auth.Token)
-	if !ok {
+	sess, err := session.Get("session", c)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 	}
+	uid := sess.Values["uid"].(string)
 
 	dbCon, err := connection.AppDBOpen()
 	if err != nil {
@@ -75,7 +77,7 @@ func DiaryRandom(c echo.Context) error {
 	}
 	queries := db.New(dbCon)
 
-	diary, err := queries.GetDiaryRandom(c.Request().Context(), user.UID)
+	diary, err := queries.GetDiaryRandom(c.Request().Context(), uid)
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "작성한 일기장이 없습니다.")
@@ -85,10 +87,11 @@ func DiaryRandom(c echo.Context) error {
 }
 
 func Save(c echo.Context) error {
-	user, ok := c.Get("user").(*auth.Token)
-	if !ok {
+	sess, err := session.Get("session", c)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 	}
+	uid := sess.Values["uid"].(string)
 
 	date := c.FormValue("date")
 	content := c.FormValue("content")
@@ -100,13 +103,13 @@ func Save(c echo.Context) error {
 	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
-		Uid:  user.UID,
+		Uid:  uid,
 		Date: date,
 	})
 
 	if err != nil {
 		_, err = queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
-			Uid:     user.UID,
+			Uid:     uid,
 			Content: content,
 			Date:    date,
 		})
@@ -129,15 +132,16 @@ func Save(c echo.Context) error {
 }
 
 func AiFeedback(c echo.Context) error {
-	user, ok := c.Get("user").(*auth.Token)
-	if !ok {
+	sess, err := session.Get("session", c)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 	}
+	uid := sess.Values["uid"].(string)
 
 	content := c.FormValue("content")
 	typeValue := c.QueryParam("type")
 
-	slog.Info("AiFeedback", "user", user.UID, "content", content, "type", typeValue)
+	slog.Info("AiFeedback", "user", uid, "content", content, "type", typeValue)
 
 	var typeStr string
 	switch typeValue {

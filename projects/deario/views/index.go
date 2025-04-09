@@ -63,7 +63,7 @@ func Index(title string, date string) Node {
 				Hr(Class("medium")),
 
 				// 일기장 조회
-				Form(h.Get("/diary"), h.Target("#diary"), h.Trigger("firebase:authed"), h.Swap("outerHTML"),
+				Form(h.Get("/diary"), h.Target("#diary"), h.Trigger("load"), h.Swap("outerHTML"),
 					Input(Type("hidden"), Name("date"), Value(date)),
 				),
 

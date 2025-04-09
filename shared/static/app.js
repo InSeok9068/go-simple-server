@@ -2,17 +2,14 @@ document.addEventListener('alpine:init', () => {
     Alpine.store('auth', {
         isAuthed: false,
         user: null,
-        token: null,
 
-        login(user, token) {
+        login(user) {
             this.isAuthed = true;
             this.user = user;
-            this.token = token;
         },
         logout() {
             this.isAuthed = false;
             this.user = null;
-            this.token = null;
         }
     });
 });

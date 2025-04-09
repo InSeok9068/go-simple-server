@@ -21,9 +21,26 @@ const uiConfig = {
     ],
     callbacks: {
         signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-            console.log("로그인 성공:", authResult.user);
+            authResult.user.getIdToken(true).then((idToken) => {
+                return fetch('/create-session', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({token: idToken})
+                })
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = "/";
+                } else {
+                    alert("세션 생성 실패");
+                }
+            }).catch((err) => {
+                console.error("세션 생성 중 에러:", err);
+            });
+
             // return false로 하면 signInSuccessUrl로 리다이렉트 안 함
-            return true;
+            return false;
         },
         signInFailure: function (error) {
             // Some unrecoverable error occurred during sign-in.

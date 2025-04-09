@@ -71,6 +71,7 @@ go get firebase.google.com/go/v4@latest
 go get github.com/eduardolat/gomponents-lucide@latest
 go get github.com/glsubri/gomponents-alpine@latest
 go get github.com/go-rod/rod@latest
+go get github.com/gorilla/sessions@latest
 go get github.com/joho/godotenv@latest
 go get github.com/labstack/echo-contrib@latest
 go get github.com/labstack/echo/v4@latest

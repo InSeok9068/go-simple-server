@@ -10,7 +10,6 @@ import (
 	"simple-server/internal/middleware"
 
 	"github.com/labstack/echo/v4"
-	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -34,9 +33,8 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	middleware.FirebaseInit()
 	middleware.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
-	e.Use(echoMiddleware.KeyAuthWithConfig(middleware.FirebaseAuth()))
+	middleware.RegisterFirebaseAuthMiddleware(e)
 
 	// PWA 파일
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/static/manifest.json")
