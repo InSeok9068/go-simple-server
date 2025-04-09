@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"log/slog"
 	. "maragu.dev/gomponents"
@@ -11,6 +10,7 @@ import (
 	"os"
 	aiclient "simple-server/internal/ai"
 	"simple-server/internal/connection"
+	"simple-server/pkg/util"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
 	shared "simple-server/shared/views"
@@ -33,11 +33,10 @@ func Login(c echo.Context) error {
 }
 
 func Diary(c echo.Context) error {
-	sess, err := session.Get("session", c)
+	uid, err := util.SesseionUid(c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+		return err
 	}
-	uid := sess.Values["uid"].(string)
 
 	date := c.FormValue("date")
 	if date == "" {
@@ -65,11 +64,10 @@ func Diary(c echo.Context) error {
 }
 
 func DiaryRandom(c echo.Context) error {
-	sess, err := session.Get("session", c)
+	uid, err := util.SesseionUid(c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+		return err
 	}
-	uid := sess.Values["uid"].(string)
 
 	dbCon, err := connection.AppDBOpen()
 	if err != nil {
@@ -87,11 +85,10 @@ func DiaryRandom(c echo.Context) error {
 }
 
 func Save(c echo.Context) error {
-	sess, err := session.Get("session", c)
+	uid, err := util.SesseionUid(c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+		return err
 	}
-	uid := sess.Values["uid"].(string)
 
 	date := c.FormValue("date")
 	content := c.FormValue("content")
@@ -132,11 +129,10 @@ func Save(c echo.Context) error {
 }
 
 func AiFeedback(c echo.Context) error {
-	sess, err := session.Get("session", c)
+	uid, err := util.SesseionUid(c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+		return err
 	}
-	uid := sess.Values["uid"].(string)
 
 	content := c.FormValue("content")
 	typeValue := c.QueryParam("type")
