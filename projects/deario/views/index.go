@@ -33,12 +33,12 @@ func Index(title string, date string) Node {
 					A(Href("/"), Class("max"),
 						H3(Text(title)),
 					),
-					A(ID("login"), Href("/login"), x.Data(""), x.Show("!$store.auth.isAuthed"),
+					A(ID("login"), Href("/login"), x.Data(""), /*, x.Show("!$store.auth.isAuthed")*/
 						I(Text("login")),
 					),
-					A(ID("logout"), x.Data(""), x.Show("$store.auth.isAuthed"),
-						I(Text("logout")),
-					),
+					//A(ID("logout"), x.Data(""), x.Show("$store.auth.isAuthed"),
+					//	I(Text("logout")),
+					//),
 				),
 			),
 			/* Header */
