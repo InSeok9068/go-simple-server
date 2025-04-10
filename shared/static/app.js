@@ -34,3 +34,11 @@ htmx.on("htmx:afterRequest", (event) => {
         alert(parsedResponse.message);
     }
 });
+
+function showModal(querySelector) {
+    document.querySelector(querySelector).showModal()
+}
+
+function closeModal(querySelector) {
+    document.querySelector(querySelector).close()
+}

@@ -33,7 +33,7 @@ func Index(title string, date string) Node {
 					A(Href("/"), Class("max"),
 						H3(Text(title)),
 					),
-					A(ID("login"), Href("/login"), x.Data(""), /*, x.Show("!$store.auth.isAuthed")*/
+					A(ID("login"), Href("/login"), x.Data(""),
 						Text("Login"),
 					),
 				),
@@ -83,26 +83,10 @@ func Index(title string, date string) Node {
 							Text("일기 요정"),
 						),
 						Menu(Class("top no-wrap"), ID("ai-feedback"), Attr("data-ui", "#ai-feedback"),
-							Li(h.Post("/ai-feedback?type=1"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
-								h.Indicator("#feedback-loading"),
-								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
-								Text("칭찬받기"),
-							),
-							Li(h.Post("/ai-feedback?type=2"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
-								h.Indicator("#feedback-loading"),
-								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
-								Text("위로받기"),
-							),
-							Li(h.Post("/ai-feedback?type=3"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
-								h.Indicator("#feedback-loading"),
-								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
-								Text("충고받기"),
-							),
-							Li(h.Post("/ai-feedback?type=4"), h.Include("[name='content']"), h.Target("#ai-feedback-content"),
-								h.Indicator("#feedback-loading"),
-								h.On("htmx:after-on-load", "document.querySelector('#ai-feedback-modal').showModal()"),
-								Text("그림일기"),
-							),
+							aiFeedbackButton("1", "칭찬받기"),
+							aiFeedbackButton("2", "위로받기"),
+							aiFeedbackButton("3", "충고받기"),
+							aiFeedbackButton("4", "그림일기"),
 						),
 					),
 				),
@@ -125,13 +109,13 @@ func Index(title string, date string) Node {
 			/* Footer */
 
 			/* Dialog */
-			Dialog(ID("ai-feedback-modal"), Class("max"),
+			Dialog(ID("ai-feedback-dialog"), Class("max"),
 				H5(Text("일기 요정")),
 				Div(ID("ai-feedback-content"),
 					Text("안녕"),
 				),
 				Nav(Class("right-align"),
-					Button(Attr("onclick", "document.querySelector('#ai-feedback-modal').close()"),
+					Button(Attr("onclick", "closeModal('#ai-feedback-dialog')"),
 						Text("확인"),
 					),
 				),
@@ -161,5 +145,15 @@ func DiaryContentForm(date string, content string) Node {
 			),
 			Img(ID("indicator"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
 		),
+	)
+}
+
+func aiFeedbackButton(strType string, title string) Node {
+	return Li(
+		h.Post(fmt.Sprintf("/ai-feedback?type=%s", strType)),
+		h.Include("[name='content']"), h.Target("#ai-feedback-content"),
+		h.Indicator("#feedback-loading"),
+		h.On("htmx:after-on-load", "showModal('#ai-feedback-dialog')"),
+		Text(title),
 	)
 }
