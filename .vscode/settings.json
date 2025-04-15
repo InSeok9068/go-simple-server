@@ -24,6 +24,7 @@
   },
   "files.exclude": {
     "tmp": true,
+    "main.*": true,
     ".idea": true,
     "node_modules": true,
     "package.json": true
