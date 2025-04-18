@@ -41,7 +41,7 @@ func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary
 }
 
 const getDiary = `-- name: GetDiary :one
-    
+
 SELECT content, created, date, id, uid, updated
 FROM diarys
 WHERE date = ?
@@ -90,6 +90,49 @@ func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error)
 		&i.Updated,
 	)
 	return i, err
+}
+
+const listDiarys = `-- name: ListDiarys :many
+SELECT content, created, date, id, uid, updated
+FROM diarys
+WHERE uid = ?
+ORDER BY created desc
+LIMIT 10 OFFSET ((? - 1) * 10)
+`
+
+type ListDiarysParams struct {
+	Uid     string
+	Column2 interface{}
+}
+
+func (q *Queries) ListDiarys(ctx context.Context, arg ListDiarysParams) ([]Diary, error) {
+	rows, err := q.db.QueryContext(ctx, listDiarys, arg.Uid, arg.Column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Diary
+	for rows.Next() {
+		var i Diary
+		if err := rows.Scan(
+			&i.Content,
+			&i.Created,
+			&i.Date,
+			&i.ID,
+			&i.Uid,
+			&i.Updated,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateDiary = `-- name: UpdateDiary :one

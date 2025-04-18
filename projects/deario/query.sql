@@ -1,5 +1,5 @@
 -- sqlc generate -f ./projects/deario/sqlc.yaml
-    
+
 -- name: GetDiary :one
 SELECT *
 FROM diarys
@@ -14,6 +14,13 @@ WHERE date IS NOT NULL
   AND uid = ?
 ORDER BY RANDOM()
 LIMIT 1;
+
+-- name: ListDiarys :many
+SELECT *
+FROM diarys
+WHERE uid = ?
+ORDER BY created desc
+LIMIT 10 OFFSET ((? - 1) * 10);
 
 -- name: CreateDiary :one
 INSERT INTO diarys (uid, content, date, created, updated)

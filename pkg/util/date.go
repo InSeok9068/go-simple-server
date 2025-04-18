@@ -29,3 +29,8 @@ func MustAddDaysToDate(dateStr string, days int) string {
 	newDate := t.AddDate(0, 0, days)
 	return newDate.Format("20060102")
 }
+
+func MustFormatDateKor(date string) string {
+	t, _ := time.Parse("20060102", date)
+	return t.Format("2006년 01월 02일")
+}

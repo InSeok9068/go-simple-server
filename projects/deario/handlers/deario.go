@@ -63,6 +63,37 @@ func Diary(c echo.Context) error {
 	}
 }
 
+func DiaryList(c echo.Context) error {
+	uid, err := util.SesseionUid(c)
+	if err != nil {
+		return err
+	}
+
+	dbCon, err := connection.AppDBOpen()
+	if err != nil {
+		slog.Error("Failed to open database", "error", err.Error())
+	}
+	queries := db.New(dbCon)
+
+	diarys, err := queries.ListDiarys(c.Request().Context(), db.ListDiarysParams{
+		Uid:     uid,
+		Column2: 1,
+	})
+
+	var lis []Node
+	for _, diary := range diarys {
+		lis = append(lis,
+			Li(
+				A(Href(fmt.Sprintf("/?date=%s", diary.Date)),
+					Text(util.MustFormatDateKor(diary.Date)),
+				),
+			),
+		)
+	}
+
+	return Group(lis).Render(c.Response().Writer)
+}
+
 func DiaryRandom(c echo.Context) error {
 	uid, err := util.SesseionUid(c)
 	if err != nil {
