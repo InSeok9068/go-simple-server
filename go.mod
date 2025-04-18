@@ -23,7 +23,7 @@ require (
 	github.com/willoma/bulma-gomponents v0.13.0
 	github.com/willoma/gomplements v0.8.0
 	google.golang.org/api v0.229.0
-	google.golang.org/genai v1.0.0
+	google.golang.org/genai v1.1.0
 	maragu.dev/gomponents v1.1.0
 	maragu.dev/gomponents-htmx v0.6.1
 )
