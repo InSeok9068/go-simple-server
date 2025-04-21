@@ -90,7 +90,7 @@ func DiaryList(c echo.Context) error {
 		lis = append(lis,
 			Li(
 				A(Href(fmt.Sprintf("/?date=%s", diary.Date)),
-					P(Class("small-text"), Text(util.MustFormatDateKor(diary.Date))),
+					Text(util.MustFormatDateKorWithWeekDay(diary.Date)),
 				),
 			),
 		)

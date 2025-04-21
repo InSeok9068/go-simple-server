@@ -20,7 +20,7 @@ SELECT *
 FROM diarys
 WHERE uid = ?
 ORDER BY created desc
-LIMIT 10 OFFSET ((? - 1) * 10);
+LIMIT 7 OFFSET ((? - 1) * 7);
 
 -- name: CreateDiary :one
 INSERT INTO diarys (uid, content, date, created, updated)

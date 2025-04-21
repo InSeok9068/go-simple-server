@@ -34,3 +34,21 @@ func MustFormatDateKor(date string) string {
 	t, _ := time.Parse("20060102", date)
 	return t.Format("2006년 01월 02일")
 }
+
+func MustFormatDateKorWithWeekDay(date string) string {
+	t, _ := time.Parse("20060102", date)
+
+	// 요일을 한국어로 변환
+	weekdays := map[time.Weekday]string{
+		time.Sunday:    "일요일",
+		time.Monday:    "월요일",
+		time.Tuesday:   "화요일",
+		time.Wednesday: "수요일",
+		time.Thursday:  "목요일",
+		time.Friday:    "금요일",
+		time.Saturday:  "토요일",
+	}
+
+	korWeekday := weekdays[t.Weekday()]
+	return t.Format("2006년 01월 02일") + " " + korWeekday
+}

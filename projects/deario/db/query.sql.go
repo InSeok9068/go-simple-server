@@ -97,7 +97,7 @@ SELECT content, created, date, id, uid, updated
 FROM diarys
 WHERE uid = ?
 ORDER BY created desc
-LIMIT 10 OFFSET ((? - 1) * 10)
+LIMIT 7 OFFSET ((? - 1) * 7)
 `
 
 type ListDiarysParams struct {

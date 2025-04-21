@@ -129,11 +129,10 @@ func Index(title string, date string) Node {
 			/* Dialog */
 			Dialog(ID("diary-list-dialog"), Class("max"),
 				H5(Text("작성 일지")),
-				Ul(ID("diary-list-content"), Class("list border no-space")),
+				Ul(ID("diary-list-content"), Class("list border")),
 				Div(x.Data("{ page : 1 }"),
 					Nav(Class("center-align"),
 						Button(
-							Class("load-more"),
 							I(Text("arrow_drop_down")),
 							h.Get("/diary/list"),
 							h.Target("#diary-list-content"),
