@@ -69,6 +69,11 @@ func DiaryList(c echo.Context) error {
 		return err
 	}
 
+	page := c.QueryParam("page")
+	if page == "" {
+		page = "1"
+	}
+
 	dbCon, err := connection.AppDBOpen()
 	if err != nil {
 		slog.Error("Failed to open database", "error", err.Error())
@@ -77,7 +82,7 @@ func DiaryList(c echo.Context) error {
 
 	diarys, err := queries.ListDiarys(c.Request().Context(), db.ListDiarysParams{
 		Uid:     uid,
-		Column2: 1,
+		Column2: page,
 	})
 
 	var lis []Node
