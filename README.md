@@ -144,3 +144,23 @@ golangci-lint run ./...
 ## 참고 글
 
 https://ntorga.com/full-stack-go-app-with-htmx-and-alpinejs/
+
+## Tailwind CSS 자동완성 (Gomponents)
+
+```json
+{
+  "includeLanguages": {
+    ...
+    "go": "html"
+  },
+  "experimental": {
+    ...
+    "classRegex": [
+      [
+        "Class(?:es)?[({]([^)}]*)[)}]",
+        "[\"`]([^\"`]*)[\"`]"
+      ]
+    ]
+  }
+}
+```
