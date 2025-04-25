@@ -50,9 +50,9 @@ func HeadsWithPicoAndTailwind(title string) []Node {
 
 func HeadsWithBeer(title string) []Node {
 	beer := []Node{
-		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/beercss@3.9.7/dist/cdn/beer.min.css"),
+		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/beercss@3.10.8/dist/cdn/beer.min.css"),
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/beer.min.css';")),
-		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/beercss@3.9.7/dist/cdn/beer.min.js"),
+		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/beercss@3.10.8/dist/cdn/beer.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/beer.min.js';")),
 		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';")),
