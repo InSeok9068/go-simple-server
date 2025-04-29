@@ -9,3 +9,14 @@ create table diarys
     uid     TEXT default ''                                 not null,
     updated TEXT default ''                                 not null
 );
+
+-- auto-generated definition
+create table push_keys
+(
+    created TEXT default ''                                 not null,
+    id      TEXT default ('r' || lower(hex(randomblob(7)))) not null
+        primary key,
+    token   TEXT default ''                                 not null,
+    uid     TEXT default ''                                 not null,
+    updated TEXT default ''                                 not null
+);

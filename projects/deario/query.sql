@@ -38,3 +38,22 @@ set content = ?,
     updated = datetime('now')
 WHERE id = ?
 RETURNING *;
+
+-- name: GetPushKey :one
+SELECT *
+FROM push_keys
+WHERE uid = ?
+LIMIT 1;
+
+-- name: CreatePushKey :exec
+INSERT INTO push_keys (uid, token, created, updated)
+VALUES (?,
+        ?,
+        datetime('now', 'localtime'),
+        datetime('now', 'localtime'));
+
+-- name: UpdatePushKey :exec
+UPDATE push_keys
+set token = ?,
+    updated = datetime('now')
+WHERE uid = ?;

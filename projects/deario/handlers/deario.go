@@ -225,3 +225,38 @@ func AiFeedback(c echo.Context) error {
 		return Div(Text(result)).Render(c.Response().Writer)
 	}
 }
+
+func SavePushKey(c echo.Context) error {
+	uid, err := util.SesseionUid(c)
+	if err != nil {
+		return err
+	}
+
+	var data map[string]interface{}
+	if err := c.Bind(&data); err != nil {
+		return err
+	}
+
+	token := data["token"].(string)
+
+	dbCon, err := connection.AppDBOpen()
+	if err != nil {
+		slog.Error("Failed to open database", "error", err.Error())
+	}
+	queries := db.New(dbCon)
+
+	_, err = queries.GetPushKey(c.Request().Context(), uid)
+	if err != nil {
+		_ = queries.CreatePushKey(c.Request().Context(), db.CreatePushKeyParams{
+			Uid:   uid,
+			Token: token,
+		})
+	} else {
+		_ = queries.UpdatePushKey(c.Request().Context(), db.UpdatePushKeyParams{
+			Uid:   uid,
+			Token: token,
+		})
+	}
+
+	return nil
+}

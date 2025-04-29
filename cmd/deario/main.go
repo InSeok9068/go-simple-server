@@ -1,10 +1,12 @@
 package main
 
 import (
+	"github.com/robfig/cron/v3"
 	"io/fs"
 	"os"
 	resources "simple-server"
 	"simple-server/projects/deario/handlers"
+	"simple-server/projects/deario/tasks"
 
 	"simple-server/internal/config"
 	"simple-server/internal/middleware"
@@ -39,6 +41,10 @@ func setUpServer() *echo.Echo {
 	// PWA 파일
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)
+
+	// Web Push 서비스워커 파일
+	firebaseMessagingSw, _ := fs.Sub(resources.EmbeddedFiles, "shared/static/firebase-messaging-sw.js")
+	e.StaticFS("/firebase-messaging-sw.js", firebaseMessagingSw)
 	/* 미들 웨어 */
 
 	/* 라우터  */
@@ -49,7 +55,16 @@ func setUpServer() *echo.Echo {
 	e.GET("/diary/random", handlers.DiaryRandom)
 	e.POST("/save", handlers.Save)
 	e.POST("/ai-feedback", handlers.AiFeedback)
+
+	// 푸시키 갱신
+	e.POST("/save-pushToken", handlers.SavePushKey)
 	/* 라우터  */
+
+	/* 스케줄 */
+	c := cron.New()
+	tasks.PushTask(c)
+	c.Start()
+	/* 스케줄 */
 
 	return e
 }

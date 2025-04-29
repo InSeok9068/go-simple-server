@@ -12,3 +12,11 @@ type Diary struct {
 	Uid     string
 	Updated string
 }
+
+type PushKey struct {
+	Created string
+	ID      string
+	Token   string
+	Uid     string
+	Updated string
+}

@@ -40,6 +40,24 @@ func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary
 	return i, err
 }
 
+const createPushKey = `-- name: CreatePushKey :exec
+INSERT INTO push_keys (uid, token, created, updated)
+VALUES (?,
+        ?,
+        datetime('now', 'localtime'),
+        datetime('now', 'localtime'))
+`
+
+type CreatePushKeyParams struct {
+	Uid   string
+	Token string
+}
+
+func (q *Queries) CreatePushKey(ctx context.Context, arg CreatePushKeyParams) error {
+	_, err := q.db.ExecContext(ctx, createPushKey, arg.Uid, arg.Token)
+	return err
+}
+
 const getDiary = `-- name: GetDiary :one
 
 SELECT content, created, date, id, uid, updated
@@ -86,6 +104,26 @@ func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error)
 		&i.Created,
 		&i.Date,
 		&i.ID,
+		&i.Uid,
+		&i.Updated,
+	)
+	return i, err
+}
+
+const getPushKey = `-- name: GetPushKey :one
+SELECT created, id, token, uid, updated
+FROM push_keys
+WHERE uid = ?
+LIMIT 1
+`
+
+func (q *Queries) GetPushKey(ctx context.Context, uid string) (PushKey, error) {
+	row := q.db.QueryRowContext(ctx, getPushKey, uid)
+	var i PushKey
+	err := row.Scan(
+		&i.Created,
+		&i.ID,
+		&i.Token,
 		&i.Uid,
 		&i.Updated,
 	)
@@ -160,4 +198,21 @@ func (q *Queries) UpdateDiary(ctx context.Context, arg UpdateDiaryParams) (Diary
 		&i.Updated,
 	)
 	return i, err
+}
+
+const updatePushKey = `-- name: UpdatePushKey :exec
+UPDATE push_keys
+set token = ?,
+    updated = datetime('now')
+WHERE uid = ?
+`
+
+type UpdatePushKeyParams struct {
+	Token string
+	Uid   string
+}
+
+func (q *Queries) UpdatePushKey(ctx context.Context, arg UpdatePushKeyParams) error {
+	_, err := q.db.ExecContext(ctx, updatePushKey, arg.Token, arg.Uid)
+	return err
 }

@@ -1,5 +1,6 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import {getAuth, onAuthStateChanged,} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import {getAuth, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import {getMessaging, getToken} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging.js";
 
 // 1. Firebase 초기화
 const firebaseConfig = {
@@ -12,6 +13,7 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const messaging = getMessaging(app);
 
 // 2. onAuthStateChanged로 로그인 / 로그아웃 감지
 onAuthStateChanged(auth, (user) => {
@@ -68,6 +70,39 @@ htmx.on("htmx:afterRequest", (event) => {
     }
 });
 
-// document.getElementById("logout").addEventListener("click", () => {
-//     auth.signOut();
-// });
+async function requestPermissionAndGetToken() {
+    try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            throw new Error('Permission not granted.');
+        }
+
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        console.log('Service Worker registered:', registration);
+
+        const token = await getToken(messaging, {
+            vapidKey: 'BFTAfRBfcOTDygKFWmR1PlFincyIeDa4jC-_6VfLUx-ZvlfBOiM7Wx3VbkpY_jAngZz2MqSsZBp0bpiuRzcJ_G4',  // FCM 콘솔에서 발급한 Web Push 인증키
+            serviceWorkerRegistration: registration,
+        });
+
+        if (token) {
+            console.log('FCM Token:', token);
+            // 이 토큰을 서버에 저장해두고, 나중에 이걸로 푸시 보냄
+            fetch('save-pushToken', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    token: token
+                })
+            })
+        } else {
+            console.log('No token available.');
+        }
+    } catch (error) {
+        console.error('An error occurred while getting permission or token:', error);
+    }
+}
+
+requestPermissionAndGetToken()
