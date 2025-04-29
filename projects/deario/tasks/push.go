@@ -36,6 +36,11 @@ func PushTask(c *cron.Cron) {
 			Token: pushKey.Token,
 		}
 
-		_, err = client.Send(ctx, message)
+		response, err := client.Send(ctx, message)
+		if err != nil {
+			slog.Error("Failed to send push", "error", err.Error())
+		}
+
+		slog.Info("푸시 발송 응답", response)
 	})
 }
