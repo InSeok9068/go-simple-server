@@ -28,3 +28,21 @@ const messaging = firebase.messaging();
 //
 //     self.registration.showNotification(notificationTitle, notificationOptions);
 // });
+
+// 알림 클릭 시 PWA 앱으로 진입
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+
+    const rootUrl = '/';
+
+    event.waitUntil(
+        clients.matchAll({type: 'window', includeUncontrolled: true}).then(function (clientList) {
+            for (let client of clientList) {
+                if (client.url.includes('/') && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            return clients.openWindow(rootUrl);
+        })
+    );
+});
