@@ -1,0 +1,2 @@
+# 푸시 알림 테스트
+GET http://localhost:8080/push-test

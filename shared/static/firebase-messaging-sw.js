@@ -18,13 +18,13 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // 백그라운드 메시지 수신
-messaging.onBackgroundMessage(function (payload) {
-    console.log('[firebase-messaging-sw.js] Received background message:', payload);
-    const notificationTitle = payload.notification?.title || 'Default Title';
-    const notificationOptions = {
-        body: payload.notification?.body || 'Default body content',
-        // icon: '/your-icon.png'  // 알림 아이콘 (선택사항)
-    };
-
-    self.registration.showNotification(notificationTitle, notificationOptions);
-});
+// messaging.onBackgroundMessage(function (payload) {
+//     console.log('[firebase-messaging-sw.js] Received background message:', payload);
+//     const notificationTitle = payload.notification?.title || 'Default Title';
+//     const notificationOptions = {
+//         body: payload.notification?.body || 'Default body content',
+//         // icon: '/your-icon.png'  // 알림 아이콘 (선택사항)
+//     };
+//
+//     self.registration.showNotification(notificationTitle, notificationOptions);
+// });
