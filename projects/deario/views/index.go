@@ -107,13 +107,13 @@ func Index(title string, date string) Node {
 					h.On("htmx:after-on-load", "showModal('#diary-list-dialog')"),
 					I(Text("list_alt")),
 				),
-				A(Attr("onclick", "location.reload()"),
-					I(Text("refresh")),
+				A(Attr("onclick", "showModal('#settings-dialog')"),
+					I(Text("settings")),
 				),
 			),
 			/* Footer */
 
-			/* Dialog */
+			/* 일기요청 피드백 Dialog */
 			Dialog(ID("ai-feedback-dialog"), Class("max"),
 				H5(Text("일기 요정")),
 				Div(ID("ai-feedback-content"),
@@ -126,7 +126,7 @@ func Index(title string, date string) Node {
 				),
 			),
 
-			/* Dialog */
+			/* 작성 일지 Dialog */
 			Dialog(ID("diary-list-dialog"), Class("max"),
 				H5(Text("작성 일지")),
 				Ul(ID("diary-list-content"), Class("list border")),
@@ -146,6 +146,24 @@ func Index(title string, date string) Node {
 							Attr("@click", "page = 1; closeModal('#diary-list-dialog')"),
 							Text("확인"),
 						),
+					),
+				),
+			),
+
+			/* 설정 Dialog */
+			Dialog(ID("settings-dialog"), Class("right"),
+				H5(Text("설정")),
+				Nav(
+					Label(Class("switch icon"),
+						Input(Type("checkbox"), x.Bind("checked", "$store,notification.permission")),
+						Span(
+							I(Text("wifi")),
+						),
+					),
+				),
+				Nav(Class("right-align"),
+					Button(Attr("onclick", "closeModal('#settings-dialog')"),
+						Text("확인"),
 					),
 				),
 			),

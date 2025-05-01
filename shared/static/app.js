@@ -12,6 +12,10 @@ document.addEventListener('alpine:init', () => {
             this.user = null;
         }
     });
+
+    Alpine.store('notification', {
+        permission: Notification.permission === 'granted',
+    });
 });
 
 htmx.on("htmx:afterRequest", (event) => {
