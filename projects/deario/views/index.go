@@ -154,10 +154,14 @@ func Index(title string, date string) Node {
 			Dialog(ID("settings-dialog"), Class("right"),
 				H5(Text("설정")),
 				Nav(
+					P(Class("max"), Text("알림")),
 					Label(Class("switch icon"),
-						Input(Type("checkbox"), x.Bind("checked", "$store,notification.permission")),
+						Input(Type("checkbox"),
+							x.Data(""),
+							Attr(":checked", "$store.notification.permission"),
+						),
 						Span(
-							I(Text("wifi")),
+							I(Text("notifications")),
 						),
 					),
 				),
