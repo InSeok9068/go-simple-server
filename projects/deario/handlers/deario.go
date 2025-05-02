@@ -226,8 +226,48 @@ func AiFeedback(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return Div(Text(result)).Render(c.Response().Writer)
+
+		return Div(
+			Input(Type("hidden"), Name("ai-feedback"), Value(result)),
+			Text(result),
+		).Render(c.Response().Writer)
 	}
+}
+
+func AiFeedbackSave(c echo.Context) error {
+	uid, err := util.SesseionUid(c)
+	if err != nil {
+		return err
+	}
+
+	date := c.FormValue("date")
+	aiFeedback := c.FormValue("ai-feedback")
+
+	dbCon, err := connection.AppDBOpen()
+	if err != nil {
+		slog.Error("Failed to open database", "error", err.Error())
+	}
+	queries := db.New(dbCon)
+
+	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
+		Uid:  uid,
+		Date: date,
+	})
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "작성한 일기가 없습니다.")
+	}
+
+	err = queries.UpdateDiaryOfAiFeedback(c.Request().Context(), db.UpdateDiaryOfAiFeedbackParams{
+		ID:         diary.ID,
+		Aifeedback: aiFeedback,
+	})
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "일기요정 저장에 실패하였습니다.")
+	}
+
+	return nil
 }
 
 func SavePushKey(c echo.Context) error {

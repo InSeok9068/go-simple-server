@@ -44,6 +44,12 @@ DELETE
 FROM diarys
 WHERE id = ?;
 
+-- name: UpdateDiaryOfAiFeedback :exec
+UPDATE diarys
+SET aiFeedback = ?,
+    updated    = datetime('now')
+WHERE id = ?;
+
 -- name: GetPushKey :one
 SELECT *
 FROM push_keys

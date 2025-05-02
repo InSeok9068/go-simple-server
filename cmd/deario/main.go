@@ -54,7 +54,9 @@ func setUpServer() *echo.Echo {
 	e.GET("/diary/list", handlers.DiaryList)
 	e.GET("/diary/random", handlers.DiaryRandom)
 	e.POST("/save", handlers.Save)
+	e.GET("/ai-feedback", handlers.AiFeedback)
 	e.POST("/ai-feedback", handlers.AiFeedback)
+	e.POST("/ai-feedback/save", handlers.AiFeedbackSave)
 
 	// 푸시키 갱신
 	e.POST("/save-pushToken", handlers.SavePushKey)

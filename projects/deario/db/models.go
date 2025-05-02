@@ -5,12 +5,13 @@
 package db
 
 type Diary struct {
-	Content string
-	Created string
-	Date    string
-	ID      string
-	Uid     string
-	Updated string
+	Content    string
+	Created    string
+	Date       string
+	ID         string
+	Uid        string
+	Updated    string
+	Aifeedback string
 }
 
 type PushKey struct {
