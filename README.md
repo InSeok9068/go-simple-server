@@ -10,7 +10,7 @@
 | CSS 프레임워크 선택지 1 | Beer CSS                |
 | CSS 프레임워크 선택지 2 | Pico CSS + Tailwind CSS |
 | CSS 프레임워크 선택지 3 | Bulma CSS               |
-| Template 엔진     | Gomponents              |
+| Template 엔진     | Gomponents              | 
 | 데이터베이스          | SQLite3                 |
 
 ### 추가 구성 고려
@@ -21,6 +21,8 @@
 - Tabler : CSS 프레임워크 (복잡한 관리자 UI) - PC 환경
 - Shoelace : CSS 프레임워크 (바닐라 웹 컴포넌트)
 - ~~surreal.js : [surreal.js](https://cdn.jsdelivr.net/gh/gnat/surreal@main/surreal.js)~~
+- DataStar : SSE 기반 서버주도 프레임워크
+- Unpoly : Htmx+ Like 프레임워크
 
 ---
 
