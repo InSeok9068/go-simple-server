@@ -143,7 +143,7 @@ func Index(title string, date string) Node {
 					),
 					Nav(Class("right-align"),
 						Button(
-							Attr("@click", "page = 1; closeModal('#diary-list-dialog')"),
+							Attr("@click", "closeModal('#diary-list-dialog')"),
 							Text("확인"),
 						),
 					),
