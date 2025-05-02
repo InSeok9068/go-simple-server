@@ -34,10 +34,15 @@ RETURNING *;
 
 -- name: UpdateDiary :one
 UPDATE diarys
-set content = ?,
+SET content = ?,
     updated = datetime('now')
 WHERE id = ?
 RETURNING *;
+
+-- name: DeleteDiary :exec
+DELETE
+FROM diarys
+WHERE id = ?;
 
 -- name: GetPushKey :one
 SELECT *
@@ -54,6 +59,6 @@ VALUES (?,
 
 -- name: UpdatePushKey :exec
 UPDATE push_keys
-set token = ?,
+SET token   = ?,
     updated = datetime('now')
 WHERE uid = ?;

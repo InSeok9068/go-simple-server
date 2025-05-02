@@ -58,6 +58,17 @@ func (q *Queries) CreatePushKey(ctx context.Context, arg CreatePushKeyParams) er
 	return err
 }
 
+const deleteDiary = `-- name: DeleteDiary :exec
+DELETE
+FROM diarys
+WHERE id = ?
+`
+
+func (q *Queries) DeleteDiary(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteDiary, id)
+	return err
+}
+
 const getDiary = `-- name: GetDiary :one
 
 SELECT content, created, date, id, uid, updated
@@ -175,7 +186,7 @@ func (q *Queries) ListDiarys(ctx context.Context, arg ListDiarysParams) ([]Diary
 
 const updateDiary = `-- name: UpdateDiary :one
 UPDATE diarys
-set content = ?,
+SET content = ?,
     updated = datetime('now')
 WHERE id = ?
 RETURNING content, created, date, id, uid, updated
@@ -202,7 +213,7 @@ func (q *Queries) UpdateDiary(ctx context.Context, arg UpdateDiaryParams) (Diary
 
 const updatePushKey = `-- name: UpdatePushKey :exec
 UPDATE push_keys
-set token = ?,
+SET token   = ?,
     updated = datetime('now')
 WHERE uid = ?
 `

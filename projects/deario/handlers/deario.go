@@ -151,10 +151,14 @@ func Save(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError, "등록 실패")
 		}
 	} else {
-		_, err = queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
-			Content: content,
-			ID:      diary.ID,
-		})
+		if content == "" {
+			err = queries.DeleteDiary(c.Request().Context(), diary.ID)
+		} else {
+			_, err = queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
+				Content: content,
+				ID:      diary.ID,
+			})
+		}
 
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
