@@ -33,16 +33,19 @@ const messaging = firebase.messaging();
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
 
-    const rootUrl = '/';
-
     event.waitUntil(
         clients.matchAll({type: 'window', includeUncontrolled: true}).then(function (clientList) {
-            for (let client of clientList) {
-                if (client.url.includes('/') && 'focus' in client) {
+            for (const client of clientList) {
+                // 이미 열려 있는 창이 있다면 focus
+                if (client.url === self.registration.scope || client.url === self.registration.scope + '/' && 'focus' in client) {
                     return client.focus();
                 }
             }
-            return clients.openWindow(rootUrl);
+
+            // 없으면 새 창 열기 (여기서 '/' 경로로 이동)
+            if (clients.openWindow) {
+                return clients.openWindow('/');
+            }
         })
     );
 });
