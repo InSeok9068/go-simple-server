@@ -36,15 +36,15 @@ self.addEventListener('notificationclick', function (event) {
     event.waitUntil(
         clients.matchAll({type: 'window', includeUncontrolled: true}).then(function (clientList) {
             for (const client of clientList) {
-                // 이미 열려 있는 창이 있다면 focus
-                if (client.url === self.registration.scope || client.url === self.registration.scope + '/' && 'focus' in client) {
+                // PWA가 이미 열려 있는 경우 포커스
+                if (client.url.includes(self.registration.scope) && 'focus' in client) {
                     return client.focus();
                 }
             }
 
-            // 없으면 새 창 열기 (여기서 '/' 경로로 이동)
+            // PWA가 열려있지 않은 경우 새 창으로 열기
             if (clients.openWindow) {
-                return clients.openWindow('/');
+                return clients.openWindow(self.registration.scope);  // PWA 경로로 설정
             }
         })
     );
