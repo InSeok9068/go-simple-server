@@ -2,10 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"log/slog"
-	. "maragu.dev/gomponents"
-	. "maragu.dev/gomponents/html"
 	"net/http"
 	"os"
 	aiclient "simple-server/internal/ai"
@@ -16,6 +13,10 @@ import (
 	shared "simple-server/shared/views"
 	"strings"
 	"time"
+
+	"github.com/labstack/echo/v4"
+	. "maragu.dev/gomponents"
+	. "maragu.dev/gomponents/html"
 )
 
 func Index(c echo.Context) error {
@@ -33,7 +34,7 @@ func Login(c echo.Context) error {
 }
 
 func Diary(c echo.Context) error {
-	uid, err := util.SesseionUid(c)
+	uid, err := util.SesseionUID(c)
 	if err != nil {
 		return err
 	}
@@ -64,7 +65,7 @@ func Diary(c echo.Context) error {
 }
 
 func DiaryList(c echo.Context) error {
-	uid, err := util.SesseionUid(c)
+	uid, err := util.SesseionUID(c)
 	if err != nil {
 		return err
 	}
@@ -80,7 +81,7 @@ func DiaryList(c echo.Context) error {
 	}
 	queries := db.New(dbCon)
 
-	diarys, err := queries.ListDiarys(c.Request().Context(), db.ListDiarysParams{
+	diarys, _ := queries.ListDiarys(c.Request().Context(), db.ListDiarysParams{
 		Uid:     uid,
 		Column2: page,
 	})
@@ -100,7 +101,7 @@ func DiaryList(c echo.Context) error {
 }
 
 func DiaryRandom(c echo.Context) error {
-	uid, err := util.SesseionUid(c)
+	uid, err := util.SesseionUID(c)
 	if err != nil {
 		return err
 	}
@@ -121,7 +122,7 @@ func DiaryRandom(c echo.Context) error {
 }
 
 func Save(c echo.Context) error {
-	uid, err := util.SesseionUid(c)
+	uid, err := util.SesseionUID(c)
 	if err != nil {
 		return err
 	}
@@ -169,7 +170,7 @@ func Save(c echo.Context) error {
 }
 
 func AiFeedback(c echo.Context) error {
-	uid, err := util.SesseionUid(c)
+	uid, err := util.SesseionUID(c)
 	if err != nil {
 		return err
 	}
@@ -200,9 +201,9 @@ func AiFeedback(c echo.Context) error {
 		**Do not copy, draw, or include any part of the content text in the image.**  
 		Use it only to understand the mood and setting.
 		
-		Only return an image. Do not generate or show any text in the picture.
-		`
+		Only return an image. Do not generate or show any text in the picture.`
 	}
+
 	if typeValue == "4" {
 		prompt := fmt.Sprintf(`
 		%s
@@ -235,7 +236,7 @@ func AiFeedback(c echo.Context) error {
 }
 
 func AiFeedbackSave(c echo.Context) error {
-	uid, err := util.SesseionUid(c)
+	uid, err := util.SesseionUID(c)
 	if err != nil {
 		return err
 	}
@@ -271,7 +272,7 @@ func AiFeedbackSave(c echo.Context) error {
 }
 
 func SavePushKey(c echo.Context) error {
-	uid, err := util.SesseionUid(c)
+	uid, err := util.SesseionUID(c)
 	if err != nil {
 		return err
 	}

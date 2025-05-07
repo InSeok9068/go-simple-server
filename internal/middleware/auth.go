@@ -43,7 +43,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo) {
 			return err
 		}
 
-		slog.Info("data", data["token"].(string))
+		slog.Info("data", "token", data["token"].(string))
 
 		user, err := auth.VerifyIDToken(ctx, data["token"].(string))
 		if err != nil {

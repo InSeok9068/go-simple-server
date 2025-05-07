@@ -2,12 +2,13 @@ package tasks
 
 import (
 	"context"
-	"firebase.google.com/go/v4/messaging"
-	"github.com/robfig/cron/v3"
 	"log/slog"
 	"simple-server/internal/connection"
 	"simple-server/internal/middleware"
 	"simple-server/projects/deario/db"
+
+	"firebase.google.com/go/v4/messaging"
+	"github.com/robfig/cron/v3"
 )
 
 func PushTask(c *cron.Cron) {
@@ -41,6 +42,6 @@ func PushTask(c *cron.Cron) {
 			slog.Error("Failed to send push", "error", err.Error())
 		}
 
-		slog.Info("푸시 발송 응답", response)
+		slog.Info("푸시 발송 응답", "response", response)
 	})
 }
