@@ -291,6 +291,10 @@ func GetAiFeedback(c echo.Context) error {
 	})
 
 	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "저장된 일기가 없습니다.")
+	}
+
+	if diary.Aifeedback == "" {
 		return echo.NewHTTPError(http.StatusInternalServerError, "저장된 일기요정이 없습니다.")
 	}
 
