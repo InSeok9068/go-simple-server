@@ -91,6 +91,7 @@ func Index(title string, date string) Node {
 							aiFeedbackButton("2", "위로받기"),
 							aiFeedbackButton("3", "충고받기"),
 							aiFeedbackButton("4", "그림일기"),
+							Hr(),
 							Li(
 								h.Get("/ai-feedback?date="+date),
 								h.Target("#ai-feedback-content"),
