@@ -90,6 +90,18 @@ func Index(title string, date string) Node {
 						),
 					),
 				),
+				Nav(
+					Div(Class("max")),
+					Form(
+						h.Get("/ai-feedback"),
+						h.Target("#ai-feedback-content"),
+						h.On("htmx:after-on-load", "showModal('#ai-feedback-dialog')"),
+						Input(Type("hidden"), Name("date"), Value(date)),
+						Button(
+							Span(Text("일기요정 다시보기")),
+						),
+					),
+				),
 			),
 			/* Body */
 
@@ -120,10 +132,11 @@ func Index(title string, date string) Node {
 						Text("안녕"),
 					),
 					Nav(Class("right-align"),
-						Button(
+						Button(Class("border"),
 							h.Post("/ai-feedback/save"),
 							h.Swap("none"),
-							Text("저장"),
+							I(Text("save")),
+							Span(Text("저장")),
 						),
 						Button(Attr("onclick", "closeModal('#ai-feedback-dialog')"),
 							Text("확인"),

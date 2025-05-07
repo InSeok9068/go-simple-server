@@ -39,7 +39,8 @@ linters:
     - makezero
     - mirror
     - musttag
-    - nestif
+    # Go 언어 특성상 명시적 IF가 많아짐
+    # - nestif
     - nilerr
     - nilnesserr
     - nilnil

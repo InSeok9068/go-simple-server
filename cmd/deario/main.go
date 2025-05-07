@@ -54,7 +54,7 @@ func setUpServer() *echo.Echo {
 	e.GET("/diary/list", handlers.DiaryList)
 	e.GET("/diary/random", handlers.DiaryRandom)
 	e.POST("/save", handlers.Save)
-	e.GET("/ai-feedback", handlers.AiFeedback)
+	e.GET("/ai-feedback", handlers.GetAiFeedback)
 	e.POST("/ai-feedback", handlers.AiFeedback)
 	e.POST("/ai-feedback/save", handlers.AiFeedbackSave)
 
