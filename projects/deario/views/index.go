@@ -185,6 +185,18 @@ func Index(title string, date string) Node {
 						),
 					),
 				),
+				//Nav(
+				//	P(Class("max"), Text("알림 시간")),
+				//	Div(Class("field"),
+				//		Input(Type("datetime-local")),
+				//	),
+				//),
+				//Nav(
+				//	P(Class("max"), Text("랜덤 일기 조회 기간")),
+				//	Div(Class("field"),
+				//		Input(Type("number")),
+				//	),
+				//),
 				Nav(Class("right-align"),
 					Button(
 						Attr("data-ui", "#settings-dialog"),
