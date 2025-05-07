@@ -90,8 +90,9 @@ func Index(title string, date string) Node {
 							Li(
 								h.Get("/ai-feedback?date="+date),
 								h.Target("#ai-feedback-content"),
-								h.On("htmx:after-on-load", "showModal('#ai-feedback-dialog')"),
-								Text("다시보기")),
+								h.On("htmx:after-on-load", "if (event.detail.successful) showModal('#ai-feedback-dialog')"),
+								Text("다시보기"),
+							),
 						),
 					),
 				),
@@ -218,7 +219,7 @@ func aiFeedbackButton(strType string, title string) Node {
 		h.Post(fmt.Sprintf("/ai-feedback?type=%s", strType)),
 		h.Include("[name='content']"), h.Target("#ai-feedback-content"),
 		h.Indicator("#feedback-loading"),
-		h.On("htmx:after-on-load", "showModal('#ai-feedback-dialog')"),
+		h.On("htmx:after-on-load", "if (event.detail.successful) showModal('#ai-feedback-dialog')"),
 		Text(title),
 	)
 }
