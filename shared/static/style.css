@@ -1,3 +1,10 @@
+.ellipsis {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block; /* p 태그가 블록 요소이므로 명시적으로 지정 */
+}
+
 /*:root {*/
 /*    --pico-line-height: var(--font-lineheight-1);*/
 /*    !* Original: 1.5 /*/

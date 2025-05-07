@@ -55,7 +55,11 @@ func Index(title string, date string) Node {
 					Div(Class("max"),
 						Text(DateView(date)),
 					),
-					P(Class("max bold"), x.Data(""), x.Show("$store.auth.isAuthed"), x.Text("$store.auth?.user?.displayName")),
+					P(Class("max bold ellipsis"),
+						x.Data(""),
+						x.Show("$store.auth.isAuthed"),
+						x.Text("$store.auth?.user?.displayName"),
+					),
 				),
 				Hr(Class("medium")),
 
