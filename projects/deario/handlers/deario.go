@@ -277,7 +277,7 @@ func GetAiFeedback(c echo.Context) error {
 		return err
 	}
 
-	date := c.FormValue("date")
+	date := c.QueryParam("date")
 
 	dbCon, err := connection.AppDBOpen()
 	if err != nil {
