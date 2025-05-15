@@ -49,7 +49,9 @@ func Diary(c echo.Context) error {
 	dbCon, err := connection.AppDBOpen()
 	if err != nil {
 		slog.Error("Failed to open database", "error", err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "데이터베이스 연결에 실패했습니다.")
 	}
+	defer dbCon.Close()
 	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
@@ -59,9 +61,16 @@ func Diary(c echo.Context) error {
 
 	if err != nil {
 		return views.DiaryContentForm(date, "").Render(c.Response().Writer)
-	} else {
-		return views.DiaryContentForm(diary.Date, diary.Content).Render(c.Response().Writer)
 	}
+
+	decryptedContent, err := util.Decrypt(diary.Content)
+	if err != nil {
+		slog.Error("Failed to decrypt diary content", "diaryID", diary.ID, "error", err.Error())
+		return views.DiaryContentForm(diary.Date, "").Render(c.Response().Writer)
+	}
+	diary.Content = decryptedContent
+
+	return views.DiaryContentForm(diary.Date, diary.Content).Render(c.Response().Writer)
 }
 
 func DiaryList(c echo.Context) error {
@@ -130,10 +139,18 @@ func Save(c echo.Context) error {
 	date := c.FormValue("date")
 	content := c.FormValue("content")
 
+	encryptedContent, err := util.Encrypt(content)
+	if err != nil {
+		slog.Error("Failed to encrypt diary content", "error", err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "일기 암호화에 실패했습니다.")
+	}
+
 	dbCon, err := connection.AppDBOpen()
 	if err != nil {
 		slog.Error("Failed to open database", "error", err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "데이터베이스 연결에 실패했습니다.")
 	}
+	defer dbCon.Close()
 	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
@@ -144,28 +161,29 @@ func Save(c echo.Context) error {
 	if err != nil {
 		_, err = queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
 			Uid:     uid,
-			Content: content,
+			Content: encryptedContent,
 			Date:    date,
 		})
-
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "등록 실패")
+			slog.Error("Failed to create diary", "error", err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, "일기 저장에 실패했습니다.")
 		}
 	} else {
 		if content == "" {
 			err = queries.DeleteDiary(c.Request().Context(), diary.ID)
 		} else {
 			_, err = queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
-				Content: content,
+				Content: encryptedContent,
 				ID:      diary.ID,
 			})
 		}
-
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
+			slog.Error("Failed to update/delete diary", "diaryID", diary.ID, "error", err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, "일기 수정 또는 삭제에 실패했습니다.")
 		}
 	}
 
+	c.Response().Header().Set("HX-Refresh", "true")
 	return nil
 }
 
