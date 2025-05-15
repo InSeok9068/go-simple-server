@@ -2,12 +2,13 @@ package views
 
 import (
 	"fmt"
-	lucide "github.com/eduardolat/gomponents-lucide"
-	x "github.com/glsubri/gomponents-alpine"
-	h "maragu.dev/gomponents-htmx"
 	"simple-server/pkg/util"
 	shared "simple-server/shared/views"
 	"time"
+
+	lucide "github.com/eduardolat/gomponents-lucide"
+	x "github.com/glsubri/gomponents-alpine"
+	h "maragu.dev/gomponents-htmx"
 
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/components"
@@ -185,18 +186,18 @@ func Index(title string, date string) Node {
 						),
 					),
 				),
-				//Nav(
-				//	P(Class("max"), Text("알림 시간")),
-				//	Div(Class("field"),
-				//		Input(Type("datetime-local")),
-				//	),
-				//),
-				//Nav(
-				//	P(Class("max"), Text("랜덤 일기 조회 기간")),
-				//	Div(Class("field"),
-				//		Input(Type("number")),
-				//	),
-				//),
+				// Nav(
+				// 	P(Class("max"), Text("알림 시간")),
+				// 	Div(Class("field"),
+				// 		Input(Type("datetime-local")),
+				// 	),
+				// ),
+				// Nav(
+				// 	P(Class("max"), Text("랜덤 일기 조회 기간")),
+				// 	Div(Class("field"),
+				// 		Input(Type("number")),
+				// 	),
+				// ),
 				Nav(Class("right-align"),
 					Button(
 						Attr("data-ui", "#settings-dialog"),
