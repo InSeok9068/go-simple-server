@@ -1,0 +1,57 @@
+{
+  "workbench.startupEditor": "none",
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.colorTheme": "One Dark Pro",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
+  "editor.linkedEditing": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.inlineSuggest.suppressSuggestions": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.shellIntegration.enabled": false,
+  "remote.autoForwardPortsSource": "hybrid",
+  "remote.SSH.remotePlatform": {
+    "Developer_Server_(GO)": "linux",
+    "Developer_Server_(JAVA)": "linux",
+    "Developer_Server_(DOCKER)": "linux"
+  },
+  "settingsSync.ignoredSettings": ["remote.SSH.configFile"],
+  "security.workspace.trust.untrustedFiles": "open",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
+  },
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
+  "[templ]": {
+    "editor.defaultFormatter": "a-h.templ"
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "cweijan.vscode-database-client2"
+  },
+  "files.exclude": {
+    ".history": true
+  },
+  "search.exclude": {
+    ".history/**": true
+  },
+  "css.enabledLanguages": ["html", "templ", "vue"],
+  "go.toolsManagement.autoUpdate": true,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "chat.commandCenter.enabled": false,
+  "database-client.autoSync": true,
+  "database-client.telemetry.usesOnlineServices": false,
+  "excalidraw.theme": "light",
+  "geminicodeassist.project": "gen-lang-client-0630583372"
+  // "cody.telemetry.level": "off",
+  // "codeium.enableConfig": {
+  //   "*": true,
+  //   "markdown": true,
+  //   "templ": true
+  // }
+}
