@@ -30,9 +30,9 @@ func PushTask(c *cron.Cron) {
 		}
 
 		message := &messaging.Message{
-			Notification: &messaging.Notification{
-				Title: "매일 알림",
-				Body:  "오늘 하루는 어땠나요?",
+			Data: map[string]string{
+				"title": "매일 알림",
+				"body":  "오늘 하루는 어땠나요?",
 			},
 			Token: pushKey.Token,
 		}
