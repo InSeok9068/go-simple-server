@@ -15,6 +15,67 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const messaging = getMessaging(app);
 
+// 앱 초기화 시 생체 인증 확인
+async function checkBiometricAuthAndSetup() {
+    try {
+        // 생체 인증이 지원되는지 확인
+        if (!window.PublicKeyCredential) {
+            console.log('생체 인증이 지원되지 않는 디바이스입니다. 일반 모드로 진입합니다.');
+            await setupAppServices();
+            return;
+        }
+
+        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        if (!available) {
+            console.log('생체 인증 하드웨어를 사용할 수 없습니다. 일반 모드로 진입합니다.');
+            await setupAppServices();
+            return;
+        }
+
+        // 이미 인증된 상태인지 확인
+        const isAuthenticated = sessionStorage.getItem('biometricAuthenticated') === 'true';
+        if (isAuthenticated) {
+            console.log('이미 생체 인증된 세션입니다.');
+            await setupAppServices();
+            return;
+        }
+
+        // 인증 옵션 설정
+        const publicKeyCredentialRequestOptions = {
+            challenge: new Uint8Array([21, 31, 105]), // 보안을 위해 서버에서 생성된 챌린지 사용 권장
+            rpId: window.location.hostname,
+            userVerification: 'required',
+            timeout: 60000
+        };
+
+        try {
+            // 생체 인증 요청
+            const credential = await navigator.credentials.get({
+                publicKey: publicKeyCredentialRequestOptions
+            });
+
+            // 인증 성공
+            console.log('생체 인증 성공:', credential);
+            sessionStorage.setItem('biometricAuthenticated', 'true');
+        } catch (authError) {
+            console.error('생체 인증 실패:', authError);
+            // 인증 실패해도 앱은 계속 진행
+        }
+
+        // 인증 성공 또는 실패 후 앱 초기화
+        await setupAppServices();
+    } catch (error) {
+        console.error('생체 인증 프로세스 중 오류 발생:', error);
+        // 오류 발생해도 앱은 계속 진행
+        await setupAppServices();
+    }
+}
+
+// 앱 서비스 설정 함수 (Firebase 함수와 겹치지 않도록 이름 변경)
+async function setupAppServices() {
+    await requestPermissionAndGetToken();
+}
+
 // 2. onAuthStateChanged로 로그인 / 로그아웃 감지
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -105,4 +166,5 @@ async function requestPermissionAndGetToken() {
     }
 }
 
-requestPermissionAndGetToken()
+// 앱 시작 - 생체 인증 확인 후 앱 서비스 설정 실행
+checkBiometricAuthAndSetup();
