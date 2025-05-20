@@ -7,6 +7,7 @@ import (
 
 func HeadsDefault(title string) []Node {
 	return []Node{
+		Meta(Name("viewport"), Content("width=device-width, initial-scale=1.0, maximum-scale=1.0")),
 		Link(Rel("icon"), Href("/shared/static/favicon.ico")),
 		Link(Rel("stylesheet"), Href("/shared/static/style.css")),
 		Link(Rel("stylesheet"), Href("/static/style.css")),
@@ -30,6 +31,17 @@ func HeadsWithBulma(title string) []Node {
 	return append(
 		HeadsDefault(title),
 		bulma...,
+	)
+}
+
+func HeadsWithTailwind(title string) []Node {
+	tailwind := []Node{
+		Link(Rel("stylesheet"), Href("/shared/static/tailwindcss.css")),
+	}
+
+	return append(
+		HeadsDefault(title),
+		tailwind...,
 	)
 }
 
