@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	aiclient "simple-server/internal/ai"
-	"simple-server/internal/connection"
 	"simple-server/pkg/util"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
@@ -46,11 +45,10 @@ func Diary(c echo.Context) error {
 		date = strings.ReplaceAll(date, "-", "")
 	}
 
-	dbCon, err := connection.AppDBOpen()
+	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
-		slog.Error("Failed to open database", "error", err.Error())
+		return err
 	}
-	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  uid,
@@ -75,11 +73,10 @@ func DiaryList(c echo.Context) error {
 		page = "1"
 	}
 
-	dbCon, err := connection.AppDBOpen()
+	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
-		slog.Error("Failed to open database", "error", err.Error())
+		return err
 	}
-	queries := db.New(dbCon)
 
 	diarys, _ := queries.ListDiarys(c.Request().Context(), db.ListDiarysParams{
 		Uid:     uid,
@@ -106,11 +103,10 @@ func DiaryRandom(c echo.Context) error {
 		return err
 	}
 
-	dbCon, err := connection.AppDBOpen()
+	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
-		slog.Error("Failed to open database", "error", err.Error())
+		return err
 	}
-	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiaryRandom(c.Request().Context(), uid)
 
@@ -130,11 +126,10 @@ func Save(c echo.Context) error {
 	date := c.FormValue("date")
 	content := c.FormValue("content")
 
-	dbCon, err := connection.AppDBOpen()
+	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
-		slog.Error("Failed to open database", "error", err.Error())
+		return err
 	}
-	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  uid,
@@ -244,11 +239,10 @@ func AiFeedbackSave(c echo.Context) error {
 	date := c.FormValue("date")
 	aiFeedback := c.FormValue("ai-feedback")
 
-	dbCon, err := connection.AppDBOpen()
+	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
-		slog.Error("Failed to open database", "error", err.Error())
+		return err
 	}
-	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  uid,
@@ -279,11 +273,10 @@ func GetAiFeedback(c echo.Context) error {
 
 	date := c.QueryParam("date")
 
-	dbCon, err := connection.AppDBOpen()
+	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
-		slog.Error("Failed to open database", "error", err.Error())
+		return err
 	}
-	queries := db.New(dbCon)
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  uid,
@@ -317,11 +310,10 @@ func SavePushKey(c echo.Context) error {
 
 	token := data["token"].(string)
 
-	dbCon, err := connection.AppDBOpen()
+	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
-		slog.Error("Failed to open database", "error", err.Error())
+		return err
 	}
-	queries := db.New(dbCon)
 
 	_, err = queries.GetPushKey(c.Request().Context(), uid)
 	if err != nil {
