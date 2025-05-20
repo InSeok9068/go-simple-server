@@ -88,6 +88,7 @@ func HeadWithFirebaseLogin() []Node {
 
 func HeadWithFirebaseAuth() []Node {
 	return []Node{
+		Script(Src("/shared/static/notification-module.js")),
 		Script(Type("module"), Src("/shared/static/firebase_auth.js"), Defer()),
 	}
 }

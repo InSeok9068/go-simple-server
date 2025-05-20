@@ -180,6 +180,7 @@ func Index(title string, date string) Node {
 						Input(Type("checkbox"),
 							x.Data(""),
 							Attr(":checked", "$store.notification.permission"),
+							Attr("@change", "if($event.target.checked) { $store.notification.requestPermission().then(result => { if(!result) $event.target.checked = false; }) }"),
 						),
 						Span(
 							I(Text("notifications")),
