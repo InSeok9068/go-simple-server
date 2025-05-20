@@ -11,6 +11,7 @@ import (
 	"os"
 	"simple-server/internal/connection"
 	"sync"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -18,6 +19,60 @@ import (
 )
 
 var initOnce sync.Once
+var logBuffer []LogEntry
+var bufferMutex sync.Mutex
+var logDB *sql.DB
+
+// LogEntry 로그 항목을 저장하는 구조체
+type LogEntry struct {
+	Level   int
+	Message string
+	Data    string
+	Time    time.Time
+}
+
+// BatchDatabaseHandler 배치 처리를 지원하는 핸들러
+type BatchDatabaseHandler struct {
+	flushInterval time.Duration
+}
+
+func (h *BatchDatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
+	logMessage := r.Message
+	logLevel := r.Level.Level()
+	data := make(map[string]any)
+
+	r.Attrs(func(attr slog.Attr) bool {
+		data[attr.Key] = attr.Value.Any()
+		return true
+	})
+
+	data["service"] = os.Getenv("SERVICE_NAME")
+	jsonBytes, _ := json.Marshal(data)
+
+	// 버퍼에 로그 항목 추가
+	bufferMutex.Lock()
+	logBuffer = append(logBuffer, LogEntry{
+		Level:   int(logLevel),
+		Message: logMessage,
+		Data:    string(jsonBytes),
+		Time:    time.Now(),
+	})
+	bufferMutex.Unlock()
+
+	return nil
+}
+
+func (h *BatchDatabaseHandler) Enabled(_ context.Context, level slog.Level) bool {
+	return level >= slog.LevelInfo
+}
+
+func (h *BatchDatabaseHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return h
+}
+
+func (h *BatchDatabaseHandler) WithGroup(name string) slog.Handler {
+	return h
+}
 
 // MultiHandler : 여러 slog.Handler를 지원하는 커스텀 핸들러
 type MultiHandler struct {
@@ -67,68 +122,106 @@ func (m *MultiHandler) WithGroup(name string) slog.Handler {
 	return NewMultiHandler(newHandlers...)
 }
 
-type DatabaseHandler struct {
-	db *sql.DB
+// FlushLogs 버퍼에 있는 모든 로그를 데이터베이스에 저장
+func FlushLogs() {
+	bufferMutex.Lock()
+	defer bufferMutex.Unlock()
+
+	if len(logBuffer) == 0 {
+		return
+	}
+
+	// 데이터베이스 트랜잭션 시작
+	tx, err := logDB.Begin()
+	if err != nil {
+		slog.Error("Failed to begin transaction", "error", err)
+		return
+	}
+
+	// 준비된 statement 생성
+	stmt, err := tx.Prepare("INSERT INTO _logs (level, message, data, created) VALUES (?, ?, ?, ?)")
+	if err != nil {
+		slog.Error("Failed to prepare statement", "error", err)
+		_ = tx.Rollback()
+		return
+	}
+	defer stmt.Close()
+
+	// 모든 로그 항목을 데이터베이스에 저장
+	for _, entry := range logBuffer {
+		_, err := stmt.Exec(entry.Level, entry.Message, entry.Data, entry.Time)
+		if err != nil {
+			slog.Error("Failed to insert log", "error", err)
+			_ = tx.Rollback()
+			return
+		}
+	}
+
+	// 트랜잭션 커밋
+	if err := tx.Commit(); err != nil {
+		slog.Error("Failed to commit transaction", "error", err)
+		_ = tx.Rollback()
+		return
+	}
+
+	// 버퍼 비우기
+	logBuffer = []LogEntry{}
 }
 
-func (h *DatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
-	logMessage := r.Message
-	logLevel := r.Level.Level()
-	data := make(map[string]any)
-	r.Attrs(func(attr slog.Attr) bool {
-		data[attr.Key] = attr.Value.Any()
-		return true
-	})
-	data["service"] = os.Getenv("SERVICE_NAME")
-	jsonBytes, _ := json.Marshal(data)
+// startLogFlusher 주기적으로 로그를 데이터베이스에 저장하는 고루틴 시작
+func startLogFlusher(interval time.Duration) {
+	go func() {
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
 
-	_, _ = h.db.ExecContext(ctx, "INSERT INTO _logs (level, message, data) VALUES (?, ?, ?)",
-		logLevel,
-		logMessage,
-		string(jsonBytes))
-
-	return nil
+		for {
+			<-ticker.C
+			FlushLogs()
+		}
+	}()
 }
 
-func (h *DatabaseHandler) Enabled(_ context.Context, level slog.Level) bool {
-	return level >= slog.LevelInfo
-}
-
-func (h *DatabaseHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return h
-}
-
-func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
-	return h
-}
-
+// LoggerWithDatabaseInit 로거 초기화 함수 수정
 func LoggerWithDatabaseInit() {
 	initOnce.Do(func() {
 		os.Setenv("LOG_DATABASE_URL", "file:./shared/log_data/auxiliary.db")
-		dbCon, err := connection.LogDBOpen()
+		var err error
+		logDB, err = connection.LogDBOpen()
 		if err != nil {
 			slog.Error("Failed to open database", "error", err)
 			return
 		}
 
-		// Database Handler
-		databaseHandler := &DatabaseHandler{db: dbCon}
+		//// 로그 테이블이 존재하는지 확인, 없으면 생성
+		//_, err = logDB.Exec(`
+		//	CREATE TABLE IF NOT EXISTS _logs (
+		//		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		//		level INTEGER NOT NULL,
+		//		message TEXT NOT NULL,
+		//		data TEXT NOT NULL,
+		//		created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		//	)
+		//`)
+		//if err != nil {
+		//	slog.Error("Failed to create log table", "error", err)
+		//	return
+		//}
 
-		// // File Handler
-		// file, err := os.OpenFile("app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		// if err != nil {
-		// 	slog.Error("Failed to open log file", "error", err)
-		// 	return
-		// }
-		// fileHandler := slog.NewTextHandler(file, &slog.HandlerOptions{})
+		// 배치 핸들러 생성
+		batchHandler := &BatchDatabaseHandler{
+			flushInterval: 5 * time.Second,
+		}
 
-		// Console Handler
+		// 콘솔 핸들러
 		consoleHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})
 
-		// MultiHandler: Combine all handlers
-		multiHandler := NewMultiHandler(consoleHandler, databaseHandler)
+		// 다중 핸들러: 모든 핸들러 결합
+		multiHandler := NewMultiHandler(consoleHandler, batchHandler)
 		slog.SetDefault(slog.New(multiHandler))
 		log.SetOutput(os.Stdout)
+
+		// 로그 플러셔 시작 - 5초마다 실행
+		startLogFlusher(5 * time.Second)
 	})
 }
 

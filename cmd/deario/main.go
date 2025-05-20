@@ -4,9 +4,11 @@ import (
 	"github.com/robfig/cron/v3"
 	"io/fs"
 	"os"
+	"os/signal"
 	resources "simple-server"
 	"simple-server/projects/deario/handlers"
 	"simple-server/projects/deario/tasks"
+	"syscall"
 
 	"simple-server/internal/config"
 	"simple-server/internal/middleware"
@@ -26,7 +28,19 @@ func main() {
 	config.LoggerWithDatabaseInit()
 	/* 로깅 초기화 */
 
+	// 종료 신호 처리를 위한 채널 설정
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
+
 	e := setUpServer()
+
+	// 종료 신호 처리를 위한 고루틴
+	go func() {
+		<-signalCh
+		// 모든 로그 강제 저장
+		config.FlushLogs()
+		os.Exit(0)
+	}()
 
 	e.Logger.Fatal(e.Start(":8002"))
 }
