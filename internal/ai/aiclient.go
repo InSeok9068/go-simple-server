@@ -40,7 +40,7 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 
 	slog.Info(fmt.Sprintf(`프롬프트 요청 : %s`, prompt))
 
-	result, _ := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp-image-generation", genai.Text(prompt), &genai.GenerateContentConfig{
+	result, _ := client.Models.GenerateContent(ctx, "gemini-2.0-flash-preview-image-generation", genai.Text(prompt), &genai.GenerateContentConfig{
 		ResponseModalities: []string{"Text", "Image"},
 	})
 	slog.Info("이미지 생성 응답", "결과", result)
