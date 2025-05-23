@@ -1,3 +1,5 @@
+<!-- vi ~/.codeium/windsurf/memories/global_rules.md -->
+
 한글로 대답해줘
 
 1. 불필요한 복잡성보다는 직관적인 코드 선호
