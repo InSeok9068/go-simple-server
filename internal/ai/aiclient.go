@@ -44,9 +44,14 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 		ResponseModalities: []string{"Text", "Image"},
 	})
 	slog.Info("이미지 생성 응답", "결과", result)
-	resultImage := result.Candidates[0].Content.Parts[0].InlineData.Data
-	data := base64.StdEncoding.EncodeToString(resultImage)
-	return data, nil
+
+	for _, part := range result.Candidates[0].Content.Parts {
+		if part.InlineData != nil {
+			return base64.StdEncoding.EncodeToString(part.InlineData.Data), nil
+		}
+	}
+
+	return "", errors.New("이미지 생성 실패")
 
 	// result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp-image-generation", genai.Text(prompt), nil)
 	// if err != nil {
