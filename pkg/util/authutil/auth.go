@@ -1,4 +1,4 @@
-package util
+package authutil
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SesseionUID(c echo.Context) (string, error) {
+func SessionUID(c echo.Context) (string, error) {
 	sess, _ := session.Get("session", c)
 	uid := sess.Values["uid"]
 	if uid == nil {

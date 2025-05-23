@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"os"
 	aiclient "simple-server/internal/ai"
-	"simple-server/pkg/util"
+	"simple-server/pkg/util/authutil"
+	"simple-server/pkg/util/dateutil"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
 	shared "simple-server/shared/views"
@@ -33,7 +34,7 @@ func Login(c echo.Context) error {
 }
 
 func Diary(c echo.Context) error {
-	uid, err := util.SesseionUID(c)
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
@@ -63,7 +64,7 @@ func Diary(c echo.Context) error {
 }
 
 func DiaryList(c echo.Context) error {
-	uid, err := util.SesseionUID(c)
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
@@ -88,7 +89,7 @@ func DiaryList(c echo.Context) error {
 		lis = append(lis,
 			Li(
 				A(Href(fmt.Sprintf("/?date=%s", diary.Date)),
-					Text(util.MustFormatDateKorWithWeekDay(diary.Date)),
+					Text(dateutil.MustFormatDateKorWithWeekDay(diary.Date)),
 				),
 			),
 		)
@@ -98,7 +99,7 @@ func DiaryList(c echo.Context) error {
 }
 
 func DiaryRandom(c echo.Context) error {
-	uid, err := util.SesseionUID(c)
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
@@ -118,7 +119,7 @@ func DiaryRandom(c echo.Context) error {
 }
 
 func Save(c echo.Context) error {
-	uid, err := util.SesseionUID(c)
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
@@ -165,7 +166,7 @@ func Save(c echo.Context) error {
 }
 
 func AiFeedback(c echo.Context) error {
-	uid, err := util.SesseionUID(c)
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
@@ -231,7 +232,7 @@ func AiFeedback(c echo.Context) error {
 }
 
 func AiFeedbackSave(c echo.Context) error {
-	uid, err := util.SesseionUID(c)
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
@@ -266,7 +267,7 @@ func AiFeedbackSave(c echo.Context) error {
 }
 
 func GetAiFeedback(c echo.Context) error {
-	uid, err := util.SesseionUID(c)
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
@@ -298,7 +299,7 @@ func GetAiFeedback(c echo.Context) error {
 }
 
 func SavePushKey(c echo.Context) error {
-	uid, err := util.SesseionUID(c)
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}

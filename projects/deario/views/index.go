@@ -2,7 +2,8 @@ package views
 
 import (
 	"fmt"
-	"simple-server/pkg/util"
+	"simple-server/pkg/util/dateutil"
+	"simple-server/pkg/util/gomutil"
 	shared "simple-server/shared/views"
 	"time"
 
@@ -19,7 +20,7 @@ func Index(title string, date string) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
-		Head: util.MergeHeads(
+		Head: gomutil.MergeHeads(
 			shared.HeadsWithBeer(title),
 			shared.HeadWithFirebaseAuth(),
 			[]Node{
@@ -44,13 +45,13 @@ func Index(title string, date string) Node {
 			/* Body */
 			Main(Class("responsive"),
 				Nav(
-					A(Href(fmt.Sprintf("/?date=%s", util.MustAddDaysToDate(date, -1))),
+					A(Href(fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1))),
 						I(Text("arrow_back_ios")),
 					),
 					A(Href(fmt.Sprintf("/?date=%s", time.Now().Format("20060102"))),
 						Button(Class("small-round small"), Text("Today")),
 					),
-					A(Href(fmt.Sprintf("/?date=%s", util.MustAddDaysToDate(date, 1))),
+					A(Href(fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1))),
 						I(Text("arrow_forward_ios")),
 					),
 					Div(Class("max"),

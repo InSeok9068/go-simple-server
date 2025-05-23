@@ -1,4 +1,4 @@
-package util
+package gomutil
 
 import (
 	. "maragu.dev/gomponents"
