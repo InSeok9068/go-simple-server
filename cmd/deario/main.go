@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/robfig/cron/v3"
 	"io/fs"
 	"os"
 	resources "simple-server"
 	"simple-server/projects/deario/handlers"
 	"simple-server/projects/deario/tasks"
+
+	"github.com/robfig/cron/v3"
 
 	"simple-server/internal/config"
 	"simple-server/internal/middleware"
