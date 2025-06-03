@@ -151,7 +151,7 @@ func Index(title string, date string) Node {
 					Li(P(Class("small-text"), Text("- 예) 많이 힘들었겠네"))),
 					Li(Text("숨은 의도: 말 뒤의 감정/의도를 추측했는가")),
 					Li(P(Class("small-text"), Text("- 예) 혹시 피곤해서 예민한 건가?"))),
-					Li(Text("판단/변명: 내 생각만 앞세워 판단하거나 변명하지 않았는가")),
+					Li(Text("판단/변명: 내 스스로 판단하거나 변명하지 않았는가")),
 					Li(P(Class("small-text"), Text("- 예) 네가 서운했겠네. 미안해 (변명 X)"))),
 				),
 				Nav(Class("right-align"),
