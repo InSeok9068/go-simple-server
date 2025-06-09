@@ -10,7 +10,7 @@ LIMIT 1;
 -- name: GetDiaryRandom :one
 SELECT *
 FROM diarys
-WHERE date IS NOT NULL
+WHERE date >= ?
   AND uid = ?
 ORDER BY RANDOM()
 LIMIT 1;
@@ -68,3 +68,23 @@ UPDATE push_keys
 SET token   = ?,
     updated = datetime('now')
 WHERE uid = ?;
+
+-- name: GetDiarySetting :one
+SELECT *
+FROM diary_settings
+WHERE uid = ?
+LIMIT 1;
+
+-- name: CreateDiarySetting :exec
+INSERT INTO diary_settings (uid, random_range_days, created, updated)
+VALUES (?,
+        ?,
+        datetime('now', 'localtime'),
+        datetime('now', 'localtime'));
+
+-- name: UpdateDiarySettingRange :exec
+UPDATE diary_settings
+SET random_range_days = ?,
+    updated           = datetime('now')
+WHERE uid = ?;
+

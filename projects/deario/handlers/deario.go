@@ -20,13 +20,26 @@ import (
 )
 
 func Index(c echo.Context) error {
-	date := c.QueryParam("date")
-	if date == "" {
-		date = time.Now().Format("20060102")
-	} else {
-		date = strings.ReplaceAll(date, "-", "")
-	}
-	return views.Index(os.Getenv("APP_TITLE"), date).Render(c.Response().Writer)
+        date := c.QueryParam("date")
+        if date == "" {
+                date = time.Now().Format("20060102")
+        } else {
+                date = strings.ReplaceAll(date, "-", "")
+        }
+
+        rangeDays := 30
+        uid, err := authutil.SessionUID(c)
+        if err == nil {
+                queries, qerr := db.GetQueries(c.Request().Context())
+                if qerr == nil {
+                        setting, serr := queries.GetDiarySetting(c.Request().Context(), uid)
+                        if serr == nil {
+                                rangeDays = int(setting.RandomRangeDays)
+                        }
+                }
+        }
+
+        return views.Index(os.Getenv("APP_TITLE"), date, rangeDays).Render(c.Response().Writer)
 }
 
 func Login(c echo.Context) error {
@@ -99,17 +112,28 @@ func DiaryList(c echo.Context) error {
 }
 
 func DiaryRandom(c echo.Context) error {
-	uid, err := authutil.SessionUID(c)
-	if err != nil {
-		return err
-	}
+        uid, err := authutil.SessionUID(c)
+        if err != nil {
+                return err
+        }
 
-	queries, err := db.GetQueries(c.Request().Context())
-	if err != nil {
-		return err
-	}
+        queries, err := db.GetQueries(c.Request().Context())
+        if err != nil {
+                return err
+        }
 
-	diary, err := queries.GetDiaryRandom(c.Request().Context(), uid)
+        rangeDays := 30
+        setting, serr := queries.GetDiarySetting(c.Request().Context(), uid)
+        if serr == nil {
+                rangeDays = int(setting.RandomRangeDays)
+        }
+
+        startDate := time.Now().AddDate(0, 0, -rangeDays).Format("20060102")
+
+        diary, err := queries.GetDiaryRandom(c.Request().Context(), db.GetDiaryRandomParams{
+                Date: startDate,
+                Uid:  uid,
+        })
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "작성한 일기장이 없습니다.")
@@ -331,5 +355,39 @@ func SavePushKey(c echo.Context) error {
 		})
 	}
 
-	return nil
+        return nil
+}
+
+func SaveRandomRangeDays(c echo.Context) error {
+        uid, err := authutil.SessionUID(c)
+        if err != nil {
+                return err
+        }
+
+        var data struct {
+                Days int `json:"days"`
+        }
+        if err := c.Bind(&data); err != nil {
+                return err
+        }
+
+        queries, err := db.GetQueries(c.Request().Context())
+        if err != nil {
+                return err
+        }
+
+        _, serr := queries.GetDiarySetting(c.Request().Context(), uid)
+        if serr != nil {
+                _ = queries.CreateDiarySetting(c.Request().Context(), db.CreateDiarySettingParams{
+                        Uid:             uid,
+                        RandomRangeDays: int64(data.Days),
+                })
+        } else {
+                _ = queries.UpdateDiarySettingRange(c.Request().Context(), db.UpdateDiarySettingRangeParams{
+                        RandomRangeDays: int64(data.Days),
+                        Uid:             uid,
+                })
+        }
+
+        return nil
 }

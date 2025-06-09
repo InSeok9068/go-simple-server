@@ -21,3 +21,15 @@ create table push_keys
     uid     TEXT default ''                                 not null,
     updated TEXT default ''                                 not null
 );
+
+-- auto-generated definition
+create table diary_settings
+(
+    id                TEXT default ('r' || lower(hex(randomblob(7)))) not null
+        primary key,
+    uid               TEXT default ''                                 not null
+        unique,
+    random_range_days INTEGER default 30                              not null,
+    created           TEXT default ''                                 not null,
+    updated           TEXT default ''                                 not null
+);
