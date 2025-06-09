@@ -31,6 +31,7 @@ onAuthStateChanged(auth, (user) => {
     }
 })
 
+let reauthInProgress = false;
 htmx.on("htmx:afterRequest", (event) => {
     const contentType = event.detail.xhr.getResponseHeader("Content-Type");
     if (contentType !== 'application/json') {
@@ -43,7 +44,8 @@ htmx.on("htmx:afterRequest", (event) => {
     }
 
     const isResponseError = event.detail.xhr.status === 401;
-    if (isResponseError) {
+    if (isResponseError && !reauthInProgress) {
+        reauthInProgress = true;
         auth.authStateReady().then(() => {
             if (auth.currentUser === undefined) {
                 location.href = "/login";
@@ -65,6 +67,8 @@ htmx.on("htmx:afterRequest", (event) => {
                 }
             }).catch((err) => {
                 console.error("세션 생성 중 에러:", err);
+            }).finally(() => {
+                reauthInProgress = false;
             });
         })
     }
