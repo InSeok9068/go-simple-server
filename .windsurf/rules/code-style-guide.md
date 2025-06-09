@@ -49,6 +49,7 @@ trigger: always_on
 ## 프로젝트 설명
 
 - homepage : 아래의 서비스들을 간단한 소개 및 인입경로를 정의한 홈페이지
+    - homepage는 `TailwindCSS` 사용
 - ai-study : 공부주제를 던져주면 AI가 10가지의 공부주제 리스트를 나열
 - deario : 오늘의 일기를 작성하고 일기요정(AI) 간단한 피드백으로 하루를 되돌아봄
 - sample : 코드 동작성에 대한 간단한 검증용 샘플 프로젝트
