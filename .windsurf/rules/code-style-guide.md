@@ -8,7 +8,7 @@ trigger: always_on
 - 서버 프레임워크 : Echo
 - 템플릿 라이브러리 : Gomponents
 - 데이터베이스 : SQLite
-- SQL 제너레이터 : SQLC
+- SQL 코드 제너레이터 : SQLC
 - 프론트엔드 라이브러리 : HTMX, Alpinejs
 - CSS 프레임워크 : BeerCSS
 - 소스 관리 : Monorepo (다양한 프로젝트를 한곳에서 관리)
@@ -41,6 +41,12 @@ trigger: always_on
 - 로깅은 `slog` 패키지를 활용하여 각각 상황에 맞게 `DEBUG`, `INFO`, `WARN`, `ERROR` 적절히 분리
 - Gomponents 특성상 자바스크립트는 별도의 JS 파일로 분리 후 사용
 
+## 스키마 및 쿼리 수정
+
+- 스키마 수정 : `./projects/{프로젝트명}/schema.sql` 파일 수정
+- 쿼리 수정 : `./projects/{프로젝트명}/query.sql` 파일 수정
+- 코드 생성 : `sqlc generate -f ./projects/{프로젝트명}/sqlc.yaml` 터미널 명령어 실행
+
 ## 프로젝트 설명
 
 - homepage : 아래의 서비스들을 간단한 소개 및 인입경로를 정의한 홈페이지
@@ -48,4 +54,4 @@ trigger: always_on
 - deario : 오늘의 일기를 작성하고 일기요정(AI) 간단한 피드백으로 하루를 되돌아봄
 - sample : 코드 동작성에 대한 간단한 검증용 샘플 프로젝트
 
-※ 위에 명시된 사항들을 반드시 준수해주세요 !!.
+※ 위에 명시된 사항들을 반드시 준수해주세요 !!
