@@ -210,7 +210,10 @@ func AiFeedback(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return Div(Img(Style("width:320px"), Src(fmt.Sprintf("data:image/png;base64,%s", result)))).Render(c.Response().Writer)
+		return Div(
+			Input(Type("hidden"), Name("ai-image"), Value(result)),
+			Img(Style("width:320px"), Src(fmt.Sprintf("data:image/png;base64,%s", result))),
+		).Render(c.Response().Writer)
 	} else {
 		prompt := fmt.Sprintf(`아래의 내용은 나의 오늘 하루의 일기야
 		내용 : %s
@@ -241,6 +244,7 @@ func AiFeedbackSave(c echo.Context) error {
 
 	date := c.FormValue("date")
 	aiFeedback := c.FormValue("ai-feedback")
+	aiImage := c.FormValue("ai-image")
 
 	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
@@ -259,6 +263,7 @@ func AiFeedbackSave(c echo.Context) error {
 	err = queries.UpdateDiaryOfAiFeedback(c.Request().Context(), db.UpdateDiaryOfAiFeedbackParams{
 		ID:         diary.ID,
 		Aifeedback: aiFeedback,
+		Aiimage:    aiImage,
 	})
 
 	if err != nil {
@@ -288,6 +293,13 @@ func GetAiFeedback(c echo.Context) error {
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "저장된 일기가 없습니다.")
+	}
+
+	if diary.Aiimage != "" {
+		return Div(
+			Input(Type("hidden"), Name("ai-image"), Value(diary.Aiimage)),
+			Img(Style("width:320px"), Src(fmt.Sprintf("data:image/png;base64,%s", diary.Aiimage))),
+		).Render(c.Response().Writer)
 	}
 
 	if diary.Aifeedback == "" {

@@ -16,7 +16,7 @@ VALUES (?,
         ?,
         datetime('now', 'localtime'),
         datetime('now', 'localtime'))
-RETURNING content, created, date, id, uid, updated, aifeedback
+RETURNING content, created, date, id, uid, updated, aifeedback, aiimage
 `
 
 type CreateDiaryParams struct {
@@ -37,6 +37,7 @@ func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary
 		&i.Uid,
 		&i.Updated,
 		&i.Aifeedback,
+		&i.Aiimage,
 	)
 	return i, err
 }
@@ -72,7 +73,7 @@ func (q *Queries) DeleteDiary(ctx context.Context, id string) error {
 
 const getDiary = `-- name: GetDiary :one
 
-SELECT content, created, date, id, uid, updated, aifeedback
+SELECT content, created, date, id, uid, updated, aifeedback, aiimage
 FROM diarys
 WHERE date = ?
   AND uid = ?
@@ -96,12 +97,13 @@ func (q *Queries) GetDiary(ctx context.Context, arg GetDiaryParams) (Diary, erro
 		&i.Uid,
 		&i.Updated,
 		&i.Aifeedback,
+		&i.Aiimage,
 	)
 	return i, err
 }
 
 const getDiaryRandom = `-- name: GetDiaryRandom :one
-SELECT content, created, date, id, uid, updated, aifeedback
+SELECT content, created, date, id, uid, updated, aifeedback, aiimage
 FROM diarys
 WHERE date IS NOT NULL
   AND uid = ?
@@ -120,6 +122,7 @@ func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error)
 		&i.Uid,
 		&i.Updated,
 		&i.Aifeedback,
+		&i.Aiimage,
 	)
 	return i, err
 }
@@ -145,7 +148,7 @@ func (q *Queries) GetPushKey(ctx context.Context, uid string) (PushKey, error) {
 }
 
 const listDiarys = `-- name: ListDiarys :many
-SELECT content, created, date, id, uid, updated, aifeedback
+SELECT content, created, date, id, uid, updated, aifeedback, aiimage
 FROM diarys
 WHERE uid = ?
 ORDER BY created desc
@@ -174,6 +177,7 @@ func (q *Queries) ListDiarys(ctx context.Context, arg ListDiarysParams) ([]Diary
 			&i.Uid,
 			&i.Updated,
 			&i.Aifeedback,
+			&i.Aiimage,
 		); err != nil {
 			return nil, err
 		}
@@ -193,7 +197,7 @@ UPDATE diarys
 SET content = ?,
     updated = datetime('now')
 WHERE id = ?
-RETURNING content, created, date, id, uid, updated, aifeedback
+RETURNING content, created, date, id, uid, updated, aifeedback, aiimage
 `
 
 type UpdateDiaryParams struct {
@@ -212,6 +216,7 @@ func (q *Queries) UpdateDiary(ctx context.Context, arg UpdateDiaryParams) (Diary
 		&i.Uid,
 		&i.Updated,
 		&i.Aifeedback,
+		&i.Aiimage,
 	)
 	return i, err
 }
@@ -219,17 +224,19 @@ func (q *Queries) UpdateDiary(ctx context.Context, arg UpdateDiaryParams) (Diary
 const updateDiaryOfAiFeedback = `-- name: UpdateDiaryOfAiFeedback :exec
 UPDATE diarys
 SET aiFeedback = ?,
+    aiImage    = ?,
     updated    = datetime('now')
 WHERE id = ?
 `
 
 type UpdateDiaryOfAiFeedbackParams struct {
 	Aifeedback string
+	Aiimage    string
 	ID         string
 }
 
 func (q *Queries) UpdateDiaryOfAiFeedback(ctx context.Context, arg UpdateDiaryOfAiFeedbackParams) error {
-	_, err := q.db.ExecContext(ctx, updateDiaryOfAiFeedback, arg.Aifeedback, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateDiaryOfAiFeedback, arg.Aifeedback, arg.Aiimage, arg.ID)
 	return err
 }
 

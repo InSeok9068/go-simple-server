@@ -12,6 +12,7 @@ type Diary struct {
 	Uid        string
 	Updated    string
 	Aifeedback string
+	Aiimage    string
 }
 
 type PushKey struct {
