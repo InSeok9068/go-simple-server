@@ -47,6 +47,7 @@ WHERE id = ?;
 -- name: UpdateDiaryOfAiFeedback :exec
 UPDATE diarys
 SET aiFeedback = ?,
+    aiImage    = ?,
     updated    = datetime('now')
 WHERE id = ?;
 

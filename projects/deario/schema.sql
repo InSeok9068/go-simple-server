@@ -8,7 +8,8 @@ create table diarys
         primary key,
     uid        TEXT default ''                                 not null,
     updated    TEXT default ''                                 not null,
-    aiFeedback TEXT default ''                                 not null
+    aiFeedback TEXT default ''                                 not null,
+    aiImage    TEXT default ''                                 not null
 );
 
 -- auto-generated definition
