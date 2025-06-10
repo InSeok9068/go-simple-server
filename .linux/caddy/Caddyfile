@@ -3,6 +3,14 @@
     email dlstjr9068@gmail.com  # Let's Encrypt SSL 인증서 발급을 위한 이메일 설정
 }
 
+# Adminer 루트도메인 (HTTPS 자동 적용)
+db.toy-project.n-e.kr {
+    root * /var/www/html/adminer
+
+    php_fastcgi unix//run/php/php-fpm.sock
+    file_server
+}
+
 # 홈페이지 루트도메인 (HTTPS 자동 적용)
 toy-project.n-e.kr {
     reverse_proxy 127.0.0.1:8000
