@@ -16,7 +16,7 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func Index(title string, date string) Node {
+func Index(title string, date string, rangeDays int) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
@@ -224,18 +224,16 @@ func Index(title string, date string) Node {
 						),
 					),
 				),
-				// Nav(
-				// 	P(Class("max"), Text("알림 시간")),
-				// 	Div(Class("field"),
-				// 		Input(Type("datetime-local")),
-				// 	),
-				// ),
-				// Nav(
-				// 	P(Class("max"), Text("랜덤 일기 조회 기간")),
-				// 	Div(Class("field"),
-				// 		Input(Type("number")),
-				// 	),
-				// ),
+                                Nav(
+                                        P(Class("max"), Text("랜덤 일기 조회 기간")),
+                                        Div(Class("field"),
+                                                Input(Type("number"), Name("days"), Value(fmt.Sprintf("%d", rangeDays)),
+                                                        h.Post("/setting/random-range-days"),
+                                                        h.Swap("none"),
+                                                        h.Trigger("change"),
+                                                ),
+                                        ),
+                                ),
 				Nav(Class("right-align"),
 					Button(
 						Attr("data-ui", "#settings-dialog"),

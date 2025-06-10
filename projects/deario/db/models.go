@@ -15,6 +15,14 @@ type Diary struct {
 	Aiimage    string
 }
 
+type DiarySetting struct {
+	ID              string
+	Uid             string
+	RandomRangeDays int64
+	Created         string
+	Updated         string
+}
+
 type PushKey struct {
 	Created string
 	ID      string

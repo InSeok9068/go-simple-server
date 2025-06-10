@@ -57,10 +57,12 @@ func setUpServer() *echo.Echo {
 	e.POST("/save", handlers.Save)
 	e.GET("/ai-feedback", handlers.GetAiFeedback)
 	e.POST("/ai-feedback", handlers.AiFeedback)
-	e.POST("/ai-feedback/save", handlers.AiFeedbackSave)
+        e.POST("/ai-feedback/save", handlers.AiFeedbackSave)
 
-	// 푸시키 갱신
-	e.POST("/save-pushToken", handlers.SavePushKey)
+        // 푸시키 갱신
+        e.POST("/save-pushToken", handlers.SavePushKey)
+        // 설정 저장
+        e.POST("/setting/random-range-days", handlers.SaveRandomRangeDays)
 	/* 라우터  */
 
 	/* 스케줄 */

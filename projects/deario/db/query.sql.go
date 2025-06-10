@@ -42,6 +42,24 @@ func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary
 	return i, err
 }
 
+const createDiarySetting = `-- name: CreateDiarySetting :exec
+INSERT INTO diary_settings (uid, random_range_days, created, updated)
+VALUES (?,
+        ?,
+        datetime('now', 'localtime'),
+        datetime('now', 'localtime'))
+`
+
+type CreateDiarySettingParams struct {
+	Uid             string
+	RandomRangeDays int64
+}
+
+func (q *Queries) CreateDiarySetting(ctx context.Context, arg CreateDiarySettingParams) error {
+	_, err := q.db.ExecContext(ctx, createDiarySetting, arg.Uid, arg.RandomRangeDays)
+	return err
+}
+
 const createPushKey = `-- name: CreatePushKey :exec
 INSERT INTO push_keys (uid, token, created, updated)
 VALUES (?,
@@ -105,14 +123,19 @@ func (q *Queries) GetDiary(ctx context.Context, arg GetDiaryParams) (Diary, erro
 const getDiaryRandom = `-- name: GetDiaryRandom :one
 SELECT content, created, date, id, uid, updated, aifeedback, aiimage
 FROM diarys
-WHERE date IS NOT NULL
+WHERE date >= ?
   AND uid = ?
 ORDER BY RANDOM()
 LIMIT 1
 `
 
-func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error) {
-	row := q.db.QueryRowContext(ctx, getDiaryRandom, uid)
+type GetDiaryRandomParams struct {
+	Date string
+	Uid  string
+}
+
+func (q *Queries) GetDiaryRandom(ctx context.Context, arg GetDiaryRandomParams) (Diary, error) {
+	row := q.db.QueryRowContext(ctx, getDiaryRandom, arg.Date, arg.Uid)
 	var i Diary
 	err := row.Scan(
 		&i.Content,
@@ -123,6 +146,26 @@ func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error)
 		&i.Updated,
 		&i.Aifeedback,
 		&i.Aiimage,
+	)
+	return i, err
+}
+
+const getDiarySetting = `-- name: GetDiarySetting :one
+SELECT id, uid, random_range_days, created, updated
+FROM diary_settings
+WHERE uid = ?
+LIMIT 1
+`
+
+func (q *Queries) GetDiarySetting(ctx context.Context, uid string) (DiarySetting, error) {
+	row := q.db.QueryRowContext(ctx, getDiarySetting, uid)
+	var i DiarySetting
+	err := row.Scan(
+		&i.ID,
+		&i.Uid,
+		&i.RandomRangeDays,
+		&i.Created,
+		&i.Updated,
 	)
 	return i, err
 }
@@ -237,6 +280,23 @@ type UpdateDiaryOfAiFeedbackParams struct {
 
 func (q *Queries) UpdateDiaryOfAiFeedback(ctx context.Context, arg UpdateDiaryOfAiFeedbackParams) error {
 	_, err := q.db.ExecContext(ctx, updateDiaryOfAiFeedback, arg.Aifeedback, arg.Aiimage, arg.ID)
+	return err
+}
+
+const updateDiarySettingRange = `-- name: UpdateDiarySettingRange :exec
+UPDATE diary_settings
+SET random_range_days = ?,
+    updated           = datetime('now')
+WHERE uid = ?
+`
+
+type UpdateDiarySettingRangeParams struct {
+	RandomRangeDays int64
+	Uid             string
+}
+
+func (q *Queries) UpdateDiarySettingRange(ctx context.Context, arg UpdateDiarySettingRangeParams) error {
+	_, err := q.db.ExecContext(ctx, updateDiarySettingRange, arg.RandomRangeDays, arg.Uid)
 	return err
 }
 
