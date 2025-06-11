@@ -35,11 +35,10 @@ go.work.sum
 *.log
 
 # Pocketbase
-pb_data
-pb_migrations
+data
+log
 !pocketbase.exe
 !pocketbase
-log_data
 
 # air
 tmp
