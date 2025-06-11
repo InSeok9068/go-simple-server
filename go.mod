@@ -9,7 +9,7 @@ tool github.com/sqlc-dev/sqlc/cmd/sqlc
 tool github.com/golangci/golangci-lint/cmd/golangci-lint
 
 require (
-	firebase.google.com/go/v4 v4.16.0
+	firebase.google.com/go/v4 v4.16.1
 	github.com/doganarif/govisual v0.1.9
 	github.com/eduardolat/gomponents-lucide v1.4.0
 	github.com/glsubri/gomponents-alpine v0.2.2
