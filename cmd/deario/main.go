@@ -20,7 +20,7 @@ func main() {
 	config.LoadEnv()
 	os.Setenv("SERVICE_NAME", "deario")
 	os.Setenv("APP_TITLE", "Deario")
-	os.Setenv("APP_DATABASE_URL", "file:./projects/deario/pb_data/data.db")
+	os.Setenv("APP_DATABASE_URL", config.AppDatabaseURL(os.Getenv("SERVICE_NAME")))
 	/* 환경 설정 */
 
 	/* 로깅 초기화 */

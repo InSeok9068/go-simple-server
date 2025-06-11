@@ -104,7 +104,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 
 func LoggerWithDatabaseInit() {
 	initOnce.Do(func() {
-		os.Setenv("LOG_DATABASE_URL", "file:./shared/log_data/auxiliary.db")
+		os.Setenv("LOG_DATABASE_URL", LogDatabaseURL())
 		dbCon, err := connection.LogDBOpen()
 		if err != nil {
 			slog.Error("Failed to open database", "error", err)
