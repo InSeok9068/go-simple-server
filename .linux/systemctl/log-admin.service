@@ -3,7 +3,7 @@ Description=Log Admin Service
 After=network.target
 
 [Service]
-ExecStart=/home/ubuntu/app/log-admin serve --dir /var/log --http=127.0.0.1:9000
+ExecStart=/home/ubuntu/app/log-admin serve --dir /srv/log --http=127.0.0.1:9000
 WorkingDirectory=/home/ubuntu/app
 Restart=always
 User=root
