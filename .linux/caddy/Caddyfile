@@ -30,8 +30,3 @@ deario.toy-project.n-e.kr {
 log.toy-project.n-e.kr {
     reverse_proxy 127.0.0.1:9000
 }
-
-# 일기장 어드민 서브도메인
-deario-admin.toy-project.n-e.kr {
-    reverse_proxy 127.0.0.1:9002
-}
