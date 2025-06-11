@@ -11,12 +11,12 @@ NC='\033[0m' # No Color
 function show_usage {
   echo -e "${BLUE}사용법:${NC} $0 [명령어] [서비스명] [옵션...]"
   echo -e "명령어:"
-  echo -e "  ${GREEN}create${NC} [서비스명] [포트번호(선택)] [어드민포트(선택)] - 새 서비스 생성"
+  echo -e "  ${GREEN}create${NC} [서비스명] [포트번호(선택)] - 새 서비스 생성"
   echo -e "  ${GREEN}deploy${NC} [서비스명] - 서비스 배포 명령어 출력"
   echo -e "  ${GREEN}remove${NC} [서비스명] - 서비스 제거"
   echo -e "  ${GREEN}undeploy${NC} [서비스명] - 서비스 제거 명령어 출력"
   echo -e "예시:"
-  echo -e "  $0 create my-service 8003 9003"
+  echo -e "  $0 create my-service 8003"
   echo -e "  $0 deploy my-service"
   echo -e "  $0 remove my-service"
   echo -e "  $0 undeploy my-service"
@@ -62,7 +62,6 @@ case "$COMMAND" in
   "create")
     # new-service.sh 기능
     SERVICE_PORT="$3"
-    ADMIN_PORT="$4"
 
     # 포트 자동 할당 (제공되지 않은 경우)
     if [ -z "$SERVICE_PORT" ]; then
@@ -82,16 +81,10 @@ case "$COMMAND" in
       fi
     fi
 
-    # 어드민 포트 자동 할당 (제공되지 않은 경우)
-    if [ -z "$ADMIN_PORT" ]; then
-      ADMIN_PORT=$((SERVICE_PORT + 1000)) # 서비스 포트 + 1000
-    fi
-
     # 메인 스크립트 시작
     echo -e "${BLUE}=== $SERVICE_NAME 서비스 생성 스크립트 ===${NC}"
     echo -e "서비스명: ${YELLOW}$SERVICE_NAME${NC}"
     echo -e "서비스 포트: ${YELLOW}$SERVICE_PORT${NC}"
-    echo -e "어드민 포트: ${YELLOW}$ADMIN_PORT${NC}"
     echo -e "${YELLOW}계속하려면 Enter 키를 누르세요... (취소하려면 Ctrl+C)${NC}"
     read
 
@@ -160,26 +153,6 @@ WantedBy=multi-user.target
 EOF
     check "메인 서비스 파일 생성 완료"
 
-    # 어드민 서비스 파일 생성
-    cat > ".linux/systemctl/$SERVICE_NAME-admin.service" << EOF
-[Unit]
-Description=$SERVICE_NAME Admin Service
-After=network.target
-
-[Service]
-Type=simple
-User=ubuntu
-Group=ubuntu
-WorkingDirectory=/home/ubuntu/app
-ExecStart=/home/ubuntu/app/$SERVICE_NAME-admin serve --dir /home/ubuntu/app/projects/$SERVICE_NAME/pb_data --http=127.0.0.1:$ADMIN_PORT
-Restart=on-failure
-RestartSec=5s
-
-[Install]
-WantedBy=multi-user.target
-EOF
-    check "어드민 서비스 파일 생성 완료"
-
     # 6. Caddyfile 업데이트
     step "6" "Caddyfile 업데이트"
     mkdir -p ".linux/caddy" || error_exit "caddy 폴더 생성 실패"
@@ -194,10 +167,6 @@ $SERVICE_NAME.toy-project.n-e.kr {
     reverse_proxy 127.0.0.1:$SERVICE_PORT
 }
 
-# $SERVICE_NAME 어드민 서브도메인
-$SERVICE_NAME-admin.toy-project.n-e.kr {
-    reverse_proxy 127.0.0.1:$ADMIN_PORT
-}
 EOF
       check "Caddyfile 업데이트 완료"
     else
@@ -214,36 +183,22 @@ EOF
     echo -e "\n${YELLOW}1. 서비스 실행 파일 권한 부여${NC}"
     echo "chmod +x /home/ubuntu/app/$SERVICE_NAME"
 
-    echo -e "\n${YELLOW}2. 어드민 실행 파일 권한 부여${NC}"
-    echo "chmod +x /home/ubuntu/app/$SERVICE_NAME-admin"
-
-    echo -e "\n${YELLOW}3. 서비스 파일 설치 및 활성화${NC}"
+    echo -e "\n${YELLOW}2. 서비스 파일 설치 및 활성화${NC}"
     echo "sudo cp .linux/systemctl/$SERVICE_NAME.service /etc/systemd/system/"
     echo "sudo systemctl daemon-reload"
     echo "sudo systemctl start $SERVICE_NAME.service"
     echo "sudo systemctl enable $SERVICE_NAME.service"
 
-    echo -e "\n${YELLOW}4. 어드민 서비스 파일 설치 및 활성화${NC}"
-    echo "sudo cp .linux/systemctl/$SERVICE_NAME-admin.service /etc/systemd/system/"
-    echo "sudo systemctl daemon-reload"
-    echo "sudo systemctl start $SERVICE_NAME-admin.service"
-    echo "sudo systemctl enable $SERVICE_NAME-admin.service"
-
-    echo -e "\n${YELLOW}5. Caddyfile 수정${NC}"
+    echo -e "\n${YELLOW}3. Caddyfile 수정${NC}"
     echo "sudo nano /etc/caddy/Caddyfile"
     echo -e "${GREEN}서브도메인과 포트 설정을 추가해주세요${NC}"
 
-    echo -e "\n${YELLOW}6. Caddy 서비스 재시작${NC}"
+    echo -e "\n${YELLOW}4. Caddy 서비스 재시작${NC}"
     echo "sudo systemctl reload caddy"
 
     echo -e "\n${BLUE}=== 서비스 상태 확인 명령어 ====${NC}"
     echo "sudo systemctl status $SERVICE_NAME.service"
-    echo "sudo systemctl status $SERVICE_NAME-admin.service"
     echo "sudo systemctl status caddy"
-
-    echo -e "\n${YELLOW}7. 어드민 계정 생성 (필요한 경우)${NC}"
-    echo "# 브라우저에서 $SERVICE_NAME-admin.toy-project.n-e.kr 접속"
-    echo "# 어드민 계정을 설정하세요"
 
     echo -e "\n${GREEN}위 명령어들을 복사하여 서버에서 순서대로 실행하세요.${NC}"
     ;;
@@ -300,9 +255,7 @@ EOF
 
       # Sed를 이용한 복잡한 패턴 처리 (여러 줄에 걸친 블록 제거)
       perl -i -0pe 's/# '"$SERVICE_NAME"' 서브도메인.*?}//gs' "$CADDYFILE"
-      perl -i -0pe 's/# '"$SERVICE_NAME"' 어드민 서브도메인.*?}//gs' "$CADDYFILE"
       perl -i -0pe 's/'"$SERVICE_NAME"'\.toy-project\.n-e\.kr \{.*?}//gs' "$CADDYFILE"
-      perl -i -0pe 's/'"$SERVICE_NAME"'-admin\.toy-project\.n-e\.kr \{.*?}//gs' "$CADDYFILE"
 
       # 중복된 빈 줄 정리 (3개 이상의 연속된 빈 줄을 2개로 줄임)
       perl -i -0pe 's/\n{3,}/\n\n/g' "$CADDYFILE"
@@ -315,20 +268,12 @@ EOF
     # 4. systemd 서비스 파일 제거
     step "4" "systemd 서비스 파일 제거"
     SERVICE_FILE=".linux/systemctl/$SERVICE_NAME.service"
-    ADMIN_SERVICE_FILE=".linux/systemctl/$SERVICE_NAME-admin.service"
 
     if [ -f "$SERVICE_FILE" ]; then
       rm "$SERVICE_FILE"
       check "메인 서비스 파일 제거 완료"
     else
       warn "메인 서비스 파일을 찾을 수 없습니다"
-    fi
-
-    if [ -f "$ADMIN_SERVICE_FILE" ]; then
-      rm "$ADMIN_SERVICE_FILE"
-      check "어드민 서비스 파일 제거 완료"
-    else
-      warn "어드민 서비스 파일을 찾을 수 없습니다"
     fi
 
     # 5. main.go 파일 제거
@@ -389,27 +334,21 @@ EOF
     echo "sudo systemctl stop $SERVICE_NAME.service"
     echo "sudo systemctl disable $SERVICE_NAME.service"
 
-    echo -e "\n${YELLOW}2. 어드민 서비스 중지 및 비활성화${NC}"
-    echo "sudo systemctl stop $SERVICE_NAME-admin.service"
-    echo "sudo systemctl disable $SERVICE_NAME-admin.service"
-
-    echo -e "\n${YELLOW}3. 서비스 파일 제거${NC}"
+    echo -e "\n${YELLOW}2. 서비스 파일 제거${NC}"
     echo "sudo rm /etc/systemd/system/$SERVICE_NAME.service"
-    echo "sudo rm /etc/systemd/system/$SERVICE_NAME-admin.service"
     echo "sudo systemctl daemon-reload"
 
-    echo -e "\n${YELLOW}4. 서비스 실행 파일 제거${NC}"
+    echo -e "\n${YELLOW}3. 서비스 실행 파일 제거${NC}"
     echo "rm /home/ubuntu/app/$SERVICE_NAME"
-    echo "rm /home/ubuntu/app/$SERVICE_NAME-admin"
 
-    echo -e "\n${YELLOW}5. 서비스 프로젝트 폴더 제거${NC}"
+    echo -e "\n${YELLOW}4. 서비스 프로젝트 폴더 제거${NC}"
     echo "rm -rf /home/ubuntu/app/projects/$SERVICE_NAME"
 
-    echo -e "\n${YELLOW}6. Caddyfile 수정${NC}"
+    echo -e "\n${YELLOW}5. Caddyfile 수정${NC}"
     echo "sudo nano /etc/caddy/Caddyfile"
     echo -e "${GREEN}서브도메인 설정을 찾아서 삭제해주세요${NC}"
 
-    echo -e "\n${YELLOW}7. Caddy 서비스 재시작${NC}"
+    echo -e "\n${YELLOW}6. Caddy 서비스 재시작${NC}"
     echo "sudo systemctl reload caddy"
 
     echo -e "\n${BLUE}=== 서비스 상태 확인 명령어 ====${NC}"

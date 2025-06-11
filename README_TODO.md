@@ -59,16 +59,6 @@
   - 서버경로 : /etc/systemd/system/`서비스.service`
   - sudo systemctl start 서비스.service
   - sudo systemctl enable 서비스.service
-- [ ] `서비스-admin.service` 생성 [선택]
-  - [pocketbase](pocketbase) => `서비스-admin` 파일 서버 전송
-  - chmod +x 서비스-admin
-  - [deario-admin.service](.linux/systemctl/deario-admin.service) 참고
-  - 서버경로 : /etc/systemd/system/`서비스-admin.service`
-  - 어드민 계정 생성
-    - /home/ubuntu/app/서비스-admin serve --dir /home/ubuntu/app/projects/서비스/pb_data --http=127.0.0.1:?
-    - 접속 후 계정 생성
-  - sudo systemctl start 서비스-admin.service
-  - sudo systemctl enable 서비스-admin.service
 - [ ] [Caddyfile](.linux/caddy/Caddyfile) 서비스 프록시 추가
 
 ## 프로젝트 개선 사항
