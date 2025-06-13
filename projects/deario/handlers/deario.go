@@ -207,18 +207,20 @@ func AiFeedback(c echo.Context) error {
 		typeStr = "충고를 해줘"
 	case "4":
 		typeStr = `
-		Create a single illustrated image that represents an emotional or meaningful moment from someone's day.
-		
-		Do not include any text, captions, signs, labels, handwriting, or words in any language in the image.  
-		Absolutely no text or characters should appear anywhere.
-		
-		Just imagine a beautiful or reflective scene like a page from a wordless picture book, using only colors, lighting, composition, and elements to tell the story.
-		
-		You will be given some context in the 'contents' field, but this is for inspiration only.  
-		**Do not copy, draw, or include any part of the content text in the image.**  
-		Use it only to understand the mood and setting.
-		
-		Only return an image. Do not generate or show any text in the picture.`
+		Create a single image containing a 4-panel comic strip that tells a complete story without using any text, words, or written language. The four panels should be arranged in a single image, clearly separated but visually connected.
+
+		For the image:
+		1. Create a single image divided into 4 equal rectangular panels (2x2 grid)
+		2. Each panel should be a self-contained illustration that flows naturally to the next
+		3. Use only visual storytelling through composition, colors, lighting, and expressions
+		4. Absolutely no text, captions, speech bubbles, signs, or written words
+		5. Show clear character emotions and actions to convey the narrative
+		6. Maintain visual consistency across all panels
+		7. Each panel should focus on a single, meaningful moment or emotion
+
+		The comic should tell its story through pure visual language, like a wordless graphic novel. The sequence of four panels should show a clear beginning, development, and resolution of a simple, relatable situation or emotion.
+
+		Use the context provided in the 'contents' field only as inspiration for the mood and setting, but do not include any text or literal elements from it in the image.`
 	}
 
 	if typeValue == "4" {
