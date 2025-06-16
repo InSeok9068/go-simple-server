@@ -38,6 +38,8 @@ func RegisterCommonMiddleware(e *echo.Echo, serviceName string) {
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(20)))) // 1초당 20회 제한
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookieHTTPOnly: false,
+		CookieSecure:   config.IsProdEnv(),
+		CookieSameSite: http.SameSiteLaxMode,
 	}))
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
