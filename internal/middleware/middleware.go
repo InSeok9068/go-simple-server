@@ -34,7 +34,7 @@ func RegisterCommonMiddleware(e *echo.Echo, serviceName string) {
 	e.Use(middleware.Timeout())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
-	e.Use(middleware.BodyLimit("1M"))
+	e.Use(middleware.BodyLimit("5M"))
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(20)))) // 1초당 20회 제한
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookieHTTPOnly: false,
