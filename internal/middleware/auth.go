@@ -58,6 +58,8 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo) {
 			Path:     "/",
 			MaxAge:   86400 * 7,
 			HttpOnly: true,
+			Secure:   config.IsProdEnv(),
+			SameSite: http.SameSiteLaxMode,
 		}
 		sess.Values["uid"] = user.UID
 
