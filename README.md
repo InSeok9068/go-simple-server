@@ -67,6 +67,7 @@ go get github.com/openai/openai-go@latest
 go get github.com/robfig/cron/v3@latest
 go get github.com/willoma/bulma-gomponents@latest
 go get github.com/willoma/gomplements@latest
+go get golang.org/x/time@latest
 go get google.golang.org/api@latest
 go get google.golang.org/genai@latest
 go get maragu.dev/gomponents@latest
