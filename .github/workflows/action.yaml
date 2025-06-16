@@ -38,17 +38,11 @@ jobs:
         with:
           go-version: 1.24
 
-      # 5. GCC 패키지 설치
-      - name: Install GCC Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential gcc-multilib
-
       # 5. Tailwindcss CLI 설치
       - name: Install Tailwindcss CLI Dependencies
         run: |
           chmod +x ./tailwindcss-install.sh
-          ./tailwindcss-install.sh linux          
+          ./tailwindcss-install.sh linux
 
       # 6. Tailwindcss Out 파일 생성
       - name: Tailwindcss Generate
@@ -64,7 +58,6 @@ jobs:
       # 8. 환경 변수 설정 및 빌드
       - name: Build for Linux
         env:
-          CGO_ENABLED: 1
           GOOS: linux
           GOARCH: amd64
         run: |
@@ -122,7 +115,7 @@ jobs:
           format: markdown
           message: |
             Status: 😚 **Success**
-            
+
             Branch: ${{ github.ref_name }}
 
             Commit message: ${{ github.event.head_commit.message }}
@@ -139,7 +132,7 @@ jobs:
           format: markdown
           message: |
             Status: 😱 **Failure**
-            
+
             Branch: ${{ github.ref_name }}
 
             Commit message: ${{ github.event.head_commit.message }}

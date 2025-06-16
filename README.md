@@ -63,7 +63,6 @@ go get github.com/gorilla/sessions@latest
 go get github.com/joho/godotenv@latest
 go get github.com/labstack/echo-contrib@latest
 go get github.com/labstack/echo/v4@latest
-go get github.com/mattn/go-sqlite3@latest
 go get github.com/openai/openai-go@latest
 go get github.com/robfig/cron/v3@latest
 go get github.com/willoma/bulma-gomponents@latest
@@ -72,6 +71,7 @@ go get google.golang.org/api@latest
 go get google.golang.org/genai@latest
 go get maragu.dev/gomponents@latest
 go get maragu.dev/gomponents-htmx@latest
+go get modernc.org/sqlite@latest
 ```
 
 ### 개발 도구 종속성 최신화
@@ -80,7 +80,7 @@ go get maragu.dev/gomponents-htmx@latest
 #go install github.com/a-h/templ/cmd/templ@latest
 go install github.com/air-verse/air@latest
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-CGO_ENABLED=0 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
 
 ### 불필요한 종속성 제거
