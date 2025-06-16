@@ -122,8 +122,7 @@ func Save(c echo.Context) error {
 	// 사용자 세션 확인
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
-		slog.Error("세션에서 사용자 ID를 가져오는데 실패했습니다", "error", err)
-		return echo.NewHTTPError(http.StatusUnauthorized, "인증에 실패했습니다. 다시 로그인해주세요.")
+		return err
 	}
 
 	// 요청 데이터 검증
@@ -141,8 +140,6 @@ func Save(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "시스템 오류가 발생했습니다.")
 	}
 
-	slog.Info("일기 저장 시도", "uid", uid, "date", date, "content_length", len(content))
-
 	// 기존 일기 조회
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  uid,
@@ -150,8 +147,6 @@ func Save(c echo.Context) error {
 	})
 
 	if err != nil {
-		slog.Info("새 일기 생성 시도", "uid", uid, "date", date)
-
 		_, err = queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
 			Uid:     uid,
 			Content: content,
@@ -162,11 +157,9 @@ func Save(c echo.Context) error {
 			slog.Error("일기 생성에 실패했습니다",
 				"error", err,
 				"uid", uid,
-				"date", date,
-				"content_length", len(content))
+				"date", date)
 			return echo.NewHTTPError(http.StatusInternalServerError, "일기 저장에 실패했습니다. 다시 시도해주세요.")
 		}
-		slog.Info("일기 생성 성공", "uid", uid, "date", date)
 	} else {
 		if content == "" {
 			err = queries.DeleteDiary(c.Request().Context(), diary.ID)
@@ -178,7 +171,10 @@ func Save(c echo.Context) error {
 		}
 
 		if err != nil {
-			slog.Error("일기 수정에 실패했습니다", "error", err, "uid", uid, "date", date)
+			slog.Error("일기 수정에 실패했습니다",
+				"error", err,
+				"uid", uid,
+				"date", date)
 			return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
 		}
 	}
