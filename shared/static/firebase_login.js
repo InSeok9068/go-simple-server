@@ -21,6 +21,8 @@ const uiConfig = {
   ],
   callbacks: {
     signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("firebaseui-auth-container").style.display = "none";
       authResult.user
         .getIdToken(true)
         .then((idToken) => {

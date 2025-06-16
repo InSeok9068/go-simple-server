@@ -17,7 +17,7 @@ func Login() Node {
 		Body: []Node{
 			Main(Class("responsive"),
 				Div(ID("firebaseui-auth-container")),
-				Div(ID("loader")),
+				Div(ID("loader"), Img(Src("/shared/static/spinner.svg"))),
 			),
 		}},
 	)
