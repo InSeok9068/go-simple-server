@@ -24,15 +24,6 @@ jobs:
             ENV=prod
           EOF
 
-      - name: Install Templ Dependencies
-        run: |
-          export PATH=$PATH:$HOME/go/bin
-          go install github.com/a-h/templ/cmd/templ@latest
-
-      - name: Templ Generate
-        run: |
-          templ generate
-
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
