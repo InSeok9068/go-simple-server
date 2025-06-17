@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"log/slog"
 	"net"
@@ -139,7 +138,7 @@ func CustomLogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error
 	remoteIP, _, _ := net.SplitHostPort(v.RemoteIP)
 	userIP, _, _ := net.SplitHostPort(c.RealIP())
 
-	slog.Info(fmt.Sprintf(`%s %s`, method, requestURI),
+	slog.Info("request",
 		"execTime", v.Latency.Microseconds(),
 		"id", v.RequestID,
 		"type", "request",

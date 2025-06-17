@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"log/slog"
 	"simple-server/internal/config"
 
@@ -17,7 +16,7 @@ func Request(ctx context.Context, prompt string) (string, error) {
 		Backend: genai.BackendGeminiAPI,
 	})
 
-	slog.Info(fmt.Sprintf(`프롬프트 요청 : %s`, prompt))
+	slog.Info("프롬프트 요청", "prompt", prompt)
 
 	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash", genai.Text(prompt), nil)
 	if err != nil {
@@ -27,7 +26,7 @@ func Request(ctx context.Context, prompt string) (string, error) {
 
 	resultText := result.Candidates[0].Content.Parts[0].Text
 
-	slog.Info(fmt.Sprintf(`프롬프트 응답 : %s`, resultText))
+	slog.Info("프롬프트 응답", "result", resultText)
 
 	return resultText, nil
 }
@@ -38,12 +37,12 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 		Backend: genai.BackendGeminiAPI,
 	})
 
-	slog.Info(fmt.Sprintf(`프롬프트 요청 : %s`, prompt))
+	slog.Info("프롬프트 요청", "prompt", prompt)
 
 	result, _ := client.Models.GenerateContent(ctx, "gemini-2.0-flash-preview-image-generation", genai.Text(prompt), &genai.GenerateContentConfig{
 		ResponseModalities: []string{"Text", "Image"},
 	})
-	slog.Info("이미지 생성 응답", "결과", result)
+	slog.Info("이미지 생성 응답", "result", result)
 
 	for _, part := range result.Candidates[0].Content.Parts {
 		if part.InlineData != nil {

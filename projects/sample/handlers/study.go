@@ -37,7 +37,7 @@ func AIStudy(c echo.Context, random bool) error {
 	</ol>
 	`, input)
 
-	slog.Info(fmt.Sprintf(`프롬프트 요청 : %s`, prompt))
+	slog.Info("프롬프트 요청", "prompt", prompt)
 
 	result, err := client.Models.GenerateContent(ctx, "gemini-1.5-flash", genai.Text(prompt), nil)
 	if err != nil {
@@ -49,7 +49,7 @@ func AIStudy(c echo.Context, random bool) error {
 	re := regexp.MustCompile(`(?s)<ol>.*?</ol>`)
 	resultText = re.FindString(resultText)
 
-	slog.Info(fmt.Sprintf(`프롬프트 응답 : %s`, resultText))
+	slog.Info("프롬프트 응답", "result", resultText)
 
 	return c.HTML(http.StatusOK, resultText)
 }
