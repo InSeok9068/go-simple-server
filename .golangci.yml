@@ -1,19 +1,7 @@
-run:
-  timeout: 5m
-
-# https://golangci-lint.run/usage/linters/
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
-    ## enabled by default
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
-
-    ## disabled by default
     - asasalint
     - asciicheck
     - bidichk
@@ -23,6 +11,7 @@ linters:
     - cyclop
     - dupl
     - durationcheck
+    - errcheck
     - errname
     - errorlint
     - exhaustive
@@ -35,7 +24,9 @@ linters:
     - goconst
     - gocritic
     - gosec
+    - govet
     - iface
+    - ineffassign
     - makezero
     - mirror
     - musttag
@@ -51,17 +42,21 @@ linters:
     - reassign
     - sloglint
     - sqlclosecheck
-    - stylecheck
-    - usetesting
+    - staticcheck
     - unconvert
     - unparam
+    - unused
     - usestdlibvars
+    - usetesting
     - wastedassign
     - whitespace
-
-linters-settings:
-  stylecheck:
-    dot-import-whitelist:
-      - maragu.dev/gomponents
-      - maragu.dev/gomponents/html
-      - maragu.dev/gomponents/components
+  settings:
+    staticcheck:
+      dot-import-whitelist:
+        - maragu.dev/gomponents
+        - maragu.dev/gomponents/html
+        - maragu.dev/gomponents/components
+  exclusions:
+    presets:
+      - legacy
+      - std-error-handling
