@@ -121,7 +121,7 @@ go env -w CGO_ENABLED=1
 ## 오류 검증
 
 ```shell
-curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.63.4
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.1.6
 ```
 
 ```shell
