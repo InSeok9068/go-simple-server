@@ -1,6 +1,8 @@
 package shared
 
 import (
+	"simple-server/internal/config"
+
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
@@ -18,6 +20,7 @@ func HeadsDefault(title string) []Node {
 		Script(Src("https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"), Defer(),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/cdn.min.js';")),
 		Script(Src("/shared/static/app.js")),
+		If(config.IsDevEnv(), Script(Text(`htmx.logAll();`), Defer())),
 		Title(title),
 	}
 }
