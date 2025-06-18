@@ -2,17 +2,19 @@ package middleware
 
 import (
 	"context"
-	"fmt"
+	"io/fs"
 	"log/slog"
 	"net/http"
-	"os"
 	"simple-server/internal/config"
 	"simple-server/internal/connection"
 	"simple-server/pkg/util/authutil"
 
+	resources "simple-server"
+
 	firebase "firebase.google.com/go/v4"
 	sqladapter "github.com/Blank-Xu/sql-adapter"
 	"github.com/casbin/casbin/v2"
+	"github.com/casbin/casbin/v2/model"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -97,15 +99,23 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 
 /* 권한 */
 func InitCasbin() error {
-	serviceName := os.Getenv("SERVICE_NAME")
-
 	db, _ := connection.AppDBOpen()
 	adapter, err := sqladapter.NewAdapter(db, "sqlite", "")
 	if err != nil {
 		slog.Error("casbin adapter 초기화 실패", "error", err.Error())
 		return err
 	}
-	enforcer, err := casbin.NewEnforcer(fmt.Sprintf("./projects/%s/model.conf", serviceName), adapter)
+	modelData, err := fs.ReadFile(resources.EmbeddedFiles, "model.conf")
+	if err != nil {
+		slog.Error("모델 파일 읽기 실패", "error", err.Error())
+		return err
+	}
+	m, err := model.NewModelFromString(string(modelData))
+	if err != nil {
+		slog.Error("casbin 모델 생성 실패", "error", err.Error())
+		return err
+	}
+	enforcer, err := casbin.NewEnforcer(m, adapter)
 	if err != nil {
 		slog.Error("casbin enforcer 초기화 실패", "error", err.Error())
 		return err
@@ -131,7 +141,6 @@ func RegisterCasbinMiddleware(e *echo.Group) error {
 			obj := c.Path()
 			act := c.Request().Method
 
-			Enforcer.EnableLog(true)
 			ok, err := Enforcer.Enforce(uid, obj, act)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "권한 검사 실패")
