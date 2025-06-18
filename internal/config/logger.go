@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"net"
 	"os"
 	"simple-server/internal/connection"
 	"sync"
@@ -154,16 +153,8 @@ func CustomLogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error
 	// 요청 정보 로그 기록
 	method := c.Request().Method
 	requestURI := c.Request().RequestURI
-	remoteIP, _, err := net.SplitHostPort(v.RemoteIP)
-	if err != nil {
-		slog.Warn("원격 IP 파싱 실패", "error", err)
-		remoteIP = v.RemoteIP
-	}
-	userIP, _, err := net.SplitHostPort(c.RealIP())
-	if err != nil {
-		slog.Warn("사용자 IP 파싱 실패", "error", err)
-		userIP = c.RealIP()
-	}
+	remoteIP := v.RemoteIP
+	userIP := c.RealIP()
 
 	slog.Info(fmt.Sprintf(`%s %s`, method, requestURI),
 		"execTime", v.Latency.Microseconds(),
