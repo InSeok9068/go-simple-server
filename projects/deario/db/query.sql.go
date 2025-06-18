@@ -10,13 +10,22 @@ import (
 )
 
 const createDiary = `-- name: CreateDiary :one
-INSERT INTO diarys (uid, content, date, created, updated)
-VALUES (?,
+INSERT INTO
+    diarys (
+        uid,
+        content,
+        date,
+        created,
+        updated
+    )
+VALUES (
         ?,
         ?,
+        ?,
+        --         strftime('%Y%m%d', 'now', 'localtime'),
         datetime('now', 'localtime'),
-        datetime('now', 'localtime'))
-RETURNING content, created, date, id, uid, updated, aifeedback, aiimage
+        datetime('now', 'localtime')
+    ) RETURNING id, uid, date, content, aifeedback, aiimage, created, updated
 `
 
 type CreateDiaryParams struct {
@@ -25,29 +34,31 @@ type CreateDiaryParams struct {
 	Date    string
 }
 
-// strftime('%Y%m%d', 'now', 'localtime'),
 func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary, error) {
 	row := q.db.QueryRowContext(ctx, createDiary, arg.Uid, arg.Content, arg.Date)
 	var i Diary
 	err := row.Scan(
-		&i.Content,
-		&i.Created,
-		&i.Date,
 		&i.ID,
 		&i.Uid,
-		&i.Updated,
+		&i.Date,
+		&i.Content,
 		&i.Aifeedback,
 		&i.Aiimage,
+		&i.Created,
+		&i.Updated,
 	)
 	return i, err
 }
 
 const createPushKey = `-- name: CreatePushKey :exec
-INSERT INTO push_keys (uid, token, created, updated)
-VALUES (?,
+INSERT INTO
+    push_keys (uid, token, created, updated)
+VALUES (
+        ?,
         ?,
         datetime('now', 'localtime'),
-        datetime('now', 'localtime'))
+        datetime('now', 'localtime')
+    )
 `
 
 type CreatePushKeyParams struct {
@@ -60,10 +71,37 @@ func (q *Queries) CreatePushKey(ctx context.Context, arg CreatePushKeyParams) er
 	return err
 }
 
+const createUser = `-- name: CreateUser :exec
+INSERT INTO
+    users (
+        uid,
+        name,
+        email,
+        created,
+        updated
+    )
+VALUES (
+        ?,
+        ?,
+        ?,
+        datetime('now', 'localtime'),
+        datetime('now', 'localtime')
+    )
+`
+
+type CreateUserParams struct {
+	Uid   string
+	Name  string
+	Email string
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.db.ExecContext(ctx, createUser, arg.Uid, arg.Name, arg.Email)
+	return err
+}
+
 const deleteDiary = `-- name: DeleteDiary :exec
-DELETE
-FROM diarys
-WHERE id = ?
+DELETE FROM diarys WHERE id = ?
 `
 
 func (q *Queries) DeleteDiary(ctx context.Context, id string) error {
@@ -73,11 +111,7 @@ func (q *Queries) DeleteDiary(ctx context.Context, id string) error {
 
 const getDiary = `-- name: GetDiary :one
 
-SELECT content, created, date, id, uid, updated, aifeedback, aiimage
-FROM diarys
-WHERE date = ?
-  AND uid = ?
-LIMIT 1
+SELECT id, uid, date, content, aifeedback, aiimage, created, updated FROM diarys WHERE date = ? AND uid = ? LIMIT 1
 `
 
 type GetDiaryParams struct {
@@ -90,24 +124,25 @@ func (q *Queries) GetDiary(ctx context.Context, arg GetDiaryParams) (Diary, erro
 	row := q.db.QueryRowContext(ctx, getDiary, arg.Date, arg.Uid)
 	var i Diary
 	err := row.Scan(
-		&i.Content,
-		&i.Created,
-		&i.Date,
 		&i.ID,
 		&i.Uid,
-		&i.Updated,
+		&i.Date,
+		&i.Content,
 		&i.Aifeedback,
 		&i.Aiimage,
+		&i.Created,
+		&i.Updated,
 	)
 	return i, err
 }
 
 const getDiaryRandom = `-- name: GetDiaryRandom :one
-SELECT content, created, date, id, uid, updated, aifeedback, aiimage
+SELECT id, uid, date, content, aifeedback, aiimage, created, updated
 FROM diarys
-WHERE date IS NOT NULL
-  AND uid = ?
-ORDER BY RANDOM()
+WHERE
+    date IS NOT NULL
+    AND uid = ?
+ORDER BY RANDOM ()
 LIMIT 1
 `
 
@@ -115,44 +150,60 @@ func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error)
 	row := q.db.QueryRowContext(ctx, getDiaryRandom, uid)
 	var i Diary
 	err := row.Scan(
-		&i.Content,
-		&i.Created,
-		&i.Date,
 		&i.ID,
 		&i.Uid,
-		&i.Updated,
+		&i.Date,
+		&i.Content,
 		&i.Aifeedback,
 		&i.Aiimage,
+		&i.Created,
+		&i.Updated,
 	)
 	return i, err
 }
 
 const getPushKey = `-- name: GetPushKey :one
-SELECT created, id, token, uid, updated
-FROM push_keys
-WHERE uid = ?
-LIMIT 1
+SELECT id, uid, token, created, updated FROM push_keys WHERE uid = ? LIMIT 1
 `
 
 func (q *Queries) GetPushKey(ctx context.Context, uid string) (PushKey, error) {
 	row := q.db.QueryRowContext(ctx, getPushKey, uid)
 	var i PushKey
 	err := row.Scan(
-		&i.Created,
 		&i.ID,
-		&i.Token,
 		&i.Uid,
+		&i.Token,
+		&i.Created,
+		&i.Updated,
+	)
+	return i, err
+}
+
+const getUser = `-- name: GetUser :one
+SELECT uid, name, email, created, updated FROM users WHERE uid = ? LIMIT 1
+`
+
+func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUser, uid)
+	var i User
+	err := row.Scan(
+		&i.Uid,
+		&i.Name,
+		&i.Email,
+		&i.Created,
 		&i.Updated,
 	)
 	return i, err
 }
 
 const listDiarys = `-- name: ListDiarys :many
-SELECT content, created, date, id, uid, updated, aifeedback, aiimage
+SELECT id, uid, date, content, aifeedback, aiimage, created, updated
 FROM diarys
-WHERE uid = ?
+WHERE
+    uid = ?
 ORDER BY created desc
-LIMIT 7 OFFSET ((? - 1) * 7)
+LIMIT 7
+OFFSET ((? - 1) * 7)
 `
 
 type ListDiarysParams struct {
@@ -170,14 +221,14 @@ func (q *Queries) ListDiarys(ctx context.Context, arg ListDiarysParams) ([]Diary
 	for rows.Next() {
 		var i Diary
 		if err := rows.Scan(
-			&i.Content,
-			&i.Created,
-			&i.Date,
 			&i.ID,
 			&i.Uid,
-			&i.Updated,
+			&i.Date,
+			&i.Content,
 			&i.Aifeedback,
 			&i.Aiimage,
+			&i.Created,
+			&i.Updated,
 		); err != nil {
 			return nil, err
 		}
@@ -194,10 +245,11 @@ func (q *Queries) ListDiarys(ctx context.Context, arg ListDiarysParams) ([]Diary
 
 const updateDiary = `-- name: UpdateDiary :one
 UPDATE diarys
-SET content = ?,
+SET
+    content = ?,
     updated = datetime('now')
-WHERE id = ?
-RETURNING content, created, date, id, uid, updated, aifeedback, aiimage
+WHERE
+    id = ? RETURNING id, uid, date, content, aifeedback, aiimage, created, updated
 `
 
 type UpdateDiaryParams struct {
@@ -209,24 +261,26 @@ func (q *Queries) UpdateDiary(ctx context.Context, arg UpdateDiaryParams) (Diary
 	row := q.db.QueryRowContext(ctx, updateDiary, arg.Content, arg.ID)
 	var i Diary
 	err := row.Scan(
-		&i.Content,
-		&i.Created,
-		&i.Date,
 		&i.ID,
 		&i.Uid,
-		&i.Updated,
+		&i.Date,
+		&i.Content,
 		&i.Aifeedback,
 		&i.Aiimage,
+		&i.Created,
+		&i.Updated,
 	)
 	return i, err
 }
 
 const updateDiaryOfAiFeedback = `-- name: UpdateDiaryOfAiFeedback :exec
 UPDATE diarys
-SET aiFeedback = ?,
-    aiImage    = ?,
-    updated    = datetime('now')
-WHERE id = ?
+SET
+    aiFeedback = ?,
+    aiImage = ?,
+    updated = datetime('now')
+WHERE
+    id = ?
 `
 
 type UpdateDiaryOfAiFeedbackParams struct {
@@ -242,9 +296,11 @@ func (q *Queries) UpdateDiaryOfAiFeedback(ctx context.Context, arg UpdateDiaryOf
 
 const updatePushKey = `-- name: UpdatePushKey :exec
 UPDATE push_keys
-SET token   = ?,
+SET
+    token = ?,
     updated = datetime('now')
-WHERE uid = ?
+WHERE
+    uid = ?
 `
 
 type UpdatePushKeyParams struct {

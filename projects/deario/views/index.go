@@ -260,7 +260,7 @@ func DiaryContentForm(date string, content string) Node {
 			Textarea(
 				Name("content"),
 				AutoFocus(),
-				h.Post("/save"),
+				h.Post("/diary/save"),
 				h.Swap("none"),
 				h.Trigger("input delay:0.5s"),
 				h.Indicator("#indicator"),

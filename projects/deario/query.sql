@@ -9,7 +9,7 @@ FROM diarys
 WHERE
     date IS NOT NULL
     AND uid = ?
-ORDER BY RANDOM()
+ORDER BY RANDOM ()
 LIMIT 1;
 
 -- name: ListDiarys :many
@@ -79,3 +79,23 @@ SET
     updated = datetime('now')
 WHERE
     uid = ?;
+
+-- name: GetUser :one
+SELECT * FROM users WHERE uid = ? LIMIT 1;
+
+-- name: CreateUser :exec
+INSERT INTO
+    users (
+        uid,
+        name,
+        email,
+        created,
+        updated
+    )
+VALUES (
+        ?,
+        ?,
+        ?,
+        datetime('now', 'localtime'),
+        datetime('now', 'localtime')
+    );

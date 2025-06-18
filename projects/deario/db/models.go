@@ -4,21 +4,33 @@
 
 package db
 
+import (
+	"database/sql"
+)
+
 type Diary struct {
-	Content    string
-	Created    string
-	Date       string
 	ID         string
 	Uid        string
-	Updated    string
+	Date       string
+	Content    string
 	Aifeedback string
 	Aiimage    string
+	Created    sql.NullString
+	Updated    sql.NullString
 }
 
 type PushKey struct {
-	Created string
 	ID      string
-	Token   string
 	Uid     string
-	Updated string
+	Token   string
+	Created sql.NullString
+	Updated sql.NullString
+}
+
+type User struct {
+	Uid     string
+	Name    string
+	Email   string
+	Created sql.NullString
+	Updated sql.NullString
 }

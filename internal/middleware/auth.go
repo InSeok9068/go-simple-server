@@ -21,6 +21,7 @@ import (
 )
 
 var App *firebase.App
+var Enforcer *casbin.Enforcer
 
 /* 인증 */
 func InitFirebase() error {
@@ -37,7 +38,7 @@ func InitFirebase() error {
 	return nil
 }
 
-func RegisterFirebaseAuthMiddleware(e *echo.Echo) error {
+func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.Context, uid string) error) error {
 	err := InitFirebase()
 	if err != nil {
 		return err
@@ -58,7 +59,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo) error {
 
 		slog.Info("data", "token", data["token"].(string))
 
-		user, err := auth.VerifyIDToken(ctx, data["token"].(string))
+		token, err := auth.VerifyIDToken(ctx, data["token"].(string))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 		}
@@ -74,10 +75,16 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo) error {
 			Secure:   config.IsProdEnv(),
 			SameSite: http.SameSiteLaxMode,
 		}
-		sess.Values["uid"] = user.UID
+		sess.Values["uid"] = token.UID
 
 		if err := sess.Save(c.Request(), c.Response()); err != nil {
 			return err
+		}
+
+		if ensureUserFn != nil {
+			if err := ensureUserFn(c.Request().Context(), token.UID); err != nil {
+				return err
+			}
 		}
 
 		return c.NoContent(http.StatusOK)
@@ -103,13 +110,16 @@ func InitCasbin() (*casbin.Enforcer, error) {
 		slog.Error("casbin enforcer 초기화 실패", "error", err.Error())
 		return nil, err
 	}
+
+	Enforcer = enforcer
+
 	return enforcer, enforcer.LoadPolicy()
 }
 
-func RegisterCasbinMiddleware(e *echo.Echo) {
+func RegisterCasbinMiddleware(e *echo.Group) error {
 	enforcer, err := InitCasbin()
 	if err != nil {
-		return
+		return err
 	}
 
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -122,6 +132,7 @@ func RegisterCasbinMiddleware(e *echo.Echo) {
 			obj := c.Path()           // 요청 경로
 			act := c.Request().Method // 요청 메서드 (GET/POST 등)
 
+			enforcer.EnableLog(true)
 			ok, err := enforcer.Enforce(uid, obj, act)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "권한 검사 실패")
@@ -134,4 +145,5 @@ func RegisterCasbinMiddleware(e *echo.Echo) {
 		}
 	})
 
+	return nil
 }

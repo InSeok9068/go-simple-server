@@ -5,6 +5,7 @@ import (
 	"os"
 	resources "simple-server"
 	"simple-server/projects/deario/handlers"
+	"simple-server/projects/deario/services"
 	"simple-server/projects/deario/tasks"
 
 	"github.com/robfig/cron/v3"
@@ -37,8 +38,7 @@ func setUpServer() *echo.Echo {
 
 	/* 미들 웨어 */
 	middleware.RegisterCommonMiddleware(e)
-	middleware.RegisterFirebaseAuthMiddleware(e)
-	middleware.RegisterCasbinMiddleware(e)
+	middleware.RegisterFirebaseAuthMiddleware(e, services.EnsureUser)
 
 	// PWA 파일
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/static/manifest.json")
@@ -54,14 +54,15 @@ func setUpServer() *echo.Echo {
 	e.GET("/login", handlers.Login)
 	e.GET("/diary", handlers.Diary)
 	e.GET("/diary/list", handlers.DiaryList)
-	e.GET("/diary/random", handlers.DiaryRandom)
-	e.POST("/save", handlers.Save)
-	e.GET("/ai-feedback", handlers.GetAiFeedback)
-	e.POST("/ai-feedback", handlers.AiFeedback)
-	e.POST("/ai-feedback/save", handlers.AiFeedbackSave)
 
-	// 푸시키 갱신
-	e.POST("/save-pushToken", handlers.SavePushKey)
+	authGroup := e.Group("")
+	middleware.RegisterCasbinMiddleware(authGroup)
+	authGroup.GET("/diary/random", handlers.DiaryRandom)
+	authGroup.POST("/diary/save", handlers.Save)
+	authGroup.GET("/ai-feedback", handlers.GetAiFeedback)
+	authGroup.POST("/ai-feedback", handlers.AiFeedback)
+	authGroup.POST("/ai-feedback/save", handlers.AiFeedbackSave)
+	authGroup.POST("/save-pushToken", handlers.SavePushKey)
 	/* 라우터  */
 
 	/* 스케줄 */

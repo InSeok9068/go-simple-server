@@ -8,15 +8,22 @@ import (
 )
 
 func SessionUID(c echo.Context) (string, error) {
-	sess, _ := session.Get("session", c)
+	sess, err := session.Get("session", c)
+	if err != nil {
+		return "", echo.NewHTTPError(http.StatusInternalServerError, "세션을 가져오는 중 오류가 발생했습니다.")
+	}
+
+	if sess == nil || sess.Values == nil {
+		return "", echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 세션입니다.")
+	}
+
 	uid := sess.Values["uid"]
 	if uid == nil {
 		return "", echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 	}
 
-	strUID := uid.(string)
-
-	if strUID == "" {
+	strUID, ok := uid.(string)
+	if !ok || strUID == "" {
 		return "", echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 	}
 

@@ -14,7 +14,7 @@ import (
 	"golang.org/x/time/rate"
 )
 
-func RegisterCommonMiddleware(e *echo.Echo) {
+func RegisterCommonMiddleware(e *echo.Echo) error {
 	serviceName := os.Getenv("SERVICE_NAME")
 
 	var sharedStaticFS fs.FS
@@ -50,6 +50,8 @@ func RegisterCommonMiddleware(e *echo.Echo) {
 		LogRemoteIP:   true,
 		LogValuesFunc: config.CustomLogValuesFunc,
 	}))
+
+	return nil
 }
 
 func RegisterGoVisualMiddleware(e *echo.Echo) {
