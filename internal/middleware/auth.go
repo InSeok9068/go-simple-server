@@ -141,6 +141,10 @@ func RegisterCasbinMiddleware(e *echo.Group) error {
 			obj := c.Path()
 			act := c.Request().Method
 
+			if config.IsDevEnv() {
+				Enforcer.EnableLog(true)
+			}
+
 			ok, err := Enforcer.Enforce(uid, obj, act)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "권한 검사 실패")
