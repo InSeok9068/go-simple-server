@@ -1,24 +1,33 @@
 -- auto-generated definition
-create table diarys (
-    id TEXT default (
-        'r' || lower(hex(randomblob(7)))
-    ) not null primary key,
-    uid TEXT default '' not null,
-    date TEXT default '' not null,
-    content TEXT default '' not null,
-    aiFeedback TEXT default '' not null,
-    aiImage TEXT default '' not null,
-    created TEXT default '' not null,
-    updated TEXT default '' not null
+CREATE TABLE users (
+    uid TEXT PRIMARY KEY,
+    name TEXT DEFAULT '' NOT NULL,
+    email TEXT UNIQUE DEFAULT '' NOT NULL,
+    created TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
 -- auto-generated definition
-create table push_keys (
-    uid TEXT default '' not null,
-    id TEXT default (
-        'r' || lower(hex(randomblob(7)))
-    ) not null primary key,
-    token TEXT default '' not null,
-    created TEXT default '' not null,
-    updated TEXT default '' not null
+CREATE TABLE diarys (
+    id TEXT DEFAULT(
+        'r' || LOWER(HEX(RANDOMBLOB (7)))
+    ) NOT NULL PRIMARY KEY,
+    uid TEXT DEFAULT '' NOT NULL,
+    date TEXT DEFAULT '' NOT NULL,
+    content TEXT DEFAULT '' NOT NULL,
+    aiFeedback TEXT DEFAULT '' NOT NULL,
+    aiImage TEXT DEFAULT '' NOT NULL,
+    created TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- auto-generated definition
+CREATE TABLE push_keys (
+    id TEXT DEFAULT(
+        'r' || LOWER(HEX(RANDOMBLOB (7)))
+    ) NOT NULL PRIMARY KEY,
+    uid TEXT DEFAULT '' NOT NULL,
+    token TEXT DEFAULT '' NOT NULL,
+    created TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated TEXT DEFAULT CURRENT_TIMESTAMP
 );

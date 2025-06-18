@@ -30,7 +30,7 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	middleware.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
+	middleware.RegisterCommonMiddleware(e)
 	/* 미들 웨어 */
 
 	/* 라우터  */

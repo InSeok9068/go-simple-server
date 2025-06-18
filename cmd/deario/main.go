@@ -36,8 +36,9 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 미들 웨어 */
-	middleware.RegisterCommonMiddleware(e, os.Getenv("SERVICE_NAME"))
+	middleware.RegisterCommonMiddleware(e)
 	middleware.RegisterFirebaseAuthMiddleware(e)
+	middleware.RegisterCasbinMiddleware(e)
 
 	// PWA 파일
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/static/manifest.json")

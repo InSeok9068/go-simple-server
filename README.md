@@ -55,6 +55,8 @@ sudo systemctl start main.service
 
 ```shell
 go get firebase.google.com/go/v4@latest
+go get github.com/Blank-Xu/sql-adapter@latest
+go get github.com/casbin/casbin/v2@latest
 go get github.com/doganarif/govisual@latest
 go get github.com/eduardolat/gomponents-lucide@latest
 go get github.com/glsubri/gomponents-alpine@latest

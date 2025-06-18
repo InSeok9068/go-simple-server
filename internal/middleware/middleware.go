@@ -14,7 +14,9 @@ import (
 	"golang.org/x/time/rate"
 )
 
-func RegisterCommonMiddleware(e *echo.Echo, serviceName string) {
+func RegisterCommonMiddleware(e *echo.Echo) {
+	serviceName := os.Getenv("SERVICE_NAME")
+
 	var sharedStaticFS fs.FS
 	var projectStaticFS fs.FS
 	projectStaticDir := fmt.Sprintf("projects/%s/static", serviceName)
