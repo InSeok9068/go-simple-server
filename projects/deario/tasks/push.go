@@ -47,7 +47,7 @@ func PushTask(c *cron.Cron) {
 			slog.Error("푸시 발송 실패", "error", err)
 		}
 
-		slog.Info("푸시 발송 응답", "response", response)
+		slog.Debug("푸시 발송 응답", "response", response)
 	}); err != nil {
 		slog.Error("스케줄 등록 실패", "error", err)
 	}

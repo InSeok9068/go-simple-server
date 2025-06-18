@@ -20,7 +20,7 @@ func Request(ctx context.Context, prompt string) (string, error) {
 		return "", errors.New("AI 클라이언트 생성 실패")
 	}
 
-	slog.Info("프롬프트 요청", "prompt", prompt)
+	slog.Debug("프롬프트 요청", "prompt", prompt)
 
 	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash", genai.Text(prompt), nil)
 	if err != nil {
@@ -30,7 +30,7 @@ func Request(ctx context.Context, prompt string) (string, error) {
 
 	resultText := result.Candidates[0].Content.Parts[0].Text
 
-	slog.Info("프롬프트 응답", "resultText", resultText)
+	slog.Debug("프롬프트 응답", "resultText", resultText)
 
 	return resultText, nil
 }
@@ -45,7 +45,7 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 		return "", errors.New("AI 클라이언트 생성 실패")
 	}
 
-	slog.Info("프롬프트 요청", "prompt", prompt)
+	slog.Debug("프롬프트 요청", "prompt", prompt)
 
 	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-preview-image-generation", genai.Text(prompt), &genai.GenerateContentConfig{
 		ResponseModalities: []string{"Text", "Image"},
@@ -54,7 +54,7 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 		slog.Error("이미지 생성 요청 실패", "error", err)
 		return "", errors.New("이미지 생성 실패")
 	}
-	slog.Info("이미지 생성 응답", "result", result)
+	slog.Debug("이미지 생성 응답", "result", result)
 
 	for _, part := range result.Candidates[0].Content.Parts {
 		if part.InlineData != nil {

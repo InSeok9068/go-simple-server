@@ -128,7 +128,15 @@ func LoggerWithDatabaseInit() {
 		// fileHandler := slog.NewTextHandler(file, &slog.HandlerOptions{})
 
 		// Console Handler
-		consoleHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{})
+		var level slog.Leveler
+		if IsDevEnv() {
+			level = slog.LevelDebug
+		} else {
+			level = slog.LevelInfo
+		}
+		consoleHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: level,
+		})
 
 		// MultiHandler: Combine all handlers
 		multiHandler := NewMultiHandler(consoleHandler, databaseHandler)
