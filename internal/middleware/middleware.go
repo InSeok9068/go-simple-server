@@ -23,13 +23,11 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	projectStaticDir := fmt.Sprintf("projects/%s/static", serviceName)
 	if config.IsProdEnv() {
 		var err error
-		sharedStaticFS, err = fs.Sub(resources.EmbeddedFiles, "shared/static")
-		if err != nil {
+		if sharedStaticFS, err = fs.Sub(resources.EmbeddedFiles, "shared/static"); err != nil {
 			slog.Error("정적 파일 시스템 초기화 실패", "error", err)
 			return err
 		}
-		projectStaticFS, err = fs.Sub(resources.EmbeddedFiles, projectStaticDir)
-		if err != nil {
+		if projectStaticFS, err = fs.Sub(resources.EmbeddedFiles, projectStaticDir); err != nil {
 			slog.Error("프로젝트 정적 파일 시스템 초기화 실패", "error", err)
 			return err
 		}
