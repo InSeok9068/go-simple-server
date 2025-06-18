@@ -197,7 +197,7 @@ func AiFeedback(c echo.Context) error {
 	content := c.FormValue("content")
 	typeValue := c.QueryParam("type")
 
-	slog.Debug("AiFeedback", "user", uid, "content", content, "type", typeValue)
+	slog.Debug("AI 피드백", "user", uid, "content", content, "type", typeValue)
 
 	var typeStr string
 	switch typeValue {

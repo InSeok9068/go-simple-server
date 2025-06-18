@@ -20,13 +20,13 @@ func EnsureUser(ctx context.Context, uid string) error {
 	if _, err := queries.GetUser(ctx, uid); err != nil {
 		auth, err := middleware.App.Auth(ctx)
 		if err != nil {
-			slog.Error("Failed to get auth client", "error", err)
+			slog.Error("인증 클라이언트 생성 실패", "error", err)
 			return err
 		}
 
 		user, err := auth.GetUser(ctx, uid)
 		if err != nil {
-			slog.Error("Failed to get user from Firebase", "uid", uid, "error", err)
+			slog.Error("Firebase 사용자 조회 실패", "uid", uid, "error", err)
 			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 		}
 
@@ -35,13 +35,13 @@ func EnsureUser(ctx context.Context, uid string) error {
 			Name:  user.DisplayName,
 			Email: user.Email,
 		}); err != nil {
-			slog.Error("Failed to create user in database", "uid", uid, "error", err)
+			slog.Error("사용자 생성 실패", "uid", uid, "error", err)
 			return err
 		}
 	}
 
 	if _, err := middleware.Enforcer.AddRoleForUser(uid, "user"); err != nil {
-		slog.Error("Failed to add role for user", "uid", uid, "error", err)
+		slog.Error("역할 추가 실패", "uid", uid, "error", err)
 		return err
 	}
 
