@@ -68,7 +68,8 @@ func (m *MultiHandler) WithGroup(name string) slog.Handler {
 }
 
 type DatabaseHandler struct {
-	db *sql.DB
+	db    *sql.DB
+	level slog.Leveler
 }
 
 func (h *DatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
@@ -96,7 +97,7 @@ func (h *DatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 func (h *DatabaseHandler) Enabled(_ context.Context, level slog.Level) bool {
-	return level >= slog.LevelInfo
+	return level >= h.level.Level()
 }
 
 func (h *DatabaseHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
@@ -116,8 +117,18 @@ func LoggerWithDatabaseInit() {
 			return
 		}
 
+		var level slog.Leveler
+		if IsDevEnv() {
+			level = slog.LevelDebug
+		} else {
+			level = slog.LevelInfo
+		}
+
 		// Database Handler
-		databaseHandler := &DatabaseHandler{db: dbCon}
+		databaseHandler := &DatabaseHandler{
+			db:    dbCon,
+			level: level,
+		}
 
 		// // File Handler
 		// file, err := os.OpenFile("app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -128,12 +139,6 @@ func LoggerWithDatabaseInit() {
 		// fileHandler := slog.NewTextHandler(file, &slog.HandlerOptions{})
 
 		// Console Handler
-		var level slog.Leveler
-		if IsDevEnv() {
-			level = slog.LevelDebug
-		} else {
-			level = slog.LevelInfo
-		}
 		consoleHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level: level,
 		})
