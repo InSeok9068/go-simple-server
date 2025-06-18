@@ -17,8 +17,7 @@ func EnsureUser(ctx context.Context, uid string) error {
 		return err
 	}
 
-	_, err = queries.GetUser(ctx, uid)
-	if err != nil {
+	if _, err := queries.GetUser(ctx, uid); err != nil {
 		auth, err := middleware.App.Auth(ctx)
 		if err != nil {
 			slog.Error("Failed to get auth client", "error", err)
@@ -31,12 +30,11 @@ func EnsureUser(ctx context.Context, uid string) error {
 			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 		}
 
-		err = queries.CreateUser(ctx, db.CreateUserParams{
+		if err := queries.CreateUser(ctx, db.CreateUserParams{
 			Uid:   user.UID,
 			Name:  user.DisplayName,
 			Email: user.Email,
-		})
-		if err != nil {
+		}); err != nil {
 			slog.Error("Failed to create user in database", "uid", uid, "error", err)
 			return err
 		}
