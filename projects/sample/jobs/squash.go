@@ -1,6 +1,7 @@
 package jobs
 
 import (
+	"log/slog"
 	"simple-server/internal/config"
 
 	"github.com/go-rod/rod"
@@ -9,7 +10,9 @@ import (
 )
 
 func SquashJob(c *cron.Cron) {
-	_, _ = c.AddFunc("* * * * *", SquashExecute)
+	if _, err := c.AddFunc("* * * * *", SquashExecute); err != nil {
+		slog.Error("스케줄 등록 실패", "error", err)
+	}
 }
 
 func SquashExecute() {

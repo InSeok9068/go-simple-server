@@ -99,7 +99,11 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 
 /* 권한 */
 func InitCasbin() error {
-	db, _ := connection.AppDBOpen()
+	db, err := connection.AppDBOpen()
+	if err != nil {
+		slog.Error("데이터베이스 연결 실패", "error", err)
+		return err
+	}
 	adapter, err := sqladapter.NewAdapter(db, "sqlite", "")
 	if err != nil {
 		slog.Error("casbin adapter 초기화 실패", "error", err.Error())

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log/slog"
 	resources "simple-server"
 
 	"github.com/joho/godotenv"
@@ -9,8 +10,19 @@ import (
 var EnvMap map[string]string
 
 func LoadEnv() {
-	envData, _ := resources.EmbeddedFiles.ReadFile(".env")
-	EnvMap, _ = godotenv.Unmarshal(string(envData))
+	envData, err := resources.EmbeddedFiles.ReadFile(".env")
+	if err != nil {
+		slog.Error("환경 파일 읽기 실패", "error", err)
+		return
+	}
+
+	envMap, err := godotenv.Unmarshal(string(envData))
+	if err != nil {
+		slog.Error("환경 변수 파싱 실패", "error", err)
+		return
+	}
+
+	EnvMap = envMap
 }
 
 func IsDevEnv() bool {

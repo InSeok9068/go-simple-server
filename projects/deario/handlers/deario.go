@@ -79,10 +79,14 @@ func DiaryList(c echo.Context) error {
 		return err
 	}
 
-	diarys, _ := queries.ListDiarys(c.Request().Context(), db.ListDiarysParams{
+	diarys, err := queries.ListDiarys(c.Request().Context(), db.ListDiarysParams{
 		Uid:     uid,
 		Column2: page,
 	})
+	if err != nil {
+		slog.Error("일기 목록 조회 실패", "error", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "목록을 가져오지 못했습니다.")
+	}
 
 	var lis []Node
 	for _, diary := range diarys {
@@ -351,15 +355,21 @@ func SavePushKey(c echo.Context) error {
 
 	_, err = queries.GetPushKey(c.Request().Context(), uid)
 	if err != nil {
-		_ = queries.CreatePushKey(c.Request().Context(), db.CreatePushKeyParams{
+		if err := queries.CreatePushKey(c.Request().Context(), db.CreatePushKeyParams{
 			Uid:   uid,
 			Token: token,
-		})
+		}); err != nil {
+			slog.Error("푸시 키 저장 실패", "error", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 저장 실패")
+		}
 	} else {
-		_ = queries.UpdatePushKey(c.Request().Context(), db.UpdatePushKeyParams{
+		if err := queries.UpdatePushKey(c.Request().Context(), db.UpdatePushKeyParams{
 			Uid:   uid,
 			Token: token,
-		})
+		}); err != nil {
+			slog.Error("푸시 키 업데이트 실패", "error", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 업데이트 실패")
+		}
 	}
 
 	return nil

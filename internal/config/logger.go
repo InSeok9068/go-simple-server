@@ -80,12 +80,17 @@ func (h *DatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
 		return true
 	})
 	data["service"] = os.Getenv("SERVICE_NAME")
-	jsonBytes, _ := json.Marshal(data)
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
 
-	_, _ = h.db.ExecContext(ctx, "INSERT INTO _logs (level, message, data) VALUES (?, ?, ?)",
+	if _, err := h.db.ExecContext(ctx, "INSERT INTO _logs (level, message, data) VALUES (?, ?, ?)",
 		logLevel,
 		logMessage,
-		string(jsonBytes))
+		string(jsonBytes)); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -107,7 +112,7 @@ func LoggerWithDatabaseInit() {
 		os.Setenv("LOG_DATABASE_URL", LogDatabaseURL())
 		dbCon, err := connection.LogDBOpen()
 		if err != nil {
-			slog.Error("Failed to open database", "error", err)
+			slog.Error("로그 데이터베이스 연결 실패", "error", err)
 			return
 		}
 
@@ -136,8 +141,16 @@ func CustomLogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error
 	// 요청 정보 로그 기록
 	method := c.Request().Method
 	requestURI := c.Request().RequestURI
-	remoteIP, _, _ := net.SplitHostPort(v.RemoteIP)
-	userIP, _, _ := net.SplitHostPort(c.RealIP())
+	remoteIP, _, err := net.SplitHostPort(v.RemoteIP)
+	if err != nil {
+		slog.Warn("원격 IP 파싱 실패", "error", err)
+		remoteIP = v.RemoteIP
+	}
+	userIP, _, err := net.SplitHostPort(c.RealIP())
+	if err != nil {
+		slog.Warn("사용자 IP 파싱 실패", "error", err)
+		userIP = c.RealIP()
+	}
 
 	slog.Info(fmt.Sprintf(`%s %s`, method, requestURI),
 		"execTime", v.Latency.Microseconds(),
