@@ -13,9 +13,13 @@ import (
 func EnsureUser(ctx context.Context, uid string) error {
 	slog.Info("EnsureUser called", "uid", uid)
 
-	queries, _ := db.GetQueries(ctx)
+	queries, err := db.GetQueries(ctx)
+	if err != nil {
+		slog.Error("쿼리 로드 실패", "error", err)
+		return err
+	}
 
-	_, err := queries.GetUser(ctx, uid)
+	_, err = queries.GetUser(ctx, uid)
 	if err != nil {
 		slog.Info("User not found in database, creating new user", "uid", uid, "error", err)
 

@@ -493,7 +493,10 @@ func HasSpecialChar(s string) bool {
 //	isValid := util.IsValidEmail("example@example.com")
 func IsValidEmail(email string) bool {
 	pattern := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	match, _ := regexp.MatchString(pattern, email)
+	match, err := regexp.MatchString(pattern, email)
+	if err != nil {
+		return false
+	}
 	return match
 }
 
@@ -509,7 +512,10 @@ func IsValidKoreanPhoneNumber(phone string) bool {
 
 	// 한국 휴대폰 번호 패턴 검사 (01X-XXXX-XXXX)
 	pattern := `^01[0-9][0-9]{7,8}$`
-	match, _ := regexp.MatchString(pattern, phone)
+	match, err := regexp.MatchString(pattern, phone)
+	if err != nil {
+		return false
+	}
 	return match
 }
 

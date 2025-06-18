@@ -14,10 +14,14 @@ import (
 func AIStudy(c echo.Context, random bool) error {
 	ctx := c.Request().Context()
 	input := c.Request().FormValue("input")
-	client, _ := genai.NewClient(ctx, &genai.ClientConfig{
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
 	})
+	if err != nil {
+		slog.Error("AI 클라이언트 생성 실패", "error", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "AI 초기화 실패")
+	}
 
 	if random {
 		input = "너가 정해줘"

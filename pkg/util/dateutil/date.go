@@ -512,7 +512,10 @@ func GetLastDayOfWeek(dateStr string) (string, error) {
 		return "", err
 	}
 
-	firstDate, _ := time.Parse(DateFormatYYYYMMDD, firstDay)
+	firstDate, err := time.Parse(DateFormatYYYYMMDD, firstDay)
+	if err != nil {
+		return "", fmt.Errorf("날짜 파싱 오류: %w", err)
+	}
 	sunday := firstDate.AddDate(0, 0, 6) // 월요일부터 6일 후는 일요일
 
 	return sunday.Format(DateFormatYYYYMMDD), nil

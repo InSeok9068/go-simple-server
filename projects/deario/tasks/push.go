@@ -12,13 +12,18 @@ import (
 )
 
 func PushTask(c *cron.Cron) {
-	_, _ = c.AddFunc("0 21 * * *", func() {
+	if _, err := c.AddFunc("0 21 * * *", func() {
 		ctx := context.Background()
-		client, _ := middleware.App.Messaging(ctx)
+		client, err := middleware.App.Messaging(ctx)
+		if err != nil {
+			slog.Error("메시징 클라이언트 생성 실패", "error", err)
+			return
+		}
 
 		dbCon, err := connection.AppDBOpen()
 		if err != nil {
-			slog.Error("Failed to open database", "error", err.Error())
+			slog.Error("데이터베이스 연결 실패", "error", err)
+			return
 		}
 		queries := db.New(dbCon)
 
@@ -39,9 +44,11 @@ func PushTask(c *cron.Cron) {
 
 		response, err := client.Send(ctx, message)
 		if err != nil {
-			slog.Error("Failed to send push", "error", err.Error())
+			slog.Error("푸시 발송 실패", "error", err)
 		}
 
 		slog.Info("푸시 발송 응답", "response", response)
-	})
+	}); err != nil {
+		slog.Error("스케줄 등록 실패", "error", err)
+	}
 }

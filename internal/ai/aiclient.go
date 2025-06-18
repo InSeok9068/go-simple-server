@@ -12,10 +12,14 @@ import (
 )
 
 func Request(ctx context.Context, prompt string) (string, error) {
-	client, _ := genai.NewClient(ctx, &genai.ClientConfig{
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
 	})
+	if err != nil {
+		slog.Error("AI 클라이언트 생성 실패", "error", err)
+		return "", errors.New("AI 클라이언트 생성 실패")
+	}
 
 	slog.Info(fmt.Sprintf(`프롬프트 요청 : %s`, prompt))
 
@@ -33,16 +37,24 @@ func Request(ctx context.Context, prompt string) (string, error) {
 }
 
 func ImageRequest(ctx context.Context, prompt string) (string, error) {
-	client, _ := genai.NewClient(ctx, &genai.ClientConfig{
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
 	})
+	if err != nil {
+		slog.Error("AI 클라이언트 생성 실패", "error", err)
+		return "", errors.New("AI 클라이언트 생성 실패")
+	}
 
 	slog.Info(fmt.Sprintf(`프롬프트 요청 : %s`, prompt))
 
-	result, _ := client.Models.GenerateContent(ctx, "gemini-2.0-flash-preview-image-generation", genai.Text(prompt), &genai.GenerateContentConfig{
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-preview-image-generation", genai.Text(prompt), &genai.GenerateContentConfig{
 		ResponseModalities: []string{"Text", "Image"},
 	})
+	if err != nil {
+		slog.Error("이미지 생성 요청 실패", "error", err)
+		return "", errors.New("이미지 생성 실패")
+	}
 	slog.Info("이미지 생성 응답", "결과", result)
 
 	for _, part := range result.Candidates[0].Content.Parts {
