@@ -18,12 +18,12 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-contrib v0.17.4
 	github.com/labstack/echo/v4 v4.13.4
-	github.com/openai/openai-go v1.5.0
+	github.com/openai/openai-go v1.6.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/willoma/bulma-gomponents v0.13.0
 	github.com/willoma/gomplements v0.8.0
 	golang.org/x/time v0.12.0
-	google.golang.org/api v0.237.0
+	google.golang.org/api v0.238.0
 	google.golang.org/genai v1.11.1
 	maragu.dev/gomponents v1.1.0
 	maragu.dev/gomponents-htmx v0.6.1
