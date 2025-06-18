@@ -11,8 +11,6 @@ import (
 )
 
 func EnsureUser(ctx context.Context, uid string) error {
-	slog.Info("EnsureUser called", "uid", uid)
-
 	queries, err := db.GetQueries(ctx)
 	if err != nil {
 		slog.Error("쿼리 로드 실패", "error", err)
@@ -21,8 +19,6 @@ func EnsureUser(ctx context.Context, uid string) error {
 
 	_, err = queries.GetUser(ctx, uid)
 	if err != nil {
-		slog.Info("User not found in database, creating new user", "uid", uid, "error", err)
-
 		auth, err := middleware.App.Auth(ctx)
 		if err != nil {
 			slog.Error("Failed to get auth client", "error", err)
@@ -44,7 +40,6 @@ func EnsureUser(ctx context.Context, uid string) error {
 			slog.Error("Failed to create user in database", "uid", uid, "error", err)
 			return err
 		}
-		slog.Info("Successfully created new user", "uid", uid)
 	}
 
 	if _, err := middleware.Enforcer.AddRoleForUser(uid, "user"); err != nil {
