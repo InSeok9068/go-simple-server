@@ -31,7 +31,7 @@ func InitFirebase() error {
 
 	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(firebaseConfig)))
 	if err != nil {
-		slog.Error("파이어베이스 초기화 실패", "error", err.Error())
+		slog.Error("파이어베이스 초기화 실패", "error", err)
 		return err
 	}
 
@@ -106,22 +106,22 @@ func InitCasbin() error {
 	}
 	adapter, err := sqladapter.NewAdapter(db, "sqlite", "")
 	if err != nil {
-		slog.Error("casbin adapter 초기화 실패", "error", err.Error())
+		slog.Error("casbin adapter 초기화 실패", "error", err)
 		return err
 	}
 	modelData, err := fs.ReadFile(resources.EmbeddedFiles, "model.conf")
 	if err != nil {
-		slog.Error("모델 파일 읽기 실패", "error", err.Error())
+		slog.Error("모델 파일 읽기 실패", "error", err)
 		return err
 	}
 	m, err := model.NewModelFromString(string(modelData))
 	if err != nil {
-		slog.Error("casbin 모델 생성 실패", "error", err.Error())
+		slog.Error("casbin 모델 생성 실패", "error", err)
 		return err
 	}
 	enforcer, err := casbin.NewEnforcer(m, adapter)
 	if err != nil {
-		slog.Error("casbin enforcer 초기화 실패", "error", err.Error())
+		slog.Error("casbin enforcer 초기화 실패", "error", err)
 		return err
 	}
 

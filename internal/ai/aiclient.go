@@ -25,7 +25,7 @@ func Request(ctx context.Context, prompt string) (string, error) {
 
 	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash", genai.Text(prompt), nil)
 	if err != nil {
-		slog.Error("AI 요청 실패", "error", err.Error())
+		slog.Error("AI 요청 실패", "error", err)
 		return "", errors.New("AI 요청 실패")
 	}
 
@@ -67,7 +67,7 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 
 	// result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp-image-generation", genai.Text(prompt), nil)
 	// if err != nil {
-	// 	slog.Error("AI 요청 실패", "error", err.Error())
+	// 	slog.Error("AI 요청 실패", "error", err)
 	// 	return nil, errors.New("AI 요청 실패")
 	// }
 

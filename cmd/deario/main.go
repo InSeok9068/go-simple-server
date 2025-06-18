@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/fs"
+	"log/slog"
 	"os"
 	resources "simple-server"
 	"simple-server/projects/deario/handlers"
@@ -45,8 +46,14 @@ func setUpServer() *echo.Echo {
 	e.StaticFS("/firebase-messaging-sw.js", firebaseMessagingSw)
 
 	/* 공개 라우터 */
-	middleware.RegisterCommonMiddleware(e)
-	middleware.RegisterFirebaseAuthMiddleware(e, services.EnsureUser)
+	if err := middleware.RegisterCommonMiddleware(e); err != nil {
+		slog.Error("공통 미들웨어 등록 실패", "error", err)
+		os.Exit(1)
+	}
+	if err := middleware.RegisterFirebaseAuthMiddleware(e, services.EnsureUser); err != nil {
+		slog.Error("Firebase 인증 미들웨어 등록 실패", "error", err)
+		os.Exit(1)
+	}
 	e.GET("/", handlers.Index)
 	e.GET("/login", handlers.Login)
 	e.GET("/diary", handlers.Diary)
@@ -55,7 +62,10 @@ func setUpServer() *echo.Echo {
 
 	/* 권한 라우터 */
 	authGroup := e.Group("")
-	middleware.RegisterCasbinMiddleware(authGroup)
+	if err := middleware.RegisterCasbinMiddleware(authGroup); err != nil {
+		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
+		os.Exit(1)
+	}
 	authGroup.GET("/diary/random", handlers.DiaryRandom)
 	authGroup.POST("/diary/save", handlers.Save)
 	authGroup.GET("/ai-feedback", handlers.GetAiFeedback)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log/slog"
 	"os"
 	"simple-server/internal/config"
 	"simple-server/internal/middleware"
@@ -25,7 +26,10 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	/* 라우터  */
-	middleware.RegisterCommonMiddleware(e)
+	if err := middleware.RegisterCommonMiddleware(e); err != nil {
+		slog.Error("공통 미들웨어 등록 실패", "error", err)
+		os.Exit(1)
+	}
 	e.GET("/", func(c echo.Context) error {
 		// 코드 리뷰 한번 해주세요
 		return views.Index("Sample").Render(c.Response().Writer)

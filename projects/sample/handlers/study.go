@@ -45,7 +45,7 @@ func AIStudy(c echo.Context, random bool) error {
 
 	result, err := client.Models.GenerateContent(ctx, "gemini-1.5-flash", genai.Text(prompt), nil)
 	if err != nil {
-		slog.Error("AI 요청 실패", "error", err.Error())
+		slog.Error("AI 요청 실패", "error", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "AI 요청 실패")
 	}
 

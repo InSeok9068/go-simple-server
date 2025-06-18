@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/fs"
+	"log/slog"
 	"os"
 	resources "simple-server"
 
@@ -41,7 +42,10 @@ func setUpServer() *echo.Echo {
 	e.GET("/metrics", echoprometheus.NewHandler())
 
 	/* 라우터  */
-	middleware.RegisterCommonMiddleware(e)
+	if err := middleware.RegisterCommonMiddleware(e); err != nil {
+		slog.Error("공통 미들웨어 등록 실패", "error", err)
+		os.Exit(1)
+	}
 	e.GET("/", func(c echo.Context) error {
 		return views.Index(os.Getenv("APP_TITLE")).Render(c.Response().Writer)
 	})
