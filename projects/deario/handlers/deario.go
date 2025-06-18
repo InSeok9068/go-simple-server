@@ -151,13 +151,11 @@ func Save(c echo.Context) error {
 	})
 
 	if err != nil {
-		_, err = queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
+		if _, err := queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
 			Uid:     uid,
 			Content: content,
 			Date:    date,
-		})
-
-		if err != nil {
+		}); err != nil {
 			slog.Error("일기 생성에 실패했습니다",
 				"error", err,
 				"uid", uid,
@@ -166,20 +164,24 @@ func Save(c echo.Context) error {
 		}
 	} else {
 		if content == "" {
-			err = queries.DeleteDiary(c.Request().Context(), diary.ID)
+			if err := queries.DeleteDiary(c.Request().Context(), diary.ID); err != nil {
+				slog.Error("일기 수정에 실패했습니다",
+					"error", err,
+					"uid", uid,
+					"date", date)
+				return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
+			}
 		} else {
-			_, err = queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
+			if _, err := queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
 				Content: content,
 				ID:      diary.ID,
-			})
-		}
-
-		if err != nil {
-			slog.Error("일기 수정에 실패했습니다",
-				"error", err,
-				"uid", uid,
-				"date", date)
-			return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
+			}); err != nil {
+				slog.Error("일기 수정에 실패했습니다",
+					"error", err,
+					"uid", uid,
+					"date", date)
+				return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
+			}
 		}
 	}
 
@@ -283,13 +285,11 @@ func AiFeedbackSave(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "작성한 일기가 없습니다.")
 	}
 
-	err = queries.UpdateDiaryOfAiFeedback(c.Request().Context(), db.UpdateDiaryOfAiFeedbackParams{
+	if err := queries.UpdateDiaryOfAiFeedback(c.Request().Context(), db.UpdateDiaryOfAiFeedbackParams{
 		ID:         diary.ID,
 		Aifeedback: aiFeedback,
 		Aiimage:    aiImage,
-	})
-
-	if err != nil {
+	}); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "일기요정 저장에 실패하였습니다.")
 	}
 
@@ -353,8 +353,7 @@ func SavePushKey(c echo.Context) error {
 		return err
 	}
 
-	_, err = queries.GetPushKey(c.Request().Context(), uid)
-	if err != nil {
+	if _, err := queries.GetPushKey(c.Request().Context(), uid); err != nil {
 		if err := queries.CreatePushKey(c.Request().Context(), db.CreatePushKeyParams{
 			Uid:   uid,
 			Token: token,
