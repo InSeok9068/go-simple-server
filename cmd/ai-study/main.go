@@ -29,11 +29,8 @@ func main() {
 func setUpServer() *echo.Echo {
 	e := echo.New()
 
-	/* 미들 웨어 */
-	middleware.RegisterCommonMiddleware(e)
-	/* 미들 웨어 */
-
 	/* 라우터  */
+	middleware.RegisterCommonMiddleware(e)
 	e.GET("/", handlers.IndexPageHandler)
 
 	e.POST("/ai-study", func(c echo.Context) error {

@@ -24,11 +24,8 @@ func main() {
 func setUpServer() *echo.Echo {
 	e := echo.New()
 
-	/* 미들 웨어 */
-	middleware.RegisterCommonMiddleware(e)
-	/* 미들 웨어 */
-
 	/* 라우터  */
+	middleware.RegisterCommonMiddleware(e)
 	e.GET("/", func(c echo.Context) error {
 		// 코드 리뷰 한번 해주세요
 		return views.Index("Sample").Render(c.Response().Writer)

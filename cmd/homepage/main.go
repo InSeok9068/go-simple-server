@@ -32,8 +32,6 @@ func main() {
 func setUpServer() *echo.Echo {
 	e := echo.New()
 
-	/* 미들 웨어 */
-	middleware.RegisterCommonMiddleware(e)
 	// PWA 파일
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)
@@ -41,9 +39,9 @@ func setUpServer() *echo.Echo {
 	// Prometheus 미들웨어
 	e.Use(echoprometheus.NewMiddleware("homepage"))
 	e.GET("/metrics", echoprometheus.NewHandler())
-	/* 미들 웨어 */
 
 	/* 라우터  */
+	middleware.RegisterCommonMiddleware(e)
 	e.GET("/", func(c echo.Context) error {
 		return views.Index(os.Getenv("APP_TITLE")).Render(c.Response().Writer)
 	})

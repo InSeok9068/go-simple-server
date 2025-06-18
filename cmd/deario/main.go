@@ -36,10 +36,6 @@ func main() {
 func setUpServer() *echo.Echo {
 	e := echo.New()
 
-	/* 미들 웨어 */
-	middleware.RegisterCommonMiddleware(e)
-	middleware.RegisterFirebaseAuthMiddleware(e, services.EnsureUser)
-
 	// PWA 파일
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)
@@ -47,14 +43,17 @@ func setUpServer() *echo.Echo {
 	// Web Push 서비스워커 파일
 	firebaseMessagingSw, _ := fs.Sub(resources.EmbeddedFiles, "shared/static/firebase-messaging-sw.js")
 	e.StaticFS("/firebase-messaging-sw.js", firebaseMessagingSw)
-	/* 미들 웨어 */
 
-	/* 라우터  */
+	/* 공개 라우터 */
+	middleware.RegisterCommonMiddleware(e)
+	middleware.RegisterFirebaseAuthMiddleware(e, services.EnsureUser)
 	e.GET("/", handlers.Index)
 	e.GET("/login", handlers.Login)
 	e.GET("/diary", handlers.Diary)
 	e.GET("/diary/list", handlers.DiaryList)
+	/* 공개 라우터 */
 
+	/* 권한 라우터 */
 	authGroup := e.Group("")
 	middleware.RegisterCasbinMiddleware(authGroup)
 	authGroup.GET("/diary/random", handlers.DiaryRandom)
@@ -63,7 +62,7 @@ func setUpServer() *echo.Echo {
 	authGroup.POST("/ai-feedback", handlers.AiFeedback)
 	authGroup.POST("/ai-feedback/save", handlers.AiFeedbackSave)
 	authGroup.POST("/save-pushToken", handlers.SavePushKey)
-	/* 라우터  */
+	/* 권한 라우터 */
 
 	/* 스케줄 */
 	c := cron.New()

@@ -25,9 +25,9 @@ var Enforcer *casbin.Enforcer
 
 /* 인증 */
 func InitFirebase() error {
-	config := config.EnvMap["FIREBASE_CONFIG"]
+	firebaseConfig := config.EnvMap["FIREBASE_CONFIG"]
 
-	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(config)))
+	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(firebaseConfig)))
 	if err != nil {
 		slog.Error("파이어베이스 초기화 실패", "error", err.Error())
 		return err
@@ -39,8 +39,7 @@ func InitFirebase() error {
 }
 
 func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.Context, uid string) error) error {
-	err := InitFirebase()
-	if err != nil {
+	if err := InitFirebase(); err != nil {
 		return err
 	}
 
@@ -52,14 +51,14 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 			return err
 		}
 
-		var data map[string]interface{}
-		if err := c.Bind(&data); err != nil {
+		var req struct {
+			Token string `json:"token"`
+		}
+		if err := c.Bind(&req); err != nil {
 			return err
 		}
 
-		slog.Info("data", "token", data["token"].(string))
-
-		token, err := auth.VerifyIDToken(ctx, data["token"].(string))
+		token, err := auth.VerifyIDToken(ctx, req.Token)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 		}
@@ -68,6 +67,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 		if err != nil {
 			return err
 		}
+
 		sess.Options = &sessions.Options{
 			Path:     "/",
 			MaxAge:   86400 * 7,
@@ -82,7 +82,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 		}
 
 		if ensureUserFn != nil {
-			if err := ensureUserFn(c.Request().Context(), token.UID); err != nil {
+			if err := ensureUserFn(ctx, token.UID); err != nil {
 				return err
 			}
 		}
@@ -96,29 +96,28 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 /* 인증 */
 
 /* 권한 */
-func InitCasbin() (*casbin.Enforcer, error) {
+func InitCasbin() error {
 	serviceName := os.Getenv("SERVICE_NAME")
 
 	db, _ := connection.AppDBOpen()
 	adapter, err := sqladapter.NewAdapter(db, "sqlite", "")
 	if err != nil {
 		slog.Error("casbin adapter 초기화 실패", "error", err.Error())
-		return nil, err
+		return err
 	}
 	enforcer, err := casbin.NewEnforcer(fmt.Sprintf("./projects/%s/model.conf", serviceName), adapter)
 	if err != nil {
 		slog.Error("casbin enforcer 초기화 실패", "error", err.Error())
-		return nil, err
+		return err
 	}
 
 	Enforcer = enforcer
 
-	return enforcer, enforcer.LoadPolicy()
+	return enforcer.LoadPolicy()
 }
 
 func RegisterCasbinMiddleware(e *echo.Group) error {
-	enforcer, err := InitCasbin()
-	if err != nil {
+	if err := InitCasbin(); err != nil {
 		return err
 	}
 
@@ -129,11 +128,11 @@ func RegisterCasbinMiddleware(e *echo.Group) error {
 				return err
 			}
 
-			obj := c.Path()           // 요청 경로
-			act := c.Request().Method // 요청 메서드 (GET/POST 등)
+			obj := c.Path()
+			act := c.Request().Method
 
-			enforcer.EnableLog(true)
-			ok, err := enforcer.Enforce(uid, obj, act)
+			Enforcer.EnableLog(true)
+			ok, err := Enforcer.Enforce(uid, obj, act)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "권한 검사 실패")
 			}
