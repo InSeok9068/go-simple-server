@@ -14,6 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
+
 	"github.com/labstack/echo/v4"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
@@ -31,6 +34,20 @@ func Index(c echo.Context) error {
 
 func Login(c echo.Context) error {
 	return shared.Login().Render(c.Response().Writer)
+}
+
+func Logout(c echo.Context) error {
+	sess, err := session.Get("session", c)
+	if err != nil {
+		return err
+	}
+
+	sess.Options = &sessions.Options{Path: "/", MaxAge: -1}
+	if err := sess.Save(c.Request(), c.Response()); err != nil {
+		return err
+	}
+
+	return c.NoContent(http.StatusOK)
 }
 
 func Diary(c echo.Context) error {
