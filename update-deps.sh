@@ -79,8 +79,6 @@ print_done "모든 Go 도구 설치"
 
 # 3. 모듈 정리
 print_step "3. 불필요한 의존성 정리 중..."
-git checkout go.mod go.sum  # 변경사항 초기화
-git restore --staged go.mod go.sum
 go mod tidy
 
 if [ $? -eq 0 ]; then
