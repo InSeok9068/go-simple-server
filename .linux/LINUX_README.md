@@ -12,74 +12,77 @@ sudo timedatectl set-timezone Asia/Seoul
 
 # 시간 동기화 설정
 sudo apt install systemd-timesyncd -y
-sudo systemctl enable systemd-timesyncd
-sudo systemctl start systemd-timesyncd
 
-# nginx 설치
-sudo apt install nginx -y
-
-# nginx 서비스 등록
-sudo systemctl enable nginx
-
-# ufw 설치
+# UFW 설치
 sudo apt install ufw -y
 
-# nginx 방화벽 허용
-sudo ufw allow 'Nginx Full'
-
-# SSG 방화벽 허용
+# SSH 방화벽 허용
 sudo ufw allow 'OpenSSH'
 
-# Pocketbase Admin 방화벽 허용
+# Caddy 설치
+sudo apt install caddy -y
 
-sudo ufw allow 9000
+# Caddy 방화벽 허용
+sudo ufw allow 'Caddy Full'
+
+# fail2ban 설치
+sudo apt install fail2ban -y
+
 # ufw 활성화
 sudo ufw enable
 
 # ufw 규칙 확인
 sudo ufw status verbose
 
-# ufw 서비스 등록
-sudo systemctl enable ufw
+# 서비스 등록 확인 (systemd-timesyncd, caddy, ufw, fail2ban)
+sudo systemctl list-unit-files | grep caddy
+sudo systemctl list-unit-files | grep ufw
+sudo systemctl list-unit-files | grep systemd-timesyncd
+sudo systemctl list-unit-files | grep fail2ban
+sudo systemctl status caddy
+sudo systemctl status ufw
+sudo systemctl status systemd-timesyncd
+sudo systemctl status fail2ban
 ```
 
-## Nginx 설정
+## Caddy 설정
 
-`etc > nginx > sites-enabled > default`
-
-[파일 참조](./nginx/default)
-
-### nginx 설정 확인
-
-```shell
-sudo nginx -t
-```
-
-## 서비스 관리
-
-- nginx
-- ufw
-- pocketbase.service
-- main.service
-- systemd-timesyncd
-
-```shell
-sudo systemctl daemon-reload
-sudo systemctl start nginx
-sudo systemctl stop nginx
-sudo systemctl restart nginx
-sudo systemctl status nginx
-sudo systemctl enable nginx
-```
+서버 경로 : `/etc/caddy/Caddyfile` </br>
+파일 경로 : `./linux/caddy/Caddyfile`
 
 ## 로그 파일 관리
 
 ```shell
 sudo apt install logrotate -y
+sudo systemctl list-timers | grep logrotate
+sudo systemctl status logrotate.timer
 ```
 
-## Chromium 설치
+## [rod 사용 시 필수!] Chromium 설치
 
 ```shell
 sudo apt install chromium-browser -y
+```
+
+## [선택] 시스템 모니터링 도구 설치
+
+htop : 향상된 top </br>
+iotop : 디스크 I/O 모니터링 </br>
+iftop : 네트워크 트래픽 모니터링 </br>
+nmon : 시스템 성능 모니터링 </br>
+ncdu : 디스크 사용량 분석 </br>
+
+```shell
+sudo apt install -y htop iotop iftop nmon ncdu
+```
+
+## [선택] 자동 보안 업데이트 설정
+
+```shell
+sudo apt install unattended-upgrades -y
+sudo dpkg-reconfigure unattended-upgrades
+
+
+# 보안 업데이트 누락 확인
+sudo unattended-upgrade --dry-run
 ```
