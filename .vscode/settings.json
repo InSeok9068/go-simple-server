@@ -20,7 +20,8 @@
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
     "pocketbase": "pocketbase*",
-    "tailwind.config.js": "tailwindcss*"
+    "tailwind.config.js": "tailwindcss*",
+    "release-all.sh": "*.sh"
   },
   "files.exclude": {
     "tmp": true,
