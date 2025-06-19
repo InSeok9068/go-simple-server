@@ -56,6 +56,7 @@ func setUpServer() *echo.Echo {
 	}
 	e.GET("/", handlers.Index)
 	e.GET("/login", handlers.Login)
+	e.POST("/logout", handlers.Logout)
 	e.GET("/diary", handlers.Diary)
 	e.GET("/diary/list", handlers.DiaryList)
 	/* 공개 라우터 */
