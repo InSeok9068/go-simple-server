@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebas
 import {
   getAuth,
   onAuthStateChanged,
+  signOut,
 } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 import {
   getMessaging,
@@ -20,6 +21,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const messaging = getMessaging(app);
+
+window.logoutUser = async function () {
+  try {
+    await signOut(auth);
+    await fetch("/logout", {
+      method: "POST",
+      headers: { "X-CSRF-Token": getCookie("_csrf") },
+    });
+    location.reload();
+  } catch (err) {
+    console.error("로그아웃 실패:", err);
+  }
+};
 
 // 2. onAuthStateChanged로 로그인 / 로그아웃 감지
 onAuthStateChanged(auth, (user) => {
