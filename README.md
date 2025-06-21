@@ -66,6 +66,7 @@ go get github.com/joho/godotenv@latest
 go get github.com/labstack/echo-contrib@latest
 go get github.com/labstack/echo/v4@latest
 go get github.com/openai/openai-go@latest
+go get github.com/pressly/goose/v3@latest
 go get github.com/robfig/cron/v3@latest
 go get github.com/willoma/bulma-gomponents@latest
 go get github.com/willoma/gomplements@latest

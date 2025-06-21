@@ -35,6 +35,7 @@ modules=(
     "github.com/labstack/echo-contrib@latest"
     "github.com/labstack/echo/v4@latest"
     "github.com/openai/openai-go@latest"
+    "github.com/pressly/goose/v3@latest"
     "github.com/robfig/cron/v3@latest"
     "github.com/willoma/bulma-gomponents@latest"
     "github.com/willoma/gomplements@latest"

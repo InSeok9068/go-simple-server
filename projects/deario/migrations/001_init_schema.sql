@@ -1,5 +1,5 @@
--- auto-generated definition
-CREATE TABLE users (
+-- +goose Up
+CREATE TABLE IF NOT EXISTS users (
     uid TEXT PRIMARY KEY,
     name TEXT DEFAULT '' NOT NULL,
     email TEXT UNIQUE DEFAULT '' NOT NULL,
@@ -7,8 +7,7 @@ CREATE TABLE users (
     updated TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
--- auto-generated definition
-CREATE TABLE diarys (
+CREATE TABLE IF NOT EXISTS diarys (
     id TEXT DEFAULT(
         'r' || LOWER(HEX(RANDOMBLOB (7)))
     ) NOT NULL PRIMARY KEY,
@@ -21,8 +20,7 @@ CREATE TABLE diarys (
     updated TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
--- auto-generated definition
-CREATE TABLE push_keys (
+CREATE TABLE IF NOT EXISTS push_keys (
     id TEXT DEFAULT(
         'r' || LOWER(HEX(RANDOMBLOB (7)))
     ) NOT NULL PRIMARY KEY,
@@ -31,3 +29,10 @@ CREATE TABLE push_keys (
     created TEXT DEFAULT CURRENT_TIMESTAMP,
     updated TEXT DEFAULT CURRENT_TIMESTAMP
 );
+
+-- +goose Down
+DROP TABLE users;
+
+DROP TABLE diarys;
+
+DROP TABLE push_keys;
