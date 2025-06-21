@@ -43,7 +43,7 @@ func main() {
 	migrations, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/migrations")
 	provider, _ := goose.NewProvider(
 		goose.DialectSQLite3, db, migrations,
-		goose.WithVerbose(true),
+		goose.WithVerbose(config.IsDevEnv()),
 	)
 	if _, err := provider.Up(ctx); err != nil {
 		slog.Error("마이그레이션 실패", "error", err)
