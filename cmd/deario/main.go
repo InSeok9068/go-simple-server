@@ -1,8 +1,7 @@
 package main
 
 import (
-	"context"
-	"embed"
+	"github.com/robfig/cron/v3"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -10,19 +9,14 @@ import (
 	"simple-server/projects/deario/handlers"
 	"simple-server/projects/deario/services"
 	"simple-server/projects/deario/tasks"
-	"time"
-
-	"github.com/pressly/goose/v3"
-	"github.com/robfig/cron/v3"
 
 	"simple-server/internal/config"
 	"simple-server/internal/connection"
 	"simple-server/internal/middleware"
+	"simple-server/internal/migration"
 
 	"github.com/labstack/echo/v4"
 )
-
-var migrations embed.FS
 
 func main() {
 	/* 환경 설정 */
@@ -37,15 +31,9 @@ func main() {
 	/* 로깅 초기화 */
 
 	/* DB 마이그레이션 */
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
 	db, _ := connection.AppDBOpen()
 	migrations, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/migrations")
-	provider, _ := goose.NewProvider(
-		goose.DialectSQLite3, db, migrations,
-		goose.WithVerbose(config.IsDevEnv()),
-	)
-	if _, err := provider.Up(ctx); err != nil {
+	if err := migration.Up(db, migrations); err != nil {
 		slog.Error("마이그레이션 실패", "error", err)
 		os.Exit(1)
 	}
