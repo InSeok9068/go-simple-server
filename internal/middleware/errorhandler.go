@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -12,11 +13,12 @@ import (
 func RegisterErrorHandler(e *echo.Echo) {
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		var (
+			he      *echo.HTTPError
 			code    int
 			message string
 		)
 
-		if he, ok := err.(*echo.HTTPError); ok {
+		if errors.As(err, &he) {
 			code = he.Code
 			if m, ok := he.Message.(string); ok {
 				message = m
