@@ -54,28 +54,29 @@ sudo systemctl start main.service
 ### 프로젝트 종속성 최신화
 
 ```shell
-go get firebase.google.com/go/v4@latest
-go get github.com/Blank-Xu/sql-adapter@latest
-go get github.com/casbin/casbin/v2@latest
-go get github.com/doganarif/govisual@latest
-go get github.com/eduardolat/gomponents-lucide@latest
-go get github.com/glsubri/gomponents-alpine@latest
-go get github.com/go-rod/rod@latest
-go get github.com/gorilla/sessions@latest
-go get github.com/joho/godotenv@latest
-go get github.com/labstack/echo-contrib@latest
-go get github.com/labstack/echo/v4@latest
-go get github.com/openai/openai-go@latest
-go get github.com/pressly/goose/v3@latest
-go get github.com/robfig/cron/v3@latest
-go get github.com/willoma/bulma-gomponents@latest
-go get github.com/willoma/gomplements@latest
-go get golang.org/x/time@latest
-go get google.golang.org/api@latest
-go get google.golang.org/genai@latest
-go get maragu.dev/gomponents@latest
-go get maragu.dev/gomponents-htmx@latest
-go get modernc.org/sqlite@latest
+go get firebase.google.com/go/v4
+go get github.com/Blank-Xu/sql-adapter
+go get github.com/casbin/casbin/v2
+go get github.com/doganarif/govisual
+go get github.com/eduardolat/gomponents-lucide
+go get github.com/glsubri/gomponents-alpine
+go get github.com/go-rod/rod
+go get github.com/gorilla/sessions
+go get github.com/joho/godotenv
+go get github.com/labstack/echo-contrib
+go get github.com/labstack/echo/v4
+go get github.com/openai/openai-go
+go get github.com/pressly/goose/v3
+go get github.com/qustavo/sqlhooks/v2
+go get github.com/robfig/cron/v3
+go get github.com/willoma/bulma-gomponents
+go get github.com/willoma/gomplements
+go get golang.org/x/time
+go get google.golang.org/api
+go get google.golang.org/genai
+go get maragu.dev/gomponents
+go get maragu.dev/gomponents-htmx
+go get modernc.org/sqlite
 ```
 
 ### 개발 도구 종속성 최신화

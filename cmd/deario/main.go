@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/robfig/cron/v3"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -9,6 +8,8 @@ import (
 	"simple-server/projects/deario/handlers"
 	"simple-server/projects/deario/services"
 	"simple-server/projects/deario/tasks"
+
+	"github.com/robfig/cron/v3"
 
 	"simple-server/internal/config"
 	"simple-server/internal/connection"

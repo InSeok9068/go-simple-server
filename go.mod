@@ -22,6 +22,7 @@ require (
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/openai/openai-go v1.6.0
 	github.com/pressly/goose/v3 v3.24.3
+	github.com/qustavo/sqlhooks/v2 v2.1.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/willoma/bulma-gomponents v0.13.0
 	github.com/willoma/gomplements v0.8.0

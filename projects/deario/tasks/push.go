@@ -3,7 +3,6 @@ package tasks
 import (
 	"context"
 	"log/slog"
-	"simple-server/internal/connection"
 	"simple-server/internal/middleware"
 	"simple-server/projects/deario/db"
 
@@ -20,17 +19,17 @@ func PushTask(c *cron.Cron) {
 			return
 		}
 
-		dbCon, err := connection.AppDBOpen()
+		queries, err := db.GetQueries(ctx)
 		if err != nil {
-			slog.Error("데이터베이스 연결 실패", "error", err)
+			slog.Error("쿼리 로드 실패", "error", err)
 			return
 		}
-		queries := db.New(dbCon)
 
 		uid := "6KWofk1AVdZolC94UAuRuAB1wj13"
 		pushKey, err := queries.GetPushKey(ctx, uid)
 
 		if err != nil {
+			slog.Error("푸시 키 조회 실패", "error", err)
 			return
 		}
 
