@@ -7,7 +7,6 @@ import (
 	shared "simple-server/shared/views"
 	"time"
 
-	lucide "github.com/eduardolat/gomponents-lucide"
 	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
 
@@ -125,7 +124,7 @@ func Index(title string, date string) Node {
 					I(Text("list_alt")),
 				),
 				A(h.Get("/diary/random"),
-					lucide.Dices(),
+					I(Text("casino")),
 				),
 				A(Attr("data-ui", "#settings-dialog"),
 					I(Text("settings")),
