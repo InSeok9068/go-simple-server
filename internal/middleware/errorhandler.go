@@ -41,7 +41,9 @@ func RegisterErrorHandler(e *echo.Echo) {
 			if c.Request().Method == http.MethodHead {
 				_ = c.NoContent(code)
 			} else {
-				_ = c.String(code, message)
+				_ = c.JSON(code, map[string]string{
+					"message": message,
+				})
 			}
 		}
 	}

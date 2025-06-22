@@ -22,7 +22,7 @@ func Request(ctx context.Context, prompt string) (string, error) {
 
 	slog.Debug("프롬프트 요청", "prompt", prompt)
 
-	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash", genai.Text(prompt), nil)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.5-flash", genai.Text(prompt), nil)
 	if err != nil {
 		slog.Error("AI 요청 실패", "error", err)
 		return "", errors.New("AI 요청 실패")

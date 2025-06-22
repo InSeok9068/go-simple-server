@@ -13,6 +13,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/lmittmann/tint"
 	_ "modernc.org/sqlite"
 )
 
@@ -137,15 +138,21 @@ func LoggerWithDatabaseInit() {
 		// }
 		// fileHandler := slog.NewTextHandler(file, &slog.HandlerOptions{})
 
-		// Console Handler
-		consoleHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: level,
-		})
+		var consoleHandler slog.Handler
+		if IsDevEnv() {
+			consoleHandler = tint.NewHandler(os.Stderr, &tint.Options{
+				Level: level,
+			})
+		} else {
+			consoleHandler = slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
+				Level: level,
+			})
+		}
 
 		// MultiHandler: Combine all handlers
 		multiHandler := NewMultiHandler(consoleHandler, databaseHandler)
 		slog.SetDefault(slog.New(multiHandler))
-		log.SetOutput(os.Stdout)
+		log.SetOutput(os.Stderr)
 	})
 }
 
