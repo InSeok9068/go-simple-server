@@ -14,5 +14,6 @@ func GetQueries(ctx context.Context) (*Queries, error) {
 		return nil, err
 	}
 
-	return New(dbCon), nil
+	loggingDB := &connection.LoggingDB{DB: dbCon}
+	return New(loggingDB), nil
 }
