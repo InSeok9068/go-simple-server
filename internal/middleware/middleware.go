@@ -16,6 +16,8 @@ import (
 )
 
 func RegisterCommonMiddleware(e *echo.Echo) error {
+	RegisterErrorHandler(e)
+
 	serviceName := os.Getenv("SERVICE_NAME")
 
 	var sharedStaticFS fs.FS
