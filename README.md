@@ -47,6 +47,18 @@ chmod +x main
 sudo systemctl start main.service
 ```
 
+#### 윈도우 (로그 어드민)
+
+```shell
+./pocketbase.exe serve --dir ./shared/log
+```
+
+#### 리눅스 (로그 어드민)
+
+```shell
+./pocketbase serve --dir ./srv/log
+```
+
 ---
 
 ## 종속성 최신화
