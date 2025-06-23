@@ -29,7 +29,7 @@ func Index(title string, date string) Node {
 		),
 		Body: []Node{
 			/* Header */
-			Header(Class("fixed responsive yellow4"),
+			Header(Class("fixed yellow4"),
 				Nav(
 					A(Href("/"), Class("max"),
 						H3(Text(title)),
@@ -48,7 +48,7 @@ func Index(title string, date string) Node {
 			/* Header */
 
 			/* Body */
-			Main(Class("responsive"),
+			Main(
 				Nav(
 					A(Href(fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1))),
 						I(Text("arrow_back_ios")),
@@ -62,7 +62,7 @@ func Index(title string, date string) Node {
 					Div(Class("max"),
 						Text(DateView(date)),
 					),
-					P(Class("max bold ellipsis"),
+					P(Class("bold ellipsis"),
 						x.Data(""),
 						x.Show("$store.auth.isAuthed"),
 						x.Text("$store.auth?.user?.displayName"),
