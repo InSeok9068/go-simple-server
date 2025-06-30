@@ -304,8 +304,8 @@ func AiFeedbackSave(c echo.Context) error {
 
 	if err := queries.UpdateDiaryOfAiFeedback(c.Request().Context(), db.UpdateDiaryOfAiFeedbackParams{
 		ID:         diary.ID,
-		Aifeedback: aiFeedback,
-		Aiimage:    aiImage,
+		AiFeedback: aiFeedback,
+		AiImage:    aiImage,
 	}); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "일기요정 저장에 실패하였습니다.")
 	}
@@ -335,20 +335,20 @@ func GetAiFeedback(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "저장된 일기가 없습니다.")
 	}
 
-	if diary.Aiimage != "" {
+	if diary.AiImage != "" {
 		return Div(
-			Input(Type("hidden"), Name("ai-image"), Value(diary.Aiimage)),
-			Img(Style("width:320px"), Src(fmt.Sprintf("data:image/png;base64,%s", diary.Aiimage))),
+			Input(Type("hidden"), Name("ai-image"), Value(diary.AiImage)),
+			Img(Style("width:320px"), Src(fmt.Sprintf("data:image/png;base64,%s", diary.AiImage))),
 		).Render(c.Response().Writer)
 	}
 
-	if diary.Aifeedback == "" {
+	if diary.AiFeedback == "" {
 		return echo.NewHTTPError(http.StatusInternalServerError, "저장된 일기요정이 없습니다.")
 	}
 
 	return Div(
-		Input(Type("hidden"), Name("ai-feedback"), Value(diary.Aifeedback)),
-		Text(diary.Aifeedback),
+		Input(Type("hidden"), Name("ai-feedback"), Value(diary.AiFeedback)),
+		Text(diary.AiFeedback),
 	).Render(c.Response().Writer)
 }
 
