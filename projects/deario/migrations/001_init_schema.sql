@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS diarys (
-    id TEXT DEFAULT(
-        'r' || LOWER(HEX(RANDOMBLOB (7)))
+    id TEXT DEFAULT (
+        'r' || LOWER(HEX(RANDOMBLOB(7)))
     ) NOT NULL PRIMARY KEY,
     uid TEXT DEFAULT '' NOT NULL,
     date TEXT DEFAULT '' NOT NULL,
@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS diarys (
 );
 
 CREATE TABLE IF NOT EXISTS push_keys (
-    id TEXT DEFAULT(
-        'r' || LOWER(HEX(RANDOMBLOB (7)))
+    id TEXT DEFAULT (
+        'r' || LOWER(HEX(RANDOMBLOB(7)))
     ) NOT NULL PRIMARY KEY,
     uid TEXT DEFAULT '' NOT NULL,
     token TEXT DEFAULT '' NOT NULL,

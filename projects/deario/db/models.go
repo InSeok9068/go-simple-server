@@ -13,8 +13,8 @@ type Diary struct {
 	Uid        string
 	Date       string
 	Content    string
-	Aifeedback string
-	Aiimage    string
+	AiFeedback string
+	AiImage    string
 	Created    sql.NullString
 	Updated    sql.NullString
 }

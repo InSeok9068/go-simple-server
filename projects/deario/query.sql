@@ -1,20 +1,20 @@
 -- sqlc generate -f ./projects/deario/sqlc.yaml
 
 -- name: GetDiary :one
-SELECT * FROM diarys WHERE date = ? AND uid = ? LIMIT 1;
+SELECT * FROM diary WHERE date = ? AND uid = ? LIMIT 1;
 
 -- name: GetDiaryRandom :one
 SELECT *
-FROM diarys
+FROM diary
 WHERE
     date IS NOT NULL
     AND uid = ?
-ORDER BY RANDOM ()
+ORDER BY RANDOM()
 LIMIT 1;
 
 -- name: ListDiarys :many
 SELECT *
-FROM diarys
+FROM diary
 WHERE
     uid = ?
 ORDER BY created desc
@@ -23,7 +23,7 @@ OFFSET ((? - 1) * 7);
 
 -- name: CreateDiary :one
 INSERT INTO
-    diarys (
+    diary (
         uid,
         content,
         date,
@@ -40,7 +40,7 @@ VALUES (
     ) RETURNING *;
 
 -- name: UpdateDiary :one
-UPDATE diarys
+UPDATE diary
 SET
     content = ?,
     updated = datetime('now')
@@ -48,23 +48,23 @@ WHERE
     id = ? RETURNING *;
 
 -- name: DeleteDiary :exec
-DELETE FROM diarys WHERE id = ?;
+DELETE FROM diary WHERE id = ?;
 
 -- name: UpdateDiaryOfAiFeedback :exec
-UPDATE diarys
+UPDATE diary
 SET
-    aiFeedback = ?,
-    aiImage = ?,
+    ai_feedback = ?,
+    ai_image = ?,
     updated = datetime('now')
 WHERE
     id = ?;
 
 -- name: GetPushKey :one
-SELECT * FROM push_keys WHERE uid = ? LIMIT 1;
+SELECT * FROM push_key WHERE uid = ? LIMIT 1;
 
 -- name: CreatePushKey :exec
 INSERT INTO
-    push_keys (uid, token, created, updated)
+    push_key (uid, token, created, updated)
 VALUES (
         ?,
         ?,
@@ -73,7 +73,7 @@ VALUES (
     );
 
 -- name: UpdatePushKey :exec
-UPDATE push_keys
+UPDATE push_key
 SET
     token = ?,
     updated = datetime('now')
@@ -81,11 +81,11 @@ WHERE
     uid = ?;
 
 -- name: GetUser :one
-SELECT * FROM users WHERE uid = ? LIMIT 1;
+SELECT * FROM user WHERE uid = ? LIMIT 1;
 
 -- name: CreateUser :exec
 INSERT INTO
-    users (
+    user (
         uid,
         name,
         email,
