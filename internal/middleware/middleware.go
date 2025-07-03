@@ -9,7 +9,6 @@ import (
 	resources "simple-server"
 	"simple-server/internal/config"
 
-	"github.com/doganarif/govisual"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.opentelemetry.io/otel"
@@ -41,9 +40,13 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
+
+	// 개발환경은 GoVisual 확인을 위해서 Gzip 미적용
+	if config.IsProdEnv() {
+		e.Use(middleware.Gzip())
+	}
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORS())
-	e.Use(middleware.Gzip())
 	e.Use(middleware.Timeout())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
@@ -73,29 +76,4 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	})
 
 	return nil
-}
-
-func RegisterGoVisualMiddleware(e *echo.Echo) {
-	// govisual.Handler 설정
-	visualHandler := govisual.Wrap(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// 이 핸들러는 실제 호출되지 않음 — Echo에서 직접 라우팅 처리됨
-		}),
-		govisual.WithRequestBodyLogging(true),
-		govisual.WithResponseBodyLogging(true),
-	)
-
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			// Echo context에서 http.Request, http.ResponseWriter 가져오기
-			req := c.Request()
-			res := c.Response()
-
-			// govisual 내부 미들웨어 호출 (라우팅은 건너뜀)
-			visualHandler.ServeHTTP(res, req)
-
-			// 실제 Echo 핸들러 실행
-			return next(c)
-		}
-	})
 }

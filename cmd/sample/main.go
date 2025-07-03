@@ -25,7 +25,16 @@ func main() {
 
 	e := setUpServer()
 
-	e.Logger.Fatal(e.Start(":8002"))
+	/* 개발은 GoVisual, 운영은 Echo */
+	if config.IsDevEnv() {
+		server := config.TransferEchoToGoVisualServerOnlyDev(e, "8999")
+		slog.Info("[✅ GoVisual] http server started on [::]:8999")
+		if err := server.ListenAndServe(); err != nil {
+			e.Logger.Fatal("GoVisual 서버 시작 실패", "error", err)
+		}
+	} else {
+		e.Logger.Fatal(e.Start(":8999"))
+	}
 }
 
 func setUpServer() *echo.Echo {
