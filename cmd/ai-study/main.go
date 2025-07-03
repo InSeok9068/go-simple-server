@@ -19,11 +19,11 @@ func main() {
 	os.Setenv("APP_TITLE", "AI 공부 길잡이")
 	/* 환경 설정 */
 
-	/* 로깅 초기화 */
-	config.LoggerWithDatabaseInit()
+	/* 로깅 및 트레이서 초기화 */
+	config.InitLoggerWithDatabase()
 	config.InitTracer()
 	defer config.ShutdownTracer(context.Background())
-	/* 로깅 초기화 */
+	/* 로깅 및 트레이서 초기화 */
 
 	e := setUpServer()
 

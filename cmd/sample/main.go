@@ -18,9 +18,11 @@ func main() {
 	os.Setenv("APP_TITLE", "샘플")
 	/* 환경 설정 */
 
-	config.LoggerWithDatabaseInit()
+	/* 로깅 및 트레이서 초기화 */
+	config.InitLoggerWithDatabase()
 	config.InitTracer()
 	defer config.ShutdownTracer(context.Background())
+	/* 로깅 및 트레이서 초기화 */
 
 	e := setUpServer()
 

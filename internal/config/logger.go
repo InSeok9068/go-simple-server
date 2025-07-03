@@ -114,7 +114,7 @@ func (h *DatabaseHandler) WithGroup(name string) slog.Handler {
 	return h
 }
 
-func LoggerWithDatabaseInit() {
+func InitLoggerWithDatabase() {
 	initOnce.Do(func() {
 		os.Setenv("LOG_DATABASE_URL", LogDatabaseURL())
 		dbCon, err := connection.LogDBOpen()

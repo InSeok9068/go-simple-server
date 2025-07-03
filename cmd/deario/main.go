@@ -28,11 +28,11 @@ func main() {
 	os.Setenv("APP_DATABASE_URL", config.AppDatabaseURL(os.Getenv("SERVICE_NAME")))
 	/* 환경 설정 */
 
-	/* 로깅 초기화 */
-	config.LoggerWithDatabaseInit()
+	/* 로깅 및 트레이서 초기화 */
+	config.InitLoggerWithDatabase()
 	config.InitTracer()
 	defer config.ShutdownTracer(context.Background())
-	/* 로깅 초기화 */
+	/* 로깅 및 트레이서 초기화 */
 
 	/* DB 마이그레이션 */
 	db, _ := connection.AppDBOpen()

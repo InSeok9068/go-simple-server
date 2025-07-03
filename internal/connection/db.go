@@ -29,12 +29,9 @@ func (h *Hooks) After(ctx context.Context, query string, args ...interface{}) (c
 	begin := ctx.Value("begin").(time.Time)
 	spanCtx := trace.SpanFromContext(ctx).SpanContext()
 	if spanCtx.IsValid() {
-		slog.Debug("SQL 실행", "query", query, "args", args,
-			"duration", time.Since(begin),
-			"trace_id", spanCtx.TraceID().String())
+		slog.Debug("SQL 실행", "query", query, "args", args, "duration", time.Since(begin), "trace_id", spanCtx.TraceID().String())
 	} else {
-		slog.Debug("SQL 실행", "query", query, "args", args,
-			"duration", time.Since(begin))
+		slog.Debug("SQL 실행", "query", query, "args", args, "duration", time.Since(begin))
 	}
 	return ctx, nil
 }
