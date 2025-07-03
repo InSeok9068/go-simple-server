@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
 	"simple-server/internal/config"
@@ -16,6 +17,10 @@ func main() {
 	os.Setenv("SERVICE_NAME", "sample")
 	os.Setenv("APP_TITLE", "샘플")
 	/* 환경 설정 */
+
+	config.LoggerWithDatabaseInit()
+	config.InitTracer()
+	defer config.ShutdownTracer(context.Background())
 
 	e := setUpServer()
 

@@ -14,6 +14,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/lmittmann/tint"
+	"go.opentelemetry.io/otel/trace"
 	_ "modernc.org/sqlite"
 )
 
@@ -31,8 +32,13 @@ func NewMultiHandler(handlers ...slog.Handler) *MultiHandler {
 
 // Handle : 모든 핸들러에 로그를 전달
 func (m *MultiHandler) Handle(ctx context.Context, r slog.Record) error {
+	spanCtx := trace.SpanFromContext(ctx).SpanContext()
+	if spanCtx.IsValid() {
+		r.AddAttrs(slog.String("trace_id", spanCtx.TraceID().String()))
+	}
 	for _, handler := range m.handlers {
-		if err := handler.Handle(ctx, r); err != nil {
+		rec := r.Clone()
+		if err := handler.Handle(ctx, rec); err != nil {
 			return err
 		}
 	}
@@ -163,7 +169,7 @@ func CustomLogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error
 	remoteIP := v.RemoteIP
 	userIP := c.RealIP()
 
-	slog.Info(fmt.Sprintf(`%s %s`, method, requestURI),
+	slog.InfoContext(c.Request().Context(), fmt.Sprintf(`%s %s`, method, requestURI),
 		"execTime", v.Latency.Microseconds(),
 		"id", v.RequestID,
 		"type", "request",
