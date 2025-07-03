@@ -170,16 +170,16 @@ func CustomLogValuesFunc(c echo.Context, v middleware.RequestLoggerValues) error
 	userIP := c.RealIP()
 
 	slog.InfoContext(c.Request().Context(), fmt.Sprintf(`%s %s`, method, requestURI),
-		"execTime", v.Latency.Microseconds(),
+		"exec_time", v.Latency.Microseconds(),
 		"id", v.RequestID,
 		"type", "request",
 		"status", c.Response().Status,
 		"method", method,
 		"url", requestURI,
 		"referer", c.Request().Referer(),
-		"remoteIP", remoteIP,
-		"userIP", userIP,
-		"userAgent", c.Request().UserAgent(),
+		"remote_ip", remoteIP,
+		"user_ip", userIP,
+		"user_agent", c.Request().UserAgent(),
 		"error", v.Error,
 		"details", "")
 	return nil
