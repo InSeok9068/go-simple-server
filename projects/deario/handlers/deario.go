@@ -140,7 +140,6 @@ func DiaryRandom(c echo.Context) error {
 }
 
 func Save(c echo.Context) error {
-	// 사용자 세션 확인
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
