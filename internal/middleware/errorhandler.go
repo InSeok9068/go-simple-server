@@ -30,7 +30,7 @@ func RegisterErrorHandler(e *echo.Echo) {
 			message = http.StatusText(code)
 		}
 
-		slog.Error("요청 처리 실패",
+		slog.ErrorContext(c.Request().Context(), "요청 처리 실패",
 			"error", err,
 			"status", code,
 			"method", c.Request().Method,
