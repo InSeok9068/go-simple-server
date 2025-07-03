@@ -84,6 +84,9 @@ go get github.com/qustavo/sqlhooks/v2
 go get github.com/robfig/cron/v3
 go get github.com/willoma/bulma-gomponents
 go get github.com/willoma/gomplements
+go get go.opentelemetry.io/otel
+go get go.opentelemetry.io/otel/sdk
+go get go.opentelemetry.io/otel/trace
 go get golang.org/x/time
 go get google.golang.org/api
 go get google.golang.org/genai
