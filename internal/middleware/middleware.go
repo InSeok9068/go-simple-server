@@ -12,6 +12,8 @@ import (
 	"github.com/doganarif/govisual"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/time/rate"
 )
 
@@ -46,6 +48,15 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	e.Use(middleware.Timeout())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
+	tracer := otel.Tracer(serviceName)
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx, span := tracer.Start(c.Request().Context(), c.Request().Method+" "+c.Path())
+			defer span.End()
+			c.SetRequest(c.Request().WithContext(ctx))
+			return next(c)
+		}
+	})
 	e.Use(middleware.BodyLimit("5M"))
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(20)))) // 1초당 20회 제한
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/qustavo/sqlhooks/v2"
+	"go.opentelemetry.io/otel/trace"
 
 	"modernc.org/sqlite"
 )
@@ -26,7 +27,15 @@ func (h *Hooks) Before(ctx context.Context, query string, args ...interface{}) (
 
 func (h *Hooks) After(ctx context.Context, query string, args ...interface{}) (context.Context, error) {
 	begin := ctx.Value("begin").(time.Time)
-	slog.Debug("SQL 실행", "query", query, "args", args, "duration", time.Since(begin))
+	spanCtx := trace.SpanFromContext(ctx).SpanContext()
+	if spanCtx.IsValid() {
+		slog.Debug("SQL 실행", "query", query, "args", args,
+			"duration", time.Since(begin),
+			"trace_id", spanCtx.TraceID().String())
+	} else {
+		slog.Debug("SQL 실행", "query", query, "args", args,
+			"duration", time.Since(begin))
+	}
 	return ctx, nil
 }
 
