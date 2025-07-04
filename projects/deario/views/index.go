@@ -203,7 +203,7 @@ func Index(title string, date string) Node {
 							I(Text("arrow_drop_down")),
 							h.Get("/diary/list"),
 							h.Target("#diary-list-content"),
-							h.Trigger("load, click"),
+							h.Trigger("load delay:1s, click"),
 							h.Swap("beforeend"),
 							Attr("@click", "page++"),
 							Attr(":hx-vals", "JSON.stringify({ page: page })"),
