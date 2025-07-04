@@ -101,7 +101,6 @@ func DiaryList(c echo.Context) error {
 		Column2: page,
 	})
 	if err != nil {
-		slog.Error("일기 목록 조회 실패", "error", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "목록을 가져오지 못했습니다.")
 	}
 
@@ -149,14 +148,12 @@ func Save(c echo.Context) error {
 	date := c.FormValue("date")
 	content := c.FormValue("content")
 	if date == "" {
-		slog.Warn("날짜가 비어있습니다", "uid", uid)
 		return echo.NewHTTPError(http.StatusBadRequest, "날짜는 필수 입력값입니다.")
 	}
 
 	// 데이터베이스 쿼리 인스턴스 생성
 	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
-		slog.Error("데이터베이스 쿼리 인스턴스를 생성하는데 실패했습니다", "error", err, "uid", uid)
 		return echo.NewHTTPError(http.StatusInternalServerError, "시스템 오류가 발생했습니다.")
 	}
 
@@ -172,19 +169,11 @@ func Save(c echo.Context) error {
 			Content: content,
 			Date:    date,
 		}); err != nil {
-			slog.Error("일기 생성에 실패했습니다",
-				"error", err,
-				"uid", uid,
-				"date", date)
 			return echo.NewHTTPError(http.StatusInternalServerError, "일기 저장에 실패했습니다. 다시 시도해주세요.")
 		}
 	} else {
 		if content == "" {
 			if err := queries.DeleteDiary(c.Request().Context(), diary.ID); err != nil {
-				slog.Error("일기 수정에 실패했습니다",
-					"error", err,
-					"uid", uid,
-					"date", date)
 				return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
 			}
 		} else {
@@ -192,10 +181,6 @@ func Save(c echo.Context) error {
 				Content: content,
 				ID:      diary.ID,
 			}); err != nil {
-				slog.Error("일기 수정에 실패했습니다",
-					"error", err,
-					"uid", uid,
-					"date", date)
 				return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
 			}
 		}
@@ -374,7 +359,6 @@ func SavePushKey(c echo.Context) error {
 			Uid:   uid,
 			Token: token,
 		}); err != nil {
-			slog.Error("푸시 키 저장 실패", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 저장 실패")
 		}
 	} else {
@@ -382,7 +366,6 @@ func SavePushKey(c echo.Context) error {
 			Uid:   uid,
 			Token: token,
 		}); err != nil {
-			slog.Error("푸시 키 업데이트 실패", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 업데이트 실패")
 		}
 	}

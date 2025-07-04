@@ -3,11 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"simple-server/internal/middleware"
 	"simple-server/projects/deario/db"
-
-	"github.com/labstack/echo/v4"
 )
 
 func EnsureUser(ctx context.Context, uid string) error {
@@ -24,7 +21,7 @@ func EnsureUser(ctx context.Context, uid string) error {
 
 		user, err := auth.GetUser(ctx, uid)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+			return fmt.Errorf("인증 클라이언트 사용자 조회 실패: %w", err)
 		}
 
 		if err := queries.CreateUser(ctx, db.CreateUserParams{

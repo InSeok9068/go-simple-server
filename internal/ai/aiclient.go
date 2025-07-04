@@ -3,7 +3,6 @@ package aiclient
 import (
 	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"simple-server/internal/config"
 
@@ -51,18 +50,5 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 		}
 	}
 
-	return "", errors.New("이미지 생성 실패")
-
-	// result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp-image-generation", genai.Text(prompt), nil)
-	// if err != nil {
-	// 	slog.Error("AI 요청 실패", "error", err)
-	// 	return nil, errors.New("AI 요청 실패")
-	// }
-
-	// resultImage := result.Candidates[0].Content.Parts[0].InlineData.Data
-
-	// //slog.Info(fmt.Sprintf(`프롬프트 응답 : %s`, resultImage))
-	// data, err := base64.StdEncoding.DecodeString(string(resultImage))
-
-	// return data, nil
+	return "", fmt.Errorf("이미지 생성 실패")
 }

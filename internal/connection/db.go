@@ -3,6 +3,7 @@ package connection
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 	"os"
 	"sync"
 	"time"
@@ -24,6 +25,8 @@ func (h *Hooks) Before(ctx context.Context, query string, args ...interface{}) (
 }
 
 func (h *Hooks) After(ctx context.Context, query string, args ...interface{}) (context.Context, error) {
+	begin := ctx.Value("begin").(time.Time)
+	slog.DebugContext(ctx, "SQL 실행", "query", query, "args", args, "duration", time.Since(begin))
 	return ctx, nil
 }
 

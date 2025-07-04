@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log/slog"
 	"net/http"
 	"regexp"
 	"simple-server/internal/config"
@@ -19,7 +18,6 @@ func AIStudy(c echo.Context, random bool) error {
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
-		slog.Error("AI 클라이언트 생성 실패", "error", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "AI 초기화 실패")
 	}
 
@@ -43,7 +41,6 @@ func AIStudy(c echo.Context, random bool) error {
 
 	result, err := client.Models.GenerateContent(ctx, "gemini-1.5-flash", genai.Text(prompt), nil)
 	if err != nil {
-		slog.Error("AI 요청 실패", "error", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "AI 요청 실패")
 	}
 
