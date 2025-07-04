@@ -3,7 +3,6 @@ package middleware
 import (
 	"fmt"
 	"io/fs"
-	"log/slog"
 	"net/http"
 	"os"
 	resources "simple-server"
@@ -26,12 +25,10 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	if config.IsProdEnv() {
 		var err error
 		if sharedStaticFS, err = fs.Sub(resources.EmbeddedFiles, "shared/static"); err != nil {
-			slog.Error("정적 파일 시스템 초기화 실패", "error", err)
-			return err
+			return fmt.Errorf("정적 파일 시스템 초기화 실패: %w", err)
 		}
 		if projectStaticFS, err = fs.Sub(resources.EmbeddedFiles, projectStaticDir); err != nil {
-			slog.Error("프로젝트 정적 파일 시스템 초기화 실패", "error", err)
-			return err
+			return fmt.Errorf("프로젝트 정적 파일 시스템 초기화 실패: %w", err)
 		}
 	} else {
 		sharedStaticFS = os.DirFS("shared/static")

@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
-	"log/slog"
 	"net/http"
 	"simple-server/internal/config"
 	"simple-server/internal/connection"
@@ -31,8 +31,7 @@ func InitFirebase() error {
 
 	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(firebaseConfig)))
 	if err != nil {
-		slog.Error("파이어베이스 초기화 실패", "error", err)
-		return err
+		return fmt.Errorf("파이어베이스 초기화 실패: %w", err)
 	}
 
 	App = app
@@ -101,28 +100,23 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 func InitCasbin() error {
 	db, err := connection.AppDBOpen()
 	if err != nil {
-		slog.Error("데이터베이스 연결 실패", "error", err)
-		return err
+		return fmt.Errorf("데이터베이스 연결 실패: %w", err)
 	}
 	adapter, err := sqladapter.NewAdapter(db, "sqlite", "")
 	if err != nil {
-		slog.Error("casbin adapter 초기화 실패", "error", err)
-		return err
+		return fmt.Errorf("casbin adapter 초기화 실패: %w", err)
 	}
 	modelData, err := fs.ReadFile(resources.EmbeddedFiles, "model.conf")
 	if err != nil {
-		slog.Error("모델 파일 읽기 실패", "error", err)
-		return err
+		return fmt.Errorf("모델 파일 읽기 실패: %w", err)
 	}
 	m, err := model.NewModelFromString(string(modelData))
 	if err != nil {
-		slog.Error("casbin 모델 생성 실패", "error", err)
-		return err
+		return fmt.Errorf("casbin 모델 생성 실패: %w", err)
 	}
 	enforcer, err := casbin.NewEnforcer(m, adapter)
 	if err != nil {
-		slog.Error("casbin enforcer 초기화 실패", "error", err)
-		return err
+		return fmt.Errorf("casbin enforcer 초기화 실패: %w", err)
 	}
 
 	Enforcer = enforcer

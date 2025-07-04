@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
 	"simple-server/internal/connection"
 )
 
@@ -10,8 +10,7 @@ import (
 func GetQueries(ctx context.Context) (*Queries, error) {
 	dbCon, err := connection.AppDBOpen()
 	if err != nil {
-		slog.Error("데이터베이스 연결 실패", "error", err)
-		return nil, err
+		return nil, fmt.Errorf("데이터베이스 연결 실패: %w", err)
 	}
 
 	return New(dbCon), nil
