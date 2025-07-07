@@ -37,7 +37,7 @@ const uiConfig = {
           if (response.ok) {
             window.location.href = "/";
           } else {
-            alert("세션 생성 실패");
+            showError("세션 생성 실패");
           }
         })
         .catch((err) => {

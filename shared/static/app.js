@@ -16,7 +16,30 @@ document.addEventListener("alpine:init", () => {
   Alpine.store("notification", {
     permission: Notification.permission === "granted",
   });
+
+  Alpine.store("snackbar", {
+    visible: false,
+    message: "",
+    type: "primary",
+    show(msg, type = "primary", ms = 3000) {
+      this.message = msg;
+      this.type = type;
+      this.visible = true;
+      setTimeout(() => {
+        this.visible = false;
+      }, ms);
+    },
+    info(msg, ms) {
+      this.show(msg, "primary", ms);
+    },
+    error(msg, ms) {
+      this.show(msg, "error", ms);
+    },
+  });
 });
+
+window.showInfo = (msg, ms) => Alpine.store("snackbar").info(msg, ms);
+window.showError = (msg, ms) => Alpine.store("snackbar").error(msg, ms);
 
 htmx.on("htmx:afterRequest", (event) => {
   const contentType = event.detail.xhr.getResponseHeader("Content-Type");
@@ -35,7 +58,7 @@ htmx.on("htmx:afterRequest", (event) => {
     if (parsedResponse.message === undefined || parsedResponse.message === "") {
       return;
     }
-    alert(parsedResponse.message);
+    showError(parsedResponse.message);
   }
 });
 

@@ -19,6 +19,7 @@ func Index(title string) Node {
 		Language: "ko",
 		Head:     shared.HeadsWithBulma(title),
 		Body: []Node{
+			shared.Snackbar(),
 			b.Container(b.MaxTablet, b.Padding(2),
 				b.Columns(
 					b.Column(
@@ -86,7 +87,7 @@ func Index(title string) Node {
 				document.getElementById("copy").addEventListener("click", () => {
 					navigator.clipboard.writeText(
 						document.getElementById("result").innerText
-					).then(() => alert("복사 되었습니다."));
+                                        ).then(() => showInfo("복사 되었습니다."));
 				});
 			`)),
 		},

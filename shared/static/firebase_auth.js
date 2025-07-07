@@ -87,7 +87,7 @@ htmx.on("htmx:afterRequest", (event) => {
           if (response.ok) {
             location.reload();
           } else {
-            alert("재 로그인 실패");
+            showError("재 로그인 실패");
           }
         })
         .catch((err) => {
