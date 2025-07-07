@@ -124,15 +124,14 @@ func (h *DatabaseHandler) flush() {
 		_ = tx.Rollback()
 		return
 	}
+	defer stmt.Close()
 	for _, e := range entries {
 		if _, err := stmt.ExecContext(ctx, e.level, e.message, e.data); err != nil {
 			slog.Error("로그 배치 실패", "error", err)
 			_ = tx.Rollback()
-			_ = stmt.Close()
 			return
 		}
 	}
-	_ = stmt.Close()
 	if err := tx.Commit(); err != nil {
 		slog.Error("로그 배치 커밋 실패", "error", err)
 	}
