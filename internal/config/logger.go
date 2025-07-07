@@ -10,6 +10,7 @@ import (
 	"os"
 	"simple-server/internal/connection"
 	"sync"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -73,9 +74,68 @@ func (m *MultiHandler) WithGroup(name string) slog.Handler {
 	return NewMultiHandler(newHandlers...)
 }
 
+type logEntry struct {
+	level   slog.Level
+	message string
+	data    string
+}
+
 type DatabaseHandler struct {
-	db    *sql.DB
-	level slog.Leveler
+	db     *sql.DB
+	level  slog.Leveler
+	mu     sync.Mutex
+	buffer []logEntry
+}
+
+func NewDatabaseHandler(db *sql.DB, level slog.Leveler) *DatabaseHandler {
+	h := &DatabaseHandler{
+		db:    db,
+		level: level,
+	}
+	go h.start()
+	return h
+}
+
+func (h *DatabaseHandler) start() {
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+	for range ticker.C {
+		h.flush()
+	}
+}
+
+func (h *DatabaseHandler) flush() {
+	h.mu.Lock()
+	entries := h.buffer
+	h.buffer = nil
+	h.mu.Unlock()
+	if len(entries) == 0 {
+		return
+	}
+	ctx := context.Background()
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		slog.Error("로그 배치 시작 실패", "error", err)
+		return
+	}
+	stmt, err := tx.PrepareContext(ctx, "INSERT INTO _logs (level, message, data) VALUES (?, ?, ?)")
+	if err != nil {
+		slog.Error("로그 배치 쿼리 준비 실패", "error", err)
+		_ = tx.Rollback()
+		return
+	}
+	for _, e := range entries {
+		if _, err := stmt.ExecContext(ctx, e.level, e.message, e.data); err != nil {
+			slog.Error("로그 배치 실패", "error", err)
+			_ = tx.Rollback()
+			_ = stmt.Close()
+			return
+		}
+	}
+	_ = stmt.Close()
+	if err := tx.Commit(); err != nil {
+		slog.Error("로그 배치 커밋 실패", "error", err)
+	}
 }
 
 func (h *DatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
@@ -92,13 +152,9 @@ func (h *DatabaseHandler) Handle(ctx context.Context, r slog.Record) error {
 		return err
 	}
 
-	if _, err := h.db.ExecContext(ctx, "INSERT INTO _logs (level, message, data) VALUES (?, ?, ?)",
-		logLevel,
-		logMessage,
-		string(jsonBytes)); err != nil {
-		return err
-	}
-
+	h.mu.Lock()
+	h.buffer = append(h.buffer, logEntry{level: logLevel, message: logMessage, data: string(jsonBytes)})
+	h.mu.Unlock()
 	return nil
 }
 
@@ -131,10 +187,7 @@ func InitLoggerWithDatabase() {
 		}
 
 		// Database Handler
-		databaseHandler := &DatabaseHandler{
-			db:    dbCon,
-			level: level,
-		}
+		databaseHandler := NewDatabaseHandler(dbCon, level)
 
 		// // File Handler
 		// file, err := os.OpenFile("app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
