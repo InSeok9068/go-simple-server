@@ -173,3 +173,18 @@ https://ntorga.com/full-stack-go-app-with-htmx-and-alpinejs/
   }
 }
 ```
+
+---
+
+## 이미 Merge된 브랜치 제거
+
+```bash
+for branch in $(git for-each-ref refs/remotes/origin/ --format='%(refname:short)' \
+  | grep -E '^origin/(feature/|codox/)'); do
+
+  if git merge-base --is-ancestor "$branch" origin/main; then
+    echo "🗑 삭제: $branch"
+    git push origin --delete "${branch#origin/}"
+  fi
+done
+```
