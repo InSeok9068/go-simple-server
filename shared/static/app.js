@@ -38,9 +38,6 @@ document.addEventListener("alpine:init", () => {
   });
 });
 
-window.showInfo = (msg, ms) => Alpine.store("snackbar").info(msg, ms);
-window.showError = (msg, ms) => Alpine.store("snackbar").error(msg, ms);
-
 htmx.on("htmx:afterRequest", (event) => {
   const contentType = event.detail.xhr.getResponseHeader("Content-Type");
   if (contentType !== "application/json") {
@@ -68,6 +65,14 @@ htmx.on("htmx:configRequest", (event) => {
     event.detail.headers["X-CSRF-Token"] = match;
   }
 });
+
+function showInfo(msg, ms) {
+  Alpine.store("snackbar").info(msg, ms);
+}
+
+function showError(msg, ms) {
+  Alpine.store("snackbar").error(msg, ms);
+}
 
 function showModal(querySelector) {
   document.querySelector(querySelector).showModal();

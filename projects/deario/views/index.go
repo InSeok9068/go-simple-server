@@ -183,7 +183,7 @@ func Index(title string, date string) Node {
 						Button(Class("border"),
 							h.Post("/ai-feedback/save?"),
 							h.Swap("none"),
-							h.On("htmx:after-on-load", "if (event.detail.successful) showInfo('저장 되었습니다.')"),
+							h.On("htmx:after-on-load", "if (event.detail.successful) closeModal('#ai-feedback-dialog'); showInfo('저장 되었습니다.')"),
 							I(Text("save")),
 							Span(Text("저장")),
 						),
