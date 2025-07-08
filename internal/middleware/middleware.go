@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"expvar"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	resources "simple-server"
 	"simple-server/internal/config"
 
+	ipfilter "github.com/crazy-max/echo-ipfilter"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.opentelemetry.io/otel"
@@ -72,6 +74,18 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 			return next(c)
 		}
 	})
+
+	// Debug
+	debugGroup := e.Group("/debug")
+	if config.IsProdEnv() {
+		debugGroup.Use(ipfilter.MiddlewareWithConfig(ipfilter.Config{
+			WhiteList: []string{
+				"121.190.49.104/32",
+			},
+			BlockByDefault: true,
+		}))
+	}
+	debugGroup.GET("/vars", echo.WrapHandler(expvar.Handler()))
 
 	return nil
 }

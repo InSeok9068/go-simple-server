@@ -26,6 +26,7 @@ modules=(
     "firebase.google.com/go/v4@latest"
     "github.com/Blank-Xu/sql-adapter@latest"
     "github.com/casbin/casbin/v2@latest"
+    "github.com/crazy-max/echo-ipfilter@latest"
     "github.com/doganarif/govisual@latest"
     "github.com/eduardolat/gomponents-lucide@latest"
     "github.com/glsubri/gomponents-alpine@latest"
