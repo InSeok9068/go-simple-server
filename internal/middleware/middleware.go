@@ -62,6 +62,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		LogValuesFunc: config.CustomLogValuesFunc,
 	}))
 
+	// Tracing
 	tracer := otel.Tracer(serviceName)
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
