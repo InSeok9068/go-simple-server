@@ -85,6 +85,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 			BlockByDefault: true,
 		}))
 	}
+	// expvar 핸들러
 	debugGroup.GET("/vars", echo.WrapHandler(expvar.Handler()))
 
 	return nil
