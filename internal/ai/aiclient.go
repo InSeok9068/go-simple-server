@@ -18,6 +18,8 @@ func Request(ctx context.Context, prompt string) (string, error) {
 		return "", fmt.Errorf("AI 클라이언트 생성 실패: %w", err)
 	}
 
+	// gemini-2.5-pro
+	// gemini-2.5-flash
 	result, err := client.Models.GenerateContent(ctx, "gemini-2.5-flash", genai.Text(prompt), nil)
 	if err != nil {
 		return "", fmt.Errorf("AI 요청 실패: %w", err)
