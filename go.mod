@@ -22,7 +22,7 @@ require (
 	github.com/labstack/echo-contrib v0.17.4
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/lmittmann/tint v1.1.2
-	github.com/openai/openai-go v1.8.2
+	github.com/openai/openai-go v1.8.3
 	github.com/pressly/goose/v3 v3.24.3
 	github.com/qustavo/sqlhooks/v2 v2.1.0
 	github.com/robfig/cron/v3 v3.0.1
