@@ -18,6 +18,10 @@ const uiConfig = {
     firebase.auth.EmailAuthProvider.PROVIDER_ID,
     // 소셜 로그인 예시 (Google)
     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    // 소셜 로그인 예시 (Apple)
+    firebase.auth.AppleAuthProvider.PROVIDER_ID,
+    // 소셜 로그인 예시 (Facebook)
+    firebase.auth.FacebookAuthProvider.PROVIDER_ID,
   ],
   callbacks: {
     signInSuccessWithAuthResult: function (authResult, redirectUrl) {
