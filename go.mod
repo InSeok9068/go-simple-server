@@ -11,7 +11,7 @@ tool github.com/golangci/golangci-lint/cmd/golangci-lint
 require (
 	firebase.google.com/go/v4 v4.16.1
 	github.com/Blank-Xu/sql-adapter v1.1.2
-	github.com/casbin/casbin/v2 v2.108.0
+	github.com/casbin/casbin/v2 v2.109.0
 	github.com/crazy-max/echo-ipfilter v1.12.0
 	github.com/doganarif/govisual v0.1.9
 	github.com/eduardolat/gomponents-lucide v1.4.0
@@ -22,7 +22,7 @@ require (
 	github.com/labstack/echo-contrib v0.17.4
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/lmittmann/tint v1.1.2
-	github.com/openai/openai-go v1.8.3
+	github.com/openai/openai-go v1.10.1
 	github.com/pressly/goose/v3 v3.24.3
 	github.com/qustavo/sqlhooks/v2 v2.1.0
 	github.com/robfig/cron/v3 v3.0.1
