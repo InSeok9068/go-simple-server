@@ -94,12 +94,18 @@ FROM diary
 WHERE
     date IS NOT NULL
     AND uid = ?
+    AND date >= ?
 ORDER BY RANDOM()
 LIMIT 1
 `
 
-func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error) {
-	row := q.db.QueryRowContext(ctx, getDiaryRandom, uid)
+type GetDiaryRandomParams struct {
+	Uid  string
+	Date string
+}
+
+func (q *Queries) GetDiaryRandom(ctx context.Context, arg GetDiaryRandomParams) (Diary, error) {
+	row := q.db.QueryRowContext(ctx, getDiaryRandom, arg.Uid, arg.Date)
 	var i Diary
 	err := row.Scan(
 		&i.ID,
@@ -183,6 +189,54 @@ func (q *Queries) ListDiarys(ctx context.Context, arg ListDiarysParams) ([]Diary
 			&i.AiImage,
 			&i.Created,
 			&i.Updated,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPushTargets = `-- name: ListPushTargets :many
+SELECT
+    uid,
+    push_token,
+    push_time,
+    random_range
+FROM user_setting
+WHERE
+    is_push = 1
+    AND push_token != ''
+    AND push_time != ''
+`
+
+type ListPushTargetsRow struct {
+	Uid         string
+	PushToken   string
+	PushTime    string
+	RandomRange int64
+}
+
+func (q *Queries) ListPushTargets(ctx context.Context) ([]ListPushTargetsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listPushTargets)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPushTargetsRow
+	for rows.Next() {
+		var i ListPushTargetsRow
+		if err := rows.Scan(
+			&i.Uid,
+			&i.PushToken,
+			&i.PushTime,
+			&i.RandomRange,
 		); err != nil {
 			return nil, err
 		}
