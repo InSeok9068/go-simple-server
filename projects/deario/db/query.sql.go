@@ -11,21 +11,8 @@ import (
 
 const createDiary = `-- name: CreateDiary :one
 INSERT INTO
-    diary (
-        uid,
-        content,
-        date,
-        created,
-        updated
-    )
-VALUES (
-        ?,
-        ?,
-        ?,
-        --         strftime('%Y%m%d', 'now', 'localtime'),
-        datetime('now', 'localtime'),
-        datetime('now', 'localtime')
-    ) RETURNING id, uid, date, content, ai_feedback, ai_image, created, updated
+    diary (uid, content, date)
+VALUES (?, ?, ?) RETURNING id, uid, date, content, ai_feedback, ai_image, created, updated
 `
 
 type CreateDiaryParams struct {
@@ -50,43 +37,8 @@ func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary
 	return i, err
 }
 
-const createPushKey = `-- name: CreatePushKey :exec
-INSERT INTO
-    push_key (uid, token, created, updated)
-VALUES (
-        ?,
-        ?,
-        datetime('now', 'localtime'),
-        datetime('now', 'localtime')
-    )
-`
-
-type CreatePushKeyParams struct {
-	Uid   string
-	Token string
-}
-
-func (q *Queries) CreatePushKey(ctx context.Context, arg CreatePushKeyParams) error {
-	_, err := q.db.ExecContext(ctx, createPushKey, arg.Uid, arg.Token)
-	return err
-}
-
 const createUser = `-- name: CreateUser :exec
-INSERT INTO
-    user (
-        uid,
-        name,
-        email,
-        created,
-        updated
-    )
-VALUES (
-        ?,
-        ?,
-        ?,
-        datetime('now', 'localtime'),
-        datetime('now', 'localtime')
-    )
+INSERT INTO user (uid, name, email) VALUES (?, ?, ?)
 `
 
 type CreateUserParams struct {
@@ -162,23 +114,6 @@ func (q *Queries) GetDiaryRandom(ctx context.Context, uid string) (Diary, error)
 	return i, err
 }
 
-const getPushKey = `-- name: GetPushKey :one
-SELECT id, uid, token, created, updated FROM push_key WHERE uid = ? LIMIT 1
-`
-
-func (q *Queries) GetPushKey(ctx context.Context, uid string) (PushKey, error) {
-	row := q.db.QueryRowContext(ctx, getPushKey, uid)
-	var i PushKey
-	err := row.Scan(
-		&i.ID,
-		&i.Uid,
-		&i.Token,
-		&i.Created,
-		&i.Updated,
-	)
-	return i, err
-}
-
 const getUser = `-- name: GetUser :one
 SELECT uid, name, email, created, updated FROM user WHERE uid = ? LIMIT 1
 `
@@ -190,6 +125,25 @@ func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
 		&i.Uid,
 		&i.Name,
 		&i.Email,
+		&i.Created,
+		&i.Updated,
+	)
+	return i, err
+}
+
+const getUserSetting = `-- name: GetUserSetting :one
+SELECT uid, is_push, push_token, push_time, random_range, created, updated FROM user_setting WHERE uid = ? LIMIT 1
+`
+
+func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, error) {
+	row := q.db.QueryRowContext(ctx, getUserSetting, uid)
+	var i UserSetting
+	err := row.Scan(
+		&i.Uid,
+		&i.IsPush,
+		&i.PushToken,
+		&i.PushTime,
+		&i.RandomRange,
 		&i.Created,
 		&i.Updated,
 	)
@@ -294,21 +248,58 @@ func (q *Queries) UpdateDiaryOfAiFeedback(ctx context.Context, arg UpdateDiaryOf
 	return err
 }
 
-const updatePushKey = `-- name: UpdatePushKey :exec
-UPDATE push_key
+const upsertPushKey = `-- name: UpsertPushKey :exec
+INSERT INTO
+    user_setting (uid, push_token)
+VALUES (?, ?)
+ON CONFLICT (uid) DO
+UPDATE
 SET
-    token = ?,
+    push_token = excluded.push_token,
     updated = datetime('now')
-WHERE
-    uid = ?
 `
 
-type UpdatePushKeyParams struct {
-	Token string
-	Uid   string
+type UpsertPushKeyParams struct {
+	Uid       string
+	PushToken string
 }
 
-func (q *Queries) UpdatePushKey(ctx context.Context, arg UpdatePushKeyParams) error {
-	_, err := q.db.ExecContext(ctx, updatePushKey, arg.Token, arg.Uid)
+func (q *Queries) UpsertPushKey(ctx context.Context, arg UpsertPushKeyParams) error {
+	_, err := q.db.ExecContext(ctx, upsertPushKey, arg.Uid, arg.PushToken)
+	return err
+}
+
+const upsertUserSetting = `-- name: UpsertUserSetting :exec
+INSERT INTO
+    user_setting (
+        uid,
+        is_push,
+        push_time,
+        random_range
+    )
+VALUES (?, ?, ?, ?)
+ON CONFLICT (uid) DO
+UPDATE
+SET
+    is_push = excluded.is_push,
+    push_time = excluded.push_time,
+    random_range = excluded.random_range,
+    updated = datetime('now')
+`
+
+type UpsertUserSettingParams struct {
+	Uid         string
+	IsPush      int64
+	PushTime    string
+	RandomRange int64
+}
+
+func (q *Queries) UpsertUserSetting(ctx context.Context, arg UpsertUserSettingParams) error {
+	_, err := q.db.ExecContext(ctx, upsertUserSetting,
+		arg.Uid,
+		arg.IsPush,
+		arg.PushTime,
+		arg.RandomRange,
+	)
 	return err
 }

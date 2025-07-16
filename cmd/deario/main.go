@@ -95,6 +95,8 @@ func setUpServer() *echo.Echo {
 	authGroup.POST("/ai-feedback", handlers.AiFeedback)
 	authGroup.POST("/ai-feedback/save", handlers.AiFeedbackSave)
 	authGroup.POST("/save-pushToken", handlers.SavePushKey)
+	authGroup.GET("/setting", handlers.Setting)
+	authGroup.POST("/setting", handlers.SettingSave)
 	/* 권한 라우터 */
 
 	/* 스케줄 */

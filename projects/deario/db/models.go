@@ -19,18 +19,20 @@ type Diary struct {
 	Updated    sql.NullString
 }
 
-type PushKey struct {
-	ID      string
-	Uid     string
-	Token   string
-	Created sql.NullString
-	Updated sql.NullString
-}
-
 type User struct {
 	Uid     string
 	Name    string
 	Email   string
 	Created sql.NullString
 	Updated sql.NullString
+}
+
+type UserSetting struct {
+	Uid         string
+	IsPush      int64
+	PushToken   string
+	PushTime    string
+	RandomRange int64
+	Created     sql.NullString
+	Updated     sql.NullString
 }

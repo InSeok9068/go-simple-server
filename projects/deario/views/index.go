@@ -130,9 +130,9 @@ func Index(title string, date string) Node {
 					I(Text("casino")),
 					Text("랜덤"),
 				),
-				A(Attr("data-ui", "#settings-dialog"),
-					I(Text("settings")),
-					Text("설정"),
+				A(Attr("data-ui", "#menu-dialog"),
+					I(Text("menu_open")),
+					Text("메뉴"),
 				),
 			),
 			/* Footer */
@@ -219,36 +219,18 @@ func Index(title string, date string) Node {
 				),
 			),
 
-			/* 설정 Dialog */
-			Dialog(ID("settings-dialog"), Class("right"),
-				H5(Text("설정")),
-				Nav(
-					P(Class("max"), Text("알림")),
-					Label(Class("switch icon"),
-						Input(Type("checkbox"),
-							x.Data(""),
-							Attr(":checked", "$store.notification.permission"),
-						),
-						Span(
-							I(Text("notifications")),
-						),
+			/* 메뉴 Dialog */
+			Dialog(ID("menu-dialog"), Class("right"),
+				H5(Text("메뉴")),
+				Ul(Class("list"),
+					Li(Class("wave round"),
+						I(Text("settings")),
+						A(Href("/setting"), Text("설정")),
 					),
 				),
-				// Nav(
-				// 	P(Class("max"), Text("알림 시간")),
-				// 	Div(Class("field"),
-				// 		Input(Type("datetime-local")),
-				// 	),
-				// ),
-				// Nav(
-				// 	P(Class("max"), Text("랜덤 일기 조회 기간")),
-				// 	Div(Class("field"),
-				// 		Input(Type("number")),
-				// 	),
-				// ),
 				Nav(Class("right-align"),
 					Button(
-						Attr("data-ui", "#settings-dialog"),
+						Attr("data-ui", "#menu-dialog"),
 						Text("확인"),
 					),
 				),

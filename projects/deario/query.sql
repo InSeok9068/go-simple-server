@@ -23,21 +23,8 @@ OFFSET ((? - 1) * 7);
 
 -- name: CreateDiary :one
 INSERT INTO
-    diary (
-        uid,
-        content,
-        date,
-        created,
-        updated
-    )
-VALUES (
-        ?,
-        ?,
-        ?,
-        --         strftime('%Y%m%d', 'now', 'localtime'),
-        datetime('now', 'localtime'),
-        datetime('now', 'localtime')
-    ) RETURNING *;
+    diary (uid, content, date)
+VALUES (?, ?, ?) RETURNING *;
 
 -- name: UpdateDiary :one
 UPDATE diary
@@ -59,43 +46,38 @@ SET
 WHERE
     id = ?;
 
--- name: GetPushKey :one
-SELECT * FROM push_key WHERE uid = ? LIMIT 1;
+-- name: GetUserSetting :one
+SELECT * FROM user_setting WHERE uid = ? LIMIT 1;
 
--- name: CreatePushKey :exec
+-- name: UpsertUserSetting :exec
 INSERT INTO
-    push_key (uid, token, created, updated)
-VALUES (
-        ?,
-        ?,
-        datetime('now', 'localtime'),
-        datetime('now', 'localtime')
-    );
-
--- name: UpdatePushKey :exec
-UPDATE push_key
+    user_setting (
+        uid,
+        is_push,
+        push_time,
+        random_range
+    )
+VALUES (?, ?, ?, ?)
+ON CONFLICT (uid) DO
+UPDATE
 SET
-    token = ?,
-    updated = datetime('now')
-WHERE
-    uid = ?;
+    is_push = excluded.is_push,
+    push_time = excluded.push_time,
+    random_range = excluded.random_range,
+    updated = datetime('now');
+
+-- name: UpsertPushKey :exec
+INSERT INTO
+    user_setting (uid, push_token)
+VALUES (?, ?)
+ON CONFLICT (uid) DO
+UPDATE
+SET
+    push_token = excluded.push_token,
+    updated = datetime('now');
 
 -- name: GetUser :one
 SELECT * FROM user WHERE uid = ? LIMIT 1;
 
 -- name: CreateUser :exec
-INSERT INTO
-    user (
-        uid,
-        name,
-        email,
-        created,
-        updated
-    )
-VALUES (
-        ?,
-        ?,
-        ?,
-        datetime('now', 'localtime'),
-        datetime('now', 'localtime')
-    );
+INSERT INTO user (uid, name, email) VALUES (?, ?, ?);

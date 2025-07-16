@@ -354,20 +354,58 @@ func SavePushKey(c echo.Context) error {
 		return err
 	}
 
-	if _, err := queries.GetPushKey(c.Request().Context(), uid); err != nil {
-		if err := queries.CreatePushKey(c.Request().Context(), db.CreatePushKeyParams{
-			Uid:   uid,
-			Token: token,
-		}); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 저장 실패")
-		}
-	} else {
-		if err := queries.UpdatePushKey(c.Request().Context(), db.UpdatePushKeyParams{
-			Uid:   uid,
-			Token: token,
-		}); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 업데이트 실패")
-		}
+	if err := queries.UpsertPushKey(c.Request().Context(), db.UpsertPushKeyParams{
+		Uid:       uid,
+		PushToken: token,
+	}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 저장 실패")
+	}
+
+	return nil
+}
+
+func Setting(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	userSetting, err := queries.GetUserSetting(c.Request().Context(), uid)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정을 가져오지 못했습니다.")
+	}
+
+	return views.Setting(userSetting).Render(c.Response().Writer)
+}
+
+func SettingSave(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	var data map[string]interface{}
+	if err := c.Bind(&data); err != nil {
+		return err
+	}
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	if err := queries.UpsertUserSetting(c.Request().Context(), db.UpsertUserSettingParams{
+		Uid:         uid,
+		IsPush:      data["is_push"].(int64),
+		PushTime:    data["push_time"].(string),
+		RandomRange: data["random_range"].(int64),
+	}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정 저장 실패")
 	}
 
 	return nil

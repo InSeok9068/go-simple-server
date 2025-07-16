@@ -26,7 +26,7 @@ func PushTask(c *cron.Cron) {
 		}
 
 		uid := "6KWofk1AVdZolC94UAuRuAB1wj13"
-		pushKey, err := queries.GetPushKey(ctx, uid)
+		userSetting, err := queries.GetUserSetting(ctx, uid)
 
 		if err != nil {
 			slog.Error("푸시 키 조회 실패", "error", err)
@@ -38,7 +38,7 @@ func PushTask(c *cron.Cron) {
 				"title": "매일 알림",
 				"body":  "오늘 하루는 어땠나요?",
 			},
-			Token: pushKey.Token,
+			Token: userSetting.PushToken,
 		}
 
 		response, err := client.Send(ctx, message)
