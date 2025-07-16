@@ -9,6 +9,7 @@ FROM diary
 WHERE
     date IS NOT NULL
     AND uid = ?
+    AND date >= ?
 ORDER BY RANDOM()
 LIMIT 1;
 

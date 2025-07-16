@@ -36,13 +36,12 @@ func Setting(userSetting db.UserSetting) Node {
 					FieldSet(
 						Legend(Text("설정")),
 						// 알람 여부
-						Div(Class("field border label"),
-							Label(Class("switch"),
-								Input(Type("checkbox"), Name("is_push"), Value("1"),
-									x.Model("isPush"),
-									If(userSetting.IsPush == 1, Checked())),
-								Span(Text("알람")),
-							),
+						Nav(Text("알림")),
+						Label(Class("switch"),
+							Input(Type("checkbox"), Name("is_push"), Value("1"),
+								x.Model("isPush"),
+								If(userSetting.IsPush == 1, Checked())),
+							Span(Text("")),
 						),
 						// 알림 시간
 						Div(Class("field border label"),
