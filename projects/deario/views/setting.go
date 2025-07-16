@@ -29,6 +29,25 @@ func Setting(userSetting db.UserSetting) Node {
 		),
 		Body: []Node{
 			shared.Snackbar(),
+			/* Header */
+			Header(Class("fixed yellow4"),
+				Nav(
+					A(Href("/"), Class("max"),
+						H3(Text("Deario")),
+					),
+					A(ID("login"), Href("/login"), x.Data(""),
+						x.Show("!$store.auth.isAuthed"),
+						Text("Login"),
+					),
+					A(ID("logout"), Href("#"), x.Data(""),
+						x.Show("$store.auth.isAuthed"),
+						Attr("onclick", "logoutUser()"),
+						Text("Logout"),
+					),
+				),
+			),
+			/* Header */
+
 			/* Body */
 			Main(Class("responsive"),
 				Form(h.Post("/setting"), h.Swap("none"),
@@ -39,7 +58,6 @@ func Setting(userSetting db.UserSetting) Node {
 						Nav(Text("알림")),
 						Label(Class("switch"),
 							Input(Type("checkbox"), Name("is_push"), Value("1"),
-								x.Model("isPush"),
 								If(userSetting.IsPush == 1, Checked())),
 							Span(Text("")),
 						),
@@ -55,7 +73,7 @@ func Setting(userSetting db.UserSetting) Node {
 							Label(Text("랜덤일자")),
 						),
 						Nav(Class("right-align"),
-							Button(Class("border"), Text("저장")),
+							Button(Text("저장")),
 						),
 					),
 				),

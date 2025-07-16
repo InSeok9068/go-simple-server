@@ -33,7 +33,7 @@ func Index(title string, date string) Node {
 			Header(Class("fixed yellow4"),
 				Nav(
 					A(Href("/"), Class("max"),
-						H3(Text(title)),
+						H3(Text("Deario")),
 					),
 					A(ID("login"), Href("/login"), x.Data(""),
 						x.Show("!$store.auth.isAuthed"),

@@ -8,6 +8,7 @@ import (
 	aiclient "simple-server/internal/ai"
 	"simple-server/pkg/util/authutil"
 	"simple-server/pkg/util/dateutil"
+	"simple-server/pkg/util/maputil"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
 	shared "simple-server/shared/views"
@@ -411,9 +412,9 @@ func SettingSave(c echo.Context) error {
 
 	if err := queries.UpsertUserSetting(c.Request().Context(), db.UpsertUserSettingParams{
 		Uid:         uid,
-		IsPush:      data["is_push"].(int64),
-		PushTime:    data["push_time"].(string),
-		RandomRange: data["random_range"].(int64),
+		IsPush:      maputil.GetInt64(data, "is_push", 0),
+		PushTime:    maputil.GetString(data, "push_time", ""),
+		RandomRange: maputil.GetInt64(data, "random_range", 365),
 	}); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정 저장 실패")
 	}
