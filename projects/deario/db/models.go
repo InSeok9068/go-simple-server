@@ -17,6 +17,7 @@ type Diary struct {
 	AiImage    string
 	Created    sql.NullString
 	Updated    sql.NullString
+	Mood       string
 }
 
 type User struct {

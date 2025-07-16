@@ -47,6 +47,14 @@ SET
 WHERE
     id = ?;
 
+-- name: UpdateDiaryOfMood :exec
+UPDATE diary
+SET
+    mood = ?,
+    updated = datetime('now')
+WHERE
+    id = ?;
+
 -- name: GetUserSetting :one
 SELECT * FROM user_setting WHERE uid = ? LIMIT 1;
 

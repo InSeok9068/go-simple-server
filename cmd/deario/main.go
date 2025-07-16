@@ -97,6 +97,7 @@ func setUpServer() *echo.Echo {
 	authGroup.POST("/save-pushToken", handlers.SavePushKey)
 	authGroup.GET("/setting", handlers.Setting)
 	authGroup.POST("/setting", handlers.SettingSave)
+	authGroup.POST("/diary/mood", handlers.UpdateDiaryOfMood)
 	/* 권한 라우터 */
 
 	/* 스케줄 */

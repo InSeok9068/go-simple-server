@@ -421,3 +421,38 @@ func SettingSave(c echo.Context) error {
 
 	return nil
 }
+
+func UpdateDiaryOfMood(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	var data map[string]interface{}
+	if err := c.Bind(&data); err != nil {
+		return err
+	}
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
+		Uid:  uid,
+		Date: maputil.GetString(data, "date", ""),
+	})
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "일기를 먼저 작성해주세요.")
+	}
+
+	if err := queries.UpdateDiaryOfMood(c.Request().Context(), db.UpdateDiaryOfMoodParams{
+		ID:   diary.ID,
+		Mood: maputil.GetString(data, "mood", "0"),
+	}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "일기요정 저장 실패")
+	}
+
+	return nil
+}

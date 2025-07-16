@@ -1,3 +1,7 @@
 svg {
-    fill: none !important;
+  fill: none !important;
+}
+
+.deario-fit-height {
+  block-size: 16rem !important;
 }
