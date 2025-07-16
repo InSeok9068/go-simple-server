@@ -77,6 +77,18 @@ SET
     push_token = excluded.push_token,
     updated = datetime('now');
 
+-- name: ListPushTargets :many
+SELECT
+    uid,
+    push_token,
+    push_time,
+    random_range
+FROM user_setting
+WHERE
+    is_push = 1
+    AND push_token != ''
+    AND push_time != '';
+
 -- name: GetUser :one
 SELECT * FROM user WHERE uid = ? LIMIT 1;
 

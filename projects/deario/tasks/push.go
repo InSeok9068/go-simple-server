@@ -3,6 +3,8 @@ package tasks
 import (
 	"context"
 	"log/slog"
+	"time"
+
 	"simple-server/internal/middleware"
 	"simple-server/projects/deario/db"
 
@@ -11,8 +13,10 @@ import (
 )
 
 func PushTask(c *cron.Cron) {
-	if _, err := c.AddFunc("0 21 * * *", func() {
+	if _, err := c.AddFunc("@every 1m", func() {
 		ctx := context.Background()
+		now := time.Now().Format("15:04")
+
 		client, err := middleware.App.Messaging(ctx)
 		if err != nil {
 			slog.Error("메시징 클라이언트 생성 실패", "error", err)
@@ -25,28 +29,30 @@ func PushTask(c *cron.Cron) {
 			return
 		}
 
-		uid := "6KWofk1AVdZolC94UAuRuAB1wj13"
-		userSetting, err := queries.GetUserSetting(ctx, uid)
-
+		targets, err := queries.ListPushTargets(ctx)
 		if err != nil {
-			slog.Error("푸시 키 조회 실패", "error", err)
+			slog.Error("푸시 대상 조회 실패", "error", err)
 			return
 		}
 
-		message := &messaging.Message{
-			Data: map[string]string{
-				"title": "매일 알림",
-				"body":  "오늘 하루는 어땠나요?",
-			},
-			Token: userSetting.PushToken,
-		}
+		for _, target := range targets {
+			if target.PushTime != now {
+				continue
+			}
 
-		response, err := client.Send(ctx, message)
-		if err != nil {
-			slog.Error("푸시 발송 실패", "error", err)
-		}
+			message := &messaging.Message{
+				Data: map[string]string{
+					"title": "매일 알림",
+					"body":  "오늘 하루는 어땠나요?",
+				},
+				Token: target.PushToken,
+			}
 
-		slog.Debug("푸시 발송 응답", "response", response)
+			if _, err := client.Send(ctx, message); err != nil {
+				slog.Error("푸시 발송 실패", "error", err, "uid", target.Uid)
+				continue
+			}
+		}
 	}); err != nil {
 		slog.Error("스케줄 등록 실패", "error", err)
 	}

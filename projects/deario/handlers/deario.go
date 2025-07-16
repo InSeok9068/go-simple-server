@@ -129,7 +129,17 @@ func DiaryRandom(c echo.Context) error {
 		return err
 	}
 
-	diary, err := queries.GetDiaryRandom(c.Request().Context(), uid)
+	userSetting, err := queries.GetUserSetting(c.Request().Context(), uid)
+	if err != nil {
+		return err
+	}
+
+	dateLimit := time.Now().AddDate(0, 0, -int(userSetting.RandomRange)).Format("20060102")
+
+	diary, err := queries.GetDiaryRandom(c.Request().Context(), db.GetDiaryRandomParams{
+		Uid:  uid,
+		Date: dateLimit,
+	})
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "작성한 일기장이 없습니다.")
