@@ -15,7 +15,7 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func Index(title string, date string) Node {
+func Index(title string, date string, mood string) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
@@ -85,30 +85,30 @@ func Index(title string, date string) Node {
 				),
 
 				Nav(
-					Div(x.Data("{ mood: 0 }"),
+					Div(x.Data("{ mood: '"+mood+"' }"),
 						Form(h.Post("/diary/mood"),
 							h.Swap("none"),
 							h.On("htmx:after-on-load", "if (event.detail.successful) showInfo('저장 되었습니다.')"),
 							Input(Type("hidden"), Name("date"), Value(date)),
 							Input(Type("hidden"), Name("mood"), x.Model("mood")),
-							Button(Class("chip circle"), x.Class("mood === 1 ? 'primary' : ''"),
-								x.On("click", "mood = 1"),
+							Button(Class("chip circle"), x.Class("mood === '1' ? 'primary' : ''"),
+								x.On("click", "mood = '1'"),
 								I(Text("sentiment_very_satisfied")),
 							),
-							Button(Class("chip circle"), x.Class("mood === 2 ? 'primary' : ''"),
-								x.On("click", "mood = 2"),
+							Button(Class("chip circle"), x.Class("mood === '2' ? 'primary' : ''"),
+								x.On("click", "mood = '2'"),
 								I(Text("sentiment_satisfied")),
 							),
-							Button(Class("chip circle"), x.Class("mood === 3 ? 'primary' : ''"),
-								x.On("click", "mood = 3"),
+							Button(Class("chip circle"), x.Class("mood === '3' ? 'primary' : ''"),
+								x.On("click", "mood = '3'"),
 								I(Text("sentiment_neutral")),
 							),
-							Button(Class("chip circle"), x.Class("mood === 4 ? 'primary' : ''"),
-								x.On("click", "mood = 4"),
+							Button(Class("chip circle"), x.Class("mood === '4' ? 'primary' : ''"),
+								x.On("click", "mood = '4'"),
 								I(Text("sentiment_frustrated")),
 							),
-							Button(Class("chip circle"), x.Class("mood === 5 ? 'primary' : ''"),
-								x.On("click", "mood = 5"),
+							Button(Class("chip circle"), x.Class("mood === '5' ? 'primary' : ''"),
+								x.On("click", "mood = '5'"),
 								I(Text("sentiment_extremely_dissatisfied")),
 							),
 						),

@@ -30,7 +30,28 @@ func Index(c echo.Context) error {
 	} else {
 		date = strings.ReplaceAll(date, "-", "")
 	}
-	return views.Index(os.Getenv("APP_TITLE"), date).Render(c.Response().Writer)
+
+	uid, _ := authutil.SessionUID(c)
+
+	if uid == "" {
+		return views.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Response().Writer)
+	}
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
+		Uid:  uid,
+		Date: date,
+	})
+
+	if err != nil {
+		return views.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Response().Writer)
+	}
+
+	return views.Index(os.Getenv("APP_TITLE"), date, diary.Mood).Render(c.Response().Writer)
 }
 
 func Login(c echo.Context) error {
