@@ -1,9 +1,14 @@
 package views
 
 import (
+	"fmt"
+
 	"simple-server/pkg/util/gomutil"
 	"simple-server/projects/deario/db"
 	shared "simple-server/shared/views"
+
+	x "github.com/glsubri/gomponents-alpine"
+	h "maragu.dev/gomponents-htmx"
 
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/components"
@@ -25,12 +30,33 @@ func Setting(userSetting db.UserSetting) Node {
 		Body: []Node{
 			shared.Snackbar(),
 			/* Body */
-			Main(
-				Form(
+			Main(Class("responsive"),
+				Form(h.Post("/setting"), h.Swap("none"),
+					h.On("htmx:after-on-load", "showInfo('저장 되었습니다.')"),
 					FieldSet(
 						Legend(Text("설정")),
+						// 알람 여부
 						Div(Class("field border label"),
-							Input(),
+							Label(Class("switch"),
+								Input(Type("checkbox"), Name("is_push"), Value("1"),
+									x.Model("isPush"),
+									If(userSetting.IsPush == 1, Checked())),
+								Span(Text("알람")),
+							),
+						),
+						// 알림 시간
+						Div(Class("field border label"),
+							Input(Type("time"), Name("push_time"), Value(userSetting.PushTime)),
+							Label(Text("알림시간")),
+						),
+						// 랜덤 일자 범위
+						Div(Class("field border label"),
+							Input(Type("number"), Name("random_range"),
+								Value(fmt.Sprintf("%d", userSetting.RandomRange))),
+							Label(Text("랜덤일자")),
+						),
+						Nav(Class("right-align"),
+							Button(Class("border"), Text("저장")),
 						),
 					),
 				),
