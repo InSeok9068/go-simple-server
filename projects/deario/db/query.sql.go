@@ -257,15 +257,20 @@ func (q *Queries) ListPushTargets(ctx context.Context) ([]ListPushTargetsRow, er
 }
 
 const monthlyDiaryCount = `-- name: MonthlyDiaryCount :many
-WITH monthly AS (
-    SELECT substr(date, 1, 6) AS month, COUNT(*) AS count
-    FROM diary
-    WHERE uid = ?
-    GROUP BY substr(date, 1, 6)
-    ORDER BY month DESC
-    LIMIT 6
-)
-SELECT month, count FROM monthly ORDER BY month
+WITH
+    monthly AS (
+        SELECT substr(date, 1, 6) AS month, COUNT(*) AS count
+        FROM diary
+        WHERE
+            uid = ?
+        GROUP BY
+            substr(date, 1, 6)
+        ORDER BY month DESC
+        LIMIT 6
+    )
+SELECT month, count
+FROM monthly
+ORDER BY month
 `
 
 type MonthlyDiaryCountRow struct {
@@ -296,62 +301,52 @@ func (q *Queries) MonthlyDiaryCount(ctx context.Context, uid string) ([]MonthlyD
 	return items, nil
 }
 
-const monthlyMoodAvg = `-- name: MonthlyMoodAvg :many
-WITH monthly AS (
-    SELECT substr(date, 1, 6) AS month, AVG(CAST(mood AS INTEGER)) AS mood_avg
-    FROM diary
-    WHERE uid = ?
-    GROUP BY substr(date, 1, 6)
-    ORDER BY month DESC
-    LIMIT 6
-)
-SELECT month, mood_avg FROM monthly ORDER BY month
-`
-
-type MonthlyMoodAvgRow struct {
-	Month   string
-	MoodAvg sql.NullFloat64
-}
-
-func (q *Queries) MonthlyMoodAvg(ctx context.Context, uid string) ([]MonthlyMoodAvgRow, error) {
-	rows, err := q.db.QueryContext(ctx, monthlyMoodAvg, uid)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []MonthlyMoodAvgRow
-	for rows.Next() {
-		var i MonthlyMoodAvgRow
-		if err := rows.Scan(&i.Month, &i.MoodAvg); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const monthlyMoodCount = `-- name: MonthlyMoodCount :many
-WITH monthly AS (
-    SELECT
-        substr(date, 1, 6) AS month,
-        sum(CASE WHEN mood='1' THEN 1 ELSE 0 END) AS mood1,
-        sum(CASE WHEN mood='2' THEN 1 ELSE 0 END) AS mood2,
-        sum(CASE WHEN mood='3' THEN 1 ELSE 0 END) AS mood3,
-        sum(CASE WHEN mood='4' THEN 1 ELSE 0 END) AS mood4,
-        sum(CASE WHEN mood='5' THEN 1 ELSE 0 END) AS mood5
-    FROM diary
-    WHERE uid = ?
-    GROUP BY substr(date, 1, 6)
-    ORDER BY month DESC
-    LIMIT 6
-)
-SELECT month, mood1, mood2, mood3, mood4, mood5 FROM monthly ORDER BY month
+WITH
+    monthly AS (
+        SELECT
+            substr(date, 1, 6) AS month,
+            sum(
+                CASE
+                    WHEN mood = '1' THEN 1
+                    ELSE 0
+                END
+            ) AS mood1,
+            sum(
+                CASE
+                    WHEN mood = '2' THEN 1
+                    ELSE 0
+                END
+            ) AS mood2,
+            sum(
+                CASE
+                    WHEN mood = '3' THEN 1
+                    ELSE 0
+                END
+            ) AS mood3,
+            sum(
+                CASE
+                    WHEN mood = '4' THEN 1
+                    ELSE 0
+                END
+            ) AS mood4,
+            sum(
+                CASE
+                    WHEN mood = '5' THEN 1
+                    ELSE 0
+                END
+            ) AS mood5
+        FROM diary
+        WHERE
+            uid = ?
+        GROUP BY
+            substr(date, 1, 6)
+        ORDER BY month DESC
+        LIMIT 6
+    )
+SELECT month, mood1, mood2, mood3, mood4, mood5
+FROM monthly
+ORDER BY month
 `
 
 type MonthlyMoodCountRow struct {

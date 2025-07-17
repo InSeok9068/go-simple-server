@@ -37,8 +37,6 @@ func Statistic() Node {
 			Main(Class("responsive"),
 				H5(Text("월별 일기 통계")),
 				Canvas(ID("countChart")),
-				H5(Text("월별 평균 기분")),
-				Canvas(ID("moodChart")),
 				H5(Text("월별 기분 분포")),
 				Canvas(ID("moodStackChart")),
 			),

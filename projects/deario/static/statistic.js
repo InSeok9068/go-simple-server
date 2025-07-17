@@ -21,25 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       });
 
-      const moodCtx = document.getElementById("moodChart").getContext("2d");
-      new Chart(moodCtx, {
-        type: "line",
-        data: {
-          labels: data.months,
-          datasets: [
-            {
-              label: "평균 기분",
-              data: data.moodAvg,
-              borderColor: "rgba(244,67,54,0.8)",
-              fill: false,
-            },
-          ],
-        },
-        options: {
-          scales: { y: { suggestedMin: 1, suggestedMax: 5 } },
-        },
-      });
-
       const stackCtx = document
         .getElementById("moodStackChart")
         .getContext("2d");
@@ -49,27 +30,27 @@ document.addEventListener("DOMContentLoaded", () => {
           labels: data.months,
           datasets: [
             {
-              label: `1 ${moodIcons[1]}`,
+              label: `${moodIcons[1]}`,
               data: data.mood1,
               backgroundColor: "#ffeb3b",
             },
             {
-              label: `2 ${moodIcons[2]}`,
+              label: `${moodIcons[2]}`,
               data: data.mood2,
               backgroundColor: "#8bc34a",
             },
             {
-              label: `3 ${moodIcons[3]}`,
+              label: `${moodIcons[3]}`,
               data: data.mood3,
               backgroundColor: "#03a9f4",
             },
             {
-              label: `4 ${moodIcons[4]}`,
+              label: `${moodIcons[4]}`,
               data: data.mood4,
               backgroundColor: "#ff9800",
             },
             {
-              label: `5 ${moodIcons[5]}`,
+              label: `${moodIcons[5]}`,
               data: data.mood5,
               backgroundColor: "#f44336",
             },
