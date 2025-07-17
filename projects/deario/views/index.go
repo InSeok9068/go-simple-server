@@ -80,7 +80,7 @@ func Index(title string, date string, mood string) Node {
 
 				Nav(
 					P(Class("bold"),
-						Text("오늘의 기분을 아이콘으로 표현해주세요 ✅"),
+						Text("하루의 기분을 아이콘으로 표현해주세요 ✅"),
 					),
 				),
 
