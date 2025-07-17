@@ -1,5 +1,7 @@
 console.log("statistic page loaded");
 
+const moodIcons = ["", "😁", "🙂", "😐", "😣", "😭"];
+
 document.addEventListener("DOMContentLoaded", () => {
   fetch("/statistic/data")
     .then((res) => res.json())
@@ -46,11 +48,31 @@ document.addEventListener("DOMContentLoaded", () => {
         data: {
           labels: data.months,
           datasets: [
-            { label: "1", data: data.mood1, backgroundColor: "#ffeb3b" },
-            { label: "2", data: data.mood2, backgroundColor: "#8bc34a" },
-            { label: "3", data: data.mood3, backgroundColor: "#03a9f4" },
-            { label: "4", data: data.mood4, backgroundColor: "#ff9800" },
-            { label: "5", data: data.mood5, backgroundColor: "#f44336" },
+            {
+              label: `1 ${moodIcons[1]}`,
+              data: data.mood1,
+              backgroundColor: "#ffeb3b",
+            },
+            {
+              label: `2 ${moodIcons[2]}`,
+              data: data.mood2,
+              backgroundColor: "#8bc34a",
+            },
+            {
+              label: `3 ${moodIcons[3]}`,
+              data: data.mood3,
+              backgroundColor: "#03a9f4",
+            },
+            {
+              label: `4 ${moodIcons[4]}`,
+              data: data.mood4,
+              backgroundColor: "#ff9800",
+            },
+            {
+              label: `5 ${moodIcons[5]}`,
+              data: data.mood5,
+              backgroundColor: "#f44336",
+            },
           ],
         },
         options: {
