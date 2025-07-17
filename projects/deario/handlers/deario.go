@@ -479,6 +479,10 @@ func UpdateDiaryOfMood(c echo.Context) error {
 	return nil
 }
 
+func Statistic(c echo.Context) error {
+	return views.Statistic().Render(c.Response().Writer)
+}
+
 func buildAvgMap(rows []db.MonthlyMoodAvgRow) map[string]float64 {
 	m := make(map[string]float64)
 	for _, r := range rows {
@@ -504,10 +508,6 @@ func toInt(v sql.NullFloat64) int64 {
 		return int64(v.Float64)
 	}
 	return 0
-}
-
-func Statistic(c echo.Context) error {
-	return views.Statistic().Render(c.Response().Writer)
 }
 
 func StatisticData(c echo.Context) error {
