@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createDiary = `-- name: CreateDiary :one
@@ -241,6 +242,131 @@ func (q *Queries) ListPushTargets(ctx context.Context) ([]ListPushTargetsRow, er
 			&i.PushToken,
 			&i.PushTime,
 			&i.RandomRange,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const monthlyDiaryCount = `-- name: MonthlyDiaryCount :many
+SELECT substr(date, 1, 6) AS month, COUNT(*) AS count
+FROM diary
+WHERE uid = ?
+GROUP BY substr(date, 1, 6)
+ORDER BY month
+`
+
+type MonthlyDiaryCountRow struct {
+	Month string
+	Count int64
+}
+
+func (q *Queries) MonthlyDiaryCount(ctx context.Context, uid string) ([]MonthlyDiaryCountRow, error) {
+	rows, err := q.db.QueryContext(ctx, monthlyDiaryCount, uid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []MonthlyDiaryCountRow
+	for rows.Next() {
+		var i MonthlyDiaryCountRow
+		if err := rows.Scan(&i.Month, &i.Count); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const monthlyMoodAvg = `-- name: MonthlyMoodAvg :many
+SELECT substr(date, 1, 6) AS month, AVG(CAST(mood AS INTEGER)) AS mood_avg
+FROM diary
+WHERE uid = ?
+GROUP BY substr(date, 1, 6)
+ORDER BY month
+`
+
+type MonthlyMoodAvgRow struct {
+	Month   string
+	MoodAvg sql.NullFloat64
+}
+
+func (q *Queries) MonthlyMoodAvg(ctx context.Context, uid string) ([]MonthlyMoodAvgRow, error) {
+	rows, err := q.db.QueryContext(ctx, monthlyMoodAvg, uid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []MonthlyMoodAvgRow
+	for rows.Next() {
+		var i MonthlyMoodAvgRow
+		if err := rows.Scan(&i.Month, &i.MoodAvg); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const monthlyMoodCount = `-- name: MonthlyMoodCount :many
+SELECT
+    substr(date, 1, 6) AS month,
+    sum(CASE WHEN mood='1' THEN 1 ELSE 0 END) AS mood1,
+    sum(CASE WHEN mood='2' THEN 1 ELSE 0 END) AS mood2,
+    sum(CASE WHEN mood='3' THEN 1 ELSE 0 END) AS mood3,
+    sum(CASE WHEN mood='4' THEN 1 ELSE 0 END) AS mood4,
+    sum(CASE WHEN mood='5' THEN 1 ELSE 0 END) AS mood5
+FROM diary
+WHERE uid = ?
+GROUP BY substr(date, 1, 6)
+ORDER BY month
+`
+
+type MonthlyMoodCountRow struct {
+	Month string
+	Mood1 sql.NullFloat64
+	Mood2 sql.NullFloat64
+	Mood3 sql.NullFloat64
+	Mood4 sql.NullFloat64
+	Mood5 sql.NullFloat64
+}
+
+func (q *Queries) MonthlyMoodCount(ctx context.Context, uid string) ([]MonthlyMoodCountRow, error) {
+	rows, err := q.db.QueryContext(ctx, monthlyMoodCount, uid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []MonthlyMoodCountRow
+	for rows.Next() {
+		var i MonthlyMoodCountRow
+		if err := rows.Scan(
+			&i.Month,
+			&i.Mood1,
+			&i.Mood2,
+			&i.Mood3,
+			&i.Mood4,
+			&i.Mood5,
 		); err != nil {
 			return nil, err
 		}

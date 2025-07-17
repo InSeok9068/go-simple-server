@@ -98,6 +98,8 @@ func setUpServer() *echo.Echo {
 	authGroup.GET("/setting", handlers.Setting)
 	authGroup.POST("/setting", handlers.SettingSave)
 	authGroup.POST("/diary/mood", handlers.UpdateDiaryOfMood)
+	authGroup.GET("/statistic", handlers.Statistic)
+	authGroup.GET("/statistic/data", handlers.StatisticData)
 	/* 권한 라우터 */
 
 	/* 스케줄 */

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -476,4 +477,97 @@ func UpdateDiaryOfMood(c echo.Context) error {
 	}
 
 	return nil
+}
+
+func buildAvgMap(rows []db.MonthlyMoodAvgRow) map[string]float64 {
+	m := make(map[string]float64)
+	for _, r := range rows {
+		if r.MoodAvg.Valid {
+			m[r.Month] = r.MoodAvg.Float64
+		} else {
+			m[r.Month] = 0
+		}
+	}
+	return m
+}
+
+func buildMoodMap(rows []db.MonthlyMoodCountRow) map[string]db.MonthlyMoodCountRow {
+	m := make(map[string]db.MonthlyMoodCountRow)
+	for _, r := range rows {
+		m[r.Month] = r
+	}
+	return m
+}
+
+func toInt(v sql.NullFloat64) int64 {
+	if v.Valid {
+		return int64(v.Float64)
+	}
+	return 0
+}
+
+func Statistic(c echo.Context) error {
+	return views.Statistic().Render(c.Response().Writer)
+}
+
+func StatisticData(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	counts, err := queries.MonthlyDiaryCount(c.Request().Context(), uid)
+	if err != nil {
+		return err
+	}
+
+	avgs, err := queries.MonthlyMoodAvg(c.Request().Context(), uid)
+	if err != nil {
+		return err
+	}
+
+	moods, err := queries.MonthlyMoodCount(c.Request().Context(), uid)
+	if err != nil {
+		return err
+	}
+
+	avgMap := buildAvgMap(avgs)
+	moodMap := buildMoodMap(moods)
+
+	var months []string
+	var diaryCount []int64
+	var moodAvg []float64
+	var mood1, mood2, mood3, mood4, mood5 []int64
+
+	for _, cRow := range counts {
+		month := cRow.Month
+		months = append(months, month)
+		diaryCount = append(diaryCount, cRow.Count)
+		moodAvg = append(moodAvg, avgMap[month])
+
+		mm := moodMap[month]
+		mood1 = append(mood1, toInt(mm.Mood1))
+		mood2 = append(mood2, toInt(mm.Mood2))
+		mood3 = append(mood3, toInt(mm.Mood3))
+		mood4 = append(mood4, toInt(mm.Mood4))
+		mood5 = append(mood5, toInt(mm.Mood5))
+	}
+
+	result := map[string]interface{}{
+		"months":     months,
+		"diaryCount": diaryCount,
+		"moodAvg":    moodAvg,
+		"mood1":      mood1,
+		"mood2":      mood2,
+		"mood3":      mood3,
+		"mood4":      mood4,
+		"mood5":      mood5,
+	}
+
+	return c.JSON(http.StatusOK, result)
 }
