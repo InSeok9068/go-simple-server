@@ -369,6 +369,40 @@ func GetAiFeedback(c echo.Context) error {
 	).Render(c.Response().Writer)
 }
 
+func AiFeedbackAudio(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	file, err := c.FormFile("audio")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "오디오 파일이 필요합니다.")
+	}
+
+	src, err := file.Open()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "파일 열기 실패")
+	}
+	defer src.Close()
+
+	text, err := aiclient.Transcribe(c.Request().Context(), src)
+	if err != nil {
+		slog.Error("오디오 변환 실패", "error", err, "uid", uid)
+		return echo.NewHTTPError(http.StatusInternalServerError, "음성 인식 실패")
+	}
+
+	prompt := fmt.Sprintf(`아래의 내용은 나의 일기 녹음이야. 핵심 내용을 요약해줘.
+%s`, text)
+	result, err := aiclient.Request(c.Request().Context(), prompt)
+	if err != nil {
+		slog.Error("AI 요약 실패", "error", err, "uid", uid)
+		return echo.NewHTTPError(http.StatusInternalServerError, "요약 실패")
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"text": result})
+}
+
 func SavePushKey(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {

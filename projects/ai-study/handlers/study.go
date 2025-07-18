@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	_ "github.com/openai/openai-go"
 	"net/http"
 	"regexp"
 	"simple-server/internal/ai"

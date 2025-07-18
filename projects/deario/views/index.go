@@ -325,6 +325,9 @@ func DiaryContentForm(date string, content string) Node {
 				Text(content),
 			),
 		),
+		Nav(
+			Button(Type("button"), ID("record-btn"), Attr("onclick", "toggleRecord()"), Text("녹음")),
+		),
 	)
 }
 

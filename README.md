@@ -79,7 +79,6 @@ go get github.com/joho/godotenv
 go get github.com/labstack/echo-contrib
 go get github.com/labstack/echo/v4
 go get github.com/lmittmann/tint
-go get github.com/openai/openai-go
 go get github.com/pressly/goose/v3
 go get github.com/qustavo/sqlhooks/v2
 go get github.com/robfig/cron/v3

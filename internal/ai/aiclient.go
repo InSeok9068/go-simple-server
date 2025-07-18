@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"simple-server/internal/config"
 
 	"google.golang.org/genai"
@@ -53,4 +54,34 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 	}
 
 	return "", fmt.Errorf("이미지 생성 실패")
+}
+
+func Transcribe(ctx context.Context, r io.Reader) (string, error) {
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{
+		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
+		Backend: genai.BackendGeminiAPI,
+	})
+	if err != nil {
+		return "", fmt.Errorf("AI 클라이언트 생성 실패: %w", err)
+	}
+
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return "", fmt.Errorf("오디오 읽기 실패: %w", err)
+	}
+
+	parts := []*genai.Part{
+		{Text: "다음 음성을 한국어 텍스트로 정확히 전사해줘."},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "audio/webm"}},
+	}
+
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.5-flash", []*genai.Content{{Parts: parts}}, nil)
+	if err != nil {
+		return "", fmt.Errorf("오디오 인식 실패: %w", err)
+	}
+	if len(result.Candidates) == 0 || len(result.Candidates[0].Content.Parts) == 0 {
+		return "", fmt.Errorf("오디오 인식 실패: 빈 응답")
+	}
+
+	return result.Candidates[0].Content.Parts[0].Text, nil
 }
