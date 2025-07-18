@@ -86,3 +86,30 @@ sudo dpkg-reconfigure unattended-upgrades
 # 보안 업데이트 누락 확인
 sudo unattended-upgrade --dry-run
 ```
+
+## [선택] litestream 설치
+
+```shell
+wget https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.deb
+sudo dpkg -i litestream-v0.3.13-linux-amd64.deb
+litestream version
+
+sudo systemctl enable litestream
+sudo systemctl start litestream
+sudo journalctl -u litestream -f
+
+# If you make changes to Litestream configuration file, you’ll need to restart the service
+# /etc/litestream.yml
+sudo systemctl restart litestream
+```
+
+### litestream.yml
+
+```yml
+dbs:
+  - path: /srv/deario/data/data.db
+    replicas:
+      - url: gcs://BUCKET/PATH
+        # snapshot-interval: 1h     # 1시간마다 전체 스냅샷
+        # retention: 7d             # 7일 지나면 자동 정리
+```
