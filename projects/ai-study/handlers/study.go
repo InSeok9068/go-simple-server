@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/labstack/echo/v4"
-	_ "github.com/openai/openai-go"
 	"net/http"
 	"regexp"
-	"simple-server/internal/ai"
+	aiclient "simple-server/internal/ai"
+
+	"github.com/labstack/echo/v4"
 )
 
 func AIStudy(c echo.Context, random bool) error {
