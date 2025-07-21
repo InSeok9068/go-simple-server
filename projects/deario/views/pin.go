@@ -10,7 +10,7 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func Pin() Node {
+func Pin(csrfToken string) Node {
 	return HTML5(HTML5Props{
 		Title:    "핀 입력",
 		Language: "ko",
@@ -27,6 +27,7 @@ func Pin() Node {
 			layout.AppHeader(),
 			Main(Class("responsive"),
 				Form(Action("/pin"), Method("POST"),
+					gomutil.CSRFInput(csrfToken),
 					FieldSet(
 						Legend(Text("핀 번호 입력")),
 						Div(Class("field border label"),
