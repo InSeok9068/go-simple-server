@@ -51,7 +51,7 @@ func Index(title string, date string, mood string) Node {
 						Text(DateView(date)),
 					),
 					I(x.Data(""), x.Text("$store.save.isOk ? 'check' : 'sync'")),
-					P(Class("bold displayname-ellipsis"),
+					P(Class("bold u-text-ellipsis‑65px"),
 						x.Data(""),
 						x.Text("$store.auth?.user?.displayName??'게스트'"),
 					),
@@ -299,7 +299,7 @@ func DateView(date string) string {
 func DiaryContentForm(date string, content string) Node {
 	return Form(ID("diary"),
 		Input(Type("hidden"), Name("date"), Value(date)),
-		Div(Class("field textarea border deario-fit-height"),
+		Div(Class("field textarea border u-fit-h‑18rem"),
 			Textarea(
 				Name("content"),
 				AutoFocus(),

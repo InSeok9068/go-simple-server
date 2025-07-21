@@ -2,17 +2,17 @@ svg {
   fill: none !important;
 }
 
-.deario-fit-height {
-  block-size: 18rem !important;
-}
-
-.login-out-min-width {
+.a‑login {
   min-width: 60px;
   display: inline-block;
   text-align: center;
 }
 
-.displayname-ellipsis {
+.u-fit-h‑18rem {
+  block-size: 18rem !important;
+}
+
+.u-text-ellipsis‑65px {
   max-width: 65px;
   white-space: nowrap !important;
   overflow: hidden;
