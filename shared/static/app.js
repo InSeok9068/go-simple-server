@@ -6,12 +6,28 @@ document.addEventListener("alpine:init", () => {
     login(user) {
       this.isAuthed = true;
       this.user = user;
+      try {
+        localStorage.setItem("authUser", JSON.stringify(user));
+      } catch (e) {
+        console.error("localStorage save error", e);
+      }
     },
     logout() {
       this.isAuthed = false;
       this.user = null;
+      localStorage.removeItem("authUser");
     },
   });
+
+  const saved = localStorage.getItem("authUser");
+  if (saved) {
+    try {
+      Alpine.store("auth").login(JSON.parse(saved));
+    } catch (e) {
+      console.error("localStorage parse error", e);
+      localStorage.removeItem("authUser");
+    }
+  }
 
   Alpine.store("notification", {
     permission: Notification.permission === "granted",
