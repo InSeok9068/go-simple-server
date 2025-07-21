@@ -1,8 +1,14 @@
+/* 페이지 이동 최적화 */
+@view-transition {
+  navigation: auto;
+}
+
 .ellipsis {
-    white-space: nowrap !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block; /* p 태그가 블록 요소이므로 명시적으로 지정 */
+  max-width: 65px;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block; /* p 태그가 블록 요소이므로 명시적으로 지정 */
 }
 
 /*:root {*/
