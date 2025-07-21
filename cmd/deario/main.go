@@ -98,6 +98,7 @@ func setUpServer() *echo.Echo {
 	authGroup.GET("/setting", handlers.Setting)
 	authGroup.POST("/setting", handlers.SettingSave)
 	authGroup.POST("/pin", handlers.PinCheck)
+	authGroup.POST("/pin/reset", handlers.PinReset)
 	authGroup.POST("/diary/mood", handlers.UpdateDiaryOfMood)
 	authGroup.GET("/statistic", handlers.Statistic)
 	authGroup.GET("/statistic/data", handlers.StatisticData)
