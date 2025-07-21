@@ -1,16 +1,18 @@
 package views
 
 import (
-	"simple-server/pkg/util/gomutil"
-	"simple-server/projects/deario/views/layout"
-	shared "simple-server/shared/views"
+        "simple-server/pkg/util/gomutil"
+        "simple-server/projects/deario/views/layout"
+        shared "simple-server/shared/views"
 
-	. "maragu.dev/gomponents"
-	. "maragu.dev/gomponents/components"
-	. "maragu.dev/gomponents/html"
+        h "maragu.dev/gomponents-htmx"
+
+        . "maragu.dev/gomponents"
+        . "maragu.dev/gomponents/components"
+        . "maragu.dev/gomponents/html"
 )
 
-func Pin(csrfToken string) Node {
+func Pin() Node {
 	return HTML5(HTML5Props{
 		Title:    "핀 입력",
 		Language: "ko",
@@ -23,23 +25,22 @@ func Pin(csrfToken string) Node {
 			},
 		),
 		Body: []Node{
-			shared.Snackbar(),
-			layout.AppHeader(),
-			Main(Class("responsive"),
-				Form(Action("/pin"), Method("POST"),
-					gomutil.CSRFInput(csrfToken),
-					FieldSet(
-						Legend(Text("핀 번호 입력")),
-						Div(Class("field border label"),
-							Input(Type("password"), Name("pin"), AutoFocus()),
-							Label(Text("핀번호")),
-						),
-						Nav(Class("right-align"),
-							Button(Text("확인")),
-						),
-					),
-				),
-			),
+                        shared.Snackbar(),
+                        layout.AppHeader(),
+                        Main(Class("responsive"),
+                                Form(h.Post("/pin"), h.Target("this"), h.Swap("outerHTML"),
+                                        FieldSet(
+                                                Legend(Text("핀 번호 입력")),
+                                                Div(Class("field border label"),
+                                                        Input(Type("password"), Name("pin"), AutoFocus()),
+                                                        Label(Text("핀번호")),
+                                                ),
+                                                Nav(Class("right-align"),
+                                                        Button(Text("확인")),
+                                                ),
+                                        ),
+                                ),
+                        ),
 		},
 	})
 }
