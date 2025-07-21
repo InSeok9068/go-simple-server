@@ -49,10 +49,9 @@ func Index(c echo.Context) error {
 		return err
 	}
 
-	if isPinRequired(userSetting) {
-		token, _ := c.Get("csrf").(string)
-		return views.Pin(token).Render(c.Response().Writer)
-	}
+        if isPinRequired(userSetting) {
+                return views.Pin().Render(c.Response().Writer)
+        }
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  uid,
@@ -627,9 +626,9 @@ func PinCheck(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "핀번호가 일치하지 않습니다")
 	}
 
-	if err := queries.UpdatePinLastAt(c.Request().Context(), uid); err != nil {
-		return err
-	}
+        if err := queries.UpdatePinLastAt(c.Request().Context(), uid); err != nil {
+                return err
+        }
 
-	return c.Redirect(http.StatusSeeOther, "/")
+        return c.HTML(http.StatusOK, "<script>location.href = \"/\";</script>")
 }
