@@ -36,4 +36,8 @@ type UserSetting struct {
 	RandomRange int64
 	Created     sql.NullString
 	Updated     sql.NullString
+	PinEnabled  int64
+	Pin         string
+	PinCycle    int64
+	PinLastAt   string
 }

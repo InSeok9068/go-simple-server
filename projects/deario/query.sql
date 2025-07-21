@@ -64,15 +64,23 @@ INSERT INTO
         uid,
         is_push,
         push_time,
-        random_range
+        random_range,
+        pin_enabled,
+        pin,
+        pin_cycle,
+        pin_last_at
     )
-VALUES (?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT (uid) DO
 UPDATE
 SET
     is_push = excluded.is_push,
     push_time = excluded.push_time,
     random_range = excluded.random_range,
+    pin_enabled = excluded.pin_enabled,
+    pin = excluded.pin,
+    pin_cycle = excluded.pin_cycle,
+    pin_last_at = excluded.pin_last_at,
     updated = datetime('now');
 
 -- name: UpsertPushKey :exec
@@ -117,6 +125,13 @@ WITH
 SELECT *
 FROM monthly
 ORDER BY month;
+
+-- name: UpdatePinLastAt :exec
+UPDATE user_setting
+SET
+    pin_last_at = datetime('now'),
+    updated = datetime('now')
+WHERE uid = ?;
 
 -- name: MonthlyMoodCount :many
 WITH

@@ -142,7 +142,7 @@ func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
 }
 
 const getUserSetting = `-- name: GetUserSetting :one
-SELECT uid, is_push, push_token, push_time, random_range, created, updated FROM user_setting WHERE uid = ? LIMIT 1
+SELECT uid, is_push, push_token, push_time, random_range, created, updated, pin_enabled, pin, pin_cycle, pin_last_at FROM user_setting WHERE uid = ? LIMIT 1
 `
 
 func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, error) {
@@ -156,6 +156,10 @@ func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, 
 		&i.RandomRange,
 		&i.Created,
 		&i.Updated,
+		&i.PinEnabled,
+		&i.Pin,
+		&i.PinCycle,
+		&i.PinLastAt,
 	)
 	return i, err
 }
@@ -459,6 +463,19 @@ func (q *Queries) UpdateDiaryOfMood(ctx context.Context, arg UpdateDiaryOfMoodPa
 	return err
 }
 
+const updatePinLastAt = `-- name: UpdatePinLastAt :exec
+UPDATE user_setting
+SET
+    pin_last_at = datetime('now'),
+    updated = datetime('now')
+WHERE uid = ?
+`
+
+func (q *Queries) UpdatePinLastAt(ctx context.Context, uid string) error {
+	_, err := q.db.ExecContext(ctx, updatePinLastAt, uid)
+	return err
+}
+
 const upsertPushKey = `-- name: UpsertPushKey :exec
 INSERT INTO
     user_setting (uid, push_token)
@@ -486,15 +503,23 @@ INSERT INTO
         uid,
         is_push,
         push_time,
-        random_range
+        random_range,
+        pin_enabled,
+        pin,
+        pin_cycle,
+        pin_last_at
     )
-VALUES (?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT (uid) DO
 UPDATE
 SET
     is_push = excluded.is_push,
     push_time = excluded.push_time,
     random_range = excluded.random_range,
+    pin_enabled = excluded.pin_enabled,
+    pin = excluded.pin,
+    pin_cycle = excluded.pin_cycle,
+    pin_last_at = excluded.pin_last_at,
     updated = datetime('now')
 `
 
@@ -503,6 +528,10 @@ type UpsertUserSettingParams struct {
 	IsPush      int64
 	PushTime    string
 	RandomRange int64
+	PinEnabled  int64
+	Pin         string
+	PinCycle    int64
+	PinLastAt   string
 }
 
 func (q *Queries) UpsertUserSetting(ctx context.Context, arg UpsertUserSettingParams) error {
@@ -511,6 +540,10 @@ func (q *Queries) UpsertUserSetting(ctx context.Context, arg UpsertUserSettingPa
 		arg.IsPush,
 		arg.PushTime,
 		arg.RandomRange,
+		arg.PinEnabled,
+		arg.Pin,
+		arg.PinCycle,
+		arg.PinLastAt,
 	)
 	return err
 }

@@ -9,6 +9,7 @@ import (
 	aiclient "simple-server/internal/ai"
 	"simple-server/pkg/util/authutil"
 	"simple-server/pkg/util/dateutil"
+	"simple-server/pkg/util/hashutil"
 	"simple-server/pkg/util/maputil"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
@@ -41,6 +42,15 @@ func Index(c echo.Context) error {
 	queries, err := db.GetQueries(c.Request().Context())
 	if err != nil {
 		return err
+	}
+
+	userSetting, err := queries.GetUserSetting(c.Request().Context(), uid)
+	if err != nil {
+		return err
+	}
+
+	if isPinRequired(userSetting) {
+		return views.Pin().Render(c.Response().Writer)
 	}
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
@@ -432,11 +442,28 @@ func SettingSave(c echo.Context) error {
 		return err
 	}
 
+	userSetting, err := queries.GetUserSetting(c.Request().Context(), uid)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정을 가져오지 못했습니다.")
+	}
+
+	pinEnabled := maputil.GetInt64(data, "pin_enabled", 0)
+	pin := maputil.GetString(data, "pin", "")
+	if pin != "" {
+		pin = hashutil.SHA256(pin)
+	} else {
+		pin = userSetting.Pin
+	}
+
 	if err := queries.UpsertUserSetting(c.Request().Context(), db.UpsertUserSettingParams{
 		Uid:         uid,
 		IsPush:      maputil.GetInt64(data, "is_push", 0),
 		PushTime:    maputil.GetString(data, "push_time", ""),
 		RandomRange: maputil.GetInt64(data, "random_range", 365),
+		PinEnabled:  pinEnabled,
+		Pin:         pin,
+		PinCycle:    maputil.GetInt64(data, "pin_cycle", -1),
+		PinLastAt:   userSetting.PinLastAt,
 	}); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정 저장 실패")
 	}
@@ -549,4 +576,59 @@ func StatisticData(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, result)
+}
+
+func isPinRequired(us db.UserSetting) bool {
+	if us.PinEnabled != 1 || us.Pin == "" {
+		return false
+	}
+
+	if us.PinCycle == -1 {
+		return false
+	}
+
+	if us.PinCycle == 0 {
+		return true
+	}
+
+	if us.PinLastAt == "" {
+		return true
+	}
+
+	last, err := time.Parse("20060102", us.PinLastAt)
+	if err != nil {
+		return true
+	}
+
+	diff := time.Since(last).Hours() / 24
+	return int64(diff) >= us.PinCycle
+}
+
+func PinCheck(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	pin := c.FormValue("pin")
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	us, err := queries.GetUserSetting(c.Request().Context(), uid)
+	if err != nil {
+		return err
+	}
+
+	if hashutil.SHA256(pin) != us.Pin {
+		return echo.NewHTTPError(http.StatusUnauthorized, "핀번호가 일치하지 않습니다")
+	}
+
+	if err := queries.UpdatePinLastAt(c.Request().Context(), uid); err != nil {
+		return err
+	}
+
+	return c.Redirect(http.StatusSeeOther, "/")
 }
