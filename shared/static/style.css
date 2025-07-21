@@ -3,6 +3,12 @@
   navigation: auto;
 }
 
+/* BeerCSS 첫번째 모달 포커스 제거 */
+:is(.scroll, .no-scroll, .no-space, .tabs, .tabbed) :focus-visible {
+  outline: 0 !important;
+  outline-offset: 0 !important;
+}
+
 /*:root {*/
 /*    --pico-line-height: var(--font-lineheight-1);*/
 /*    !* Original: 1.5 /*/

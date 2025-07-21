@@ -2,6 +2,7 @@ package shared
 
 import (
 	"simple-server/internal/config"
+	"simple-server/pkg/util/gomutil"
 
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
@@ -11,18 +12,25 @@ func HeadsDefault(title string) []Node {
 	return []Node{
 		Meta(Name("viewport"), Content("width=device-width, initial-scale=1.0, maximum-scale=1.0")),
 		Link(Rel("icon"), Href("/shared/static/favicon.ico")),
-		Link(Rel("stylesheet"), Href("/shared/static/style.css")),
-		Link(Rel("stylesheet"), Href("/static/style.css")),
 		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/open-props@1.7.13/open-props.min.css"),
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/open-props.min.css';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/htmx.min.js';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"), Defer(),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/cdn.min.js';")),
-		Script(Src("/shared/static/app.js")),
 		If(config.IsDevEnv(), Script(Text(`htmx.logAll();`), Defer())),
 		Title(title),
 	}
+}
+
+func HeadsCustom() []Node {
+	custom := []Node{
+		Link(Rel("stylesheet"), Href("/shared/static/style.css")),
+		Link(Rel("stylesheet"), Href("/static/style.css")),
+		Script(Src("/shared/static/app.js")),
+	}
+
+	return custom
 }
 
 func HeadsWithBulma(title string) []Node {
@@ -31,9 +39,10 @@ func HeadsWithBulma(title string) []Node {
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/bulma.min.css';")),
 	}
 
-	return append(
+	return gomutil.MergeHeads(
 		HeadsDefault(title),
-		bulma...,
+		bulma,
+		HeadsCustom(),
 	)
 }
 
@@ -42,9 +51,10 @@ func HeadsWithTailwind(title string) []Node {
 		Link(Rel("stylesheet"), Href("/shared/static/tailwindcss.css")),
 	}
 
-	return append(
+	return gomutil.MergeHeads(
 		HeadsDefault(title),
-		tailwind...,
+		tailwind,
+		HeadsCustom(),
 	)
 }
 
@@ -57,9 +67,10 @@ func HeadsWithPicoAndTailwind(title string) []Node {
 		// Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css")),
 	}
 
-	return append(
+	return gomutil.MergeHeads(
 		HeadsDefault(title),
-		picoAndTailwind...,
+		picoAndTailwind,
+		HeadsCustom(),
 	)
 }
 
@@ -73,9 +84,10 @@ func HeadsWithBeer(title string) []Node {
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';")),
 	}
 
-	return append(
+	return gomutil.MergeHeads(
 		HeadsDefault(title),
-		beer...,
+		beer,
+		HeadsCustom(),
 	)
 }
 
