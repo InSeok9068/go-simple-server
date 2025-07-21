@@ -630,7 +630,7 @@ func PinCheck(c echo.Context) error {
 	}
 
 	if hashutil.SHA256(pin) != us.Pin {
-		return echo.NewHTTPError(http.StatusUnauthorized, "핀번호가 일치하지 않습니다")
+		return echo.NewHTTPError(http.StatusInternalServerError, "핀번호가 일치하지 않습니다")
 	}
 
 	if err := queries.UpdatePinLastAt(c.Request().Context(), uid); err != nil {
