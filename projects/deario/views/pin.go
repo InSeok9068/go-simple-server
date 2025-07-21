@@ -37,6 +37,7 @@ func Pin() Node {
 						),
 						Nav(Class("right-align"),
 							Button(Text("확인")),
+							Button(Type("button"), Attr("onclick", "resetPin()"), Class("secondary"), Text("핀 초기화")),
 						),
 					),
 				),

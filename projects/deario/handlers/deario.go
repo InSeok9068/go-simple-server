@@ -8,6 +8,7 @@ import (
 	"os"
 	aiclient "simple-server/internal/ai"
 	"simple-server/internal/config"
+	"simple-server/internal/middleware"
 	"simple-server/pkg/util/authutil"
 	"simple-server/pkg/util/dateutil"
 	"simple-server/pkg/util/hashutil"
@@ -654,4 +655,41 @@ func PinCheck(c echo.Context) error {
 	}
 
 	return c.HTML(http.StatusOK, "<script>location.href = \"/\";</script>")
+}
+
+func PinReset(c echo.Context) error {
+	var req struct {
+		Token string `json:"token"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return err
+	}
+
+	ctx := c.Request().Context()
+	auth, err := middleware.App.Auth(ctx)
+	if err != nil {
+		return err
+	}
+
+	token, err := auth.VerifyIDToken(ctx, req.Token)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "재인증 실패")
+	}
+
+	queries, err := db.GetQueries(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err := queries.ResetPin(ctx, token.UID); err != nil {
+		return err
+	}
+
+	sess, err := session.Get("pin", c)
+	if err == nil {
+		sess.Options = &sessions.Options{Path: "/", MaxAge: -1}
+		_ = sess.Save(c.Request(), c.Response())
+	}
+
+	return c.NoContent(http.StatusOK)
 }

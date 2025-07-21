@@ -22,6 +22,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const messaging = getMessaging(app);
 
+window.getIdToken = async function () {
+  await auth.authStateReady();
+  if (auth.currentUser === undefined) {
+    throw new Error("no user");
+  }
+  return await auth.currentUser.getIdToken(true);
+};
+
 window.logoutUser = async function () {
   try {
     await signOut(auth);

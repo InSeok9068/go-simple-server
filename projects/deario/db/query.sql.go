@@ -392,6 +392,22 @@ func (q *Queries) MonthlyMoodCount(ctx context.Context, uid string) ([]MonthlyMo
 	return items, nil
 }
 
+const resetPin = `-- name: ResetPin :exec
+UPDATE user_setting
+SET
+    pin_enabled = 0,
+    pin = '',
+    pin_cycle = -1,
+    pin_last_at = '',
+    updated = datetime('now')
+WHERE uid = ?
+`
+
+func (q *Queries) ResetPin(ctx context.Context, uid string) error {
+	_, err := q.db.ExecContext(ctx, resetPin, uid)
+	return err
+}
+
 const updateDiary = `-- name: UpdateDiary :one
 UPDATE diary
 SET

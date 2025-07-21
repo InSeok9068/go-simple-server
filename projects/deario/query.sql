@@ -126,6 +126,16 @@ SELECT *
 FROM monthly
 ORDER BY month;
 
+-- name: ResetPin :exec
+UPDATE user_setting
+SET
+    pin_enabled = 0,
+    pin = '',
+    pin_cycle = -1,
+    pin_last_at = '',
+    updated = datetime('now')
+WHERE uid = ?;
+
 -- name: UpdatePinLastAt :exec
 UPDATE user_setting
 SET
