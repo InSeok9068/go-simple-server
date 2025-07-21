@@ -23,11 +23,12 @@ func Index(title string, date string, mood string) Node {
 		Head: gomutil.MergeHeads(
 			shared.HeadsWithBeer(title),
 			shared.HeadWithFirebaseAuth(),
-			[]Node{
-				Link(Rel("manifest"), Href("/manifest.json")),
-				Script(Src("/static/deario.js")),
-			},
-		),
+                       []Node{
+                               Link(Rel("manifest"), Href("/manifest.json")),
+                               Script(Src("/static/deario.js")),
+                               Script(Src("/shared/static/pwa_lock.js")),
+                       },
+               ),
 		Body: []Node{
 			shared.Snackbar(),
 

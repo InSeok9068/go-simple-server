@@ -176,6 +176,14 @@ https://ntorga.com/full-stack-go-app-with-htmx-and-alpinejs/
 
 ---
 
+## PWA 잠금 기능 사용법
+
+1. 처음 실행 시 PIN을 설정합니다. 네 자리 이상 입력 후 저장을 누르세요.
+2. 이후 앱을 열면 PIN을 입력해야 화면이 표시됩니다.
+3. PIN을 잊은 경우 브라우저의 로컬 스토리지를 지우면 초기화됩니다.
+
+---
+
 ## 이미 Merge된 브랜치 제거
 
 ```bash
