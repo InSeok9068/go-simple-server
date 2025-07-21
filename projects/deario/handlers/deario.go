@@ -50,7 +50,8 @@ func Index(c echo.Context) error {
 	}
 
 	if isPinRequired(userSetting) {
-		return views.Pin().Render(c.Response().Writer)
+		token, _ := c.Get("csrf").(string)
+		return views.Pin(token).Render(c.Response().Writer)
 	}
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
