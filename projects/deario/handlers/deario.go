@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	aiclient "simple-server/internal/ai"
+	"simple-server/internal/config"
 	"simple-server/pkg/util/authutil"
 	"simple-server/pkg/util/dateutil"
 	"simple-server/pkg/util/hashutil"
@@ -49,9 +50,9 @@ func Index(c echo.Context) error {
 		return err
 	}
 
-        if isPinRequired(userSetting) {
-                return views.Pin().Render(c.Response().Writer)
-        }
+	if isPinRequired(c, userSetting) {
+		return views.Pin().Render(c.Response().Writer)
+	}
 
 	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  uid,
@@ -578,7 +579,7 @@ func StatisticData(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func isPinRequired(us db.UserSetting) bool {
+func isPinRequired(c echo.Context, us db.UserSetting) bool {
 	if us.PinEnabled != 1 || us.Pin == "" {
 		return false
 	}
@@ -588,6 +589,12 @@ func isPinRequired(us db.UserSetting) bool {
 	}
 
 	if us.PinCycle == 0 {
+		sess, err := session.Get("pin", c)
+		if err == nil {
+			if ok, _ := sess.Values["checked"].(bool); ok {
+				return false
+			}
+		}
 		return true
 	}
 
@@ -626,9 +633,25 @@ func PinCheck(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "핀번호가 일치하지 않습니다")
 	}
 
-        if err := queries.UpdatePinLastAt(c.Request().Context(), uid); err != nil {
-                return err
-        }
+	if err := queries.UpdatePinLastAt(c.Request().Context(), uid); err != nil {
+		return err
+	}
 
-        return c.HTML(http.StatusOK, "<script>location.href = \"/\";</script>")
+	sess, err := session.Get("pin", c)
+	if err != nil {
+		return err
+	}
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   0,
+		HttpOnly: true,
+		Secure:   config.IsProdEnv(),
+		SameSite: http.SameSiteLaxMode,
+	}
+	sess.Values["checked"] = true
+	if err := sess.Save(c.Request(), c.Response()); err != nil {
+		return err
+	}
+
+	return c.HTML(http.StatusOK, "<script>location.href = \"/\";</script>")
 }
