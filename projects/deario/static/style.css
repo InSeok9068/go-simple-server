@@ -5,3 +5,17 @@ svg {
 .deario-fit-height {
   block-size: 18rem !important;
 }
+
+.login-out-min-width {
+  min-width: 60px;
+  display: inline-block;
+  text-align: center;
+}
+
+.displayname-ellipsis {
+  max-width: 65px;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}

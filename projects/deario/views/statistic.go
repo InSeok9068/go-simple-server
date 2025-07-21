@@ -2,9 +2,9 @@ package views
 
 import (
 	"simple-server/pkg/util/gomutil"
+	"simple-server/projects/deario/views/layout"
 	shared "simple-server/shared/views"
 
-	x "github.com/glsubri/gomponents-alpine"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/components"
 	. "maragu.dev/gomponents/html"
@@ -25,21 +25,18 @@ func Statistic() Node {
 		),
 		Body: []Node{
 			shared.Snackbar(),
-			Header(Class("fixed yellow4"),
-				Nav(
-					A(Href("/"), Class("max"),
-						H3(Text("Deario")),
-					),
-					A(ID("login"), Href("/login"), x.Data(""), x.Show("!$store.auth.isAuthed"), Text("Login")),
-					A(ID("logout"), Href("#"), x.Data(""), x.Show("$store.auth.isAuthed"), Attr("onclick", "logoutUser()"), Text("Logout")),
-				),
-			),
+			/* Header */
+			layout.AppHeader(),
+			/* Header */
+
+			/* Body */
 			Main(Class("responsive"),
 				H5(Text("월별 일기 통계")),
 				Canvas(ID("countChart")),
 				H5(Text("월별 기분 분포")),
 				Canvas(ID("moodStackChart")),
 			),
+			/* Body */
 		},
 	})
 }

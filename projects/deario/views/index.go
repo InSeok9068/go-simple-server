@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"simple-server/pkg/util/dateutil"
 	"simple-server/pkg/util/gomutil"
+	"simple-server/projects/deario/views/layout"
 	shared "simple-server/shared/views"
 	"time"
 
@@ -29,23 +30,9 @@ func Index(title string, date string, mood string) Node {
 		),
 		Body: []Node{
 			shared.Snackbar(),
+
 			/* Header */
-			Header(Class("fixed yellow4"),
-				Nav(
-					A(Href("/"), Class("max"),
-						H3(Text("Deario")),
-					),
-					A(ID("login"), Href("/login"), x.Data(""),
-						x.Show("!$store.auth.isAuthed"),
-						Text("Login"),
-					),
-					A(ID("logout"), Href("#"), x.Data(""),
-						x.Show("$store.auth.isAuthed"),
-						Attr("onclick", "logoutUser()"),
-						Text("Logout"),
-					),
-				),
-			),
+			layout.AppHeader(),
 			/* Header */
 
 			/* Body */
@@ -64,7 +51,7 @@ func Index(title string, date string, mood string) Node {
 						Text(DateView(date)),
 					),
 					I(x.Data(""), x.Text("$store.save.isOk ? 'check' : 'sync'")),
-					P(Class("bold ellipsis"),
+					P(Class("bold displayname-ellipsis"),
 						x.Data(""),
 						x.Text("$store.auth?.user?.displayName??'게스트'"),
 					),

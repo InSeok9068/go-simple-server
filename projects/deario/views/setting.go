@@ -5,9 +5,9 @@ import (
 
 	"simple-server/pkg/util/gomutil"
 	"simple-server/projects/deario/db"
+	"simple-server/projects/deario/views/layout"
 	shared "simple-server/shared/views"
 
-	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
 
 	. "maragu.dev/gomponents"
@@ -29,23 +29,9 @@ func Setting(userSetting db.UserSetting) Node {
 		),
 		Body: []Node{
 			shared.Snackbar(),
+
 			/* Header */
-			Header(Class("fixed yellow4"),
-				Nav(
-					A(Href("/"), Class("max"),
-						H3(Text("Deario")),
-					),
-					A(ID("login"), Href("/login"), x.Data(""),
-						x.Show("!$store.auth.isAuthed"),
-						Text("Login"),
-					),
-					A(ID("logout"), Href("#"), x.Data(""),
-						x.Show("$store.auth.isAuthed"),
-						Attr("onclick", "logoutUser()"),
-						Text("Logout"),
-					),
-				),
-			),
+			layout.AppHeader(),
 			/* Header */
 
 			/* Body */
