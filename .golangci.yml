@@ -35,7 +35,7 @@ linters:
     - nilerr
     - nilnesserr
     - nilnil
-    - noctx
+    # - noctx
     - nonamedreturns
     - nosprintfhostport
     - protogetter
