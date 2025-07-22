@@ -35,7 +35,8 @@ linters:
     - nilerr
     - nilnesserr
     - nilnil
-    - noctx
+    # 로깅 강제성 X
+    # - noctx
     - nonamedreturns
     - nosprintfhostport
     - protogetter
