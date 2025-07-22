@@ -26,6 +26,7 @@ func Index(title string, date string, mood string) Node {
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("/static/deario.js")),
+				Script(Src("/static/pin_check.js")),
 			},
 		),
 		Body: []Node{

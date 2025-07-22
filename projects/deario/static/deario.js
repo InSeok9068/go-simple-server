@@ -14,6 +14,10 @@ document.addEventListener("alpine:init", () => {
   });
 });
 
+window.pinChecked = function () {
+  sessionStorage.setItem("pinChecked", "true");
+};
+
 window.resetPin = async function () {
   try {
     const token = await window.getIdToken();

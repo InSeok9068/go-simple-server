@@ -654,7 +654,7 @@ func PinCheck(c echo.Context) error {
 		return err
 	}
 
-	return c.HTML(http.StatusOK, "<script>location.href = \"/\";</script>")
+	return c.HTML(http.StatusOK, "<script>pinChecked();location.href = \"/\";</script>")
 }
 
 func PinReset(c echo.Context) error {
