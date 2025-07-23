@@ -61,12 +61,14 @@ func Setting(userSetting db.UserSetting) Node {
 						),
 						// 테마 변경
 						Nav(Text("테마")),
-						Label(Class("switch"),
+						Label(Class("switch icon"),
 							Input(Type("checkbox"),
 								x.Data(""),
 								x.Bind("checked", "$store.theme.value === 'dark'"),
 								x.On("change", "$store.theme.toggle()")),
-							Span(Text("")),
+							Span(
+								I(Text("dark_mode")),
+							),
 						),
 						Nav(Class("right-align"),
 							Button(Text("저장")),
