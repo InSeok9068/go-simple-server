@@ -91,10 +91,10 @@ document.addEventListener("alpine:init", () => {
     },
     setColor(color) {
       this.color = color;
+      if (window.applyThemeColor) {
+        window.applyThemeColor(color);
+      }
       try {
-        if (window.applyThemeColor) {
-          window.applyThemeColor(color);
-        }
         localStorage.setItem("themeColor", color);
       } catch (e) {
         console.error("set color error", e);

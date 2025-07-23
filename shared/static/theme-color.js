@@ -1,7 +1,6 @@
-window.applyThemeColor = function (color) {
+window.applyThemeColor = async (color) => {
   try {
-    const theme = materialDynamicColors.themeFromSourceColor(color);
-    applyTheme(theme);
+    await window.ui("theme", color);
   } catch (e) {
     console.error("set color error", e);
   }

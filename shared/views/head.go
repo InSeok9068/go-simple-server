@@ -27,7 +27,7 @@ func HeadsCustom() []Node {
 	custom := []Node{
 		Link(Rel("stylesheet"), Href("/shared/static/style.css")),
 		Link(Rel("stylesheet"), Href("/static/style.css")),
-		Script(Src("/shared/static/app.js"), Defer()),
+		Script(Src("/shared/static/app.js")),
 	}
 
 	return custom
