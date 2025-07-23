@@ -29,7 +29,6 @@ func Index(title string, date string, mood string, theme string) Node {
 			},
 		),
 		HTMLAttrs: []Node{
-			Attr("data-theme", theme),
 			x.Init(fmt.Sprintf("Alpine.store('theme').set('%s')", theme)),
 		},
 		Body: []Node{
