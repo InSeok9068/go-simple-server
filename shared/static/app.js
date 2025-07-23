@@ -55,16 +55,24 @@ document.addEventListener("alpine:init", () => {
 
   Alpine.store("theme", {
     value: "light",
+    color: "#6200ee",
     init() {
       const saved = localStorage.getItem("theme");
       if (saved) {
         this.value = saved;
+      }
+      const savedColor = localStorage.getItem("themeColor");
+      if (savedColor) {
+        this.color = savedColor;
       }
       if (window.ui) {
         window.ui("mode", this.value);
       } else {
         document.body.classList.remove("light", "dark");
         document.body.classList.add(this.value);
+      }
+      if (this.color) {
+        this.setColor(this.color);
       }
     },
     set(theme) {
@@ -79,6 +87,16 @@ document.addEventListener("alpine:init", () => {
         localStorage.setItem("theme", theme);
       } catch (e) {
         console.error("localStorage save error", e);
+      }
+    },
+    setColor(color) {
+      this.color = color;
+      try {
+        const theme = materialDynamicColors.themeFromSourceColor(color);
+        applyTheme(theme);
+        localStorage.setItem("themeColor", color);
+      } catch (e) {
+        console.error("set color error", e);
       }
     },
     toggle() {
