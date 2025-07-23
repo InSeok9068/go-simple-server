@@ -29,7 +29,6 @@ func Setting(userSetting db.UserSetting) Node {
 			},
 		),
 		HTMLAttrs: []Node{
-			Attr("data-theme", userSetting.Theme),
 			x.Init(fmt.Sprintf("Alpine.store('theme').set('%s')", userSetting.Theme)),
 		},
 		Body: []Node{

@@ -60,11 +60,21 @@ document.addEventListener("alpine:init", () => {
       if (saved) {
         this.value = saved;
       }
-      document.documentElement.setAttribute("data-theme", this.value);
+      if (window.ui) {
+        window.ui("mode", this.value);
+      } else {
+        document.body.classList.remove("light", "dark");
+        document.body.classList.add(this.value);
+      }
     },
     set(theme) {
       this.value = theme;
-      document.documentElement.setAttribute("data-theme", theme);
+      if (window.ui) {
+        window.ui("mode", theme);
+      } else {
+        document.body.classList.remove("light", "dark");
+        document.body.classList.add(theme);
+      }
       try {
         localStorage.setItem("theme", theme);
       } catch (e) {
