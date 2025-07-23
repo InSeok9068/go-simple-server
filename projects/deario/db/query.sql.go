@@ -142,7 +142,7 @@ func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
 }
 
 const getUserSetting = `-- name: GetUserSetting :one
-SELECT uid, is_push, push_token, push_time, random_range, created, updated FROM user_setting WHERE uid = ? LIMIT 1
+SELECT uid, is_push, push_token, push_time, random_range, created, updated, theme FROM user_setting WHERE uid = ? LIMIT 1
 `
 
 func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, error) {
@@ -156,6 +156,7 @@ func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, 
 		&i.RandomRange,
 		&i.Created,
 		&i.Updated,
+		&i.Theme,
 	)
 	return i, err
 }
@@ -486,15 +487,17 @@ INSERT INTO
         uid,
         is_push,
         push_time,
-        random_range
+        random_range,
+        theme
     )
-VALUES (?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?)
 ON CONFLICT (uid) DO
 UPDATE
 SET
     is_push = excluded.is_push,
     push_time = excluded.push_time,
     random_range = excluded.random_range,
+    theme = excluded.theme,
     updated = datetime('now')
 `
 
@@ -503,6 +506,7 @@ type UpsertUserSettingParams struct {
 	IsPush      int64
 	PushTime    string
 	RandomRange int64
+	Theme       string
 }
 
 func (q *Queries) UpsertUserSetting(ctx context.Context, arg UpsertUserSettingParams) error {
@@ -511,6 +515,7 @@ func (q *Queries) UpsertUserSetting(ctx context.Context, arg UpsertUserSettingPa
 		arg.IsPush,
 		arg.PushTime,
 		arg.RandomRange,
+		arg.Theme,
 	)
 	return err
 }

@@ -1,16 +1,18 @@
 package views
 
 import (
+	"fmt"
 	"simple-server/pkg/util/gomutil"
 	"simple-server/projects/deario/views/layout"
 	shared "simple-server/shared/views"
 
+	x "github.com/glsubri/gomponents-alpine"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/components"
 	. "maragu.dev/gomponents/html"
 )
 
-func Statistic() Node {
+func Statistic(theme string) Node {
 	return HTML5(HTML5Props{
 		Title:    "통계",
 		Language: "ko",
@@ -23,6 +25,10 @@ func Statistic() Node {
 				Script(Src("/static/statistic.js")),
 			},
 		),
+		HTMLAttrs: []Node{
+			Attr("data-theme", theme),
+			x.Init(fmt.Sprintf("Alpine.store('theme').set('%s')", theme)),
+		},
 		Body: []Node{
 			shared.Snackbar(),
 			/* Header */

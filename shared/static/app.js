@@ -52,6 +52,31 @@ document.addEventListener("alpine:init", () => {
       this.show(msg, "error", ms);
     },
   });
+
+  Alpine.store("theme", {
+    value: "light",
+    init() {
+      const saved = localStorage.getItem("theme");
+      if (saved) {
+        this.value = saved;
+      }
+      document.documentElement.setAttribute("data-theme", this.value);
+    },
+    set(theme) {
+      this.value = theme;
+      document.documentElement.setAttribute("data-theme", theme);
+      try {
+        localStorage.setItem("theme", theme);
+      } catch (e) {
+        console.error("localStorage save error", e);
+      }
+    },
+    toggle() {
+      this.set(this.value === "dark" ? "light" : "dark");
+    },
+  });
+
+  Alpine.store("theme").init();
 });
 
 htmx.on("htmx:afterRequest", (event) => {
