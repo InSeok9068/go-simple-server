@@ -8,6 +8,7 @@ import (
 	"simple-server/projects/deario/views/layout"
 	shared "simple-server/shared/views"
 
+	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
 
 	. "maragu.dev/gomponents"
@@ -57,6 +58,14 @@ func Setting(userSetting db.UserSetting) Node {
 							Input(Type("number"), Name("random_range"),
 								Value(fmt.Sprintf("%d", userSetting.RandomRange))),
 							Label(Text("랜덤일자")),
+						),
+						// 테마 변경
+						Nav(Text("테마")),
+						Label(Class("switch"),
+							Input(Type("checkbox"),
+								x.Bind("checked", "$store.theme.value === 'dark'"),
+								x.On("change", "$store.theme.toggle()")),
+							Span(Text("")),
 						),
 						Nav(Class("right-align"),
 							Button(Text("저장")),
