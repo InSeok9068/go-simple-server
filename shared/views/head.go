@@ -40,8 +40,8 @@ func HeadsWithBulma(title string) []Node {
 	}
 
 	return gomutil.MergeHeads(
-		HeadsDefault(title),
 		bulma,
+		HeadsDefault(title),
 		HeadsCustom(),
 	)
 }
@@ -52,8 +52,8 @@ func HeadsWithTailwind(title string) []Node {
 	}
 
 	return gomutil.MergeHeads(
-		HeadsDefault(title),
 		tailwind,
+		HeadsDefault(title),
 		HeadsCustom(),
 	)
 }
@@ -68,8 +68,8 @@ func HeadsWithPicoAndTailwind(title string) []Node {
 	}
 
 	return gomutil.MergeHeads(
-		HeadsDefault(title),
 		picoAndTailwind,
+		HeadsDefault(title),
 		HeadsCustom(),
 	)
 }
@@ -82,12 +82,11 @@ func HeadsWithBeer(title string) []Node {
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/beer.min.js';")),
 		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';")),
-		Script(Type("module"), Src("/shared/static/theme-color.js")),
 	}
 
 	return gomutil.MergeHeads(
-		HeadsDefault(title),
 		beer,
+		HeadsDefault(title),
 		HeadsCustom(),
 	)
 }

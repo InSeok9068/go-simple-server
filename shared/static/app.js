@@ -65,24 +65,12 @@ document.addEventListener("alpine:init", () => {
       if (savedColor) {
         this.color = savedColor;
       }
-      if (window.ui) {
-        window.ui("mode", this.value);
-      } else {
-        document.body.classList.remove("light", "dark");
-        document.body.classList.add(this.value);
-      }
-      if (this.color) {
-        this.setColor(this.color);
-      }
+      window.ui("mode", this.value);
+      window.ui("theme", this.color);
     },
     set(theme) {
       this.value = theme;
-      if (window.ui) {
-        window.ui("mode", theme);
-      } else {
-        document.body.classList.remove("light", "dark");
-        document.body.classList.add(theme);
-      }
+      window.ui("mode", theme);
       try {
         localStorage.setItem("theme", theme);
       } catch (e) {
@@ -91,9 +79,7 @@ document.addEventListener("alpine:init", () => {
     },
     setColor(color) {
       this.color = color;
-      if (window.applyThemeColor) {
-        window.applyThemeColor(color);
-      }
+      window.ui("theme", color);
       try {
         localStorage.setItem("themeColor", color);
       } catch (e) {
