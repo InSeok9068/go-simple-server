@@ -27,7 +27,7 @@ func HeadsCustom() []Node {
 	custom := []Node{
 		Link(Rel("stylesheet"), Href("/shared/static/style.css")),
 		Link(Rel("stylesheet"), Href("/static/style.css")),
-		Script(Src("/shared/static/app.js")),
+		Script(Src("/shared/static/app.js"), Defer()),
 	}
 
 	return custom
@@ -82,6 +82,7 @@ func HeadsWithBeer(title string) []Node {
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/beer.min.js';")),
 		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';")),
+		Script(Type("module"), Src("/shared/static/theme-color.js")),
 	}
 
 	return gomutil.MergeHeads(
