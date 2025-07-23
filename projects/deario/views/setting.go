@@ -27,7 +27,7 @@ func Setting(userSetting db.UserSetting) Node {
 				Script(Src("/static/deario.js")),
 			},
 		),
-		HTMLAttrs: nil,
+
 		Body: []Node{
 			shared.Snackbar(),
 

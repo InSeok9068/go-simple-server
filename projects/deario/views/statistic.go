@@ -23,7 +23,7 @@ func Statistic() Node {
 				Script(Src("/static/statistic.js")),
 			},
 		),
-		HTMLAttrs: nil,
+
 		Body: []Node{
 			shared.Snackbar(),
 			/* Header */
