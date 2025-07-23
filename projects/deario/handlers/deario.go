@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -28,14 +29,13 @@ func Index(c echo.Context) error {
 	date := c.QueryParam("date")
 	if date == "" {
 		date = time.Now().Format("20060102")
-	} else {
-		date = strings.ReplaceAll(date, "-", "")
 	}
+	date = strings.ReplaceAll(date, "-", "")
 
 	uid, _ := authutil.SessionUID(c)
 
 	if uid == "" {
-		return views.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Response().Writer)
+		return views.Index(os.Getenv("APP_TITLE"), date, "0", "light").Render(c.Response().Writer)
 	}
 
 	queries, err := db.GetQueries(c.Request().Context())
@@ -43,16 +43,24 @@ func Index(c echo.Context) error {
 		return err
 	}
 
-	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
+	diary, errDiary := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{
 		Uid:  uid,
 		Date: date,
 	})
 
-	if err != nil {
-		return views.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Response().Writer)
+	userSetting, errSetting := queries.GetUserSetting(c.Request().Context(), uid)
+
+	if errDiary != nil && !errors.Is(errDiary, sql.ErrNoRows) {
+		return errDiary
+	}
+	if errSetting != nil && !errors.Is(errSetting, sql.ErrNoRows) {
+		return errSetting
 	}
 
-	return views.Index(os.Getenv("APP_TITLE"), date, diary.Mood).Render(c.Response().Writer)
+	mood := moodValue(diary, errDiary)
+	theme := themeValue(userSetting, errSetting)
+
+	return views.Index(os.Getenv("APP_TITLE"), date, mood, theme).Render(c.Response().Writer)
 }
 
 func Login(c echo.Context) error {
@@ -437,6 +445,7 @@ func SettingSave(c echo.Context) error {
 		IsPush:      maputil.GetInt64(data, "is_push", 0),
 		PushTime:    maputil.GetString(data, "push_time", ""),
 		RandomRange: maputil.GetInt64(data, "random_range", 365),
+		Theme:       maputil.GetString(data, "theme", "light"),
 	}); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정 저장 실패")
 	}
@@ -480,7 +489,41 @@ func UpdateDiaryOfMood(c echo.Context) error {
 }
 
 func Statistic(c echo.Context) error {
-	return views.Statistic().Render(c.Response().Writer)
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	userSetting, err := queries.GetUserSetting(c.Request().Context(), uid)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+
+	theme := "light"
+	if err == nil && userSetting.Theme != "" {
+		theme = userSetting.Theme
+	}
+
+	return views.Statistic(theme).Render(c.Response().Writer)
+}
+
+func moodValue(d db.Diary, err error) string {
+	if err == nil && d.ID != "" {
+		return d.Mood
+	}
+	return "0"
+}
+
+func themeValue(u db.UserSetting, err error) string {
+	if err == nil && u.Theme != "" {
+		return u.Theme
+	}
+	return "light"
 }
 
 func buildMoodMap(rows []db.MonthlyMoodCountRow) map[string]db.MonthlyMoodCountRow {

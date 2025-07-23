@@ -16,7 +16,7 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-func Index(title string, date string, mood string) Node {
+func Index(title string, date string, mood string, theme string) Node {
 	return HTML5(HTML5Props{
 		Title:    title,
 		Language: "ko",
@@ -28,6 +28,10 @@ func Index(title string, date string, mood string) Node {
 				Script(Src("/static/deario.js")),
 			},
 		),
+		HTMLAttrs: []Node{
+			Attr("data-theme", theme),
+			x.Init(fmt.Sprintf("Alpine.store('theme').set('%s')", theme)),
+		},
 		Body: []Node{
 			shared.Snackbar(),
 
