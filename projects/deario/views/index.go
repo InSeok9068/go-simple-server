@@ -28,7 +28,6 @@ func Index(title string, date string, mood string) Node {
 				Script(Src("/static/deario.js")),
 			},
 		),
-
 		Body: []Node{
 			shared.Snackbar(),
 
