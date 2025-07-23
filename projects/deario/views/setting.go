@@ -63,6 +63,7 @@ func Setting(userSetting db.UserSetting) Node {
 						Nav(Text("테마")),
 						Label(Class("switch"),
 							Input(Type("checkbox"),
+								x.Data(""),
 								x.Bind("checked", "$store.theme.value === 'dark'"),
 								x.On("change", "$store.theme.toggle()")),
 							Span(Text("")),

@@ -7,7 +7,7 @@ import (
 )
 
 func AppHeader() Node {
-	return Header(Class("fixed yellow4"),
+	return Header(Class("fixed primary"),
 		Nav(
 			A(Class("max"), Href("/"),
 				H3(Text("Deario")),
