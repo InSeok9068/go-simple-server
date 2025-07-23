@@ -36,5 +36,4 @@ type UserSetting struct {
 	RandomRange int64
 	Created     sql.NullString
 	Updated     sql.NullString
-	Theme       string
 }

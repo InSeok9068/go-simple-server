@@ -8,7 +8,6 @@ import (
 	"simple-server/projects/deario/views/layout"
 	shared "simple-server/shared/views"
 
-	x "github.com/glsubri/gomponents-alpine"
 	h "maragu.dev/gomponents-htmx"
 
 	. "maragu.dev/gomponents"
@@ -28,9 +27,7 @@ func Setting(userSetting db.UserSetting) Node {
 				Script(Src("/static/deario.js")),
 			},
 		),
-		HTMLAttrs: []Node{
-			x.Init(fmt.Sprintf("Alpine.store('theme').set('%s')", userSetting.Theme)),
-		},
+		HTMLAttrs: nil,
 		Body: []Node{
 			shared.Snackbar(),
 
@@ -61,16 +58,6 @@ func Setting(userSetting db.UserSetting) Node {
 							Input(Type("number"), Name("random_range"),
 								Value(fmt.Sprintf("%d", userSetting.RandomRange))),
 							Label(Text("랜덤일자")),
-						),
-						// 테마 설정
-						Div(x.Data(fmt.Sprintf("{ isDark: %t }", userSetting.Theme == "dark")),
-							Label(Class("switch"),
-								Input(Type("checkbox"), x.Model("isDark"),
-									Attr("@change", "Alpine.store('theme').set(isDark ? 'dark' : 'light')"),
-									If(userSetting.Theme == "dark", Checked())),
-								Span(Text("다크모드")),
-							),
-							Input(Type("hidden"), Name("theme"), x.Bind("value", "isDark ? 'dark' : 'light'")),
 						),
 						Nav(Class("right-align"),
 							Button(Text("저장")),
