@@ -32,7 +32,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.37.0
 	golang.org/x/time v0.12.0
 	google.golang.org/api v0.243.0
-	google.golang.org/genai v1.16.0
+	google.golang.org/genai v1.17.0
 	maragu.dev/gomponents v1.1.0
 	maragu.dev/gomponents-htmx v0.6.1
 	modernc.org/sqlite v1.38.0
