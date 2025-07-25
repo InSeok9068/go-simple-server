@@ -35,10 +35,10 @@ show_help() {
   echo -e "  ${GREEN}switch${NC} [service]              - 개발 환경에서 실행할 서비스를 변경합니다. (예: deario, homepage)"
   echo -e "  ${GREEN}check${NC} [build|test|lint]       - 프로젝트의 오류를 검사합니다. (인자 없으면 전체 실행)"
   echo -e "  ${GREEN}deps${NC}                          - Go 의존성 및 도구를 업데이트합니다."
-  echo -e "  ${GREEN}build:linux${NC}                   - Linux용 바이너리를 빌드합니다."
+  echo -e "  ${GREEN}build-linux${NC}                   - Linux용 바이너리를 빌드합니다."
   echo -e "  ${GREEN}release${NC} [project]             - 릴리스 브랜치를 main에 병합합니다. (인자 없으면 전체 실행)"
-  echo -e "  ${GREEN}install:tailwind${NC} [win|linux]  - TailwindCSS를 설치합니다."
-  echo -e "  ${GREEN}sqlc:generate${NC} [project]        - sqlc 코드를 생성합니다. (인자 없으면 전체 실행)"
+  echo -e "  ${GREEN}install-tailwind${NC} [win|linux]  - TailwindCSS를 설치합니다."
+  echo -e "  ${GREEN}sqlc-generate${NC} [project]        - sqlc 코드를 생성합니다. (인자 없으면 전체 실행)"
   echo -e "\n${YELLOW}서비스 관리:${NC}"
   echo -e "  ${GREEN}service create${NC} [name] [port]  - 새 서비스를 생성합니다."
   echo -e "  ${GREEN}service deploy${NC} [name]         - 서비스 배포 가이드를 출력합니다."
@@ -66,16 +66,16 @@ case "$COMMAND" in
   deps)
     bash "$SCRIPT_DIR/update-deps.sh" "$@"
     ;;
-  build:linux)
+  build-linux)
     bash "$SCRIPT_DIR/build-linux.sh" "$@"
     ;;
   release)
     bash "$SCRIPT_DIR/release-all.sh" "$@"
     ;;
-  install:tailwind)
+  install-tailwind)
     bash "$SCRIPT_DIR/tailwindcss-install.sh" "$@"
     ;;
-  sqlc:generate)
+  sqlc-generate)
     bash "$SCRIPT_DIR/sqlc-generate.sh" "$@"
     ;;
   service)
