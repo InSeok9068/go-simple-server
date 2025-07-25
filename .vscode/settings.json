@@ -19,8 +19,7 @@
   "cssvar.extensions": ["css", "html"],
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
-    "pocketbase": "pocketbase*",
-    "tailwind.config.js": "tailwindcss*"
+    "pocketbase": "pocketbase*"
   },
   "files.exclude": {
     "tmp": true,
