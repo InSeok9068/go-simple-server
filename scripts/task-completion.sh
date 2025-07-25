@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# notepad ~/.bash_profile
+# source "scripts/task-completion.sh"
+
 # Git Bash for Windows용 task.sh 자동 완성 스크립트
 
 _task_completion() {
@@ -11,14 +14,14 @@ _task_completion() {
     # 메인 명령어 목록
     # ./task.sh [TAB] 을 누를 때 (두 번째 단어 완성)
     if [ ${COMP_CWORD} -eq 1 ]; then
-        opts="help switch check deps build:linux release install:tailwind service"
+        opts="help switch check deps build:linux release install:tailwind sqlc:generate service"
         COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
         return 0
     fi
 
     # 하위 명령어 목록 (이전 단어를 기반으로)
     case "${prev}" in
-        switch|release)
+        switch|release|sqlc:generate)
             # projects/ 디렉터리 아래의 서비스 이름을 동적으로 찾아 제안
             local project_dirs
             # 프로젝트 루트에서 실행한다고 가정
