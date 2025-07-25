@@ -8,6 +8,7 @@ trigger: always_on
 - 서버 프레임워크 : Echo
 - 템플릿 라이브러리 : Gomponents
 - 데이터베이스 : SQLite
+- 데이터베이스 마이그레이션 : Goose
 - SQL 코드 제너레이터 : SQLC
 - 프론트엔드 라이브러리 : HTMX, Alpinejs
 - CSS 프레임워크 : BeerCSS
@@ -31,6 +32,7 @@ trigger: always_on
 - cmd/{프로젝트명}/main.go : 해당 프로젝트 서버 실행 파일
 - projects/{프로젝트명}/ : 해당 프로젝트 폴더
 - projects/{프로젝트명}/static : 해당 프로젝트 정적소스 폴더
+- projects/{프로젝트명}/migrations : 해당 프로젝트 마이그레이션 폴더
 - internal : 프로젝트 의존성이 존재하는 공통/공유 서버 패키지
 - shared : 프로젝트 의존성이 존재하는 공통/공유 프론트엔드 패키지
 - pkg : 프로젝트 의존성 없는 공통 패키지
@@ -49,7 +51,7 @@ trigger: always_on
 
 ## 스키마 및 쿼리 수정
 
-- 스키마 수정 : `./projects/{프로젝트명}/schema.sql` 파일 수정
+- 스키마 수정 : `./projects/{프로젝트명}/migrations/*.sql` 폴더에 파일 추가
 - 쿼리 수정 : `./projects/{프로젝트명}/query.sql` 파일 수정
 - 코드 생성 : `sqlc generate -f ./projects/{프로젝트명}/sqlc.yaml` 터미널 명령어 실행
 
