@@ -2,16 +2,24 @@
 
 **Host** : https://toy-project.n-e.kr
 
-| 구성                    | 사용 기술               |
-| ----------------------- | ----------------------- |
-| 언어                    | Go                      |
-| 백엔드 프레임워크       | Echo                    |
-| 프론트엔드 프레임워크   | Htmx + Alpine.js        |
-| CSS 프레임워크 선택지 1 | Beer CSS                |
-| CSS 프레임워크 선택지 2 | Pico CSS + Tailwind CSS |
-| CSS 프레임워크 선택지 3 | Bulma CSS               |
-| Template 엔진           | Gomponents              |
-| 데이터베이스            | SQLite3                 |
+| 구성                  | 사용 기술/도구                                                |
+| --------------------- | ------------------------------------------------------------- |
+| **언어**              | Go                                                            |
+| **백엔드 프레임워크** | Echo                                                          |
+| **프론트엔드 구성**   | HTMX + Alpine.js                                              |
+| **템플릿 엔진**       | Gomponents                                                    |
+| **CSS 프레임워크**    | 1. Beer CSS <br> 2. Pico CSS + Tailwind CSS <br> 3. Bulma CSS |
+| **데이터베이스**      | SQLite → PostgreSQL                                           |
+| **DB 관리 도구**      | Adminer                                                       |
+| **DB 마이그레이션**   | Goose                                                         |
+| **DB 복제/복구**      | Litestream (SQLite)                                           |
+| **인증**              | Firebase (With Cookie)                                        |
+| **객체 저장소**       | GCP Storage                                                   |
+| **메시지 큐**         | goqite                                                        |
+| **성능/로깅 도구**    | /debug/vars (Go 표준), trace_id (OTEL 연동)                   |
+| **로깅 대시보드 UI**  | PocketBase Admin                                              |
+| **모바일 대응**       | PWA → Capacitor                                               |
+| **웹 서버**           | Caddy                                                         |
 
 ### 추가 구성 고려
 
