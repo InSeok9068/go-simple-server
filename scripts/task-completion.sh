@@ -35,7 +35,7 @@ _task_completion() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             ;;
         install-tailwind)
-            opts="win linux"
+            opts="window linux"
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             ;;
         service)
