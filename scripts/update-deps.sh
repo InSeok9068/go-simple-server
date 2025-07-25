@@ -24,6 +24,7 @@ print_step "1. Go 모듈 업데이트 중..."
 
 modules=(
     "firebase.google.com/go/v4@latest"
+    "github.com/AlecAivazis/survey/v2@latest"
     "github.com/Blank-Xu/sql-adapter@latest"
     "github.com/casbin/casbin/v2@latest"
     "github.com/crazy-max/echo-ipfilter@latest"
