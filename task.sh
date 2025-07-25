@@ -36,7 +36,7 @@ show_help() {
   echo -e "  ${GREEN}check${NC} [build|test|lint]       - 프로젝트의 오류를 검사합니다. (인자 없으면 전체 실행)"
   echo -e "  ${GREEN}deps${NC}                          - Go 의존성 및 도구를 업데이트합니다."
   echo -e "  ${GREEN}build-linux${NC}                   - Linux용 바이너리를 빌드합니다."
-  echo -e "  ${GREEN}release${NC} [project]             - 릴리스 브랜치를 main에 병합합니다. (인자 없으면 전체 실행)"
+  echo -e "  ${GREEN}release${NC} [project]             - main 브랜치를 release/{project} 브랜치로 병합합니다. (인자 없으면 전체 실행)"
   echo -e "  ${GREEN}install-tailwind${NC} [win|linux]  - TailwindCSS를 설치합니다."
   echo -e "  ${GREEN}sqlc-generate${NC} [project]        - sqlc 코드를 생성합니다. (인자 없으면 전체 실행)"
   echo -e "\n${YELLOW}서비스 관리:${NC}"
