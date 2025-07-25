@@ -26,8 +26,8 @@ esac
 if [ ! -f "tailwindcss$EXE" ]; then
   echo "Downloading tailwindcss-$FILE..."
   curl -sLO "https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-$FILE"
-  mv "tailwindcss-$FILE" "tailwindcss$EXE"
-  chmod a+x "tailwindcss$EXE"
+  mv "tailwindcss-$FILE" "tailwind/tailwindcss$EXE"
+  chmod a+x "tailwind/tailwindcss$EXE"
   mkdir -p node_modules/tailwindcss/lib
   echo '{"devDependencies": {"tailwindcss": "latest"}}' >package.json
   echo "Setup Finish tailwindcss"

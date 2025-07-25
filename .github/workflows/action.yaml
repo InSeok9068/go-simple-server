@@ -41,13 +41,13 @@ jobs:
       # 5. Tailwindcss CLI 설치
       - name: Install Tailwindcss CLI Dependencies
         run: |
-          chmod +x ./tailwindcss-install.sh
-          ./tailwindcss-install.sh linux
+          chmod +x ./task.sh
+          ./task.sh install:tailwind linux
 
       # 6. Tailwindcss Out 파일 생성
       - name: Tailwindcss Generate
         run: |
-          ./tailwindcss -i tailwindcss.css -o shared/static/tailwindcss.css  --minify
+          tailwind/tailwindcss -i tailwind/tailwindcss.css -o shared/static/tailwindcss.css  --minify
 
       # # 7. Lint 실행
       # - name: golangci-lint
