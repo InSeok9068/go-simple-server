@@ -42,7 +42,7 @@ jobs:
       - name: Install Tailwindcss CLI Dependencies
         run: |
           chmod +x ./task.sh
-          ./task.sh install:tailwind linux
+          ./task.sh install-tailwind linux
 
       # 6. Tailwindcss Out 파일 생성
       - name: Tailwindcss Generate
