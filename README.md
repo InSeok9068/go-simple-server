@@ -22,7 +22,7 @@
 - Shoelace : CSS 프레임워크 (바닐라 웹 컴포넌트)
 - ~~surreal.js : [surreal.js](https://cdn.jsdelivr.net/gh/gnat/surreal@main/surreal.js)~~
 - DataStar : SSE 기반 서버주도 프레임워크
-- Unpoly : Htmx+ Like 프레임워크
+- Unpoly : Htmx Like 프레임워크
 
 ---
 
@@ -187,4 +187,18 @@ for branch in $(git for-each-ref refs/remotes/origin/ --format='%(refname:short)
     git push origin --delete "${branch#origin/}"
   fi
 done
+```
+
+---
+
+## Gemini CLI 설치 및 자동화 커밋메시지 도구 설치
+
+```shell
+npm install -g @google/gemini-cli
+
+gemini
+
+npm install -g gemini-commit-assistant
+
+aic
 ```
