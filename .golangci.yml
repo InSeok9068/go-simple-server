@@ -61,3 +61,8 @@ linters:
     presets:
       - legacy
       - std-error-handling
+    rules:
+      - path: cmd/scaffold
+        linters:
+          - cyclop
+          - errcheck
