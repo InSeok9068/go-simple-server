@@ -25,23 +25,59 @@ func main() {
 	case "프로젝트 생성":
 		var projectName string
 		var port string
+		var useDB bool
+		var useAuth bool
+		var createProject bool
 
-		survey.AskOne(&survey.Input{
+		if err := survey.AskOne(&survey.Input{
 			Message: "프로젝트 명: ",
-		}, &projectName, survey.WithValidator(survey.Required))
+		}, &projectName,
+			survey.WithValidator(survey.Required)); err != nil {
+			panic(err)
+		}
 
-		survey.AskOne(&survey.Input{
+		if err := survey.AskOne(&survey.Input{
 			Message: "포트 번호: ",
-		}, &port, survey.WithValidator(survey.Required))
+		}, &port,
+			survey.WithValidator(survey.Required)); err != nil {
+			panic(err)
+		}
 
-		fmt.Println("프로젝트 생성")
+		if err := survey.AskOne(&survey.Confirm{
+			Message: "데이터베이스 사용: ",
+		}, &useDB,
+			survey.WithValidator(survey.Required)); err != nil {
+			panic(err)
+		}
+
+		if err := survey.AskOne(&survey.Confirm{
+			Message: "인증 사용: ",
+		}, &useAuth,
+			survey.WithValidator(survey.Required)); err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("프로젝트 명 : %s\n", projectName)
+		fmt.Printf("포트 번호 : %s\n", port)
+		fmt.Printf("데이터베이스 사용 : %t\n", useDB)
+		fmt.Printf("인증 사용 : %t\n", useAuth)
+
+		if err := survey.AskOne(&survey.Confirm{
+			Message: "프로젝트 생성을 진행하시겠습니까? : ",
+		}, &createProject,
+			survey.WithValidator(survey.Required)); err != nil {
+			panic(err)
+		}
+
+		if !createProject {
+			return
+		}
+
 		if _, err := os.Stat(fmt.Sprintf("projects/%s", projectName)); os.IsNotExist(err) {
 			if err := os.Mkdir(fmt.Sprintf("projects/%s", projectName), 0755); err != nil {
 				panic(err)
 			}
 		}
-
-		fmt.Printf("project/%s 폴더 생성\n", projectName)
 
 		if _, err := os.Stat(fmt.Sprintf("cmd/%s/main.go", projectName)); os.IsNotExist(err) {
 			if err := os.Mkdir(fmt.Sprintf("cmd/%s", projectName), 0755); err != nil {
@@ -68,8 +104,6 @@ func main() {
 				panic(err)
 			}
 		}
-
-		fmt.Printf("cmd/%s/main.go 파일 생성\n", projectName)
 
 	case "프로젝트 삭제":
 
