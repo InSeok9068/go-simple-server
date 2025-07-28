@@ -1,5 +1,8 @@
 Common Project:
   New:
+    ☐ DB 백업 Litestream 연결
+    ☐ AI CLI 활용하여 스캐폴드 (서비스 생성, 삭제, 배포, 제거) 구현
+      - SCAFFOLD.md 자세히 구현 방법 정의
 
 Deario Project:
   New:
@@ -8,7 +11,8 @@ Deario Project:
       - 파이어베이스 활용
       - GCP Storage 활용
       - GCP Function으로 리사이즈 후 업로드
-    ☐ 
+    ☐ 일기장 내용, 피드백 암호화 구현
+    ☐ DB 외부키 릴레이션 연결
   Done:
 
 Archive:
