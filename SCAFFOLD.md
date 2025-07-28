@@ -44,22 +44,13 @@
 
 ---
 
-### 스캐폴드 서비스 생성, 삭제 스크립트 동작성 상세 설명
+```
+현재 프로젝트 구조를 분석해서 하나의 서비스를 추가해줘
 
-**로컬 동작성 우선**
+서비스명 : sample
+포트 : 8004
+DB 사용여부 : true
+인증 사용여부 : true
 
-1. 서비스명 입력 [!필수]
-2. 포트 입력 [!필수]
-3. `projects/서비스이름` 디렉토리 생성
-4. `cmd/서비스이름/main.go` 실행 파일 생성
-5. `scripts/change.sh` 스크립트에 서비스명에 따른 포트 설정 추가
-6. `embed.go` 파일에 새 서비스의 `static` 경로 추가 (`//go:embed projects/서비스이름/static`)
-7. DB가 필요한 프로젝트인지 확인 후 필요하다면 아래의 작업을 수행
-   - `embed.go` 파일에 새 서비스의 `migrations` 경로 추가 (`//go:embed projects/서비스이름/migrations/*.sql`)
-   - `db` 디렉토리, `sqlc.yaml` 파일, `query.sql` 파일 생성
-
-### Github Action을 통한 서비스 첫 배포 스크립트 동작성 상세 설명
-
-**Github Action을 통한 서비스 첫 배포 후 URL 접근 가능**
-
-1. 서비스 빌드
+@SCAFFOLD.md 참고
+```
