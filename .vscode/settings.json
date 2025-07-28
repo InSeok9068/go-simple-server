@@ -19,7 +19,8 @@
   "cssvar.extensions": ["css", "html"],
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
-    "pocketbase": "pocketbase*"
+    "pocketbase": "pocketbase*",
+    ".env": ".gitignore, .golangci.yml, .prettierignore, model.conf, tailwind.config.js"
   },
   "files.exclude": {
     "tmp": true,
