@@ -1,6 +1,14 @@
-Deario Todo:
-  Wait
+Common Project:
+  New:
+
+Deario Project:
+  New:
     ☐ 이미지 업로드 구현
+      - 클라이언트 업로드
       - 파이어베이스 활용
-  In Progress
-  Done
+      - GCP Storage 활용
+      - GCP Function으로 리사이즈 후 업로드
+    ☐ 
+  Done:
+
+Archive:
