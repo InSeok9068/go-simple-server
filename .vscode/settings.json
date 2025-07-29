@@ -11,11 +11,11 @@
   // "go.inlayHints.constantValues": true,
   /* InlayHints On */
   "css.styleSheets": [
-    "shared/static/bulma.min.css",
-    "shared/static/beer.min.css",
+    // "shared/static/lib/bulma.min.css",
+    "shared/static/lib/beer.min.css",
     "**/style.css"
   ],
-  "cssvar.files": ["shared/static/open-props.min.css"],
+  "cssvar.files": ["shared/static/lib/open-props.min.css"],
   "cssvar.extensions": ["css", "html"],
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
