@@ -50,6 +50,7 @@ modules=(
     "google.golang.org/genai@latest"
     "maragu.dev/gomponents@latest"
     "maragu.dev/gomponents-htmx@latest"
+    "maragu.dev/goqite@latest"
     "modernc.org/sqlite@latest"
 )
 

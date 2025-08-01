@@ -36,6 +36,7 @@ require (
 	google.golang.org/genai v1.18.0
 	maragu.dev/gomponents v1.1.0
 	maragu.dev/gomponents-htmx v0.6.1
+	maragu.dev/goqite v0.3.1
 	modernc.org/sqlite v1.38.2
 )
 

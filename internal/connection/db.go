@@ -30,16 +30,20 @@ func (h *Hooks) After(ctx context.Context, query string, args ...interface{}) (c
 	return ctx, nil
 }
 
-func AppDBOpen() (*sql.DB, error) {
+func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 	isHooked := os.Getenv("ENV") == "dev"
+
+	if len(hooked) > 0 {
+		isHooked = hooked[0]
+	}
+
 	if isHooked {
 		once.Do(func() {
 			sql.Register(driverName, sqlhooks.Wrap(&sqlite.Driver{}, &Hooks{}))
 		})
 		return sql.Open(driverName, os.Getenv("APP_DATABASE_URL"))
-	} else {
-		return sql.Open("sqlite", os.Getenv("APP_DATABASE_URL"))
 	}
+	return sql.Open("sqlite", os.Getenv("APP_DATABASE_URL"))
 }
 
 func LogDBOpen() (*sql.DB, error) {

@@ -102,9 +102,13 @@ func setUpServer() *echo.Echo {
 	authGroup.GET("/statistic/data", handlers.StatisticData)
 	/* 권한 라우터 */
 
+	/* 큐 리시버 */
+	go tasks.PushSendJob() // 알기 작성 알림 푸시 리시버
+	/* 큐 리시버 */
+
 	/* 스케줄 */
 	c := cron.New()
-	tasks.PushTask(c)
+	tasks.PushSendCron(c) // 일기 작성 알림 푸시
 	c.Start()
 	/* 스케줄 */
 

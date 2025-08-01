@@ -2,26 +2,32 @@ package tasks
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 	"time"
 
+	"simple-server/internal/connection"
 	"simple-server/internal/middleware"
 	"simple-server/projects/deario/db"
 
 	"firebase.google.com/go/v4/messaging"
 	"github.com/robfig/cron/v3"
+	"maragu.dev/goqite"
+	"maragu.dev/goqite/jobs"
 )
 
-func PushTask(c *cron.Cron) {
+type Payload struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+	Token string `json:"token"`
+}
+
+var pushQ *goqite.Queue
+
+func PushSendCron(c *cron.Cron) {
 	if _, err := c.AddFunc("@every 1m", func() {
 		ctx := context.Background()
 		now := time.Now().Format("15:04")
-
-		client, err := middleware.App.Messaging(ctx)
-		if err != nil {
-			slog.Error("메시징 클라이언트 생성 실패", "error", err)
-			return
-		}
 
 		queries, err := db.GetQueries(ctx)
 		if err != nil {
@@ -40,20 +46,66 @@ func PushTask(c *cron.Cron) {
 				continue
 			}
 
-			message := &messaging.Message{
-				Data: map[string]string{
-					"title": "매일 알림",
-					"body":  "오늘 하루는 어땠나요?",
-				},
+			payload := Payload{
+				Title: "매일 알림",
+				Body:  "오늘 하루는 어땠나요?",
 				Token: target.PushToken,
 			}
+			b, _ := json.Marshal(payload)
 
-			if _, err := client.Send(ctx, message); err != nil {
-				slog.Error("푸시 발송 실패", "error", err, "uid", target.Uid)
-				continue
+			if err := jobs.Create(ctx, pushQ, "send", b); err != nil {
+				slog.Error("푸시 발송 실패", "error", err)
 			}
 		}
 	}); err != nil {
 		slog.Error("스케줄 등록 실패", "error", err)
 	}
+}
+
+func PushSendJob() {
+	pushdb, err := connection.AppDBOpen(false)
+	if err != nil {
+		slog.Error("데이터베이스 연결 실패", "error", err)
+		return
+	}
+	pushQ = goqite.New(goqite.NewOpts{
+		DB:   pushdb,
+		Name: "push",
+	})
+	r := jobs.NewRunner(jobs.NewRunnerOpts{
+		Limit:        3,
+		Log:          slog.Default(),
+		PollInterval: 1 * time.Second,
+		Queue:        pushQ,
+	})
+
+	r.Register("send", func(ctx context.Context, m []byte) error {
+		client, err := middleware.App.Messaging(ctx)
+		if err != nil {
+			slog.Error("메시징 클라이언트 생성 실패", "error", err)
+			return err
+		}
+
+		var payload Payload
+		if err := json.Unmarshal(m, &payload); err != nil {
+			slog.Error("푸시 데이터 해독 실패", "error", err)
+			return err
+		}
+
+		message := &messaging.Message{
+			Data: map[string]string{
+				"title": payload.Title,
+				"body":  payload.Body,
+			},
+			Token: payload.Token,
+		}
+
+		if _, err := client.Send(ctx, message); err != nil {
+			slog.Error("푸시 발송 실패", "error", err)
+			return err
+		}
+		return nil
+	})
+
+	r.Start(context.Background())
 }

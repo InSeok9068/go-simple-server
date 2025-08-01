@@ -101,6 +101,7 @@ go get google.golang.org/api
 go get google.golang.org/genai
 go get maragu.dev/gomponents
 go get maragu.dev/gomponents-htmx
+go get maragu.dev/goqite
 go get modernc.org/sqlite
 ```
 
