@@ -62,6 +62,9 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		LogError:      true,
 		LogRemoteIP:   true,
 		LogValuesFunc: config.CustomLogValuesFunc,
+		Skipper: func(c echo.Context) bool {
+			return c.Path() == "/metrics"
+		},
 	}))
 
 	// Tracing
