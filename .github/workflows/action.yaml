@@ -105,7 +105,12 @@ jobs:
             rm ${SERVICE_NAME}.tar.gz
             sudo systemctl restart ${SERVICE_NAME}.service
 
-      # 12-1. 빌드 성공 메세지 발송
+      # 12. 커밋 메시지 준비 (텔레그램 메시지 길이 제한 해결)
+      - name: Prepare Commit Message
+        id: prep_commit
+        run: echo "commit_message=$(echo "${{ github.event.head_commit.message }}" | head -n 1 | cut -c -200)" >> $GITHUB_OUTPUT
+
+      # 13-1. 빌드 성공 메세지 발송
       - name: Send Build Success Message
         uses: appleboy/telegram-action@master
         if: success()
@@ -118,12 +123,12 @@ jobs:
 
             Branch: ${{ github.ref_name }}
 
-            Commit message: ${{ github.event.head_commit.message }}
+            Commit message: ${{ steps.prep_commit.outputs.commit_message }}
 
             [See changes](https://github.com/${{ github.repository }}/commit/${{github.sha}})
 
-      # 12-2. 빌드 실패 메세지 발송
-      - name: Send Build Success Message
+      # 13-2. 빌드 실패 메세지 발송
+      - name: Send Build Failure Message
         uses: appleboy/telegram-action@master
         if: failure()
         with:
@@ -135,7 +140,7 @@ jobs:
 
             Branch: ${{ github.ref_name }}
 
-            Commit message: ${{ github.event.head_commit.message }}
+            Commit message: ${{ steps.prep_commit.outputs.commit_message }}
 
             [link](https://github.com/${{ github.repository }}/actions)
 
