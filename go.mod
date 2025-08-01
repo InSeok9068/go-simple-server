@@ -9,10 +9,10 @@ tool github.com/sqlc-dev/sqlc/cmd/sqlc
 tool github.com/golangci/golangci-lint/cmd/golangci-lint
 
 require (
-	firebase.google.com/go/v4 v4.17.0
+	firebase.google.com/go/v4 v4.18.0
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/Blank-Xu/sql-adapter v1.1.2
-	github.com/casbin/casbin/v2 v2.110.0
+	github.com/casbin/casbin/v2 v2.111.0
 	github.com/crazy-max/echo-ipfilter v1.12.0
 	github.com/doganarif/govisual v0.1.9
 	github.com/eduardolat/gomponents-lucide v1.4.0
