@@ -20,6 +20,16 @@ type Diary struct {
 	Mood       string
 }
 
+type Goqite struct {
+	ID       string
+	Created  string
+	Updated  string
+	Queue    string
+	Body     []byte
+	Timeout  string
+	Received int64
+}
+
 type User struct {
 	Uid     string
 	Name    string
