@@ -1,6 +1,8 @@
 Common Project:
   New:
+    ☐ 도메인 유료 및 Cloudflare 무료 도메인으로 변경 고려
     ☐ DB 백업 Litestream 연결
+      - GCP 버킷 연결 (Firebase 스토리지와 따로 버킷 구분)
     ☐ AI CLI 활용하여 스캐폴드 (서비스 생성, 삭제, 배포, 제거) 구현
       - SCAFFOLD.md 자세히 구현 방법 정의
 
