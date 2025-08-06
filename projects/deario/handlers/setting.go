@@ -11,8 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Setting은 사용자 설정 페이지를 렌더링한다.
-func Setting(c echo.Context) error {
+// SettingsPage는 사용자 설정 페이지를 렌더링한다.
+func SettingsPage(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -31,8 +31,8 @@ func Setting(c echo.Context) error {
 	return views.Setting(userSetting).Render(c.Response().Writer)
 }
 
-// SettingSave는 사용자 설정을 저장한다.
-func SettingSave(c echo.Context) error {
+// UpdateSettings는 사용자 설정을 저장한다.
+func UpdateSettings(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err

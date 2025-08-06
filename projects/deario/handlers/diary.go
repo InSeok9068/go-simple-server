@@ -19,8 +19,8 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-// Index는 메인 페이지를 렌더링한다.
-func Index(c echo.Context) error {
+// IndexPage는 메인 페이지를 렌더링한다.
+func IndexPage(c echo.Context) error {
 	date := c.QueryParam("date")
 	if date == "" {
 		date = time.Now().Format("20060102")
@@ -47,13 +47,13 @@ func Index(c echo.Context) error {
 		return errDiary
 	}
 
-	mood := moodValue(diary, errDiary)
+	mood := diaryMood(diary, errDiary)
 
 	return views.Index(os.Getenv("APP_TITLE"), date, mood).Render(c.Response().Writer)
 }
 
-// Diary는 특정 날짜의 일기를 조회한다.
-func Diary(c echo.Context) error {
+// GetDiary는 특정 날짜의 일기를 조회한다.
+func GetDiary(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -82,8 +82,8 @@ func Diary(c echo.Context) error {
 	return views.DiaryContentForm(diary.Date, diary.Content).Render(c.Response().Writer)
 }
 
-// DiaryList는 일기 목록을 반환한다.
-func DiaryList(c echo.Context) error {
+// ListDiaries는 일기 날짜 목록을 반환한다.
+func ListDiaries(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -121,8 +121,8 @@ func DiaryList(c echo.Context) error {
 	return Group(lis).Render(c.Response().Writer)
 }
 
-// DiaryRandom은 무작위 일기 날짜로 이동한다.
-func DiaryRandom(c echo.Context) error {
+// RedirectToRandomDiary는 무작위 일기 날짜로 이동한다.
+func RedirectToRandomDiary(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -152,8 +152,8 @@ func DiaryRandom(c echo.Context) error {
 	return c.HTML(http.StatusOK, fmt.Sprintf(`<script>location.href = "/?date=%s";</script>`, diary.Date))
 }
 
-// Save는 일기를 저장하거나 수정한다.
-func Save(c echo.Context) error {
+// SaveDiary는 일기를 저장하거나 수정한다.
+func SaveDiary(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err

@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// UpdateDiaryOfMood는 일기의 기분 정보를 저장한다.
-func UpdateDiaryOfMood(c echo.Context) error {
+// UpdateDiaryMood는 일기의 기분 정보를 저장한다.
+func UpdateDiaryMood(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -46,8 +46,8 @@ func UpdateDiaryOfMood(c echo.Context) error {
 	return nil
 }
 
-// moodValue는 일기에서 기분 값을 추출한다.
-func moodValue(d db.Diary, err error) string {
+// diaryMood는 일기에서 기분 값을 추출한다.
+func diaryMood(d db.Diary, err error) string {
 	if err == nil && d.ID != "" {
 		return d.Mood
 	}

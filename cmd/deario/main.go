@@ -76,11 +76,11 @@ func setUpServer() *echo.Echo {
 		slog.Error("Firebase 인증 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	e.GET("/", handlers.Index)
-	e.GET("/login", handlers.Login)
+	e.GET("/", handlers.IndexPage)
+	e.GET("/login", handlers.LoginPage)
 	e.POST("/logout", handlers.Logout)
-	e.GET("/diary", handlers.Diary)
-	e.GET("/diary/list", handlers.DiaryList)
+	e.GET("/diary", handlers.GetDiary)
+	e.GET("/diary/list", handlers.ListDiaries)
 	/* 공개 라우터 */
 
 	/* 권한 라우터 */
@@ -89,20 +89,20 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	authGroup.GET("/diary/random", handlers.DiaryRandom)
-	authGroup.POST("/diary/save", handlers.Save)
-	authGroup.GET("/ai-feedback", handlers.GetAiFeedback)
-	authGroup.POST("/ai-feedback", handlers.AiFeedback)
-	authGroup.POST("/ai-feedback/save", handlers.AiFeedbackSave)
-	authGroup.POST("/save-pushToken", handlers.SavePushKey)
-	authGroup.GET("/setting", handlers.Setting)
-	authGroup.POST("/setting", handlers.SettingSave)
-	authGroup.POST("/diary/mood", handlers.UpdateDiaryOfMood)
-	authGroup.GET("/statistic", handlers.Statistic)
-	authGroup.GET("/statistic/data", handlers.StatisticData)
-	authGroup.GET("/diary/images", handlers.DiaryImages)
-	authGroup.POST("/diary/image", handlers.DiaryImageSave)
-	authGroup.DELETE("/diary/image", handlers.DiaryImageDelete)
+	authGroup.GET("/diary/random", handlers.RedirectToRandomDiary)
+	authGroup.POST("/diary/save", handlers.SaveDiary)
+	authGroup.GET("/ai-feedback", handlers.GetAIFeedback)
+	authGroup.POST("/ai-feedback", handlers.GenerateAIFeedback)
+	authGroup.POST("/ai-feedback/save", handlers.SaveAIFeedback)
+	authGroup.POST("/save-pushToken", handlers.RegisterPushToken)
+	authGroup.GET("/setting", handlers.SettingsPage)
+	authGroup.POST("/setting", handlers.UpdateSettings)
+	authGroup.POST("/diary/mood", handlers.UpdateDiaryMood)
+	authGroup.GET("/statistic", handlers.StatsPage)
+	authGroup.GET("/statistic/data", handlers.GetStatsData)
+	authGroup.GET("/diary/images", handlers.DiaryImagesPage)
+	authGroup.POST("/diary/image", handlers.UploadDiaryImage)
+	authGroup.DELETE("/diary/image", handlers.DeleteDiaryImage)
 	/* 권한 라우터 */
 
 	/* 큐 리시버 */

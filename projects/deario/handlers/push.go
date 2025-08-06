@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// SavePushKey는 푸시 토큰을 저장한다.
-func SavePushKey(c echo.Context) error {
+// RegisterPushToken은 푸시 토큰을 등록한다.
+func RegisterPushToken(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
