@@ -17,7 +17,10 @@ window.previewDiaryImage = function (input) {
     img.className = "responsive";
     img.src = URL.createObjectURL(file);
     img.onload = () => URL.revokeObjectURL(img.src);
+    const spaceDiv = document.createElement("div");
+    spaceDiv.classList.add("space");
     preview.appendChild(img);
+    preview.appendChild(spaceDiv);
   } else {
     preview.textContent = `${input.files.length}개 선택됨`;
   }

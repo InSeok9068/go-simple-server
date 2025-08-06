@@ -74,6 +74,7 @@ sudo systemctl start main.service
 ### 프로젝트 종속성 최신화
 
 ```shell
+go get cloud.google.com/go/storage
 go get firebase.google.com/go/v4
 go get github.com/AlecAivazis/survey/v2
 go get github.com/Blank-Xu/sql-adapter

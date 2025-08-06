@@ -23,6 +23,7 @@ echo -e "\n${YELLOW}=== Go 의존성 업데이트를 시작합니다 ===${NC}"
 print_step "1. Go 모듈 업데이트 중..."
 
 modules=(
+    "cloud.google.com/go/storage@latest"
     "firebase.google.com/go/v4@latest"
     "github.com/AlecAivazis/survey/v2@latest"
     "github.com/Blank-Xu/sql-adapter@latest"

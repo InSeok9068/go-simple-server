@@ -26,7 +26,7 @@ func Index(title string, date string, mood string) Node {
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("/static/deario.js")),
-				Script(Type("module"), Src("/static/firebase_storage.js")),
+				Script(Type("module"), Src("/static/storage.js")),
 			},
 		),
 		Body: []Node{
