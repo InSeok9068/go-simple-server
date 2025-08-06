@@ -8,10 +8,8 @@ Common Project:
 
 Deario Project:
   New:
+    ☐ 기능별로 폴더 구분
     ☐ 이미지 업로드 구현
-      - 클라이언트 업로드
-      - 파이어베이스 활용
-      - GCP Storage 활용
       - GCP Function으로 리사이즈 후 업로드
     ☐ 일기장 내용, 피드백 암호화 구현
     ☐ DB 외부키 릴레이션 연결
