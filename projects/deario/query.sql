@@ -55,6 +55,16 @@ SET
 WHERE
     id = ?;
 
+-- name: UpdateDiaryImages :exec
+UPDATE diary
+SET
+    image_url1 = ?,
+    image_url2 = ?,
+    image_url3 = ?,
+    updated = datetime('now')
+WHERE
+    id = ?;
+
 -- name: GetUserSetting :one
 SELECT * FROM user_setting WHERE uid = ? LIMIT 1;
 

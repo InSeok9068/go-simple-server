@@ -100,6 +100,8 @@ func setUpServer() *echo.Echo {
 	authGroup.POST("/diary/mood", handlers.UpdateDiaryOfMood)
 	authGroup.GET("/statistic", handlers.Statistic)
 	authGroup.GET("/statistic/data", handlers.StatisticData)
+	authGroup.GET("/diary/images", handlers.DiaryImages)
+	authGroup.POST("/diary/image", handlers.DiaryImageSave)
 	/* 권한 라우터 */
 
 	/* 큐 리시버 */
