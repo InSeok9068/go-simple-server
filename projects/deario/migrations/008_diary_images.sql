@@ -1,0 +1,9 @@
+-- +goose Up
+ALTER TABLE diary ADD COLUMN image_url1 TEXT DEFAULT '' NOT NULL;
+ALTER TABLE diary ADD COLUMN image_url2 TEXT DEFAULT '' NOT NULL;
+ALTER TABLE diary ADD COLUMN image_url3 TEXT DEFAULT '' NOT NULL;
+
+-- +goose Down
+ALTER TABLE diary DROP COLUMN image_url1;
+ALTER TABLE diary DROP COLUMN image_url2;
+ALTER TABLE diary DROP COLUMN image_url3;
