@@ -9,12 +9,13 @@ import {
 window.uploadDiaryImage = async function (date) {
   const input = document.getElementById("diary-image-file");
   if (!input || input.files.length === 0) {
+    alert("파일이 필요합니다.");
     return;
   }
 
   const auth = getAuth();
   if (!auth.currentUser) {
-    showError("로그인이 필요합니다.");
+    alert("로그인이 필요합니다.");
     return;
   }
 

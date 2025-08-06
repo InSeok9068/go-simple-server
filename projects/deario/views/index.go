@@ -25,8 +25,8 @@ func Index(title string, date string, mood string) Node {
 			shared.HeadWithFirebaseAuth(),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
-				Script(Type("module"), Src("/static/deario.js")),
-                                Script(Type("module"), Src("/static/firebase_storage.js")),
+				Script(Src("/static/deario.js")),
+				Script(Type("module"), Src("/static/firebase_storage.js")),
 			},
 		),
 		Body: []Node{
@@ -248,11 +248,13 @@ func Index(title string, date string, mood string) Node {
 					h.Get(fmt.Sprintf("/diary/images?date=%s", date)),
 					h.Trigger("load"),
 				),
-				Div(
+				Button(
+					I(Text("attach_file")),
+					Text("File"),
 					Input(Type("file"), ID("diary-image-file")),
-					Nav(Class("right-align"),
-						Button(Type("button"), Attr("onclick", fmt.Sprintf("uploadDiaryImage('%s')", date)), Text("업로드")),
-					),
+				),
+				Nav(Class("right-align"),
+					Button(Type("button"), Attr("onclick", fmt.Sprintf("uploadDiaryImage('%s')", date)), Text("업로드")),
 				),
 				Nav(Class("right-align"),
 					Button(Attr("data-ui", "#diary-image-dialog"), Text("닫기")),
