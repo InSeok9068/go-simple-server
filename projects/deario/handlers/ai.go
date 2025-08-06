@@ -14,8 +14,8 @@ import (
 	. "maragu.dev/gomponents/html"
 )
 
-// AiFeedback는 사용자의 일기에 대해 피드백을 제공한다.
-func AiFeedback(c echo.Context) error {
+// GenerateAIFeedback는 일기 내용을 기반으로 AI 피드백이나 이미지를 생성한다.
+func GenerateAIFeedback(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -88,8 +88,8 @@ func AiFeedback(c echo.Context) error {
 	).Render(c.Response().Writer)
 }
 
-// AiFeedbackSave는 AI 피드백을 저장한다.
-func AiFeedbackSave(c echo.Context) error {
+// SaveAIFeedback는 생성된 AI 피드백과 이미지를 저장한다.
+func SaveAIFeedback(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -124,8 +124,8 @@ func AiFeedbackSave(c echo.Context) error {
 	return nil
 }
 
-// GetAiFeedback는 저장된 피드백을 조회한다.
-func GetAiFeedback(c echo.Context) error {
+// GetAIFeedback는 저장된 피드백이나 이미지를 반환한다.
+func GetAIFeedback(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err

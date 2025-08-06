@@ -10,12 +10,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Login 화면을 렌더링한다.
-func Login(c echo.Context) error {
+// LoginPage는 로그인 화면을 렌더링한다.
+func LoginPage(c echo.Context) error {
 	return shared.Login().Render(c.Response().Writer)
 }
 
-// Logout 세션을 종료한다.
+// Logout은 사용자 세션을 종료한다.
 func Logout(c echo.Context) error {
 	sess, err := session.Get("session", c)
 	if err != nil {

@@ -21,7 +21,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func DiaryImages(c echo.Context) error {
+// DiaryImagesPage는 일기 이미지 폼을 렌더링한다.
+func DiaryImagesPage(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -53,7 +54,8 @@ func DiaryImages(c echo.Context) error {
 	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Response().Writer)
 }
 
-func DiaryImageSave(c echo.Context) error {
+// UploadDiaryImage는 새 이미지를 업로드하고 저장한다.
+func UploadDiaryImage(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -88,7 +90,8 @@ func DiaryImageSave(c echo.Context) error {
 	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Response().Writer)
 }
 
-func DiaryImageDelete(c echo.Context) error {
+// DeleteDiaryImage는 지정된 일기 이미지를 삭제한다.
+func DeleteDiaryImage(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
@@ -133,6 +136,7 @@ func DiaryImageDelete(c echo.Context) error {
 	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Response().Writer)
 }
 
+// firstEmptyImageSlot은 비어 있는 이미지 슬롯을 찾는다.
 func firstEmptyImageSlot(d db.Diary) (int, bool) {
 	slots := []string{d.ImageUrl1, d.ImageUrl2, d.ImageUrl3}
 	for i, v := range slots {
@@ -143,6 +147,7 @@ func firstEmptyImageSlot(d db.Diary) (int, bool) {
 	return -1, false
 }
 
+// normalizeDate는 날짜 문자열을 YYYYMMDD 형식으로 변환한다.
 func normalizeDate(d string) string {
 	if d == "" {
 		return time.Now().Format("20060102")
@@ -150,6 +155,7 @@ func normalizeDate(d string) string {
 	return strings.ReplaceAll(d, "-", "")
 }
 
+// diaryAndSlot은 일기와 비어 있는 이미지 슬롯을 반환한다.
 func diaryAndSlot(ctx context.Context, q *db.Queries, uid, date string) (db.Diary, int, error) {
 	diary, err := q.GetDiary(ctx, db.GetDiaryParams{Uid: uid, Date: date})
 	if err != nil {
@@ -165,6 +171,7 @@ func diaryAndSlot(ctx context.Context, q *db.Queries, uid, date string) (db.Diar
 	return diary, slot, nil
 }
 
+// getDiary는 해당 날짜의 일기를 조회한다.
 func getDiary(ctx context.Context, q *db.Queries, uid, date string) (db.Diary, error) {
 	diary, err := q.GetDiary(ctx, db.GetDiaryParams{Uid: uid, Date: date})
 	if err != nil {
@@ -176,6 +183,7 @@ func getDiary(ctx context.Context, q *db.Queries, uid, date string) (db.Diary, e
 	return diary, nil
 }
 
+// removeDiaryFirebaseImage는 파이어베이스에서 이미지를 삭제한다.
 func removeDiaryFirebaseImage(ctx context.Context, d db.Diary, slot int) error {
 	imageURL, err := diaryImageURL(d, slot)
 	if err != nil {
@@ -187,6 +195,7 @@ func removeDiaryFirebaseImage(ctx context.Context, d db.Diary, slot int) error {
 	return deleteFirebaseImage(ctx, imageURL)
 }
 
+// setDiaryImage는 지정된 슬롯에 이미지 URL을 설정한다.
 func setDiaryImage(d db.Diary, slot int, url string) db.Diary {
 	switch slot {
 	case 0:
@@ -199,6 +208,7 @@ func setDiaryImage(d db.Diary, slot int, url string) db.Diary {
 	return d
 }
 
+// clearDiaryImage는 지정된 슬롯의 이미지 URL을 비운다.
 func clearDiaryImage(d db.Diary, slot int) (db.Diary, error) {
 	switch slot {
 	case 1:
@@ -213,6 +223,7 @@ func clearDiaryImage(d db.Diary, slot int) (db.Diary, error) {
 	return d, nil
 }
 
+// diaryImageURL은 지정된 슬롯의 이미지 URL을 반환한다.
 func diaryImageURL(d db.Diary, slot int) (string, error) {
 	switch slot {
 	case 1:
@@ -226,6 +237,7 @@ func diaryImageURL(d db.Diary, slot int) (string, error) {
 	}
 }
 
+// parseFirebaseURL은 파이어베이스 이미지 URL에서 버킷과 오브젝트를 추출한다.
 func parseFirebaseURL(raw string) (string, string, error) {
 	u, err := neturl.Parse(raw)
 	if err != nil {
@@ -247,6 +259,7 @@ func parseFirebaseURL(raw string) (string, string, error) {
 	return bucket, object, nil
 }
 
+// deleteFirebaseImage는 파이어베이스에서 이미지를 삭제한다.
 func deleteFirebaseImage(ctx context.Context, raw string) error {
 	bucket, object, err := parseFirebaseURL(raw)
 	if err != nil {
