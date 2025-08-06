@@ -252,7 +252,7 @@ func Index(title string, date string, mood string) Node {
 				Button(
 					I(Text("attach_file")),
 					Text("File"),
-					Input(Type("file"), ID("diary-image-file"), Attr("onchange", "previewDiaryImage(this)")),
+					Input(Type("file"), Attr("accept", "image/*"), ID("diary-image-file"), Attr("onchange", "previewDiaryImage(this)")),
 				),
 				Nav(Class("right-align"),
 					Img(ID("diary-image-loading"), Src("/shared/static/spinner.svg"), Style("display:none")),
@@ -260,14 +260,6 @@ func Index(title string, date string, mood string) Node {
 				),
 				Nav(Class("right-align"),
 					Button(Attr("data-ui", "#diary-image-dialog"), Text("닫기")),
-				),
-			),
-
-			/* 이미지 보기 Dialog */
-			Dialog(ID("diary-image-viewer-dialog"), Class("max"),
-				Img(ID("diary-image-viewer-img"), Class("responsive")),
-				Nav(Class("right-align"),
-					Button(Attr("data-ui", "#diary-image-viewer-dialog"), Text("닫기")),
 				),
 			),
 

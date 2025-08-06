@@ -19,8 +19,6 @@ func DiaryImages(date, img1, img2, img3 string) Node {
 					Img(
 						Src(u),
 						Class("responsive"),
-						Style("cursor:pointer"),
-						Attr("onclick", fmt.Sprintf("viewDiaryImage('%s')", u)),
 					),
 					Button(
 						Class("transparent"),
