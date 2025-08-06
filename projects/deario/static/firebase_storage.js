@@ -60,3 +60,10 @@ window.uploadDiaryImage = async function (date) {
     if (loading) loading.style.display = "none";
   }
 };
+
+window.viewDiaryImage = function (url) {
+  const img = document.getElementById("diary-image-viewer-img");
+  if (!img) return;
+  img.src = url;
+  showModal("#diary-image-viewer-dialog");
+};

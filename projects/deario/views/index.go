@@ -263,6 +263,14 @@ func Index(title string, date string, mood string) Node {
 				),
 			),
 
+			/* 이미지 보기 Dialog */
+			Dialog(ID("diary-image-viewer-dialog"), Class("max"),
+				Img(ID("diary-image-viewer-img"), Class("responsive")),
+				Nav(Class("right-align"),
+					Button(Attr("data-ui", "#diary-image-viewer-dialog"), Text("닫기")),
+				),
+			),
+
 			/* 작성 일지 Dialog */
 			Dialog(ID("diary-list-dialog"), Class("max"),
 				H5(Text("작성 일지")),
