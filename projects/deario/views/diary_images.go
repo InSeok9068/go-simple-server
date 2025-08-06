@@ -18,8 +18,9 @@ func DiaryImages(date, img1, img2, img3 string) Node {
 					Style("position:relative; display:inline-block;"),
 					Img(Src(u), Class("responsive")),
 					Button(
+						Class("transparent"),
 						Type("button"),
-						Attr("style", "position:absolute; top:4px; right:4px;"),
+						Attr("style", "position:absolute; right:1px;"),
 						h.Delete("/diary/image"),
 						h.Target("#diary-image-content"),
 						h.Swap("outerHTML"),
@@ -27,6 +28,7 @@ func DiaryImages(date, img1, img2, img3 string) Node {
 						I(Text("close")),
 					),
 				),
+				Div(Class("space")),
 			)
 		}
 	}
