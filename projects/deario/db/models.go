@@ -18,6 +18,9 @@ type Diary struct {
 	Created    sql.NullString
 	Updated    sql.NullString
 	Mood       string
+	ImageUrl1  string
+	ImageUrl2  string
+	ImageUrl3  string
 }
 
 type Goqite struct {

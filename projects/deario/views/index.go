@@ -25,7 +25,8 @@ func Index(title string, date string, mood string) Node {
 			shared.HeadWithFirebaseAuth(),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
-				Script(Src("/static/deario.js")),
+				Script(Type("module"), Src("/static/deario.js")),
+                                Script(Type("module"), Src("/static/firebase_storage.js")),
 			},
 		),
 		Body: []Node{
@@ -115,6 +116,9 @@ func Index(title string, date string, mood string) Node {
 					Button(Class("chip"), Attr("data-ui", "#cbt-dialog"),
 						I(Text("psychology_alt")),
 						Text("CBT"),
+					),
+					Button(Class("chip circle"), Attr("data-ui", "#diary-image-dialog"),
+						I(Text("image")),
 					),
 					Div(Class("max")),
 					Img(ID("feedback-loading"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
@@ -234,6 +238,24 @@ func Index(title string, date string, mood string) Node {
 							Text("확인"),
 						),
 					),
+				),
+			),
+
+			/* 이미지 Dialog */
+			Dialog(ID("diary-image-dialog"), Class("max"),
+				H5(Text("이미지")),
+				Div(ID("diary-image-content"),
+					h.Get(fmt.Sprintf("/diary/images?date=%s", date)),
+					h.Trigger("load"),
+				),
+				Div(
+					Input(Type("file"), ID("diary-image-file")),
+					Nav(Class("right-align"),
+						Button(Type("button"), Attr("onclick", fmt.Sprintf("uploadDiaryImage('%s')", date)), Text("업로드")),
+					),
+				),
+				Nav(Class("right-align"),
+					Button(Attr("data-ui", "#diary-image-dialog"), Text("닫기")),
 				),
 			),
 
