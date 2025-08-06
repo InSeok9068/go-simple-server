@@ -16,7 +16,12 @@ func DiaryImages(date, img1, img2, img3 string) Node {
 			nodes = append(nodes,
 				Div(
 					Style("position:relative; display:inline-block;"),
-					Img(Src(u), Class("responsive")),
+					Img(
+						Src(u),
+						Class("responsive"),
+						Style("cursor:pointer"),
+						Attr("onclick", fmt.Sprintf("viewDiaryImage('%s')", u)),
+					),
 					Button(
 						Class("transparent"),
 						Type("button"),
