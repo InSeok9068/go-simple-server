@@ -1,6 +1,7 @@
 Common Project:
   New:
-    ☐ 도메인 유료 및 Cloudflare 무료 도메인으로 변경 고려
+    ☐ 도메인 유료 및 Cloudflare 무료 도메인으로 변경 고려 
+      - 무료 '내도메인'에서 발급받은 도메인은 DNS 서버 장애가 잦음
     ☐ DB 백업 Litestream 연결
       - GCP 버킷 연결 (Firebase 스토리지와 따로 버킷 구분)
     ☐ AI CLI 활용하여 스캐폴드 (서비스 생성, 삭제, 배포, 제거) 구현
@@ -9,8 +10,7 @@ Common Project:
 Deario Project:
   New:
     ☐ 기능별로 폴더 구분
-    ☐ 이미지 업로드 구현
-      - GCP Function으로 리사이즈 후 업로드
+    ☐ 이미지 업로드 GCP Function으로 리사이즈 후 업로드
     ☐ 일기장 내용, 피드백 암호화 구현
     ☐ DB 외부키 릴레이션 연결
     ☐ PWA로 앱 구글 플레이 스토어 출시
@@ -25,7 +25,6 @@ Moadev Project:
     - 불러오고 (제공): 이 모든 것을 사용자에게 얼마나 빠르게 보여줄 수 있는가? (Handler와 View의 역할)
   New:
     ☐ 초기 UI 구상안
-    ☐ 
 
 아이디어 목록:
   ☐ 공공포털 오픈 API를 활용한 [축제 정보 + 날씨 정보 + 도로 교통 정보]를 활용한 여행지 추천 서비스 구현
