@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -41,10 +42,10 @@ func DiaryImages(c echo.Context) error {
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return views.DiaryImages("", "", "").Render(c.Response().Writer)
+		return views.DiaryImages(date, "", "", "").Render(c.Response().Writer)
 	}
 
-	return views.DiaryImages(diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Response().Writer)
+	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Response().Writer)
 }
 
 func DiaryImageSave(c echo.Context) error {
@@ -79,7 +80,50 @@ func DiaryImageSave(c echo.Context) error {
 		return err
 	}
 
-	return views.DiaryImages(diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Response().Writer)
+	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Response().Writer)
+}
+
+func DiaryImageDelete(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	date := normalizeDate(c.FormValue("date"))
+	slotStr := c.FormValue("slot")
+	slot, err := strconv.Atoi(slotStr)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "잘못된 슬롯입니다.")
+	}
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{Uid: uid, Date: date})
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusBadRequest, "이미지가 없습니다.")
+		}
+		return err
+	}
+
+	diary, err = clearDiaryImage(diary, slot)
+	if err != nil {
+		return err
+	}
+
+	if err := queries.UpdateDiaryImages(c.Request().Context(), db.UpdateDiaryImagesParams{
+		ImageUrl1: diary.ImageUrl1,
+		ImageUrl2: diary.ImageUrl2,
+		ImageUrl3: diary.ImageUrl3,
+		ID:        diary.ID,
+	}); err != nil {
+		return err
+	}
+
+	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Response().Writer)
 }
 
 func firstEmptyImageSlot(d db.Diary) (int, bool) {
@@ -124,4 +168,18 @@ func setDiaryImage(d db.Diary, slot int, url string) db.Diary {
 		d.ImageUrl3 = url
 	}
 	return d
+}
+
+func clearDiaryImage(d db.Diary, slot int) (db.Diary, error) {
+	switch slot {
+	case 1:
+		d.ImageUrl1 = ""
+	case 2:
+		d.ImageUrl2 = ""
+	case 3:
+		d.ImageUrl3 = ""
+	default:
+		return d, echo.NewHTTPError(http.StatusBadRequest, "잘못된 슬롯입니다.")
+	}
+	return d, nil
 }
