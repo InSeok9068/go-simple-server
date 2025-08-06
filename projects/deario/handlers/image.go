@@ -4,15 +4,20 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
 
+	"simple-server/internal/middleware"
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
 
+	"cloud.google.com/go/storage"
 	"github.com/labstack/echo/v4"
 )
 
@@ -101,11 +106,13 @@ func DiaryImageDelete(c echo.Context) error {
 		return err
 	}
 
-	diary, err := queries.GetDiary(c.Request().Context(), db.GetDiaryParams{Uid: uid, Date: date})
+	diary, err := getDiary(c.Request().Context(), queries, uid, date)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return echo.NewHTTPError(http.StatusBadRequest, "이미지가 없습니다.")
-		}
+		return err
+	}
+
+	if err := removeDiaryFirebaseImage(c.Request().Context(), diary, slot); err != nil {
+		slog.Error("파이어베이스 이미지 삭제 실패", "error", err)
 		return err
 	}
 
@@ -158,6 +165,28 @@ func diaryAndSlot(ctx context.Context, q *db.Queries, uid, date string) (db.Diar
 	return diary, slot, nil
 }
 
+func getDiary(ctx context.Context, q *db.Queries, uid, date string) (db.Diary, error) {
+	diary, err := q.GetDiary(ctx, db.GetDiaryParams{Uid: uid, Date: date})
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return db.Diary{}, echo.NewHTTPError(http.StatusBadRequest, "이미지가 없습니다.")
+		}
+		return db.Diary{}, err
+	}
+	return diary, nil
+}
+
+func removeDiaryFirebaseImage(ctx context.Context, d db.Diary, slot int) error {
+	imageURL, err := diaryImageURL(d, slot)
+	if err != nil {
+		return err
+	}
+	if imageURL == "" {
+		return nil
+	}
+	return deleteFirebaseImage(ctx, imageURL)
+}
+
 func setDiaryImage(d db.Diary, slot int, url string) db.Diary {
 	switch slot {
 	case 0:
@@ -182,4 +211,60 @@ func clearDiaryImage(d db.Diary, slot int) (db.Diary, error) {
 		return d, echo.NewHTTPError(http.StatusBadRequest, "잘못된 슬롯입니다.")
 	}
 	return d, nil
+}
+
+func diaryImageURL(d db.Diary, slot int) (string, error) {
+	switch slot {
+	case 1:
+		return d.ImageUrl1, nil
+	case 2:
+		return d.ImageUrl2, nil
+	case 3:
+		return d.ImageUrl3, nil
+	default:
+		return "", echo.NewHTTPError(http.StatusBadRequest, "잘못된 슬롯입니다.")
+	}
+}
+
+func parseFirebaseURL(raw string) (string, string, error) {
+	u, err := neturl.Parse(raw)
+	if err != nil {
+		return "", "", err
+	}
+	p := u.RawPath
+	if p == "" {
+		p = u.Path
+	}
+	parts := strings.Split(p, "/")
+	if len(parts) < 6 {
+		return "", "", fmt.Errorf("잘못된 URL")
+	}
+	bucket := parts[3]
+	object, err := neturl.QueryUnescape(parts[5])
+	if err != nil {
+		return "", "", err
+	}
+	return bucket, object, nil
+}
+
+func deleteFirebaseImage(ctx context.Context, raw string) error {
+	bucket, object, err := parseFirebaseURL(raw)
+	if err != nil {
+		return fmt.Errorf("URL 파싱 실패: %w", err)
+	}
+	client, err := middleware.App.Storage(ctx)
+	if err != nil {
+		return fmt.Errorf("스토리지 클라이언트 생성 실패: %w", err)
+	}
+	b, err := client.Bucket(bucket)
+	if err != nil {
+		return fmt.Errorf("버킷 가져오기 실패: %w", err)
+	}
+	if err := b.Object(object).Delete(ctx); err != nil {
+		if errors.Is(err, storage.ErrObjectNotExist) {
+			return nil
+		}
+		return fmt.Errorf("파일 삭제 실패: %w", err)
+	}
+	return nil
 }

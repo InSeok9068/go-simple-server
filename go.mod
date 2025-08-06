@@ -9,6 +9,7 @@ tool github.com/sqlc-dev/sqlc/cmd/sqlc
 tool github.com/golangci/golangci-lint/cmd/golangci-lint
 
 require (
+	cloud.google.com/go/storage v1.53.0
 	firebase.google.com/go/v4 v4.18.0
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/Blank-Xu/sql-adapter v1.1.2
@@ -52,7 +53,6 @@ require (
 	cloud.google.com/go/iam v1.5.2 // indirect
 	cloud.google.com/go/longrunning v0.6.7 // indirect
 	cloud.google.com/go/monitoring v1.24.2 // indirect
-	cloud.google.com/go/storage v1.53.0 // indirect
 	dario.cat/mergo v1.0.1 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/4meepo/tagalign v1.4.2 // indirect
