@@ -27,6 +27,10 @@ func HeadsCustom() []Node {
 	custom := []Node{
 		Link(Rel("stylesheet"), Href("/shared/static/style.css")),
 		Link(Rel("stylesheet"), Href("/static/style.css")),
+		Link(
+			Rel("stylesheet"),
+			Href("https://fonts.googleapis.com/css2?family=Gaegu&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;700&display=swap"),
+		),
 		Script(Src("/shared/static/app.js")),
 	}
 

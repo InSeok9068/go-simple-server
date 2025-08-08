@@ -92,6 +92,34 @@ document.addEventListener("alpine:init", () => {
   });
 
   Alpine.store("theme").init();
+
+  Alpine.store("font", {
+    value: "noto-sans-kr",
+    fonts: {
+      "noto-sans-kr": "'Noto Sans KR', sans-serif",
+      "nanum-pen-script": "'Nanum Pen Script', cursive",
+      gaegu: "'Gaegu', cursive",
+    },
+    init() {
+      const saved = localStorage.getItem("font");
+      if (saved && this.fonts[saved]) {
+        this.value = saved;
+      }
+      document.body.style.setProperty("--font-family", this.fonts[this.value]);
+    },
+    set(font) {
+      if (!this.fonts[font]) return;
+      this.value = font;
+      document.body.style.setProperty("--font-family", this.fonts[font]);
+      try {
+        localStorage.setItem("font", font);
+      } catch (e) {
+        console.error("font save error", e);
+      }
+    },
+  });
+
+  Alpine.store("font").init();
 });
 
 htmx.on("htmx:afterRequest", (event) => {
