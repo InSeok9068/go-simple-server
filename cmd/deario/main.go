@@ -91,6 +91,7 @@ func setUpServer() *echo.Echo {
 	}
 	authGroup.GET("/diary/random", handlers.RedirectToRandomDiary)
 	authGroup.POST("/diary/save", handlers.SaveDiary)
+	authGroup.GET("/diary/search", handlers.SearchDiaries)
 	authGroup.GET("/ai-feedback", handlers.GetAIFeedback)
 	authGroup.POST("/ai-feedback", handlers.GenerateAIFeedback)
 	authGroup.POST("/ai-feedback/save", handlers.SaveAIFeedback)

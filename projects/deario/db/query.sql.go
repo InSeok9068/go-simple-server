@@ -400,6 +400,51 @@ func (q *Queries) MonthlyMoodCount(ctx context.Context, uid string) ([]MonthlyMo
 	return items, nil
 }
 
+const searchDiarys = `-- name: SearchDiarys :many
+SELECT
+    date,
+    content
+FROM diary
+WHERE
+    uid = ?
+    AND content LIKE '%' || ? || '%'
+ORDER BY date DESC
+LIMIT 20
+`
+
+type SearchDiarysParams struct {
+	Uid     string
+	Column2 sql.NullString
+}
+
+type SearchDiarysRow struct {
+	Date    string
+	Content string
+}
+
+func (q *Queries) SearchDiarys(ctx context.Context, arg SearchDiarysParams) ([]SearchDiarysRow, error) {
+	rows, err := q.db.QueryContext(ctx, searchDiarys, arg.Uid, arg.Column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchDiarysRow
+	for rows.Next() {
+		var i SearchDiarysRow
+		if err := rows.Scan(&i.Date, &i.Content); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateDiary = `-- name: UpdateDiary :one
 UPDATE diary
 SET
