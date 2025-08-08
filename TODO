@@ -10,9 +10,6 @@ Common Project:
 Deario Project:
   New:
     ☐ 앱 시작 시 비밀번호 입력 요구 (보안)
-    ☐ 강력한 검색 기능.. 어떤식으로 ?? 구체적인 구현 방법 필요!
-      - [BeerCSS] Search > Docked 참고
-    ☐ 폰트 커스텀 가능한지 (Google Fonts)
     ☐ 일기 요정 [일기 작성이 막막할때 역으로 질문 해주기] 추가
     ☐ 일기장 내용, 피드백 암호화 구현
     ☐ 이미지 업로드 GCP Function으로 리사이즈 후 업로드
