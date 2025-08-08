@@ -17,6 +17,7 @@ func Statistic() Node {
 		Head: gomutil.MergeHeads(
 			shared.HeadsWithBeer("통계"),
 			shared.HeadWithFirebaseAuth(),
+			shared.HeadGoogleFonts("Gamja Flower"),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("https://cdn.jsdelivr.net/npm/chart.js")),

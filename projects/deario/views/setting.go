@@ -23,6 +23,7 @@ func Setting(userSetting db.UserSetting) Node {
 		Head: gomutil.MergeHeads(
 			shared.HeadsWithBeer("설정"),
 			shared.HeadWithFirebaseAuth(),
+			shared.HeadGoogleFonts("Gamja Flower"),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("/static/deario.js")),

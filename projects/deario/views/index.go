@@ -23,6 +23,7 @@ func Index(title string, date string, mood string) Node {
 		Head: gomutil.MergeHeads(
 			shared.HeadsWithBeer(title),
 			shared.HeadWithFirebaseAuth(),
+			shared.HeadGoogleFonts("Gamja Flower"),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("/static/deario.js")),

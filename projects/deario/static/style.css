@@ -1,5 +1,6 @@
 :root,
 body.light {
+  --font-family: "Gamja Flower";
   --primary: #006e1c;
   --on-primary: #ffffff;
   --primary-container: #94f990;
@@ -39,6 +40,7 @@ body.light {
 }
 
 body.dark {
+  --font-family: "Gamja Flower";
   --primary: #78dc77;
   --on-primary: #00390a;
   --primary-container: #005313;
@@ -75,6 +77,10 @@ body.dark {
   --surface-container: #1e201d;
   --surface-container-high: #282b27;
   --surface-container-highest: #333531;
+}
+
+body {
+  font-family: var(--font-family);
 }
 
 svg {

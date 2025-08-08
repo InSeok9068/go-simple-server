@@ -3,6 +3,7 @@ package shared
 import (
 	"simple-server/internal/config"
 	"simple-server/pkg/util/gomutil"
+	"strings"
 
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
@@ -104,5 +105,12 @@ func HeadWithFirebaseLogin() []Node {
 func HeadWithFirebaseAuth() []Node {
 	return []Node{
 		Script(Type("module"), Src("/shared/static/firebase_auth.js"), Defer()),
+	}
+}
+
+func HeadGoogleFonts(font ...string) []Node {
+	return []Node{
+		Link(Rel("stylesheet"),
+			Href("https://fonts.googleapis.com/css2?family="+strings.Join(font, "&family=")+"&display=swap&subset=korean")),
 	}
 }
