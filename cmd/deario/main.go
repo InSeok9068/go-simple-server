@@ -95,6 +95,7 @@ func setUpServer() *echo.Echo {
 	authGroup.GET("/ai-feedback", handlers.GetAIFeedback)
 	authGroup.POST("/ai-feedback", handlers.GenerateAIFeedback)
 	authGroup.POST("/ai-feedback/save", handlers.SaveAIFeedback)
+	authGroup.POST("/ai-report", handlers.GenerateAIReport)
 	authGroup.POST("/save-pushToken", handlers.RegisterPushToken)
 	authGroup.GET("/setting", handlers.SettingsPage)
 	authGroup.POST("/setting", handlers.UpdateSettings)

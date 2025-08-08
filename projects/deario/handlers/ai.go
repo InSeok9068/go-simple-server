@@ -8,10 +8,12 @@ import (
 	aiclient "simple-server/internal/ai"
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
+	"simple-server/projects/deario/tasks"
 
 	"github.com/labstack/echo/v4"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
+	"maragu.dev/goqite/jobs"
 )
 
 // GenerateAIFeedback는 일기 내용을 기반으로 AI 피드백이나 이미지를 생성한다.
@@ -166,7 +168,15 @@ func GetAIFeedback(c echo.Context) error {
 
 // GenerateAIReport AI 상담 리포트를 생성한다.
 func GenerateAIReport(c echo.Context) error {
-	// TODO AI 리포트 큐 발행
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	// 큐에 작업 추가
+	if err := jobs.Create(c.Request().Context(), tasks.AiReportQ, "ai-report", []byte(uid)); err != nil {
+		slog.Error("AI 리포트 발송 실패", "error", err)
+	}
 
 	return nil
 }

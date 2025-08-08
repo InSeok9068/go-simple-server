@@ -73,7 +73,7 @@ func PushSendJob() {
 		Name: "push",
 	})
 	r := jobs.NewRunner(jobs.NewRunnerOpts{
-		Limit:        3,
+		Limit:        1,
 		Log:          slog.Default(),
 		PollInterval: 1 * time.Second,
 		Queue:        pushQ,

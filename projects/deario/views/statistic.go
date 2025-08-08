@@ -5,6 +5,8 @@ import (
 	"simple-server/projects/deario/views/layout"
 	shared "simple-server/shared/views"
 
+	h "maragu.dev/gomponents-htmx"
+
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/components"
 	. "maragu.dev/gomponents/html"
@@ -38,8 +40,10 @@ func Statistic() Node {
 				Canvas(ID("moodStackChart")),
 				Div(Class("large-space")),
 				Button(Class("responsive small-elevate large fill"),
+					h.Post("/ai-report"),
+					h.Swap("none"),
+					h.On("htmx:after-on-load", "if (event.detail.successful) showInfo('리포트 생성 요청이 되었습니다.')"),
 					Span(Class("bold"), Text("AI 상담 리포트")),
-					Attr("onclick", "showInfo('준비 중입니다.')"),
 				),
 				P(Text("※ 최근 30개의 일기내용을 참고해서 리포트가 작성됩니다.")),
 			),
