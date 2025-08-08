@@ -156,7 +156,7 @@ func Index(title string, date string, mood string) Node {
 				),
 				A(Attr("data-ui", "#diary-list-dialog"),
 					I(Text("list_alt")),
-					Text("목록"),
+					Text("일지"),
 				),
 				A(h.Get("/diary/random"),
 					I(Text("casino")),
