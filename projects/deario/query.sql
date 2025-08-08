@@ -22,6 +22,17 @@ ORDER BY created desc
 LIMIT 7
 OFFSET ((? - 1) * 7);
 
+-- name: SearchDiarys :many
+SELECT
+    date,
+    content
+FROM diary
+WHERE
+    uid = ?
+    AND content LIKE '%' || ? || '%'
+ORDER BY date DESC
+LIMIT 20;
+
 -- name: CreateDiary :one
 INSERT INTO
     diary (uid, content, date)
