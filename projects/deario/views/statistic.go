@@ -41,7 +41,7 @@ func Statistic() Node {
 					Span(Class("bold"), Text("AI 상담 리포트")),
 					Attr("onclick", "showInfo('준비 중입니다.')"),
 				),
-				P(Text("※ 최근 30개의 일기작성 내용을 바탕으로 AI 상담 리포트를 생성합니다.")),
+				P(Text("※ 최근 30개의 일기내용을 참고해서 리포트가 작성됩니다.")),
 			),
 			/* Body */
 		},
