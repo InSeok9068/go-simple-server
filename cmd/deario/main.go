@@ -107,7 +107,8 @@ func setUpServer() *echo.Echo {
 	/* 권한 라우터 */
 
 	/* 큐 리시버 */
-	go tasks.PushSendJob() // 알기 작성 알림 푸시 리시버
+	go tasks.PushSendJob()         // 알기 작성 알림 푸시 리시버
+	go tasks.GenerateAIReportJob() // AI 리포트 생성 리시버
 	/* 큐 리시버 */
 
 	/* 스케줄 */

@@ -163,3 +163,10 @@ func GetAIFeedback(c echo.Context) error {
 		Text(diary.AiFeedback),
 	).Render(c.Response().Writer)
 }
+
+// GenerateAIReport AI 상담 리포트를 생성한다.
+func GenerateAIReport(c echo.Context) error {
+	// TODO AI 리포트 큐 발행
+
+	return nil
+}
