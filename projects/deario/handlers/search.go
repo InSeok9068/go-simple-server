@@ -45,7 +45,7 @@ func SearchDiaries(c echo.Context) error {
 		lis = append(lis,
 			Li(
 				A(Href(fmt.Sprintf("/?date=%s", d.Date)),
-					Div(Text(dateutil.MustFormatDateKorWithWeekDay(d.Date))),
+					Div(Text(dateutil.MustFormatDateKorSimpleWithWeekDay(d.Date))),
 					Div(snippetNodes(d.Content, q)...),
 				),
 			),
@@ -60,17 +60,17 @@ func snippetNodes(content, keyword string) []Node {
 	lowerKey := strings.ToLower(keyword)
 	idx := strings.Index(lower, lowerKey)
 	if idx == -1 {
-		if len(content) > 30 {
-			content = content[:30] + "..."
+		if len(content) > 20 {
+			content = content[:20] + "..."
 		}
 		return []Node{Text(content)}
 	}
 
-	start := idx - 10
+	start := idx - 5
 	if start < 0 {
 		start = 0
 	}
-	end := idx + len(keyword) + 10
+	end := idx + len(keyword) + 5
 	if end > len(content) {
 		end = len(content)
 	}

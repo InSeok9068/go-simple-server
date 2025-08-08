@@ -102,6 +102,23 @@ func MustFormatDateKorWithWeekDay(date string) string {
 	return t.Format(DateFormatKor) + " " + korWeekday
 }
 
+// MustFormatDateKorSimpleWithWeekDay 는 YYYYMMDD 형식의 날짜 문자열을 'YY년 M월 D일 요' 형식으로 변환합니다.
+// 에러 발생 시 빈 문자열을 반환합니다.
+//
+// 예시:
+//
+//	// "23년 1월 5일 목" 반환
+//	result := MustFormatDateKorSimpleWithWeekDay("20230105")
+func MustFormatDateKorSimpleWithWeekDay(date string) string {
+	t, err := time.Parse(DateFormatYYYYMMDD, date)
+	if err != nil {
+		return ""
+	}
+
+	korWeekday := string([]rune(koreanWeekdays[t.Weekday()])[0])
+	return t.Format("06년 1월 2일") + " " + korWeekday
+}
+
 // AddMonthsToDate 는 YYYYMMDD 형식의 날짜 문자열에 개월 수를 더하고 같은 형식으로 반환합니다.
 //
 // 예시:
