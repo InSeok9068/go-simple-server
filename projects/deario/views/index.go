@@ -126,7 +126,6 @@ func Index(title string, date string, mood string) Node {
 					Img(ID("feedback-loading"), Class("htmx-indicator"), Src("/shared/static/spinner.svg")),
 					Nav(Class("min active"),
 						Button(Attr("data-ui", "#ai-feedback"),
-							I(Text("kid_star")),
 							Span(Text("일기 요정")),
 						),
 						Menu(Class("top transparent no-wrap left right-align"), ID("ai-feedback"), Attr("data-ui", "#ai-feedback"),
