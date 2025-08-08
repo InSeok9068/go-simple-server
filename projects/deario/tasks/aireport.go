@@ -77,7 +77,7 @@ func GenerateAIReportJob() {
 		Limit:        1,
 		Log:          slog.Default(),
 		PollInterval: 1 * time.Second,
-		Extend:       10 * time.Minute, // 넉넉하게 10분의 타임아웃 설정
+		Extend:       5 * time.Minute, // 넉넉하게 5분의 타임아웃 설정
 		Queue:        AiReportQ,
 	})
 
