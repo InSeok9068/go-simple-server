@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"unicode/utf8"
 
 	"simple-server/pkg/util/authutil"
 	"simple-server/pkg/util/dateutil"
@@ -56,33 +57,40 @@ func SearchDiaries(c echo.Context) error {
 }
 
 func snippetNodes(content, keyword string) []Node {
-	lower := strings.ToLower(content)
-	lowerKey := strings.ToLower(keyword)
-	idx := strings.Index(lower, lowerKey)
-	if idx == -1 {
-		if len(content) > 20 {
-			content = content[:20] + "..."
+	lowerContent := strings.ToLower(content)
+	lowerKeyword := strings.ToLower(keyword)
+	byteIndex := strings.Index(lowerContent, lowerKeyword)
+
+	contentRunes := []rune(content)
+	contentRuneLen := len(contentRunes)
+
+	if byteIndex == -1 {
+		if contentRuneLen > 20 {
+			return []Node{Text(string(contentRunes[:20]) + "...")}
 		}
 		return []Node{Text(content)}
 	}
 
-	start := idx - 5
-	if start < 0 {
-		start = 0
+	runeIndex := utf8.RuneCountInString(lowerContent[:byteIndex])
+	keywordRuneLen := len([]rune(keyword))
+
+	startRune := runeIndex - 5
+	if startRune < 0 {
+		startRune = 0
 	}
-	end := idx + len(keyword) + 5
-	if end > len(content) {
-		end = len(content)
+	endRune := runeIndex + keywordRuneLen + 5
+	if endRune > contentRuneLen {
+		endRune = contentRuneLen
 	}
 
-	prefix := content[start:idx]
-	match := content[idx : idx+len(keyword)]
-	suffix := content[idx+len(keyword) : end]
+	prefix := string(contentRunes[startRune:runeIndex])
+	match := string(contentRunes[runeIndex : runeIndex+keywordRuneLen])
+	suffix := string(contentRunes[runeIndex+keywordRuneLen : endRune])
 
-	if start > 0 {
+	if startRune > 0 {
 		prefix = "..." + prefix
 	}
-	if end < len(content) {
+	if endRune < contentRuneLen {
 		suffix += "..."
 	}
 
