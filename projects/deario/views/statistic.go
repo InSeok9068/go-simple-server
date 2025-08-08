@@ -36,6 +36,12 @@ func Statistic() Node {
 				Canvas(ID("countChart")),
 				H5(Text("월별 기분 분포")),
 				Canvas(ID("moodStackChart")),
+				Div(Class("large-space")),
+				Button(Class("responsive small-elevate large fill"),
+					Span(Class("bold"), Text("AI 상담 리포트")),
+					Attr("onclick", "showInfo('준비 중입니다.')"),
+				),
+				P(Text("※ 최근 30개의 일기작성 내용을 바탕으로 AI 상담 리포트를 생성합니다.")),
 			),
 			/* Body */
 		},

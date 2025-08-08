@@ -9,7 +9,11 @@ import (
 	"google.golang.org/genai"
 )
 
-func Request(ctx context.Context, prompt string) (string, error) {
+func Request(ctx context.Context, prompt string, model ...string) (string, error) {
+	modelStr := "gemini-2.5-flash"
+	if len(model) > 0 {
+		modelStr = model[0]
+	}
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
@@ -21,7 +25,7 @@ func Request(ctx context.Context, prompt string) (string, error) {
 	// gemini-2.5-pro
 	// gemini-2.5-flash
 	// gemini-2.5-flash-lite
-	result, err := client.Models.GenerateContent(ctx, "gemini-2.5-flash", genai.Text(prompt), nil)
+	result, err := client.Models.GenerateContent(ctx, modelStr, genai.Text(prompt), nil)
 	if err != nil {
 		return "", fmt.Errorf("AI 요청 실패: %w", err)
 	}
@@ -31,7 +35,11 @@ func Request(ctx context.Context, prompt string) (string, error) {
 	return resultText, nil
 }
 
-func ImageRequest(ctx context.Context, prompt string) (string, error) {
+func ImageRequest(ctx context.Context, prompt string, model ...string) (string, error) {
+	modelStr := "gemini-2.0-flash-preview-image-generation"
+	if len(model) > 0 {
+		modelStr = model[0]
+	}
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
@@ -40,7 +48,7 @@ func ImageRequest(ctx context.Context, prompt string) (string, error) {
 		return "", fmt.Errorf("AI 클라이언트 생성 실패: %w", err)
 	}
 
-	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-preview-image-generation", genai.Text(prompt), &genai.GenerateContentConfig{
+	result, err := client.Models.GenerateContent(ctx, modelStr, genai.Text(prompt), &genai.GenerateContentConfig{
 		ResponseModalities: []string{"Text", "Image"},
 	})
 	if err != nil {
