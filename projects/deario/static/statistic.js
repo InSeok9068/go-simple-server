@@ -6,11 +6,17 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("/statistic/data")
     .then((res) => res.json())
     .then((data) => {
+      const formattedMonths = data.months.map((monthStr) => {
+        const year = monthStr.substring(2, 4);
+        const month = parseInt(monthStr.substring(4, 6), 10);
+        return `${year}년 ${month}월`;
+      });
+
       const countCtx = document.getElementById("countChart").getContext("2d");
       new Chart(countCtx, {
         type: "bar",
         data: {
-          labels: data.months,
+          labels: formattedMonths,
           datasets: [
             {
               label: "작성 수",
@@ -27,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       new Chart(stackCtx, {
         type: "bar",
         data: {
-          labels: data.months,
+          labels: formattedMonths,
           datasets: [
             {
               label: `${moodIcons[1]}`,
