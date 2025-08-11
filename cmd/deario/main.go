@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	resources "simple-server"
+	dbpkg "simple-server/projects/deario/db"
 	"simple-server/projects/deario/handlers"
 	"simple-server/projects/deario/services"
 	"simple-server/projects/deario/tasks"
@@ -12,7 +13,6 @@ import (
 	"github.com/robfig/cron/v3"
 
 	"simple-server/internal/config"
-	"simple-server/internal/connection"
 	"simple-server/internal/middleware"
 	"simple-server/internal/migration"
 
@@ -34,11 +34,16 @@ func main() {
 	/* 로깅 및 트레이서 초기화 */
 
 	/* DB 마이그레이션 */
-	db, _ := connection.AppDBOpen()
+	database, err := dbpkg.GetDB()
+	if err != nil {
+		slog.Error("데이터베이스 연결 실패", "error", err)
+		return
+	}
+	defer dbpkg.Close()
 	migrations, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/migrations")
-	if err := migration.Up(db, migrations); err != nil {
+	if err := migration.Up(database, migrations); err != nil {
 		slog.Error("마이그레이션 실패", "error", err)
-		os.Exit(1)
+		return
 	}
 	/* DB 마이그레이션 */
 

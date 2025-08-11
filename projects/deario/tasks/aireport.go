@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	aiclient "simple-server/internal/ai"
-	"simple-server/internal/connection"
 	"simple-server/projects/deario/db"
 	"strings"
 	"time"
@@ -64,7 +63,7 @@ OO님, 지난 한 달 동안의 소중한 마음 기록들을 제가 조심스�
 }
 
 func GenerateAIReportJob() {
-	apiReportDb, err := connection.AppDBOpen(false)
+	apiReportDb, err := db.GetDB()
 	if err != nil {
 		slog.Error("데이터베이스 연결 실패", "error", err)
 		return
