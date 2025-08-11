@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"time"
 
-	"simple-server/internal/connection"
 	"simple-server/internal/middleware"
 	"simple-server/projects/deario/db"
 
@@ -63,7 +62,7 @@ func PushSendCron(c *cron.Cron) {
 }
 
 func PushSendJob() {
-	pushdb, err := connection.AppDBOpen(false)
+	pushdb, err := db.GetDB()
 	if err != nil {
 		slog.Error("데이터베이스 연결 실패", "error", err)
 		return
