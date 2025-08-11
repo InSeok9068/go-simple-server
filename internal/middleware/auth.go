@@ -102,6 +102,7 @@ func InitCasbin() error {
 	if err != nil {
 		return fmt.Errorf("데이터베이스 연결 실패: %w", err)
 	}
+	defer db.Close()
 	adapter, err := sqladapter.NewAdapter(db, "sqlite", "")
 	if err != nil {
 		return fmt.Errorf("casbin adapter 초기화 실패: %w", err)
