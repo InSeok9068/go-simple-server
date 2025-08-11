@@ -67,6 +67,7 @@ document.addEventListener("alpine:init", () => {
       }
       window.ui("mode", this.value);
       window.ui("theme", this.color);
+      this.applyFlatpickrTheme(this.value);
     },
     set(theme) {
       this.value = theme;
@@ -76,6 +77,7 @@ document.addEventListener("alpine:init", () => {
       } catch (e) {
         console.error("localStorage save error", e);
       }
+      this.applyFlatpickrTheme(theme);
     },
     setColor(color) {
       this.color = color;
@@ -88,6 +90,22 @@ document.addEventListener("alpine:init", () => {
     },
     toggle() {
       this.set(this.value === "dark" ? "light" : "dark");
+    },
+    applyFlatpickrTheme(theme) {
+      const id = "flatpickr-dark";
+      const href = "https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css";
+      const link = document.getElementById(id);
+      if (theme === "dark") {
+        if (!link) {
+          const tag = document.createElement("link");
+          tag.id = id;
+          tag.rel = "stylesheet";
+          tag.href = href;
+          document.head.appendChild(tag);
+        }
+      } else if (link) {
+        link.remove();
+      }
     },
   });
 
