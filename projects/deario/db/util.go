@@ -18,12 +18,19 @@ var (
 )
 
 func initDB() {
-	dbConn, errInit = connection.AppDBOpen()
-	dbNotHookConn, errInit = connection.AppDBOpen(false)
-	if errInit == nil {
-		queries = New(dbConn)
-		queriesNotHook = New(dbNotHookConn)
+	var err error
+	dbConn, err = connection.AppDBOpen()
+	if err != nil {
+		errInit = err
+		return
 	}
+	dbNotHookConn, err = connection.AppDBOpen(false)
+	if err != nil {
+		errInit = err
+		return
+	}
+	queries = New(dbConn)
+	queriesNotHook = New(dbNotHookConn)
 }
 
 // GetDB 는 공용 DB 연결을 반환합니다
