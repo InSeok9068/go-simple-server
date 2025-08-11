@@ -89,6 +89,7 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
+	authGroup.GET("/diary/month", handlers.MonthlyDiaryDates)
 	authGroup.GET("/diary/random", handlers.RedirectToRandomDiary)
 	authGroup.POST("/diary/save", handlers.SaveDiary)
 	authGroup.GET("/diary/search", handlers.SearchDiaries)

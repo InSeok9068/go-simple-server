@@ -169,6 +169,43 @@ func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, 
 	return i, err
 }
 
+const listDiaryDatesByMonth = `-- name: ListDiaryDatesByMonth :many
+SELECT date
+FROM diary
+WHERE
+    uid = ?
+    AND substr(date, 1, 6) = ?
+ORDER BY date
+`
+
+type ListDiaryDatesByMonthParams struct {
+	Uid  string
+	Date string
+}
+
+func (q *Queries) ListDiaryDatesByMonth(ctx context.Context, arg ListDiaryDatesByMonthParams) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listDiaryDatesByMonth, arg.Uid, arg.Date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var date string
+		if err := rows.Scan(&date); err != nil {
+			return nil, err
+		}
+		items = append(items, date)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listDiarys = `-- name: ListDiarys :many
 SELECT id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
 FROM diary

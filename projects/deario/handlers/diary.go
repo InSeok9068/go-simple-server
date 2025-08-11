@@ -121,6 +121,34 @@ func ListDiaries(c echo.Context) error {
 	return Group(lis).Render(c.Response().Writer)
 }
 
+// MonthlyDiaryDates는 특정 월에 작성한 일기 날짜 목록을 반환한다.
+func MonthlyDiaryDates(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	month := c.QueryParam("month")
+	if month == "" {
+		month = time.Now().Format("200601")
+	}
+
+	queries, err := db.GetQueries(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	dates, err := queries.ListDiaryDatesByMonth(c.Request().Context(), db.ListDiaryDatesByMonthParams{
+		Uid:  uid,
+		Date: month,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "목록을 가져오지 못했습니다.")
+	}
+
+	return c.JSON(http.StatusOK, dates)
+}
+
 // RedirectToRandomDiary는 무작위 일기 날짜로 이동한다.
 func RedirectToRandomDiary(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)

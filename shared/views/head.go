@@ -114,3 +114,11 @@ func HeadGoogleFonts(font ...string) []Node {
 			Href("https://fonts.googleapis.com/css2?family="+strings.Join(font, "&family=")+"&display=swap&subset=korean")),
 	}
 }
+
+func HeadFlatpickr() []Node {
+	return []Node{
+		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css")),
+		Script(Src("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js")),
+		Script(Src("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js")),
+	}
+}

@@ -24,9 +24,11 @@ func Index(title string, date string, mood string) Node {
 			shared.HeadsWithBeer(title),
 			shared.HeadWithFirebaseAuth(),
 			shared.HeadGoogleFonts("Gamja Flower"),
+			shared.HeadFlatpickr(),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("/static/deario.js")),
+				Script(Src("/static/calendar.js")),
 				Script(Type("module"), Src("/static/storage.js")),
 			},
 		),
@@ -149,9 +151,9 @@ func Index(title string, date string, mood string) Node {
 
 			/* Footer */
 			Nav(Class("bottom"),
-				A(
+				A(Attr("data-ui", "#calendar-dialog"),
+					Attr("onclick", "showCalendar()"),
 					I(Text("calendar_month")),
-					Input(Type("date"), Name("date"), Attr("onchange", "location.href='/?date=' + this.value")),
 					Text("달력"),
 				),
 				A(Attr("data-ui", "#diary-list-dialog"),
@@ -241,6 +243,14 @@ func Index(title string, date string, mood string) Node {
 							Text("확인"),
 						),
 					),
+				),
+			),
+
+			/* 달력 Dialog */
+			Dialog(ID("calendar-dialog"), Class("bottom"),
+				Div(ID("calendar-picker")),
+				Nav(Class("right-align"),
+					Button(Attr("data-ui", "#calendar-dialog"), Text("닫기")),
 				),
 			),
 

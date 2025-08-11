@@ -22,6 +22,14 @@ ORDER BY created desc
 LIMIT 7
 OFFSET ((? - 1) * 7);
 
+-- name: ListDiaryDatesByMonth :many
+SELECT date
+FROM diary
+WHERE
+    uid = ?
+    AND substr(date, 1, 6) = ?
+ORDER BY date;
+
 -- name: SearchDiarys :many
 SELECT
     date,

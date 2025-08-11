@@ -104,3 +104,13 @@ svg {
   text-overflow: ellipsis;
   display: block;
 }
+
+.has-diary::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 4px;
+  margin: 2px auto 0;
+  background: var(--primary);
+  border-radius: 50%;
+}
