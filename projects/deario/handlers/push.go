@@ -23,7 +23,7 @@ func RegisterPushToken(c echo.Context) error {
 
 	token := data["token"].(string)
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}

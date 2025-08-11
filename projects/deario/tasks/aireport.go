@@ -63,7 +63,7 @@ OO님, 지난 한 달 동안의 소중한 마음 기록들을 제가 조심스�
 }
 
 func GenerateAIReportJob() {
-	apiReportDb, err := db.GetDB()
+	apiReportDb, err := db.GetDB(false)
 	if err != nil {
 		slog.Error("데이터베이스 연결 실패", "error", err)
 		return
@@ -84,7 +84,7 @@ func GenerateAIReportJob() {
 		uid := string(m)
 		slog.Info("AI 리포트 생성 작업을 시작합니다.", "uid", uid)
 
-		queries, err := db.GetQueries(ctx)
+		queries, err := db.GetQueries()
 		if err != nil {
 			slog.Error("쿼리 객체 생성 실패", "uid", uid, "error", err)
 			return err

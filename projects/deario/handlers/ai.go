@@ -101,7 +101,7 @@ func SaveAIFeedback(c echo.Context) error {
 	aiFeedback := c.FormValue("ai-feedback")
 	aiImage := c.FormValue("ai-image")
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func GetAIFeedback(c echo.Context) error {
 
 	date := c.QueryParam("date")
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}

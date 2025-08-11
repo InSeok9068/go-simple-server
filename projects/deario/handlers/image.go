@@ -34,7 +34,7 @@ func DiaryImagesPage(c echo.Context) error {
 	}
 	date = strings.ReplaceAll(date, "-", "")
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func UploadDiaryImage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "URL이 필요합니다.")
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func DeleteDiaryImage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "잘못된 슬롯입니다.")
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}

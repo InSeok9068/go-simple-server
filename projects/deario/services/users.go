@@ -8,7 +8,7 @@ import (
 )
 
 func EnsureUser(ctx context.Context, uid string) error {
-	queries, err := db.GetQueries(ctx)
+	queries, err := db.GetQueries()
 	if err != nil {
 		return fmt.Errorf("쿼리 로드 실패: %w", err)
 	}

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 	resources "simple-server"
-	dbpkg "simple-server/projects/deario/db"
+	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/handlers"
 	"simple-server/projects/deario/services"
 	"simple-server/projects/deario/tasks"
@@ -33,13 +33,16 @@ func main() {
 	// defer config.ShutdownTracer(context.Background())
 	/* 로깅 및 트레이서 초기화 */
 
-	/* DB 마이그레이션 */
-	database, err := dbpkg.GetDB()
+	/* DB 초기화 */
+	database, err := db.GetDB()
 	if err != nil {
 		slog.Error("데이터베이스 연결 실패", "error", err)
 		return
 	}
-	defer dbpkg.Close()
+	defer database.Close()
+	/* DB 초기화 */
+
+	/* DB 마이그레이션 */
 	migrations, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/migrations")
 	if err := migration.Up(database, migrations); err != nil {
 		slog.Error("마이그레이션 실패", "error", err)

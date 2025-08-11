@@ -18,7 +18,7 @@ func SettingsPage(c echo.Context) error {
 		return err
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func UpdateSettings(c echo.Context) error {
 		return err
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}

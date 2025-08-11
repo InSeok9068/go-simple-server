@@ -33,7 +33,7 @@ func IndexPage(c echo.Context) error {
 		return views.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Response().Writer)
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func GetDiary(c echo.Context) error {
 		date = strings.ReplaceAll(date, "-", "")
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func ListDiaries(c echo.Context) error {
 		page = "1"
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -133,7 +133,7 @@ func MonthlyDiaryDates(c echo.Context) error {
 		month = time.Now().Format("200601")
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -156,7 +156,7 @@ func RedirectToRandomDiary(c echo.Context) error {
 		return err
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}
@@ -193,7 +193,7 @@ func SaveDiary(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "날짜는 필수 입력값입니다.")
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "시스템 오류가 발생했습니다.")
 	}

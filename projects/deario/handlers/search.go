@@ -28,7 +28,7 @@ func SearchDiaries(c echo.Context) error {
 		return c.String(http.StatusOK, "")
 	}
 
-	queries, err := db.GetQueries(c.Request().Context())
+	queries, err := db.GetQueries()
 	if err != nil {
 		return err
 	}

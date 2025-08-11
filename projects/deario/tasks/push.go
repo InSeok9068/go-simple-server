@@ -28,7 +28,7 @@ func PushSendCron(c *cron.Cron) {
 		ctx := context.Background()
 		now := time.Now().Format("15:04")
 
-		queries, err := db.GetQueries(ctx)
+		queries, err := db.GetQueries()
 		if err != nil {
 			slog.Error("쿼리 로드 실패", "error", err)
 			return
@@ -62,7 +62,7 @@ func PushSendCron(c *cron.Cron) {
 }
 
 func PushSendJob() {
-	pushdb, err := db.GetDB()
+	pushdb, err := db.GetDB(false)
 	if err != nil {
 		slog.Error("데이터베이스 연결 실패", "error", err)
 		return
