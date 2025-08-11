@@ -272,7 +272,7 @@ func Index(title string, date string, mood string) Node {
 					Button(Type("button"), Attr("onclick", fmt.Sprintf("uploadDiaryImage('%s')", date)), Text("업로드")),
 				),
 				Nav(Class("right-align"),
-					Button(Type("button"), Attr("data-ui", "#diary-image-dialog"), Text("닫기")),
+					Button(Attr("data-ui", "#diary-image-dialog"), Text("닫기")),
 				),
 			),
 
