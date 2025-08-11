@@ -218,7 +218,7 @@ func Index(title string, date string, mood string) Node {
 				),
 				Nav(Class("right-align"),
 					Button(Attr("data-ui", "#cbt-dialog"),
-						Text("확인"),
+						Text("닫기"),
 					),
 				),
 			),
@@ -240,7 +240,7 @@ func Index(title string, date string, mood string) Node {
 							Span(Text("저장")),
 						),
 						Button(Type("button"), Attr("onclick", "closeModal('#ai-feedback-dialog')"),
-							Text("확인"),
+							Text("닫기"),
 						),
 					),
 				),
@@ -248,6 +248,8 @@ func Index(title string, date string, mood string) Node {
 
 			/* 달력 Dialog */
 			Dialog(ID("calendar-dialog"), Class("bottom"),
+				H5(Text("달력")),
+				Div(Class("space")),
 				Div(ID("calendar-picker")),
 				Nav(Class("right-align"),
 					Button(Attr("data-ui", "#calendar-dialog"), Text("닫기")),
@@ -295,7 +297,7 @@ func Index(title string, date string, mood string) Node {
 					Nav(Class("right-align"),
 						Button(
 							Attr("data-ui", "#diary-list-dialog"),
-							Text("확인"),
+							Text("닫기"),
 						),
 					),
 				),
@@ -321,7 +323,7 @@ func Index(title string, date string, mood string) Node {
 				Nav(Class("right-align"),
 					Button(
 						Attr("data-ui", "#menu-dialog"),
-						Text("확인"),
+						Text("닫기"),
 					),
 				),
 			),
