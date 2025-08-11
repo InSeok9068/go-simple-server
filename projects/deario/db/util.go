@@ -63,11 +63,15 @@ func GetQueries(hooked ...bool) (*Queries, error) {
 
 // Close 는 공용 DB 연결을 종료합니다
 func Close() error {
+	var err1, err2 error
 	if dbConn != nil {
-		return dbConn.Close()
+		err1 = dbConn.Close()
 	}
 	if dbNotHookConn != nil {
-		return dbNotHookConn.Close()
+		err2 = dbNotHookConn.Close()
 	}
-	return nil
+	if err1 != nil {
+		return err1
+	}
+	return err2
 }
