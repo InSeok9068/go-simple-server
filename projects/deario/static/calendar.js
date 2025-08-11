@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     inline: true,
     dateFormat: "Ymd",
     appendTo: el,
+    locale: "ko",
     onChange: function (_sel, dateStr) {
       if (dateStr) {
         location.href = "/?date=" + dateStr;
@@ -32,14 +33,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function highlightDates(instance, dates) {
-    instance.days
-      .querySelectorAll(".has-diary")
-      .forEach((e) => e.classList.remove("has-diary"));
-    dates.forEach((d) => {
-      const selector = `[aria-label="${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}"]`;
-      const dayElem = instance.days.querySelector(selector);
-      if (dayElem) {
+    // Create a Set of date strings from the server for efficient lookup.
+    const diaryDatesSet = new Set(dates);
+
+    // Iterate over each day element in the current calendar view.
+    // flatpickr-day is the class for selectable day elements.
+    instance.days.querySelectorAll(".flatpickr-day").forEach((dayElem) => {
+      // Get the JavaScript Date object associated with the element.
+      const dateObj = dayElem.dateObj;
+      if (!dateObj) return;
+
+      // Format the date object into 'YYYYMMDD' string to match the server's format.
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
+      const dateStr = `${year}${month}${day}`;
+
+      // Add or remove the 'has-diary' class based on whether the date is in our set.
+      if (diaryDatesSet.has(dateStr)) {
         dayElem.classList.add("has-diary");
+      } else {
+        dayElem.classList.remove("has-diary");
       }
     });
   }
