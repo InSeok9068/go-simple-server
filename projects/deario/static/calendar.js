@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fp = flatpickr(el, {
     inline: true,
     dateFormat: "Ymd",
+    appendTo: el,
     onChange: function (_sel, dateStr) {
       if (dateStr) {
         location.href = "/?date=" + dateStr;
