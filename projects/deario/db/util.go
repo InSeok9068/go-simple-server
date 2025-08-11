@@ -17,6 +17,7 @@ var (
 	errInit        error
 )
 
+// initDB는 데이터베이스 연결을 초기화합니다.
 func initDB() {
 	var err error
 	dbConn, err = connection.AppDBOpen()
@@ -33,7 +34,9 @@ func initDB() {
 	queriesNotHook = New(dbNotHookConn)
 }
 
-// GetDB 는 공용 DB 연결을 반환합니다
+// GetDB 는 공용 DB 연결을 반환합니다.
+// 기본 값 : hook된 연결을 반환합니다.
+// hooked 파라미터가 true이면 hook된 연결을 반환하고, false이면 hook되지 않은 연결을 반환합니다.
 func GetDB(hooked ...bool) (*sql.DB, error) {
 	once.Do(initDB)
 	if errInit != nil {
@@ -45,7 +48,9 @@ func GetDB(hooked ...bool) (*sql.DB, error) {
 	return dbConn, nil
 }
 
-// GetQueries 는 공용 쿼리 객체를 반환합니다
+// GetQueries 는 공용 쿼리 객체를 반환합니다.
+// 기본 값 : hook된 쿼리 객체를 반환합니다.
+// hooked 파라미터가 true이면 hook된 연결을 반환하고, false이면 hook되지 않은 연결을 반환합니다.
 func GetQueries(hooked ...bool) (*Queries, error) {
 	if _, err := GetDB(hooked...); err != nil {
 		return nil, err
