@@ -1,20 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
   const el = document.getElementById("calendar-picker");
   if (!el) return;
+
+  // URL에서 'date' 파라미터를 읽어와 달력의 초기 날짜로 설정합니다.
+  const urlParams = new URLSearchParams(window.location.search);
+  const dateParam = urlParams.get("date");
+
   const fp = flatpickr(el, {
-    inline: true,
-    dateFormat: "Ymd",
-    appendTo: el,
-    locale: "ko",
+    // --- 기본 설정 ---
+    inline: true, // 달력을 항상 표시합니다.
+    dateFormat: "Ymd", // 날짜 형식 (예: 20231231)
+    appendTo: el, // 달력이 삽입될 부모 요소
+    locale: "ko", // 한국어 지원
+
+    // --- UX 개선 옵션 ---
+    // URL에 날짜 파라미터가 있으면 해당 날짜를, 없으면 오늘 날짜를 기본으로 보여줍니다.
+    defaultDate: dateParam || "today",
+
+    // --- 이벤트 핸들러 ---
     onChange: function (_sel, dateStr) {
+      // 날짜를 선택하면 해당 날짜의 일기 페이지로 이동합니다.
       if (dateStr) {
         location.href = "/?date=" + dateStr;
       }
     },
     onMonthChange: function (_sel, _dateStr, instance) {
+      // 월이 변경될 때마다 해당 월의 일기 작성 기록을 불러옵니다.
       loadDiaryDates(instance);
     },
     onReady: function (_sel, _dateStr, instance) {
+      // 달력이 준비되면 현재 월의 일기 작성 기록을 불러옵니다.
       loadDiaryDates(instance);
     },
   });

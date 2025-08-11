@@ -152,7 +152,6 @@ func Index(title string, date string, mood string) Node {
 			/* Footer */
 			Nav(Class("bottom"),
 				A(Attr("data-ui", "#calendar-dialog"),
-					Attr("onclick", "showCalendar()"),
 					I(Text("calendar_month")),
 					Text("달력"),
 				),
