@@ -83,10 +83,6 @@ body {
   font-family: var(--font-family);
 }
 
-svg {
-  fill: none !important;
-}
-
 .a‑login {
   min-width: 60px;
   display: inline-block;
