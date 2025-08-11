@@ -26,8 +26,11 @@ func Index(title string, date string, mood string) Node {
 			shared.HeadGoogleFonts("Gamja Flower"),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
+				Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css")),
+				Script(Src("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js")),
 				Script(Src("/static/deario.js")),
 				Script(Type("module"), Src("/static/storage.js")),
+				Script(Src("/static/calendar.js")),
 			},
 		),
 		Body: []Node{
@@ -149,9 +152,8 @@ func Index(title string, date string, mood string) Node {
 
 			/* Footer */
 			Nav(Class("bottom"),
-				A(
+				A(Attr("data-ui", "#calendar-dialog"),
 					I(Text("calendar_month")),
-					Input(Type("date"), Name("date"), Attr("onchange", "location.href='/?date=' + this.value")),
 					Text("달력"),
 				),
 				A(Attr("data-ui", "#diary-list-dialog"),
@@ -241,6 +243,14 @@ func Index(title string, date string, mood string) Node {
 							Text("확인"),
 						),
 					),
+				),
+			),
+
+			/* 달력 Dialog */
+			Dialog(ID("calendar-dialog"), Class("max"),
+				Div(ID("calendar-picker")),
+				Nav(Class("right-align"),
+					Button(Attr("data-ui", "#calendar-dialog"), Text("닫기")),
 				),
 			),
 
