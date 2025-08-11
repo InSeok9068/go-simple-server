@@ -110,7 +110,7 @@ svg {
   display: block;
   width: 4px;
   height: 4px;
-  margin: 0px auto -4px;
+  margin: 3px auto -7px;
   background: var(--primary);
   border-radius: 50%;
 }
