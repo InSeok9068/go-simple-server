@@ -27,6 +27,7 @@ func Index(title string, date string, mood string) Node {
 			shared.HeadFlatpickr(),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
+				Script(Src("https://cdn.jsdelivr.net/npm/marked/marked.min.js")),
 				Script(Src("/static/deario.js")),
 				Script(Src("/static/calendar.js")),
 				Script(Type("module"), Src("/static/storage.js")),

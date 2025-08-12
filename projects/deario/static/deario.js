@@ -13,3 +13,12 @@ document.addEventListener("alpine:init", () => {
     },
   });
 });
+
+document.addEventListener("htmx:afterSwap", (e) => {
+  if (e.detail.target.id === "ai-feedback-content") {
+    const mdEl = document.getElementById("ai-feedback-markdown");
+    if (mdEl) {
+      mdEl.innerHTML = marked.parse(mdEl.textContent);
+    }
+  }
+});

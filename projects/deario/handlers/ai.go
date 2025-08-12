@@ -75,14 +75,14 @@ func GenerateAIFeedback(c echo.Context) error {
 	}
 
 	prompt := fmt.Sprintf(`아래의 내용은 나의 오늘 하루의 일기야
-                내용 : %s
+               내용 : %s
 
-                ※ 감정을 깊게 공감하고 나서 %s
+               ※ 감정을 깊게 공감하고 나서 %s
 
-                이해했다는말이나 이런거 하지말고 바로 답변해줘
+               이해했다는말이나 이런거 하지말고 바로 답변해줘
 
-                [응답형태는 마크다운이 아닌 <textarea>에 붙여넣을거라서 텍스트에 띄어쓰기나 줄바꿈으로 가독성을 높여줘]
-                `, content, typeStr)
+               응답은 반드시 Markdown 형식으로 해줘.
+               `, content, typeStr)
 	result, err := aiclient.Request(c.Request().Context(), prompt)
 	if err != nil {
 		return err
@@ -90,7 +90,7 @@ func GenerateAIFeedback(c echo.Context) error {
 
 	return Div(
 		Input(Type("hidden"), Name("ai-feedback"), Value(result)),
-		Text(result),
+		Div(ID("ai-feedback-markdown"), Text(result)),
 	).Render(c.Response().Writer)
 }
 
@@ -166,7 +166,7 @@ func GetAIFeedback(c echo.Context) error {
 
 	return Div(
 		Input(Type("hidden"), Name("ai-feedback"), Value(diary.AiFeedback)),
-		Text(diary.AiFeedback),
+		Div(ID("ai-feedback-markdown"), Text(diary.AiFeedback)),
 	).Render(c.Response().Writer)
 }
 
