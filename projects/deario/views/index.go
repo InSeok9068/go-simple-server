@@ -258,11 +258,11 @@ func Index(title string, date string, mood string) Node {
 			/* 이미지 Dialog */
 			Dialog(ID("diary-image-dialog"), Class("bottom"),
 				H5(Text("이미지")),
-				Div(ID("diary-image-content"),
+				Div(
 					h.Get(fmt.Sprintf("/diary/images?date=%s", date)),
 					h.Trigger("load"),
 				),
-				Div(ID("diary-image-preview")),
+				Div(Class("space")),
 				Button(
 					I(Text("attach_file")),
 					Text("File"),

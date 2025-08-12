@@ -7,20 +7,16 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
 window.previewDiaryImage = function (input) {
-  const preview = document.getElementById("diary-image-preview");
+  const preview = document.getElementById("diary-image-content");
   if (!preview) return;
-  preview.innerHTML = "";
   if (!input || !input.files || input.files.length === 0) return;
   const file = input.files[0];
   if (file.type.startsWith("image/")) {
     const img = document.createElement("img");
-    img.className = "responsive";
+    img.className = "small-width small-height";
     img.src = URL.createObjectURL(file);
     img.onload = () => URL.revokeObjectURL(img.src);
-    const spaceDiv = document.createElement("div");
-    spaceDiv.classList.add("space");
-    preview.appendChild(img);
-    preview.appendChild(spaceDiv);
+    preview.insertBefore(img, preview.firstChild);
   } else {
     preview.textContent = `${input.files.length}개 선택됨`;
   }
@@ -28,7 +24,6 @@ window.previewDiaryImage = function (input) {
 
 window.uploadDiaryImage = async function (date) {
   const input = document.getElementById("diary-image-file");
-  const preview = document.getElementById("diary-image-preview");
   const loading = document.getElementById("diary-image-loading");
   if (!input || input.files.length === 0) {
     alert("파일이 필요합니다.");
