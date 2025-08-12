@@ -26,6 +26,10 @@ func GenerateAIFeedback(c echo.Context) error {
 	content := c.FormValue("content")
 	typeValue := c.QueryParam("type")
 
+	if content == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "내용을 입력해주세요.")
+	}
+
 	slog.Debug("AI 피드백", "user", uid, "content", content, "type", typeValue)
 
 	var typeStr string
