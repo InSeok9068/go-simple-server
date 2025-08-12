@@ -54,8 +54,7 @@ func GenerateAIFeedback(c echo.Context) error {
 							- Image size: height 700px, width 320px.
 							- The four panels together must tell a complete story.
 							- The story should have a clear beginning (introduction), development, conflict or change, and resolution.
-							- The situation or emotion should be simple, relatable, and easy to understand without words.
-							`
+							- The situation or emotion should be simple, relatable, and easy to understand without words.`
 	}
 
 	if typeValue == "4" {
