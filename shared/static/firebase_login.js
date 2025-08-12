@@ -21,6 +21,9 @@ const uiConfig = {
   ],
   callbacks: {
     signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+      loader.classList.remove("hidden");
+      loader.querySelector("span").textContent = "로그인 중...";
+
       authResult.user
         .getIdToken(true)
         .then((idToken) => {
@@ -58,11 +61,12 @@ const uiConfig = {
     uiShown: function () {
       // The widget is rendered.
       // Hide the loader.
-      document.getElementById("loader").style.display = "none";
+      loader.classList.add("hidden");
     },
   },
 };
 
 // (7) FirebaseUI 인스턴스 생성 및 초기화
+const loader = document.getElementById("loader");
 const ui = new firebaseui.auth.AuthUI(firebase.auth());
 ui.start("#firebaseui-auth-container", uiConfig);

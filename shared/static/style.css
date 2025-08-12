@@ -9,6 +9,32 @@
   outline-offset: 0 !important;
 }
 
+/* 로그인 페이지 */
+main.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+#firebaseui-auth-container {
+  width: 100%;
+  max-width: 360px;
+}
+
+#loader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+#loader.hidden {
+  display: none;
+}
+
 /*:root {*/
 /*    --pico-line-height: var(--font-lineheight-1);*/
 /*    !* Original: 1.5 /*/
