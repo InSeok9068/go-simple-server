@@ -8,6 +8,7 @@ import (
 	"os"
 	resources "simple-server"
 	"simple-server/internal/config"
+	"time"
 
 	ipfilter "github.com/crazy-max/echo-ipfilter"
 	"github.com/labstack/echo/v4"
@@ -46,7 +47,10 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	}
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORS())
-	e.Use(middleware.Timeout())
+	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+		Timeout:      1 * time.Minute,
+		ErrorMessage: "요청 처리 시간이 지연되었습니다. 다시 시도해주세요.",
+	}))
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.BodyLimit("5M"))
