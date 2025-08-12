@@ -68,6 +68,7 @@ func GenerateAIReportJob() {
 		slog.Error("데이터베이스 연결 실패", "error", err)
 		return
 	}
+	defer db.Close()
 	AiReportQ = goqite.New(goqite.NewOpts{
 		DB:   apiReportDb,
 		Name: "ai-report",
@@ -80,15 +81,15 @@ func GenerateAIReportJob() {
 		Queue:        AiReportQ,
 	})
 
+	queries, err := db.GetQueries(false)
+	if err != nil {
+		slog.Error("쿼리 객체 생성 실패", "error", err)
+		return
+	}
+
 	r.Register("ai-report", func(ctx context.Context, m []byte) error {
 		uid := string(m)
 		slog.Info("AI 리포트 생성 작업을 시작합니다.", "uid", uid)
-
-		queries, err := db.GetQueries()
-		if err != nil {
-			slog.Error("쿼리 객체 생성 실패", "uid", uid, "error", err)
-			return err
-		}
 
 		var allDiaries []db.Diary
 		// 한 페이지에 7개의 일기를 가져오므로, 5페이지를 조회하여 최대 35개의 최근 일기를 가져옴
