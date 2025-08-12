@@ -117,8 +117,11 @@ func HeadGoogleFonts(font ...string) []Node {
 
 func HeadFlatpickr() []Node {
 	return []Node{
-		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css")),
-		Script(Src("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js")),
-		Script(Src("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js")),
+		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css"),
+			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/flatpickr.min.css';")),
+		Script(Src("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"),
+			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/flatpickr.min.js';")),
+		Script(Src("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js"),
+			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/ko.js';")),
 	}
 }

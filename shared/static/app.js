@@ -93,7 +93,10 @@ document.addEventListener("alpine:init", () => {
     },
     applyFlatpickrTheme(theme) {
       const id = "flatpickr-dark";
-      const href = "https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css";
+      const href =
+        "https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css";
+      const onError =
+        "this.onerror=null;this.href='shared/static/lib/dark.css';";
       const link = document.getElementById(id);
       if (theme === "dark") {
         if (!link) {
@@ -101,6 +104,7 @@ document.addEventListener("alpine:init", () => {
           tag.id = id;
           tag.rel = "stylesheet";
           tag.href = href;
+          tag.onerror = onError;
           document.head.appendChild(tag);
         }
       } else if (link) {

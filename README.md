@@ -129,6 +129,8 @@ go mod tidy
 [beer.min.css](https://cdn.jsdelivr.net/npm/beercss/dist/cdn/beer.min.css) </br>
 [open-props.min.css](https://cdn.jsdelivr.net/npm/open-props/open-props.min.css) </br>
 [pico.classless.min.css](https://cdn.jsdelivr.net/npm/@picocss/pico/css/pico.classless.min.css)
+[flatpickr.min.css](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css)
+[dark.css](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css)
 
 #### JS
 
@@ -136,6 +138,8 @@ go mod tidy
 [htmx.min.js](https://cdn.jsdelivr.net/npm/htmx.org/dist/htmx.min.js) </br>
 [beer.min.js](https://cdn.jsdelivr.net/npm/beercss/dist/cdn/beer.min.js) </br>
 [material-dynamic-colors.min.js](https://cdn.jsdelivr.net/npm/material-dynamic-colors/dist/cdn/material-dynamic-colors.min.js)
+[flatpickr.min.js](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js)
+[ko.js](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js)
 
 ---
 
