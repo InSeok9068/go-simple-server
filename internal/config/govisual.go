@@ -22,7 +22,7 @@ func TransferEchoToGoVisualServerOnlyDev(e *echo.Echo, port string) *http.Server
 	return &http.Server{
 		Addr:         ":" + port,
 		Handler:      server,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  1 * time.Minute,
+		WriteTimeout: 1 * time.Minute,
 	}
 }
