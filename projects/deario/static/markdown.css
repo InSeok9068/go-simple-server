@@ -1,0 +1,132 @@
+#ai-feedback-markdown h1,
+#ai-feedback-markdown h2,
+#ai-feedback-markdown h3,
+#ai-feedback-markdown h4,
+#ai-feedback-markdown h5,
+#ai-feedback-markdown h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+#ai-feedback-markdown h1 {
+  font-size: 2em;
+  border-bottom: 1px solid var(--outline-variant);
+  padding-bottom: 0.3em;
+}
+
+#ai-feedback-markdown h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--outline-variant);
+  padding-bottom: 0.3em;
+}
+
+#ai-feedback-markdown h3 {
+  font-size: 1.25em;
+}
+
+#ai-feedback-markdown h4 {
+  font-size: 1em;
+}
+
+#ai-feedback-markdown h5 {
+  font-size: 0.875em;
+}
+
+#ai-feedback-markdown h6 {
+  font-size: 0.85em;
+  color: var(--on-surface-variant);
+}
+
+#ai-feedback-markdown p {
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+#ai-feedback-markdown a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+#ai-feedback-markdown a:hover {
+  text-decoration: underline;
+}
+
+#ai-feedback-markdown ul,
+#ai-feedback-markdown ol {
+  padding-left: 2em;
+  margin-bottom: 16px;
+}
+
+#ai-feedback-markdown li {
+  margin-bottom: 0.5em;
+}
+
+#ai-feedback-markdown blockquote {
+  margin: 0 0 16px;
+  padding: 0 1em;
+  color: var(--on-surface-variant);
+  border-left: 0.25em solid var(--outline-variant);
+}
+
+#ai-feedback-markdown pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: var(--surface-container);
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+#ai-feedback-markdown code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: var(--surface-container);
+  border-radius: 3px;
+}
+
+#ai-feedback-markdown pre code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+#ai-feedback-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  display: block;
+  overflow: auto;
+}
+
+#ai-feedback-markdown th,
+#ai-feedback-markdown td {
+  padding: 6px 13px;
+  border: 1px solid var(--outline-variant);
+}
+
+#ai-feedback-markdown th {
+  font-weight: 600;
+}
+
+#ai-feedback-markdown tr {
+  background-color: var(--surface);
+  border-top: 1px solid var(--outline);
+}
+
+#ai-feedback-markdown tr:nth-child(2n) {
+  background-color: var(--surface-container-low);
+}
+
+#ai-feedback-markdown hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: var(--outline-variant);
+  border: 0;
+}
