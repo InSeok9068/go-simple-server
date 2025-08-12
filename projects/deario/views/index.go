@@ -25,9 +25,9 @@ func Index(title string, date string, mood string) Node {
 			shared.HeadWithFirebaseAuth(),
 			shared.HeadGoogleFonts("Gamja Flower"),
 			shared.HeadFlatpickr(),
+			shared.HeadMarked(),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
-				Script(Src("https://cdn.jsdelivr.net/npm/marked/marked.min.js")),
 				Script(Src("/static/deario.js")),
 				Script(Src("/static/calendar.js")),
 				Script(Type("module"), Src("/static/storage.js")),
@@ -139,7 +139,7 @@ func Index(title string, date string, mood string) Node {
 							Li(
 								h.Get("/ai-feedback?date="+date),
 								h.Target("#ai-feedback-content"),
-								h.On("htmx:after-on-load", "if (event.detail.successful) showModal('#ai-feedback-dialog')"),
+								h.On("htmx:after-on-load", "if (event.detail.successful) showAiFeedback()"),
 								Button(Class("fill"),
 									Span(Text("다시보기")),
 								),
@@ -361,7 +361,7 @@ func aiFeedbackButton(strType string, title string) Node {
 		h.Post(fmt.Sprintf("/ai-feedback?type=%s", strType)),
 		h.Include("[name='content']"), h.Target("#ai-feedback-content"),
 		h.Indicator("#feedback-loading"),
-		h.On("htmx:after-on-load", "if (event.detail.successful) showModal('#ai-feedback-dialog')"),
+		h.On("htmx:after-on-load", "if (event.detail.successful) showAiFeedback()"),
 		Button(Class("fill"),
 			Span(Text(title)),
 		),

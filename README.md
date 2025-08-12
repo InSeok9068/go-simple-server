@@ -140,6 +140,7 @@ go mod tidy
 [material-dynamic-colors.min.js](https://cdn.jsdelivr.net/npm/material-dynamic-colors/dist/cdn/material-dynamic-colors.min.js)
 [flatpickr.min.js](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js)
 [ko.js](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js)
+[marked.umd.js](https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js)
 
 ---
 

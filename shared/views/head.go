@@ -125,3 +125,11 @@ func HeadFlatpickr() []Node {
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/ko.js';")),
 	}
 }
+
+func HeadMarked() []Node {
+	return []Node{
+		Script(Src("https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"),
+			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/marked.umd.js';"),
+		),
+	}
+}
