@@ -50,7 +50,6 @@ window.uploadDiaryImage = async function (date) {
       values: { date: date, url: url },
     });
     if (input) input.value = "";
-    if (preview) preview.innerHTML = "";
   } catch (err) {
     console.error("업로드 실패:", err);
     showError("업로드 실패");
