@@ -1,3 +1,18 @@
+/* Material/BeerCSS 토큰 기반 Markdown 스타일 */
+/* 기대 변수: 
+   --surface --surface-container --surface-container-low
+   --on-surface --on-surface-variant
+   --primary
+   --outline --outline-variant
+*/
+
+#ai-feedback-markdown {
+  color: var(--on-surface);
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+/* 헤딩 */
 #ai-feedback-markdown h1,
 #ai-feedback-markdown h2,
 #ai-feedback-markdown h3,
@@ -8,6 +23,7 @@
   margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
+  color: var(--on-surface);
 }
 
 #ai-feedback-markdown h1 {
@@ -15,118 +31,196 @@
   border-bottom: 1px solid var(--outline-variant);
   padding-bottom: 0.3em;
 }
-
 #ai-feedback-markdown h2 {
   font-size: 1.5em;
   border-bottom: 1px solid var(--outline-variant);
   padding-bottom: 0.3em;
 }
-
 #ai-feedback-markdown h3 {
   font-size: 1.25em;
 }
-
 #ai-feedback-markdown h4 {
-  font-size: 1em;
+  font-size: 1.1em;
 }
-
 #ai-feedback-markdown h5 {
-  font-size: 0.875em;
+  font-size: 0.95em;
 }
-
 #ai-feedback-markdown h6 {
-  font-size: 0.85em;
+  font-size: 0.9em;
   color: var(--on-surface-variant);
 }
 
+/* 본문/링크 */
 #ai-feedback-markdown p {
-  margin-bottom: 16px;
-  line-height: 1.5;
+  margin: 0 0 16px;
 }
-
 #ai-feedback-markdown a {
   color: var(--primary);
   text-decoration: none;
 }
-
-#ai-feedback-markdown a:hover {
+#ai-feedback-markdown a:hover,
+#ai-feedback-markdown a:focus {
   text-decoration: underline;
 }
 
+/* 리스트 */
 #ai-feedback-markdown ul,
 #ai-feedback-markdown ol {
   padding-left: 2em;
-  margin-bottom: 16px;
+  margin: 0 0 16px;
 }
-
 #ai-feedback-markdown li {
-  margin-bottom: 0.5em;
+  margin: 0.25em 0;
+}
+#ai-feedback-markdown li > p {
+  margin: 0.25em 0;
 }
 
+/* 체크리스트 (- [ ] ) */
+#ai-feedback-markdown input[type="checkbox"] {
+  margin-right: 0.5em;
+  accent-color: var(--primary);
+}
+
+/* 인용구 */
 #ai-feedback-markdown blockquote {
   margin: 0 0 16px;
-  padding: 0 1em;
+  padding: 0.25em 1em;
   color: var(--on-surface-variant);
-  border-left: 0.25em solid var(--outline-variant);
+  border-left: 0.28em solid var(--outline-variant);
+  background: color-mix(in oklab, var(--surface-container) 70%, transparent);
+  border-radius: 6px;
+}
+
+/* 코드 및 프리포맷 */
+#ai-feedback-markdown code,
+#ai-feedback-markdown pre,
+#ai-feedback-markdown kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+}
+
+#ai-feedback-markdown code {
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  background: var(--surface-container);
+  color: var(--on-surface);
+  font-size: 0.9em;
 }
 
 #ai-feedback-markdown pre {
   padding: 16px;
   overflow: auto;
-  font-size: 85%;
+  font-size: 0.9em;
   line-height: 1.45;
-  background-color: var(--surface-container);
-  border-radius: 6px;
-  margin-bottom: 16px;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  margin: 0 0 16px;
 }
-
-#ai-feedback-markdown code {
-  padding: 0.2em 0.4em;
-  margin: 0;
-  font-size: 85%;
-  background-color: var(--surface-container);
-  border-radius: 3px;
-}
-
 #ai-feedback-markdown pre code {
   padding: 0;
-  margin: 0;
-  font-size: 100%;
-  background-color: transparent;
+  background: transparent;
   border-radius: 0;
+  font-size: 1em;
 }
 
+/* 키보드 입력 */
+#ai-feedback-markdown kbd {
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 0.1em 0.4em;
+  font-size: 0.85em;
+}
+
+/* 표 */
 #ai-feedback-markdown table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 16px;
+  margin: 0 0 16px;
   display: block;
   overflow: auto;
 }
-
 #ai-feedback-markdown th,
 #ai-feedback-markdown td {
-  padding: 6px 13px;
+  padding: 8px 12px;
   border: 1px solid var(--outline-variant);
 }
-
 #ai-feedback-markdown th {
   font-weight: 600;
+  background: var(--surface-container-low);
+  color: var(--on-surface);
 }
-
 #ai-feedback-markdown tr {
-  background-color: var(--surface);
+  background: var(--surface);
   border-top: 1px solid var(--outline);
 }
-
 #ai-feedback-markdown tr:nth-child(2n) {
-  background-color: var(--surface-container-low);
+  background: var(--surface-container-low);
 }
 
+/* 수평선 */
 #ai-feedback-markdown hr {
   height: 0.25em;
   padding: 0;
   margin: 24px 0;
-  background-color: var(--outline-variant);
+  background: var(--outline-variant);
   border: 0;
+  border-radius: 2px;
+}
+
+/* 이미지 */
+#ai-feedback-markdown img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: var(--surface-container);
+}
+
+/* 설명/요약(details/summary) */
+#ai-feedback-markdown details {
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  padding: 0.75em 1em;
+  margin: 0 0 16px;
+}
+#ai-feedback-markdown summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+/* 캡션(예: 표/이미지 설명) */
+#ai-feedback-markdown figcaption {
+  color: var(--on-surface-variant);
+  font-size: 0.9em;
+  margin-top: 6px;
+  text-align: center;
+}
+
+/* 리스트 안 코드/링크 줄바꿈 이슈 최소화 */
+#ai-feedback-markdown li code,
+#ai-feedback-markdown p code {
+  word-break: break-word;
+}
+
+/* 접근성: 포커스 링 */
+#ai-feedback-markdown a:focus,
+#ai-feedback-markdown button:focus,
+#ai-feedback-markdown summary:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 모션 최소화 사용자가 선호할 때 */
+@media (prefers-reduced-motion: reduce) {
+  #ai-feedback-markdown * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
 }
