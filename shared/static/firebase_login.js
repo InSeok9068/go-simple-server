@@ -14,10 +14,14 @@ const uiConfig = {
   signInFlow: "popup",
   signInSuccessUrl: "/",
   signInOptions: [
+    // 소셜 로그인 (Google)
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    // 소셜 로그인 (Facebook)
+    firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+    // 핸드폰 로그인
+    firebase.auth.PhoneAuthProvider.PROVIDER_ID,
     // 이메일 + 비밀번호 로그인
     firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    // 소셜 로그인 예시 (Google)
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
   ],
   callbacks: {
     signInSuccessWithAuthResult: function (authResult, redirectUrl) {
