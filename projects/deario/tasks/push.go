@@ -24,15 +24,15 @@ type Payload struct {
 var pushQ *goqite.Queue
 
 func PushSendCron(c *cron.Cron) {
+	queries, err := db.GetQueries(false)
+	if err != nil {
+		slog.Error("쿼리 로드 실패", "error", err)
+		return
+	}
+
 	if _, err := c.AddFunc("@every 1m", func() {
 		ctx := context.Background()
 		now := time.Now().Format("15:04")
-
-		queries, err := db.GetQueries()
-		if err != nil {
-			slog.Error("쿼리 로드 실패", "error", err)
-			return
-		}
 
 		targets, err := queries.ListPushTargets(ctx)
 		if err != nil {
@@ -67,6 +67,7 @@ func PushSendJob() {
 		slog.Error("데이터베이스 연결 실패", "error", err)
 		return
 	}
+	defer db.Close()
 	pushQ = goqite.New(goqite.NewOpts{
 		DB:   pushdb,
 		Name: "push",
