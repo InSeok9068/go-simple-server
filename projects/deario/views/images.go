@@ -15,10 +15,9 @@ func DiaryImages(date, img1, img2, img3 string) Node {
 		if u != "" {
 			nodes = append(nodes,
 				Div(
-					Style("position:relative; display:inline-block;"),
 					Img(
 						Src(u),
-						Class("responsive"),
+						Class("small-width small-height"),
 					),
 					Button(
 						Class("transparent"),
@@ -31,13 +30,12 @@ func DiaryImages(date, img1, img2, img3 string) Node {
 						I(Text("close")),
 					),
 				),
-				Div(Class("space")),
 			)
 		}
 	}
 	if len(nodes) == 0 {
 		nodes = append(nodes, P(Text("이미지가 없습니다.")))
 	}
-	all := append([]Node{ID("diary-image-content")}, nodes...)
-	return Div(all...)
+	all := append([]Node{Class("row scroll"), ID("diary-image-content")}, nodes...)
+	return Nav(all...)
 }
