@@ -256,7 +256,7 @@ func Index(title string, date string, mood string) Node {
 			),
 
 			/* 이미지 Dialog */
-			Dialog(ID("diary-image-dialog"), Class("max"),
+			Dialog(ID("diary-image-dialog"), Class("bottom"),
 				H5(Text("이미지")),
 				Div(ID("diary-image-content"),
 					h.Get(fmt.Sprintf("/diary/images?date=%s", date)),
