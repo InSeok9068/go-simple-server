@@ -16,6 +16,33 @@ import (
 	"maragu.dev/goqite/jobs"
 )
 
+const feedbackLineLimit = 40
+
+// feedbackNodes는 긴 피드백을 일정 길이마다 잘라 가독성을 높여준다.
+func feedbackNodes(text string) []Node {
+	lines := splitRunes(text, feedbackLineLimit)
+	nodes := []Node{Input(Type("hidden"), Name("ai-feedback"), Value(text))}
+	for _, line := range lines {
+		nodes = append(nodes, P(Text(line)))
+	}
+	return nodes
+}
+
+// splitRunes는 문자열을 지정한 길이만큼 나눠준다.
+func splitRunes(text string, limit int) []string {
+	runes := []rune(text)
+	var lines []string
+	for len(runes) > 0 {
+		l := limit
+		if len(runes) < l {
+			l = len(runes)
+		}
+		lines = append(lines, string(runes[:l]))
+		runes = runes[l:]
+	}
+	return lines
+}
+
 // GenerateAIFeedback는 일기 내용을 기반으로 AI 피드백이나 이미지를 생성한다.
 func GenerateAIFeedback(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
@@ -89,8 +116,7 @@ func GenerateAIFeedback(c echo.Context) error {
 	}
 
 	return Div(
-		Input(Type("hidden"), Name("ai-feedback"), Value(result)),
-		Text(result),
+		feedbackNodes(result)...,
 	).Render(c.Response().Writer)
 }
 
@@ -165,8 +191,7 @@ func GetAIFeedback(c echo.Context) error {
 	}
 
 	return Div(
-		Input(Type("hidden"), Name("ai-feedback"), Value(diary.AiFeedback)),
-		Text(diary.AiFeedback),
+		feedbackNodes(diary.AiFeedback)...,
 	).Render(c.Response().Writer)
 }
 
