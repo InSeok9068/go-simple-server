@@ -13,6 +13,17 @@ const uiConfig = {
   // 로그인 성공 시 이동할 URL, 혹은 자동 리다이렉트를 막을 수도 있음
   signInFlow: "popup",
   signInSuccessUrl: "/",
+
+  // Google YOLO (You Only Log-in Once)는 사용자가 브라우저에 구글 계정으로 로그인되어 있을 경우,
+  // 클릭 한 번으로 바로 로그인할 수 있게 도와주는 매우 편리한 기능입니다.
+  credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
+
+  // 로그인 화면에 서비스 약관과 개인정보처리방침 링크를 추가합니다.
+  // 실제 서비스에서는 법적 고지 및 사용자 신뢰를 위해 제공하는 것이 좋습니다.
+  // 주석을 해제하고 실제 URL로 교체하여 사용하세요.
+  // tosUrl: "/terms-of-service",
+  // privacyPolicyUrl: "/privacy-policy",
+
   signInOptions: [
     // 소셜 로그인 (Google)
     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -25,6 +36,10 @@ const uiConfig = {
   ],
   callbacks: {
     signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+      if (authResult.additionalUserInfo.isNewUser) {
+        alert("환영합니다! 회원가입이 완료되었습니다.");
+      }
+
       loader.classList.remove("hidden");
       loader.querySelector("span").textContent = "로그인 중...";
 
