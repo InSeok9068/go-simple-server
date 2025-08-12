@@ -42,20 +42,20 @@ func GenerateAIFeedback(c echo.Context) error {
 		typeStr = "충고를 해줘"
 	case "4":
 		typeStr = `
-                Create a single image containing a 4-panel comic strip that tells a complete story without using any text, words, or written language. The four panels should be arranged in a single image, clearly separated but visually connected.
+							Create a vertical (1x4) comic strip in a single image
+							The image should contain 4 equal rectangular panels arranged vertically from top to bottom.
 
-                For the image:
-                1. Create a single image divided into 4 equal rectangular panels (2x2 grid)
-                2. Each panel should be a self-contained illustration that flows naturally to the next
-                3. Use only visual storytelling through composition, colors, lighting, and expressions
-                4. Absolutely no text, captions, speech bubbles, signs, or written words
-                5. Show clear character emotions and actions to convey the narrative
-                6. Maintain visual consistency across all panels
-                7. Each panel should focus on a single, meaningful moment or emotion
-
-                The comic should tell its story through pure visual language, like a wordless graphic novel. The sequence of four panels should show a clear beginning, development, and resolution of a simple, relatable situation or emotion.
-
-                Use the context provided in the 'contents' field only as inspiration for the mood and setting, but do not include any text or literal elements from it in the image.`
+							Requirements
+							- Divide a single image into 4 equal vertical rectangular panels, arranged from top to bottom (1x4 layout).
+							- Use only visual storytelling — composition, colors, lighting, and facial expressions should convey the story and emotions.
+							- No text, captions, speech bubbles, signs, or any written language at all.
+							- Maintain visual consistency across all panels.
+							- Each panel should focus on one meaningful moment or emotion.
+							- Image size: height 700px, width 320px.
+							- The four panels together must tell a complete story.
+							- The story should have a clear beginning (introduction), development, conflict or change, and resolution.
+							- The situation or emotion should be simple, relatable, and easy to understand without words.
+							`
 	}
 
 	if typeValue == "4" {
@@ -75,14 +75,14 @@ func GenerateAIFeedback(c echo.Context) error {
 	}
 
 	prompt := fmt.Sprintf(`아래의 내용은 나의 오늘 하루의 일기야
-               내용 : %s
+							내용 : %s
 
-               ※ 감정을 깊게 공감하고 나서 %s
-
-               이해했다는말이나 이런거 하지말고 바로 답변해줘
-
-               응답은 반드시 Markdown 형식으로 해줘.
-               `, content, typeStr)
+              ※ 유의사항
+							1. 감정을 공감하고 나서 %s 이해했다는말이나 이런거 하지말고 바로 답변해줘.
+							2. 답변 길이는 250자 ~ 500자 사이로 해줘.
+							3. 답변은 너무 오바하지말고 담백하면서도 친절하게 해줘.
+							4. 응답은 반드시 Markdown 형식으로 해줘.
+              `, content, typeStr)
 	result, err := aiclient.Request(c.Request().Context(), prompt)
 	if err != nil {
 		return err
