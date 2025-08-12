@@ -81,7 +81,7 @@ func GenerateAIReportJob() {
 		Queue:        AiReportQ,
 	})
 
-	queries, err := db.GetQueries(false)
+	queries, err := db.GetQueries()
 	if err != nil {
 		slog.Error("쿼리 객체 생성 실패", "error", err)
 		return
