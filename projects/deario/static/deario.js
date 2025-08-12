@@ -16,6 +16,8 @@ document.addEventListener("alpine:init", () => {
 
 function showAiFeedback() {
   const mdEl = document.getElementById("ai-feedback-markdown");
-  mdEl.innerHTML = marked.parse(mdEl.textContent);
+  if (mdEl && mdEl.textContent) {
+    mdEl.innerHTML = marked.parse(mdEl.textContent);
+  }
   showModal("#ai-feedback-dialog");
 }
