@@ -84,6 +84,18 @@ func Setting(userSetting db.UserSetting) Node {
 								),
 							),
 						),
+						// 폰트 선택
+						Nav(Text("폰트")),
+						Div(Class("field border label"),
+							Select(
+								x.Data(""),
+								x.Model("$store.font.value"),
+								x.On("change", "$store.font.set($event.target.value)"),
+								Option(Value("gamja"), Text("Gamja Flower")),
+								Option(Value("system"), Text("시스템 기본")),
+							),
+							Label(Text("폰트")),
+						),
 						Nav(Class("right-align"),
 							Button(Text("저장")),
 						),

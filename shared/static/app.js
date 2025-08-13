@@ -53,6 +53,36 @@ document.addEventListener("alpine:init", () => {
     },
   });
 
+  Alpine.store("font", {
+    value: "gamja",
+    init() {
+      const saved = localStorage.getItem("font");
+      if (saved) {
+        this.value = saved;
+      }
+      this.apply();
+    },
+    set(font) {
+      this.value = font;
+      this.apply();
+      try {
+        localStorage.setItem("font", font);
+      } catch (e) {
+        console.error("localStorage save error", e);
+      }
+    },
+    apply() {
+      const fonts = {
+        gamja: '"Gamja Flower"',
+        system: "system-ui",
+      };
+      document.documentElement.style.setProperty(
+        "--font-family",
+        fonts[this.value] || fonts.gamja,
+      );
+    },
+  });
+
   Alpine.store("theme", {
     value: "light",
     color: "#6200ee",
@@ -114,6 +144,7 @@ document.addEventListener("alpine:init", () => {
   });
 
   Alpine.store("theme").init();
+  Alpine.store("font").init();
 });
 
 htmx.on("htmx:afterRequest", (event) => {
