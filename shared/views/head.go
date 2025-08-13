@@ -117,15 +117,16 @@ func HeadGoogleFonts(font ...string) []Node {
 
 func HeadUserFont() []Node {
 	script := `(function () {
-                var fam = localStorage.getItem('uiFontFamily') || 'Gamja+Flower'
-                var href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fam) + '&display=swap'
-                var link = document.createElement('link')
-                link.id = 'user-font'
-                link.rel = 'stylesheet'
-                link.href = href
-                document.head.appendChild(link)
-                var familyName = fam.split(':')[0].replace(/\+/g, ' ')
-                document.documentElement.style.setProperty('--font-family', familyName + ', system-ui, sans-serif')
+                var fam = localStorage.getItem('uiFontFamily') || 'Gamja+Flower';
+                fam = fam.replace(/\s+/g, '+');
+                var href = 'https://fonts.googleapis.com/css2?family=' + fam + '&display=swap';
+                var link = document.createElement('link');
+                link.id = 'user-font';
+                link.rel = 'stylesheet';
+                link.href = href;
+                document.head.appendChild(link);
+                var familyName = fam.split(':')[0].replace(/\+/g, ' ');
+                document.documentElement.style.setProperty('--font-family', familyName + ', system-ui, sans-serif');
         })();`
 
 	return []Node{

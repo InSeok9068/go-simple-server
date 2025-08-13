@@ -1,8 +1,9 @@
 (function(){
   window.applyUserFont = function(familySpec) {
     if (!familySpec) return;
+    familySpec = familySpec.replace(/\s+/g, '+');
     localStorage.setItem('uiFontFamily', familySpec);
-    var href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(familySpec) + '&display=swap';
+    var href = 'https://fonts.googleapis.com/css2?family=' + familySpec + '&display=swap';
     var link = document.getElementById('user-font');
     if (link) {
       link.href = href;
@@ -21,6 +22,6 @@
     var select = document.getElementById('font-select');
     if (!select) return;
     var fam = localStorage.getItem('uiFontFamily') || 'Gamja+Flower';
-    select.value = fam;
+    select.value = fam.replace(/\s+/g, '+');
   });
 })();
