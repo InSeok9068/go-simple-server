@@ -115,6 +115,26 @@ func HeadGoogleFonts(font ...string) []Node {
 	}
 }
 
+func HeadUserFont() []Node {
+	script := `(function () {
+                var fam = localStorage.getItem('uiFontFamily') || 'Gamja+Flower'
+                var href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fam) + '&display=swap'
+                var link = document.createElement('link')
+                link.id = 'user-font'
+                link.rel = 'stylesheet'
+                link.href = href
+                document.head.appendChild(link)
+                var familyName = fam.split(':')[0].replace(/\+/g, ' ')
+                document.documentElement.style.setProperty('--font-family', familyName + ', system-ui, sans-serif')
+        })();`
+
+	return []Node{
+		Link(Rel("preconnect"), Href("https://fonts.gstatic.com"), Attr("crossorigin", "")),
+		Script(Text(script)),
+		Script(Src("/static/font.js")),
+	}
+}
+
 func HeadFlatpickr() []Node {
 	return []Node{
 		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css"),

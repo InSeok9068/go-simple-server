@@ -21,9 +21,9 @@ func Index(title string, date string, mood string) Node {
 		Title:    title,
 		Language: "ko",
 		Head: gomutil.MergeHeads(
+			shared.HeadUserFont(),
 			shared.HeadsWithBeer(title),
 			shared.HeadWithFirebaseAuth(),
-			shared.HeadGoogleFonts("Gamja Flower"),
 			shared.HeadFlatpickr(),
 			shared.HeadMarked(),
 			[]Node{

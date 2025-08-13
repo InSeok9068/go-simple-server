@@ -17,9 +17,9 @@ func Statistic() Node {
 		Title:    "통계",
 		Language: "ko",
 		Head: gomutil.MergeHeads(
+			shared.HeadUserFont(),
 			shared.HeadsWithBeer("통계"),
 			shared.HeadWithFirebaseAuth(),
-			shared.HeadGoogleFonts("Gamja Flower"),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("https://cdn.jsdelivr.net/npm/chart.js")),
