@@ -75,13 +75,10 @@ document.addEventListener("alpine:init", () => {
       const fonts = {
         gamja: '"Gamja Flower"',
         humanist: "var(--font-humanist)",
-        geometric_humanist: "var(--font-geometric-humanist)",
-        classical_humanist: "var(--font-classical-humanist)",
         neo_grotesque: "var(--font-neo-grotesque)",
         monospace_code: "var(--font-monospace-code)",
         industrial: "var(--font-industrial)",
         rounded_sans: "var(--font-rounded-sans)",
-        antique: "var(--font-antique)",
       };
       document.documentElement.style.setProperty(
         "--font-family",
