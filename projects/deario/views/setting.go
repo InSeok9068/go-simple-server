@@ -21,9 +21,9 @@ func Setting(userSetting db.UserSetting) Node {
 		Title:    "설정",
 		Language: "ko",
 		Head: gomutil.MergeHeads(
+			shared.HeadUserFont(),
 			shared.HeadsWithBeer("설정"),
 			shared.HeadWithFirebaseAuth(),
-			shared.HeadGoogleFonts("Gamja Flower"),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("/static/deario.js")),
@@ -82,6 +82,15 @@ func Setting(userSetting db.UserSetting) Node {
 									x.Model("$store.theme.color"),
 									x.On("change", "$store.theme.setColor($event.target.value)"),
 								),
+							),
+						),
+						// 폰트 변경
+						Nav(Text("폰트")),
+						Div(Class("field border label"),
+							Select(ID("font-select"), Attr("onchange", "applyUserFont(this.value)"),
+								Option(Value("Gamja+Flower"), Text("Gamja Flower")),
+								Option(Value("Inter:wght@400;700"), Text("Inter")),
+								Option(Value("Noto+Sans+KR:wght@400;700"), Text("Noto Sans KR")),
 							),
 						),
 						Nav(Class("right-align"),
