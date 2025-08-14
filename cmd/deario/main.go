@@ -86,6 +86,7 @@ func setUpServer() *echo.Echo {
 	}
 	e.GET("/", handlers.IndexPage)
 	e.GET("/login", handlers.LoginPage)
+	e.GET("/privacy", handlers.PrivacyPage)
 	e.POST("/logout", handlers.Logout)
 	e.GET("/diary", handlers.GetDiary)
 	e.GET("/diary/list", handlers.ListDiaries)
