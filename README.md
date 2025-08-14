@@ -21,6 +21,26 @@
 | **모바일 대응**       | PWA → Capacitor                                               |
 | **웹 서버**           | Caddy                                                         |
 
+## 폴더 구조
+
+- `cmd/{프로젝트명}/main.go`: 각 프로젝트의 서버 실행 파일
+- `projects/{프로젝트명}/`: 프로젝트별 소스 코드
+  - `handlers`: HTTP 요청을 처리하는 핸들러
+  - `views`: Gomponents로 작성된 HTML 뷰 컴포넌트
+  - `static`: CSS, JavaScript 등 정적 파일
+  - `migrations`: Goose 기반 데이터베이스 마이그레이션
+  - `query.sql`: SQLC가 사용하는 쿼리 정의
+- `internal`: 여러 프로젝트에서 공유하는 서버 공통 패키지
+- `shared`: 공통 뷰 컴포넌트와 정적 자산
+- `pkg`: 외부 의존성이 없는 유틸리티 함수
+
+## 프로젝트 설명
+
+- **homepage**: 여러 서비스의 소개와 진입점을 제공하는 포털 (TailwindCSS 사용)
+- **ai-study**: 입력한 주제와 관련된 학습 주제를 AI가 제안
+- **deario**: 일기를 작성하면 AI가 피드백을 제공
+- **sample**: 새로운 기능이나 라이브러리를 실험하는 샘플 프로젝트
+
 ### 추가 구성 고려
 
 - Beer CSS : CSS 프레임워크 (Material 모바일 우선)
