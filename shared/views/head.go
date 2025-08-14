@@ -11,7 +11,7 @@ import (
 
 func HeadsDefault(title string) []Node {
 	return []Node{
-		Meta(Name("viewport"), Content("width=device-width, initial-scale=1.0, maximum-scale=1.0")),
+		Meta(Name("viewport"), Content("width=device-width, initial-scale=1")),
 		Link(Rel("icon"), Href("/shared/static/favicon.ico")),
 		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/open-props@1.7.13/open-props.min.css"),
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/open-props.min.css';")),
