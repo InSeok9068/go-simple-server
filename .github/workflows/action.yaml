@@ -5,10 +5,6 @@ on:
     branches:
       - release/*
 
-concurrency:
-  group: ${{ github.repository }}
-  cancel-in-progress: false
-
 permissions:
   contents: read
 
