@@ -320,6 +320,12 @@ func Index(title string, date string, mood string) Node {
 							Text("설정"),
 						),
 					),
+					Li(Class("wave round"),
+						A(Href("/privacy"),
+							I(Text("admin_panel_settings")),
+							Text("개인정보 처리방침"),
+						),
+					),
 				),
 				Nav(Class("right-align"),
 					Button(

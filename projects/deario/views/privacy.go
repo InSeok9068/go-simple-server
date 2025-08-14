@@ -32,14 +32,14 @@ func Privacy() Node {
 
 			/* Body */
 			Main(Class("responsive"),
-				H2(Text("개인정보 처리방침")),
+				H5(Text("개인정보 처리방침")),
 				P(Text("Deario는 사용자의 개인정보를 소중히 여기며 다음과 같이 처리합니다.")),
-				Ul(Class("list"),
-					Li(Text("수집 항목: 이메일, 닉네임, 일기 내용")),
-					Li(Text("이용 목적: 서비스 제공, 맞춤형 피드백 및 알림")),
-					Li(Text("보관 기간: 회원 탈퇴 시 즉시 파기")),
-					Li(Text("제3자 제공: 제공하지 않음")),
-					Li(Text("문의: support@example.com")),
+				Ul(Class("list border"),
+					Li(Text("- 수집 항목: 이메일, 닉네임, 일기 내용")),
+					Li(Text("- 이용 목적: 서비스 제공, 맞춤형 피드백 및 알림")),
+					Li(Text("- 보관 기간: 회원 탈퇴 시 즉시 파기")),
+					Li(Text("- 제3자 제공: 제공하지 않음")),
+					Li(Text("- 문의: dlstjr9068@gmail.com")),
 				),
 			),
 			/* Body */

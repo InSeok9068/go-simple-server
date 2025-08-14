@@ -22,7 +22,7 @@ const uiConfig = {
   // 실제 서비스에서는 법적 고지 및 사용자 신뢰를 위해 제공하는 것이 좋습니다.
   // 주석을 해제하고 실제 URL로 교체하여 사용하세요.
   // tosUrl: "/terms-of-service",
-  // privacyPolicyUrl: "/privacy-policy",
+  privacyPolicyUrl: "/privacy",
 
   signInOptions: [
     // 소셜 로그인 (Google)

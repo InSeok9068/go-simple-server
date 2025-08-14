@@ -244,3 +244,12 @@ aic
 ## 모바일, 데스크톱 성능 분석
 
 [MoCheck](https://mocheck.netlify.app/ko)
+
+---
+
+## PWA 앱 출시
+
+1. npm install -g @bubblewrap/cli
+2. bubblewrap init --manifest https://deario.toy-project.n-e.kr/manifest.json
+3. assetlinks.json 추가
+4. bubblewrap build
