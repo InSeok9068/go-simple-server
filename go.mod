@@ -13,7 +13,7 @@ require (
 	firebase.google.com/go/v4 v4.18.0
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/Blank-Xu/sql-adapter v1.1.2
-	github.com/casbin/casbin/v2 v2.119.0
+	github.com/casbin/casbin/v2 v2.120.0
 	github.com/crazy-max/echo-ipfilter v1.12.0
 	github.com/doganarif/govisual v0.1.9
 	github.com/eduardolat/gomponents-lucide v1.4.0
