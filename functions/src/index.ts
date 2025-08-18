@@ -19,13 +19,13 @@ initializeApp();
 // === 설정값 ===
 const MAX_WIDTH = 800;
 const JPEG_QUALITY = 75;
+const WEBP_QUALITY = 75;
+const MIN_QUALITY = 50; // 바이트 초과 시 여기까지 낮춤
+const QUALITY_STEP = 5;
+const MAX_BYTES = 600 * 1024; // 600KB 이하이면 "충분히 작다"로 간주
 const CONCURRENCY = 5; // 동시 처리 제한
 const IMAGE_EXT = /\.(jpe?g|png|webp)$/i;
 
-// '오늘'만 처리할지, '어제'를 처리할지 선택 (스케줄 03:00 기준)
-// 일상적으로는 'yesterday'가 하루치 완결 처리를 보장함.
-// 요청대로 'today'로 둠.
-// 'yesterday' 변경 하루전날의 데이터를 일괄처리
 const PROCESS_DAY: "today" | "yesterday" = "yesterday";
 
 // KST 기준 YYYY-MM-DD
@@ -42,23 +42,38 @@ function ymdKST(d = new Date()): string {
 function targetPrefix(): string {
   const now = new Date();
   if (PROCESS_DAY === "yesterday") {
-    // 어제 03:00에 전날 하루치 완결
     const y = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     return `diary/${ymdKST(y)}/`;
   }
   return `diary/${ymdKST(now)}/`;
 }
 
-// getFiles의 튜플 타입 간단 정의(불필요한 외부 타입 의존 제거)
+// getFiles의 튜플 타입 간단 정의
 type GetFilesTuple = [
   any[],
   { pageToken?: string } | undefined,
   { nextPageToken?: string } | undefined
 ];
 
+// 원본 메타 기준으로 포맷/콘텐츠타입 결정
+function detectFormat(meta: { contentType?: string; name?: string }) {
+  const ct = (meta.contentType || "").toLowerCase();
+  const name = meta.name || "";
+  const ext = name.split(".").pop()?.toLowerCase();
+
+  const isJPEG = ct.includes("jpeg") || ext === "jpg" || ext === "jpeg";
+  const isPNG = ct.includes("png") || ext === "png";
+  const isWEBP = ct.includes("webp") || ext === "webp";
+
+  if (isJPEG) return { fmt: "jpeg" as const, contentType: "image/jpeg" };
+  if (isPNG) return { fmt: "png" as const, contentType: "image/png" };
+  if (isWEBP) return { fmt: "webp" as const, contentType: "image/webp" };
+  return { fmt: "unsupported" as const, contentType: meta.contentType || "" };
+}
+
 export const resizeDaily = onSchedule(
   {
-    schedule: "0 3 * * *", // 매일 새벽 3시
+    schedule: "0 3 * * *",
     timeZone: "Asia/Seoul",
   },
   async () => {
@@ -68,13 +83,14 @@ export const resizeDaily = onSchedule(
     let pageToken: string | undefined = undefined;
     let processed = 0;
     let skipped = 0;
+    let unsupported = 0;
 
-    const prefix = targetPrefix(); // ✅ 업로드일자 기준 폴더만 스캔
+    const prefix = targetPrefix();
     logger.info(`Start resizeDaily. prefix=${prefix}`);
 
     do {
       const [files, nextQuery, apiResp] = (await bucket.getFiles({
-        prefix, // 오늘(또는 어제) 업로드분만 대상
+        prefix,
         autoPaginate: false,
         pageToken,
       })) as GetFilesTuple;
@@ -94,21 +110,81 @@ export const resizeDaily = onSchedule(
                   return;
                 }
 
-                // 다운로드 → 리사이즈(JPEG) → 덮어쓰기
+                const { fmt, contentType } = detectFormat({
+                  contentType: meta.contentType,
+                  name: meta.name,
+                });
+                if (fmt === "unsupported") {
+                  unsupported++;
+                  logger.warn(`Skip unsupported format: ${file.name}`);
+                  return;
+                }
+
+                // ✅ 사이즈(바이트) 기준으로 스킵
+                const objectSize = Number(meta.size || 0); // GCS 메타 size는 문자열
+                if (objectSize > 0 && objectSize <= MAX_BYTES) {
+                  await file.setMetadata({
+                    metadata: { ...(meta.metadata || {}), resized: "true" },
+                  });
+                  skipped++;
+                  return;
+                }
+
+                // 다운로드
                 const [buf] = await file.download();
-                const out = await sharp(buf)
-                  .rotate()
-                  .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-                  .jpeg({ quality: JPEG_QUALITY })
-                  .toBuffer();
+                let image = sharp(buf).rotate();
+
+                // 기본 리사이즈 (너비 제한은 유지하되, 판단 기준은 바이트)
+                // -> 큰 이미지면 용량 줄이는데 유리하니 그대로 수행
+                if (fmt === "jpeg") {
+                  image = image
+                    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+                    .jpeg({ quality: JPEG_QUALITY });
+                } else if (fmt === "png") {
+                  image = image
+                    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+                    .png({ compressionLevel: 9, palette: true }); // palette로 용량 더 감소
+                } else if (fmt === "webp") {
+                  image = image
+                    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+                    .webp({ quality: WEBP_QUALITY });
+                }
+
+                let out = await image.toBuffer();
+
+                // ✅ 인코딩 결과가 여전히 MAX_BYTES 초과이면 품질 낮춰 재시도(jpeg/webp)
+                if (
+                  out.length > MAX_BYTES &&
+                  (fmt === "jpeg" || fmt === "webp")
+                ) {
+                  let q = fmt === "jpeg" ? JPEG_QUALITY : WEBP_QUALITY;
+                  while (
+                    q - QUALITY_STEP >= MIN_QUALITY &&
+                    out.length > MAX_BYTES
+                  ) {
+                    q -= QUALITY_STEP;
+                    const retry = sharp(buf)
+                      .rotate()
+                      .resize({ width: MAX_WIDTH, withoutEnlargement: true });
+                    const encoded =
+                      fmt === "jpeg"
+                        ? retry.jpeg({ quality: q })
+                        : retry.webp({ quality: q });
+                    out = await encoded.toBuffer();
+                  }
+                }
+                // PNG는 위에서 palette+compressionLevel로 최대한 줄였고,
+                // 그래도 초과면 그대로 저장(포맷 유지 조건)
+
+                // 기존 메타 병합 + resized 마킹
+                const merged = { ...(meta.metadata || {}), resized: "true" };
 
                 await file.save(out, {
-                  contentType: "image/jpeg",
+                  contentType,
                   resumable: false,
-                  metadata: {
-                    cacheControl: "public, max-age=31536000",
-                    metadata: { resized: "true" }, // 중복 방지 마커
-                  },
+                  cacheControl: meta.cacheControl || "public, max-age=31536000",
+                  metadata: merged,
+                  validation: "crc32c",
                 });
 
                 processed++;
@@ -119,13 +195,10 @@ export const resizeDaily = onSchedule(
             })
           )
       );
-
-      // 필요 시 처리 상한선 두기 (타임아웃 회피)
-      // if (processed >= 2000) break;
     } while (pageToken);
 
     logger.info(
-      `Done. processed=${processed}, skipped=${skipped}, day=${PROCESS_DAY}, prefix=${prefix}`
+      `Done. processed=${processed}, skipped=${skipped}, unsupported=${unsupported}, day=${PROCESS_DAY}, prefix=${prefix}`
     );
   }
 );
