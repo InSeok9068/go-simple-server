@@ -73,6 +73,7 @@ tools=(
     "github.com/air-verse/air@latest"
     "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"
     "github.com/sqlc-dev/sqlc/cmd/sqlc@latest"
+    "golang.org/x/vuln/cmd/govulncheck@latest"
 )
 
 for tool in "${tools[@]}"; do

@@ -133,6 +133,7 @@ go get modernc.org/sqlite
 go install github.com/air-verse/air@latest
 go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+go install golang.org/x/vuln/cmd/govulncheck@latest
 ```
 
 ### 불필요한 종속성 제거
@@ -182,6 +183,14 @@ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install
 
 ```shell
 golangci-lint run ./...
+```
+
+---
+
+## 보안 이슈 검증
+
+```shell
+govulncheck ./...
 ```
 
 ---
