@@ -260,6 +260,7 @@ func Index(title string, date string, mood string) Node {
 			/* 이미지 Dialog */
 			Dialog(ID("diary-image-dialog"), Class("bottom"),
 				H5(Text("이미지")),
+				P(Text("※ 매일 새벽 3시경 이미지가 자동으로 리사이즈됩니다.")),
 				Div(
 					h.Get(fmt.Sprintf("/diary/images?date=%s", date)),
 					h.Trigger("load"),

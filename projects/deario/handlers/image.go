@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"simple-server/internal/middleware"
 	"simple-server/pkg/util/authutil"
+	"simple-server/pkg/util/firebaseutil"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
 
@@ -237,31 +237,9 @@ func diaryImageURL(d db.Diary, slot int) (string, error) {
 	}
 }
 
-// parseFirebaseURL은 파이어베이스 이미지 URL에서 버킷과 오브젝트를 추출한다.
-func parseFirebaseURL(raw string) (string, string, error) {
-	u, err := neturl.Parse(raw)
-	if err != nil {
-		return "", "", err
-	}
-	p := u.RawPath
-	if p == "" {
-		p = u.Path
-	}
-	parts := strings.Split(p, "/")
-	if len(parts) < 6 {
-		return "", "", fmt.Errorf("잘못된 URL")
-	}
-	bucket := parts[3]
-	object, err := neturl.QueryUnescape(parts[5])
-	if err != nil {
-		return "", "", err
-	}
-	return bucket, object, nil
-}
-
 // deleteFirebaseImage는 파이어베이스에서 이미지를 삭제한다.
 func deleteFirebaseImage(ctx context.Context, raw string) error {
-	bucket, object, err := parseFirebaseURL(raw)
+	bucket, object, err := firebaseutil.ParseFirebaseURL(raw)
 	if err != nil {
 		return fmt.Errorf("URL 파싱 실패: %w", err)
 	}
