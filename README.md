@@ -273,8 +273,40 @@ aic
 npm install -g firebase-tools
 ```
 
-### 코드 배포
+### 코드 전체 배포
 
 ```shell
 firebase deploy
+```
+
+### 함수 명령어
+
+#### 함수 목록 보기
+
+```shell
+firebase functions:list
+```
+
+#### 함수 배포
+
+```shell
+# 개별
+firebase deploy --only functions:{함수명}
+# 전체
+firebase deploy --only functions
+```
+
+#### 함수 제거
+
+```shell
+firebase functions:delete {함수명}
+```
+
+#### 함수 로깅
+
+```shell
+# 개별
+firebase functions:log --only {함수명}
+# 전체
+firebase functions:log
 ```
