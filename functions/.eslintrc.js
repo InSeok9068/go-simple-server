@@ -31,6 +31,7 @@ module.exports = {
     /* index.ts 전용 */
     "require-jsdoc": ["off"],
     "linebreak-style": ["off"],
+    "operator-linebreak": ["off"],
     "@typescript-eslint/no-explicit-any": ["off"],
     "max-len": ["off"],
   },
