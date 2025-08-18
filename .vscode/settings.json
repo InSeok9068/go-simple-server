@@ -20,7 +20,7 @@
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
     "pocketbase": "pocketbase*",
-    ".env": ".gitignore, .golangci.yml, .prettierignore, model.conf, tailwind.config.js"
+    ".env": ".gitignore, .golangci.yml, .prettierignore, .prettierrc.js, model.conf, tailwind.config.js, firebase.json, .firebaserc"
   },
   "files.exclude": {
     "tmp": true,

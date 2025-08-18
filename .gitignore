@@ -60,3 +60,7 @@ shared/static/tailwindcss.css
 
 # Local Histroy
 .history
+
+# Firebase
+!functions/package.json
+!functions/package-lock.json

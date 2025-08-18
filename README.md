@@ -262,3 +262,19 @@ aic
 2. bubblewrap init --manifest https://deario.toy-project.n-e.kr/manifest.json
 3. assetlinks.json 추가
 4. bubblewrap build
+
+---
+
+## Firebase Cloud Function
+
+### 콘솔 설치
+
+```shell
+npm install -g firebase-tools
+```
+
+### 코드 배포
+
+```shell
+firebase deploy
+```
