@@ -6,14 +6,46 @@ import {
   getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
-// 한국시간 YYYY-MM-DD
-function ymdKST(date = new Date()) {
+// 한국시간 YYYY-MM-DD로 변환 (Date | 'YYYYMMDD' | 'YYYY-MM-DD' 지원)
+function ymdKST(input = new Date()) {
+  let d;
+
+  if (input instanceof Date) {
+    d = input;
+  } else if (typeof input === "number" || typeof input === "string") {
+    const s = String(input).trim();
+
+    if (/^\d{8}$/.test(s)) {
+      // 'YYYYMMDD' -> KST 자정으로 해석
+      const y = +s.slice(0, 4);
+      const m = +s.slice(4, 6) - 1;
+      const day = +s.slice(6, 8);
+      // KST 자정 타임스탬프 만들기
+      const kst = new Date(Date.UTC(y, m, day));
+      // UTC 자정에 +9시간을 더해 KST 자정으로 맞춤
+      kst.setUTCHours(kst.getUTCHours() + 9);
+      d = kst;
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+      // 'YYYY-MM-DD' -> KST 자정으로 고정
+      d = new Date(`${s}T00:00:00+09:00`);
+    } else {
+      // 기타 문자열은 JS 파서에 위임 (권장하진 않음)
+      d = new Date(s);
+    }
+  } else {
+    d = new Date(input);
+  }
+
+  if (isNaN(d)) {
+    throw new Error("Invalid date");
+  }
+
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Seoul",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(date);
+  }).format(d);
 }
 
 function getExt(file) {
@@ -65,7 +97,7 @@ window.uploadDiaryImage = async function (date) {
 
   const uid = auth.currentUser.uid;
   const uploadYMD = ymdKST(new Date()); // 업로드 “오늘” (KST)
-  const diaryYMD = ymdKST(new Date(date)); // 일기 날짜 (사용자가 선택)
+  const diaryYMD = ymdKST(date); // 일기 날짜 (사용자가 선택)
   const ts = Date.now(); // 충돌 방지용 타임스탬프
   const ext = getExt(file);
 
