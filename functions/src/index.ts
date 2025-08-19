@@ -1,15 +1,14 @@
 import { setGlobalOptions } from "firebase-functions/v2";
-import { onSchedule } from "firebase-functions/v2/scheduler";
+import { onObjectFinalized } from "firebase-functions/v2/storage";
 import { logger } from "firebase-functions";
 import { initializeApp } from "firebase-admin/app";
 import { getStorage } from "firebase-admin/storage";
 import sharp from "sharp";
-import pLimit from "p-limit";
 
 // === 전역 옵션 ===
 setGlobalOptions({
-  region: "us-west1", // 스토리지와 동일 리전
-  timeoutSeconds: 60 * 10, // 10분
+  region: "us-west1", // 스토리지 리전과 동일
+  timeoutSeconds: 60 * 1, // 1분 (최대 9분)
   memory: "512MiB",
 });
 
@@ -22,38 +21,8 @@ const JPEG_QUALITY = 75;
 const WEBP_QUALITY = 75;
 const MIN_QUALITY = 50; // 바이트 초과 시 여기까지 낮춤
 const QUALITY_STEP = 5;
-const MAX_BYTES = 600 * 1024; // 600KB 이하이면 "충분히 작다"로 간주
-const CONCURRENCY = 5; // 동시 처리 제한
+const MAX_BYTES = 600 * 1024; // 600KB 이하면 스킵
 const IMAGE_EXT = /\.(jpe?g|png|webp)$/i;
-
-const PROCESS_DAY: "today" | "yesterday" = "yesterday";
-
-// KST 기준 YYYY-MM-DD
-function ymdKST(d = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(d);
-}
-
-// 오늘/어제 접두사 생성
-function targetPrefix(): string {
-  const now = new Date();
-  if (PROCESS_DAY === "yesterday") {
-    const y = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    return `diary/${ymdKST(y)}/`;
-  }
-  return `diary/${ymdKST(now)}/`;
-}
-
-// getFiles의 튜플 타입 간단 정의
-type GetFilesTuple = [
-  any[],
-  { pageToken?: string } | undefined,
-  { nextPageToken?: string } | undefined
-];
 
 // 원본 메타 기준으로 포맷/콘텐츠타입 결정
 function detectFormat(meta: { contentType?: string; name?: string }) {
@@ -71,134 +40,121 @@ function detectFormat(meta: { contentType?: string; name?: string }) {
   return { fmt: "unsupported" as const, contentType: meta.contentType || "" };
 }
 
-export const resizeDaily = onSchedule(
+/**
+ * diary/ 폴더로 업로드된 이미지가 "최종화"되면 즉시 리사이즈/재인코딩
+ * - 이미 resized=true 라벨이 있으면 스킵 (무한루프 방지)
+ * - 작은 파일(<= MAX_BYTES)은 메타만 찍고 스킵
+ * - 같은 객체로 overwrite 저장 → 한 번 더 finalize 되지만, 다음 트리거에서 resized=true 감지로 스킵
+ */
+export const resizeOnUpload = onObjectFinalized(
   {
-    schedule: "0 3 * * *",
-    timeZone: "Asia/Seoul",
+    region: "us-west1",
+    retry: false,
+    // 필요하면 특정 버킷만 필터링: eventFilters: { bucket: "your-bucket-name" },
   },
-  async () => {
-    const bucket = getStorage().bucket();
-    const limit = pLimit(CONCURRENCY);
+  async (event) => {
+    const { name, bucket: bucketName, contentType, metadata } = event.data;
 
-    let pageToken: string | undefined = undefined;
-    let processed = 0;
-    let skipped = 0;
-    let unsupported = 0;
+    // 이름/타입 검증
+    if (!name) return;
+    if (!name.startsWith("diary/")) {
+      // diary/ 외 경로는 무시
+      return;
+    }
+    if (!IMAGE_EXT.test(name)) {
+      return;
+    }
 
-    const prefix = targetPrefix();
-    logger.info(`Start resizeDaily. prefix=${prefix}`);
+    // 이미 처리된 파일은 스킵
+    if (metadata?.resized === "true") {
+      logger.debug(`Skip already resized: ${name}`);
+      return;
+    }
 
-    do {
-      const [files, nextQuery, apiResp] = (await bucket.getFiles({
-        prefix,
-        autoPaginate: false,
-        pageToken,
-      })) as GetFilesTuple;
+    const bucket = getStorage().bucket(bucketName);
+    const file = bucket.file(name);
 
-      pageToken = nextQuery?.pageToken ?? apiResp?.nextPageToken;
+    try {
+      // 메타 조회
+      const [meta] = await file.getMetadata();
+      const { fmt, contentType: targetContentType } = detectFormat({
+        contentType: meta.contentType || contentType,
+        name,
+      });
 
-      await Promise.all(
-        files
-          .filter((f) => IMAGE_EXT.test(f.name))
-          .map((file) =>
-            limit(async () => {
-              try {
-                // 이미 처리된 파일은 스킵
-                const [meta] = await file.getMetadata();
-                if (meta?.metadata?.resized === "true") {
-                  skipped++;
-                  return;
-                }
+      if (fmt === "unsupported") {
+        logger.warn(`Unsupported format: ${name}`);
+        return;
+      }
 
-                const { fmt, contentType } = detectFormat({
-                  contentType: meta.contentType,
-                  name: meta.name,
-                });
-                if (fmt === "unsupported") {
-                  unsupported++;
-                  logger.warn(`Skip unsupported format: ${file.name}`);
-                  return;
-                }
+      // 바이트 기준 스킵: 이미 충분히 작음
+      const objectSize = Number(meta.size || 0);
+      if (objectSize > 0 && objectSize <= MAX_BYTES) {
+        await file.setMetadata({
+          metadata: { ...(meta.metadata || {}), resized: "true" },
+        });
+        logger.debug(`Small enough, mark resized and skip: ${name}`);
+        return;
+      }
 
-                // ✅ 사이즈(바이트) 기준으로 스킵
-                const objectSize = Number(meta.size || 0); // GCS 메타 size는 문자열
-                if (objectSize > 0 && objectSize <= MAX_BYTES) {
-                  await file.setMetadata({
-                    metadata: { ...(meta.metadata || {}), resized: "true" },
-                  });
-                  skipped++;
-                  return;
-                }
+      // 다운로드
+      const [buf] = await file.download();
+      let image = sharp(buf).rotate(); // EXIF 회전 대응
 
-                // 다운로드
-                const [buf] = await file.download();
-                let image = sharp(buf).rotate();
+      // 기본 리사이즈 + 포맷별 인코딩
+      if (fmt === "jpeg") {
+        image = image
+          .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+          .jpeg({ quality: JPEG_QUALITY });
+      } else if (fmt === "png") {
+        image = image
+          .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+          .png({ compressionLevel: 9, palette: true }); // 용량 감소
+      } else if (fmt === "webp") {
+        image = image
+          .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+          .webp({ quality: WEBP_QUALITY });
+      }
 
-                // 기본 리사이즈 (너비 제한은 유지하되, 판단 기준은 바이트)
-                // -> 큰 이미지면 용량 줄이는데 유리하니 그대로 수행
-                if (fmt === "jpeg") {
-                  image = image
-                    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-                    .jpeg({ quality: JPEG_QUALITY });
-                } else if (fmt === "png") {
-                  image = image
-                    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-                    .png({ compressionLevel: 9, palette: true }); // palette로 용량 더 감소
-                } else if (fmt === "webp") {
-                  image = image
-                    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-                    .webp({ quality: WEBP_QUALITY });
-                }
+      let out = await image.toBuffer();
 
-                let out = await image.toBuffer();
+      // 여전히 큰 경우: JPEG/WEBP는 품질 단계적으로 낮춤
+      if (out.length > MAX_BYTES && (fmt === "jpeg" || fmt === "webp")) {
+        let q = fmt === "jpeg" ? JPEG_QUALITY : WEBP_QUALITY;
+        while (q - QUALITY_STEP >= MIN_QUALITY && out.length > MAX_BYTES) {
+          q -= QUALITY_STEP;
+          const retry = sharp(buf)
+            .rotate()
+            .resize({ width: MAX_WIDTH, withoutEnlargement: true });
+          out =
+            fmt === "jpeg"
+              ? await retry.jpeg({ quality: q }).toBuffer()
+              : await retry.webp({ quality: q }).toBuffer();
+        }
+      }
+      // PNG는 위 설정으로 최대한 줄였고, 그래도 크면 포맷 유지하여 저장
 
-                // ✅ 인코딩 결과가 여전히 MAX_BYTES 초과이면 품질 낮춰 재시도(jpeg/webp)
-                if (
-                  out.length > MAX_BYTES &&
-                  (fmt === "jpeg" || fmt === "webp")
-                ) {
-                  let q = fmt === "jpeg" ? JPEG_QUALITY : WEBP_QUALITY;
-                  while (
-                    q - QUALITY_STEP >= MIN_QUALITY &&
-                    out.length > MAX_BYTES
-                  ) {
-                    q -= QUALITY_STEP;
-                    const retry = sharp(buf)
-                      .rotate()
-                      .resize({ width: MAX_WIDTH, withoutEnlargement: true });
-                    const encoded =
-                      fmt === "jpeg"
-                        ? retry.jpeg({ quality: q })
-                        : retry.webp({ quality: q });
-                    out = await encoded.toBuffer();
-                  }
-                }
-                // PNG는 위에서 palette+compressionLevel로 최대한 줄였고,
-                // 그래도 초과면 그대로 저장(포맷 유지 조건)
+      // 메타 병합 + resized 마킹
+      const mergedMeta = { ...(meta.metadata || {}), resized: "true" };
 
-                // 기존 메타 병합 + resized 마킹
-                const merged = { ...(meta.metadata || {}), resized: "true" };
+      // 동일 경로 overwrite 저장 (다음 세대 finalize 한 번 더 발생하나, resized=true로 즉시 스킵됨)
+      await file.save(out, {
+        resumable: false,
+        validation: "crc32c",
+        metadata: {
+          contentType: targetContentType,
+          cacheControl: meta.cacheControl || "public, max-age=31536000",
+          metadata: mergedMeta, // ← 사용자 정의 메타
+        },
+        // v7+ (@google-cloud/storage) 권장
+        preconditionOpts: { ifGenerationMatch: meta.generation },
+        // 만약 당신의 버전이 v6 계열이면 대신 아래 줄을 쓰세요 (윗줄은 제거)
+        // ifGenerationMatch: meta.generation as any,
+      });
 
-                await file.save(out, {
-                  contentType,
-                  resumable: false,
-                  cacheControl: meta.cacheControl || "public, max-age=31536000",
-                  metadata: merged,
-                  validation: "crc32c",
-                });
-
-                processed++;
-                logger.log("Resized:", file.name);
-              } catch (e: any) {
-                logger.error(`Resize failed for ${file.name}`, e?.message || e);
-              }
-            })
-          )
-      );
-    } while (pageToken);
-
-    logger.info(
-      `Done. processed=${processed}, skipped=${skipped}, unsupported=${unsupported}, day=${PROCESS_DAY}, prefix=${prefix}`
-    );
+      logger.info(`Resized: ${name}, finalBytes=${out.length}`);
+    } catch (e: any) {
+      logger.error(`Resize failed for ${name}`, e?.message || e);
+    }
   }
 );
