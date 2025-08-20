@@ -97,7 +97,7 @@ func HeadWithFirebaseLogin() []Node {
 		Link(Rel("stylesheet"), Href("https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css")),
 		Script(Src("https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js")),
 		Script(Src("https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js")),
-		Script(Src("https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.js")),
+		Script(Src("https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth__ko.js")),
 		Script(Src("/shared/static/firebase_login.js"), Defer()),
 	}
 }
