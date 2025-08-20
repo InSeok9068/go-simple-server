@@ -14,6 +14,24 @@ document.addEventListener("alpine:init", () => {
   });
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const textarea = document.querySelector("textarea[name='content']");
+  if (!textarea) return;
+  const editor = pell.init({
+    element: document.getElementById("editor"),
+    onChange: (html) => {
+      textarea.value = html;
+      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    },
+  });
+  editor.content.innerHTML = textarea.value;
+  editor.content.setAttribute(
+    "data-placeholder",
+    textarea.getAttribute("placeholder"),
+  );
+  editor.content.focus();
+});
+
 function showAiFeedback() {
   const mdEl = document.getElementById("ai-feedback-markdown");
   if (mdEl && mdEl.textContent) {

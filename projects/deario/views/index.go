@@ -29,6 +29,8 @@ func Index(title string, date string, mood string) Node {
 			[]Node{
 				Meta(Name("description"), Content("AI 피드백 일기 서비스")),
 				Link(Rel("manifest"), Href("/manifest.json")),
+				Link(Rel("stylesheet"), Href("https://unpkg.com/pell/dist/pell.min.css")),
+				Script(Src("https://unpkg.com/pell")),
 				Script(Src("/static/deario.js")),
 				Script(Src("/static/calendar.js")),
 				Script(Type("module"), Src("/static/storage.js")),
@@ -348,9 +350,9 @@ func DiaryContentForm(date string, content string) Node {
 	return Form(ID("diary"),
 		Input(Type("hidden"), Name("date"), Value(date)),
 		Div(Class("field textarea border u-fit-h‑18rem"),
+			Div(ID("editor")),
 			Textarea(
 				Name("content"),
-				AutoFocus(),
 				x.Data(""),
 				h.Post("/diary/save"),
 				h.Swap("none"),
@@ -359,6 +361,7 @@ func DiaryContentForm(date string, content string) Node {
 				Attr("@htmx:after-request", "$store.save.ok()"),
 				Attr("aria-label", "일기 내용"),
 				Attr("placeholder", "오늘의 일기를 입력하세요"),
+				Style("display: none"),
 				Text(content),
 			),
 		),
