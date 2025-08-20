@@ -18,6 +18,7 @@ func Privacy() Node {
 		Head: gomutil.MergeHeads(
 			shared.HeadsWithBeer("개인정보 처리방침"),
 			shared.HeadWithFirebaseAuth(),
+			shared.HeadGoogleFonts("Gamja Flower"),
 			[]Node{
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("/static/deario.js")),
