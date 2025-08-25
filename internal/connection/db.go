@@ -55,6 +55,8 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 	// 메인 DB 설정
 	db.SetMaxOpenConns(5) // 최대 연결 수 (읽기 쓰기 동시)
 	db.SetMaxIdleConns(5) // 최대 유휴 연결 수 (읽기 쓰기 동시)
+	// TODO: 추후에 메모리 압박이 발생할 경우 추가
+	// db.SetConnMaxIdleTime(1 * time.Hour) // 1h 유휴 연결 유지 시간
 
 	return db, nil
 }
