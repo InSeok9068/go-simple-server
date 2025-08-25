@@ -114,3 +114,8 @@ body {
   background: var(--primary);
   border-radius: 50%;
 }
+
+.pell-content:empty::before {
+  content: attr(data-placeholder);
+  color: #888;
+}
