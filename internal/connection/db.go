@@ -58,6 +58,14 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 	// TODO: 추후에 메모리 압박이 발생할 경우 추가
 	// db.SetConnMaxIdleTime(1 * time.Hour) // 1h 유휴 연결 유지 시간
 
+	// 연결 테스트
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := db.PingContext(ctx); err != nil {
+		db.Close()
+		return nil, err
+	}
+
 	return db, nil
 }
 
@@ -72,5 +80,14 @@ func LogDBOpen() (*sql.DB, error) {
 	// 로그 DB 설정
 	db.SetMaxOpenConns(1) // 최대 연결 수 (로그는 동시성 필요 없음)
 	db.SetMaxIdleConns(1) // 최대 유휴 연결 수 (로그는 동시성 필요 없음)
+
+	// 연결 테스트
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := db.PingContext(ctx); err != nil {
+		db.Close()
+		return nil, err
+	}
+
 	return db, nil
 }

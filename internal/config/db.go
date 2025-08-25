@@ -17,9 +17,9 @@ func AppDatabaseURL(serviceName string) string {
 	pragmas := strings.Join(appPragmas, "&")
 	var url string
 	if IsDevEnv() {
-		url = fmt.Sprintf(`file:./projects/%s/data/data.db?%s`, serviceName, pragmas)
+		url = fmt.Sprintf(`file:./projects/%s/data/data.db?%s&mode=rwc`, serviceName, pragmas)
 	} else {
-		url = fmt.Sprintf(`file:/srv/%s/data/data.db?%s`, serviceName, pragmas)
+		url = fmt.Sprintf(`file:/srv/%s/data/data.db?%s&mode=rwc`, serviceName, pragmas)
 	}
 	return url
 }
@@ -35,9 +35,9 @@ func LogDatabaseURL() string {
 	pragmas := strings.Join(logPragmas, "&")
 	var url string
 	if IsDevEnv() {
-		url = fmt.Sprintf(`file:./shared/log/auxiliary.db?%s`, pragmas)
+		url = fmt.Sprintf(`file:./shared/log/auxiliary.db?%s&mode=rwc`, pragmas)
 	} else {
-		url = fmt.Sprintf(`file:/srv/log/auxiliary.db?%s`, pragmas)
+		url = fmt.Sprintf(`file:/srv/log/auxiliary.db?%s&mode=rwc`, pragmas)
 	}
 	return url
 }
