@@ -40,6 +40,8 @@ func main() {
 		return
 	}
 	defer database.Close()
+	// DB 지표 노출
+	config.PublishDBVars(database)
 	/* DB 초기화 */
 
 	/* DB 마이그레이션 */
