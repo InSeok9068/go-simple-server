@@ -39,14 +39,15 @@ type RuntimeSnapshot struct {
 }
 
 type HTTPSnapshot struct {
-	AvgResMS    float64 `json:"avg_res_ms"`
-	P95ResMS    float64 `json:"p95_res_ms"`
-	P99ResMS    float64 `json:"p99_res_ms"`
-	RPS         float64 `json:"rps"`
-	ErrorRate   float64 `json:"error_rate"`
-	ErrRate1m   float64 `json:"err_rate_1m"`
-	TotalReqs   int64   `json:"total_reqs"`
-	TotalErrors int64   `json:"total_errors"`
+	AvgResMS     float64          `json:"avg_res_ms"`
+	P95ResMS     float64          `json:"p95_res_ms"`
+	P99ResMS     float64          `json:"p99_res_ms"`
+	RPS          float64          `json:"rps"`
+	ErrorRate    float64          `json:"error_rate"`
+	ErrRate1m    float64          `json:"err_rate_1m"`
+	TotalReqs    int64            `json:"total_reqs"`
+	TotalErrors  int64            `json:"total_errors"`
+	ErrorsByPath map[string]int64 `json:"errors_by_path"`
 }
 
 type AppSnapshot struct {
@@ -100,6 +101,13 @@ func takeSnapshot(db *sql.DB) AppSnapshot {
 	ec := errCount.Value()
 	tl := totalLatencyMS.Value()
 
+	epErrs := map[string]int64{}
+	errCountByPath.Do(func(kv expvar.KeyValue) {
+		if v, ok := kv.Value.(*expvar.Int); ok {
+			epErrs[kv.Key] = v.Value()
+		}
+	})
+
 	p95, p99 := latencyPercentiles()
 	req1m, err1m := oneMinuteCounts()
 
@@ -130,14 +138,15 @@ func takeSnapshot(db *sql.DB) AppSnapshot {
 	}
 
 	http := HTTPSnapshot{
-		AvgResMS:    avg,
-		P95ResMS:    p95,
-		P99ResMS:    p99,
-		RPS:         rps,
-		ErrorRate:   rate,
-		ErrRate1m:   errRate1m,
-		TotalReqs:   rc,
-		TotalErrors: ec,
+		AvgResMS:     avg,
+		P95ResMS:     p95,
+		P99ResMS:     p99,
+		RPS:          rps,
+		ErrorRate:    rate,
+		ErrRate1m:    errRate1m,
+		TotalReqs:    rc,
+		TotalErrors:  ec,
+		ErrorsByPath: epErrs,
 	}
 
 	return AppSnapshot{
@@ -202,6 +211,12 @@ const varsPage = `<!doctype html>
       const rate1m = Number((h.err_rate_1m || 0) * 100).toFixed(2);
       const waitRate = Number((b.wait_rate || 0) * 100).toFixed(2);
 
+      const ep = h.errors_by_path || {};
+      let epHtml = "";
+      for (const k in ep) {
+        epHtml += "<div>" + k + ": " + ep[k] + "</div>";
+      }
+
       document.getElementById("app").innerHTML =
         "<div class='card'>" +
           "<b>메모리</b>" +
@@ -229,6 +244,8 @@ const varsPage = `<!doctype html>
           "<div>RPS(1m): " + rps + "</div>" +
           "<div>전체 에러율: " + rate + "%% (" + (h.total_errors || 0) + "/" + (h.total_reqs || 0) + ")</div>" +
           "<div>최근1분 에러율: " + rate1m + "%%</div>" +
+          "<div>엔드포인트별 에러:</div>" +
+          epHtml +
         "</div>";
 
       var now = new Date();
