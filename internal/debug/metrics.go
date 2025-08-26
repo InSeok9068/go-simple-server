@@ -13,6 +13,7 @@ import (
 var (
 	reqCount       = expvar.NewInt("req_count")
 	errCount       = expvar.NewInt("err_count")
+	errCountByPath = expvar.NewMap("err_count_by_path")
 	totalLatencyMS = expvar.NewInt("total_latency_ms")
 
 	mu sync.Mutex
@@ -41,6 +42,7 @@ func MetricsMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		isErr := err != nil || c.Response().Status >= 400
 		if isErr {
 			errCount.Add(1)
+			errCountByPath.Add(c.Path(), 1)
 		}
 
 		recordMetrics(dur, isErr, time.Now())
