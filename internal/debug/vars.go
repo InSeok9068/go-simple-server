@@ -13,13 +13,14 @@ import (
 )
 
 type DBSnapshot struct {
-	Open    int           `json:"open"`
-	MaxOpen int           `json:"max_open"`
-	InUse   int           `json:"in_use"`
-	Idle    int           `json:"idle"`
-	WaitCnt int64         `json:"wait_count"`
-	WaitDur time.Duration `json:"wait_duration"`
-	Pragma  any           `json:"pragma"`
+	Open     int           `json:"open"`
+	MaxOpen  int           `json:"max_open"`
+	InUse    int           `json:"in_use"`
+	Idle     int           `json:"idle"`
+	WaitCnt  int64         `json:"wait_count"`
+	WaitDur  time.Duration `json:"wait_duration"`
+	WaitRate float64       `json:"wait_rate"`
+	Pragma   any           `json:"pragma"`
 }
 
 type MemSnapshot struct {
@@ -39,7 +40,11 @@ type RuntimeSnapshot struct {
 
 type HTTPSnapshot struct {
 	AvgResMS    float64 `json:"avg_res_ms"`
+	P95ResMS    float64 `json:"p95_res_ms"`
+	P99ResMS    float64 `json:"p99_res_ms"`
+	RPS         float64 `json:"rps"`
 	ErrorRate   float64 `json:"error_rate"`
+	ErrRate1m   float64 `json:"err_rate_1m"`
 	TotalReqs   int64   `json:"total_reqs"`
 	TotalErrors int64   `json:"total_errors"`
 }
@@ -91,6 +96,23 @@ func takeSnapshot(db *sql.DB) AppSnapshot {
 		"wal_autocheckpoint": pragmaInt(ctx, db, "wal_autocheckpoint"),
 	}
 
+	rc := reqCount.Value()
+	ec := errCount.Value()
+	tl := totalLatencyMS.Value()
+
+	p95, p99 := latencyPercentiles()
+	req1m, err1m := oneMinuteCounts()
+
+	var avg, rate, rps, errRate1m float64
+	if rc > 0 {
+		avg = float64(tl) / float64(rc)
+		rate = float64(ec) / float64(rc)
+	}
+	if req1m > 0 {
+		rps = float64(req1m) / 60.0
+		errRate1m = float64(err1m) / float64(req1m)
+	}
+
 	dbs := DBSnapshot{
 		Open:    s.OpenConnections,
 		MaxOpen: s.MaxOpenConnections,
@@ -98,20 +120,22 @@ func takeSnapshot(db *sql.DB) AppSnapshot {
 		Idle:    s.Idle,
 		WaitCnt: s.WaitCount,
 		WaitDur: s.WaitDuration,
-		Pragma:  pr,
+		WaitRate: func() float64 {
+			if rc > 0 {
+				return float64(s.WaitCount) / float64(rc)
+			}
+			return 0
+		}(),
+		Pragma: pr,
 	}
 
-	rc := reqCount.Value()
-	ec := errCount.Value()
-	tl := totalLatencyMS.Value()
-	var avg, rate float64
-	if rc > 0 {
-		avg = float64(tl) / float64(rc)
-		rate = float64(ec) / float64(rc)
-	}
 	http := HTTPSnapshot{
 		AvgResMS:    avg,
+		P95ResMS:    p95,
+		P99ResMS:    p99,
+		RPS:         rps,
 		ErrorRate:   rate,
+		ErrRate1m:   errRate1m,
 		TotalReqs:   rc,
 		TotalErrors: ec,
 	}
@@ -169,7 +193,12 @@ const varsPage = `<!doctype html>
       const h = a.http || {};
 
       const avg = Number(h.avg_res_ms || 0).toFixed(2);
+      const p95 = Number(h.p95_res_ms || 0).toFixed(2);
+      const p99 = Number(h.p99_res_ms || 0).toFixed(2);
+      const rps = Number(h.rps || 0).toFixed(2);
       const rate = Number((h.error_rate || 0) * 100).toFixed(2);
+      const rate1m = Number((h.err_rate_1m || 0) * 100).toFixed(2);
+      const waitRate = Number((b.wait_rate || 0) * 100).toFixed(2);
 
       document.getElementById("app").innerHTML =
         "<div class='card'>" +
@@ -177,12 +206,15 @@ const varsPage = `<!doctype html>
           "<div>Alloc: " + m.alloc_mb + " MB</div>" +
           "<div>Heap: " + m.heap_alloc_mb + "/" + m.heap_sys_mb + " MB</div>" +
           "<div>NumGC: " + m.num_gc + "</div>" +
+          "<div>NextGC: " + m.next_gc_mb + " MB</div>" +
+          "<div>PauseTotal: " + m.pause_total_ms + " ms</div>" +
         "</div>" +
         "<div class='card'>" +
           "<b>DB 연결</b>" +
           "<div>Open: " + b.open + "</div>" +
           "<div>InUse/Idle: " + b.in_use + "/" + b.idle + "</div>" +
           "<div>WaitCount: " + b.wait_count + "</div>" +
+          "<div>WaitRate: " + waitRate + "%%</div>" +
         "</div>" +
         "<div class='card'>" +
           "<b>런타임</b>" +
@@ -191,7 +223,10 @@ const varsPage = `<!doctype html>
         "<div class='card'>" +
           "<b>HTTP 요청</b>" +
           "<div>평균 응답시간: " + avg + " ms</div>" +
-          "<div>에러율: " + rate + "%% (" + (h.total_errors || 0) + "/" + (h.total_reqs || 0) + ")</div>" +
+          "<div>P95/P99: " + p95 + "/" + p99 + " ms</div>" +
+          "<div>RPS(1m): " + rps + "</div>" +
+          "<div>전체 에러율: " + rate + "%% (" + (h.total_errors || 0) + "/" + (h.total_reqs || 0) + ")</div>" +
+          "<div>최근1분 에러율: " + rate1m + "%%</div>" +
         "</div>";
 
       var now = new Date();
