@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"expvar"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
 	"runtime"
-	"sync/atomic"
 	"time"
 )
 
@@ -40,22 +40,13 @@ type AppSnapshot struct {
 	Note string      `json:"note"`
 }
 
-var snap atomic.Value
-
 func Init(name string, db *sql.DB) {
-	ctx := context.Background()
-	snap.Store(takeSnapshot(ctx, db))
-	go func() {
-		t := time.NewTicker(5 * time.Second)
-		defer t.Stop()
-		for range t.C {
-			snap.Store(takeSnapshot(ctx, db))
-		}
-	}()
-	expvar.Publish(name, expvar.Func(snap.Load))
+	expvar.Publish(name, expvar.Func(func() any {
+		return takeSnapshot(db) // 요청 들어올 때만 실행
+	}))
 }
 
-func takeSnapshot(ctx context.Context, db *sql.DB) AppSnapshot {
+func takeSnapshot(db *sql.DB) AppSnapshot {
 	var ms runtime.MemStats
 	runtime.ReadMemStats(&ms)
 	mem := MemSnapshot{
@@ -70,6 +61,19 @@ func takeSnapshot(ctx context.Context, db *sql.DB) AppSnapshot {
 	}
 
 	s := db.Stats()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+	pr := map[string]any{
+		"journal_mode":       pragmaString(ctx, db, "journal_mode"),
+		"synchronous":        pragmaEnum(ctx, db, "synchronous", map[int64]string{0: "OFF", 1: "NORMAL", 2: "FULL", 3: "EXTRA"}),
+		"busy_timeout_ms":    pragmaInt(ctx, db, "busy_timeout"),
+		"foreign_keys":       pragmaBool(ctx, db, "foreign_keys"),
+		"temp_store":         pragmaEnum(ctx, db, "temp_store", map[int64]string{0: "DEFAULT", 1: "FILE", 2: "MEMORY"}),
+		"journal_size_limit": pragmaInt(ctx, db, "journal_size_limit"),
+		"wal_autocheckpoint": pragmaInt(ctx, db, "wal_autocheckpoint"),
+	}
+
 	dbs := DBSnapshot{
 		Open:    s.OpenConnections,
 		MaxOpen: s.MaxOpenConnections,
@@ -77,7 +81,7 @@ func takeSnapshot(ctx context.Context, db *sql.DB) AppSnapshot {
 		Idle:    s.Idle,
 		WaitCnt: s.WaitCount,
 		WaitDur: s.WaitDuration,
-		Pragma:  readSQLitePragmas(ctx, db),
+		Pragma:  pr,
 	}
 
 	return AppSnapshot{
@@ -88,29 +92,9 @@ func takeSnapshot(ctx context.Context, db *sql.DB) AppSnapshot {
 	}
 }
 
-func bytesToMB(b uint64) float64 { return float64(b) / 1024.0 / 1024.0 }
-
-func readSQLitePragmas(ctx context.Context, db *sql.DB) map[string]any {
-	pragma := map[string]any{}
-	readStr := func(name string) string {
-		var v string
-		_ = db.QueryRowContext(ctx, "PRAGMA "+name).Scan(&v)
-		return v
-	}
-	readInt := func(name string) int64 {
-		var v int64
-		_ = db.QueryRowContext(ctx, "PRAGMA "+name).Scan(&v)
-		return v
-	}
-
-	pragma["busy_timeout_ms"] = readInt("busy_timeout")
-	pragma["foreign_keys"] = readInt("foreign_keys") == 1
-	pragma["journal_mode"] = readStr("journal_mode")
-	pragma["journal_size_limit"] = readInt("journal_size_limit")
-	pragma["synchronous"] = readStr("synchronous")
-	pragma["temp_store"] = readStr("temp_store")
-	pragma["wal_autocheckpoint"] = readInt("wal_autocheckpoint")
-	return pragma
+func bytesToMB(b uint64) float64 {
+	mb := float64(b) / 1024.0 / 1024.0
+	return math.Round(mb*100) / 100 // 소수점 둘째자리까지만
 }
 
 func VarsUI(w http.ResponseWriter, r *http.Request) {
@@ -119,7 +103,81 @@ func VarsUI(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, varsPage, service)
 }
 
-const varsPage = "<!doctype html><html><head><meta charset=\"utf-8\"><title>Debug Vars</title>" +
-	"<style>body{font:14px sans-serif;margin:24px}.card{border:1px solid #eee;padding:12px;margin-bottom:12px}</style>" +
-	"</head><body><h1>Go Runtime / DB Snapshot</h1><p><a href=\"/debug/vars\">/debug/vars</a></p><div id=\"app\"></div>" +
-	"<script>async function load(){const r=await fetch('/debug/vars');const d=await r.json();const a=d['%s']||{};const m=a.mem||{};const b=a.db||{};const f=v=>v==null?'-':v;document.getElementById('app').innerHTML=`<div class='card'><b>메모리</b><div>Alloc: ${m.alloc_mb} MB</div><div>Heap: ${m.heap_alloc_mb}/${m.heap_sys_mb} MB</div><div>NumGC: ${m.num_gc}</div></div><div class='card'><b>DB 연결</b><div>Open: ${b.open}</div><div>InUse/Idle: ${b.in_use}/${b.idle}</div><div>WaitCount: ${b.wait_count}</div></div>`;}load();setInterval(load,5000);</script></body></html>"
+const varsPage = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Debug Vars</title>
+  <style>
+    body { font:14px sans-serif; margin:24px; }
+    .card { border:1px solid #eee; padding:12px; margin-bottom:12px; }
+    .row { display:flex; gap:8px; align-items:center; }
+    button { padding:6px 10px; border:1px solid #ddd; background:#f8f8f8; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>Go Runtime / DB Snapshot</h1>
+  <div class="row">
+    <p style="margin:0"><a href="/debug/vars">/debug/vars</a></p>
+    <button id="refreshBtn">새로고침</button>
+    <span id="ts" style="color:#777; font-size:12px"></span>
+  </div>
+  <div id="app" style="margin-top:12px;"></div>
+
+  <script>
+    async function load() {
+      const r = await fetch('/debug/vars', { cache: 'no-store' });
+      const d = await r.json();
+      const a = d['%s'] || {};
+      const m = a.mem || {};
+      const b = a.db || {};
+
+      document.getElementById("app").innerHTML =
+        "<div class='card'>" +
+          "<b>메모리</b>" +
+          "<div>Alloc: " + m.alloc_mb + " MB</div>" +
+          "<div>Heap: " + m.heap_alloc_mb + "/" + m.heap_sys_mb + " MB</div>" +
+          "<div>NumGC: " + m.num_gc + "</div>" +
+        "</div>" +
+        "<div class='card'>" +
+          "<b>DB 연결</b>" +
+          "<div>Open: " + b.open + "</div>" +
+          "<div>InUse/Idle: " + b.in_use + "/" + b.idle + "</div>" +
+          "<div>WaitCount: " + b.wait_count + "</div>" +
+        "</div>";
+
+      var now = new Date();
+      document.getElementById("ts").textContent = "업데이트: " + now.toLocaleString();
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", load);
+    load(); // 최초 1회만
+  </script>
+</body>
+</html>`
+
+func pragmaString(ctx context.Context, db *sql.DB, name string) string {
+	var v string
+	_ = db.QueryRowContext(ctx, "PRAGMA "+name).Scan(&v)
+	return v
+}
+func pragmaInt(ctx context.Context, db *sql.DB, name string) int64 {
+	var v int64
+	_ = db.QueryRowContext(ctx, "PRAGMA "+name).Scan(&v)
+	return v
+}
+func pragmaBool(ctx context.Context, db *sql.DB, name string) bool {
+	var v int64
+	_ = db.QueryRowContext(ctx, "PRAGMA "+name).Scan(&v)
+	return v == 1
+}
+func pragmaEnum(ctx context.Context, db *sql.DB, name string, m map[int64]string) any {
+	var v int64
+	if err := db.QueryRowContext(ctx, "PRAGMA "+name).Scan(&v); err == nil {
+		if s, ok := m[v]; ok {
+			return s
+		}
+		return v
+	}
+	return nil
+}
