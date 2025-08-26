@@ -97,5 +97,34 @@ else
     echo -e "${YELLOW}경고: 의존성 정리 중 문제가 발생했습니다.${NC}"
 fi
 
+# 4. 프론트엔드 라이브러리 버전 확인
+print_step "4. 프론트엔드 라이브러리 버전 확인 중..."
+
+frontend_libs=(
+    "htmx.org|2.0.6|https://cdn.jsdelivr.net/npm/htmx.org@%s/dist/htmx.min.js"
+    "alpinejs|3.x.x|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
+    "beercss|3.11.32|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
+    "open-props|1.7.13|https://cdn.jsdelivr.net/npm/open-props@%s/open-props.min.css"
+    "bulma|1.0.2|https://cdn.jsdelivr.net/npm/bulma@%s/css/bulma.min.css"
+    "@picocss/pico|2|https://cdn.jsdelivr.net/npm/@picocss/pico@%s/css/pico.classless.min.css"
+    "material-dynamic-colors|1.1.2|https://cdn.jsdelivr.net/npm/material-dynamic-colors@%s/dist/cdn/material-dynamic-colors.min.js"
+    "flatpickr|4.6.13|https://cdn.jsdelivr.net/npm/flatpickr@%s/dist/flatpickr.min.css"
+)
+
+for entry in "${frontend_libs[@]}"; do
+    IFS='|' read -r pkg current url <<< "$entry"
+    latest=$(npm info "$pkg" version 2>/dev/null)
+    if [ -z "$latest" ]; then
+        latest="알 수 없음"
+        latest_url="알 수 없음"
+    else
+        latest_url=$(printf "$url" "$latest")
+    fi
+    echo "- $pkg: 현재 $current, 최신 $latest"
+    echo "  최신 URL: $latest_url"
+done
+
+print_done "프론트엔드 라이브러리 버전 확인"
+
 # 완료 메시지
 echo -e "\n${GREEN}=== 모든 의존성 업데이트가 완료되었습니다 ===${NC}"
