@@ -33,11 +33,24 @@ type MemSnapshot struct {
 	NextGCMb     float64 `json:"next_gc_mb"`
 }
 
+type RuntimeSnapshot struct {
+	Goroutines int `json:"goroutines"`
+}
+
+type HTTPSnapshot struct {
+	AvgResMS    float64 `json:"avg_res_ms"`
+	ErrorRate   float64 `json:"error_rate"`
+	TotalReqs   int64   `json:"total_reqs"`
+	TotalErrors int64   `json:"total_errors"`
+}
+
 type AppSnapshot struct {
-	At   time.Time   `json:"at"`
-	DB   DBSnapshot  `json:"db"`
-	Mem  MemSnapshot `json:"mem"`
-	Note string      `json:"note"`
+	At      time.Time       `json:"at"`
+	DB      DBSnapshot      `json:"db"`
+	Mem     MemSnapshot     `json:"mem"`
+	Runtime RuntimeSnapshot `json:"runtime"`
+	HTTP    HTTPSnapshot    `json:"http"`
+	Note    string          `json:"note"`
 }
 
 func Init(name string, db *sql.DB) {
@@ -58,6 +71,10 @@ func takeSnapshot(db *sql.DB) AppSnapshot {
 		NumGC:        ms.NumGC,
 		PauseTotalMS: float64(ms.PauseTotalNs) / 1e6,
 		NextGCMb:     bytesToMB(ms.NextGC),
+	}
+
+	rt := RuntimeSnapshot{
+		Goroutines: runtime.NumGoroutine(),
 	}
 
 	s := db.Stats()
@@ -84,11 +101,28 @@ func takeSnapshot(db *sql.DB) AppSnapshot {
 		Pragma:  pr,
 	}
 
+	rc := reqCount.Value()
+	ec := errCount.Value()
+	tl := totalLatencyMS.Value()
+	var avg, rate float64
+	if rc > 0 {
+		avg = float64(tl) / float64(rc)
+		rate = float64(ec) / float64(rc)
+	}
+	http := HTTPSnapshot{
+		AvgResMS:    avg,
+		ErrorRate:   rate,
+		TotalReqs:   rc,
+		TotalErrors: ec,
+	}
+
 	return AppSnapshot{
-		At:   time.Now(),
-		DB:   dbs,
-		Mem:  mem,
-		Note: "OK",
+		At:      time.Now(),
+		DB:      dbs,
+		Mem:     mem,
+		Runtime: rt,
+		HTTP:    http,
+		Note:    "OK",
 	}
 }
 
@@ -131,6 +165,11 @@ const varsPage = `<!doctype html>
       const a = d['%s'] || {};
       const m = a.mem || {};
       const b = a.db || {};
+      const rt = a.runtime || {};
+      const h = a.http || {};
+
+      const avg = Number(h.avg_res_ms || 0).toFixed(2);
+      const rate = Number((h.error_rate || 0) * 100).toFixed(2);
 
       document.getElementById("app").innerHTML =
         "<div class='card'>" +
@@ -144,6 +183,15 @@ const varsPage = `<!doctype html>
           "<div>Open: " + b.open + "</div>" +
           "<div>InUse/Idle: " + b.in_use + "/" + b.idle + "</div>" +
           "<div>WaitCount: " + b.wait_count + "</div>" +
+        "</div>" +
+        "<div class='card'>" +
+          "<b>런타임</b>" +
+          "<div>Goroutines: " + rt.goroutines + "</div>" +
+        "</div>" +
+        "<div class='card'>" +
+          "<b>HTTP 요청</b>" +
+          "<div>평균 응답시간: " + avg + " ms</div>" +
+          "<div>에러율: " + rate + "%% (" + (h.total_errors || 0) + "/" + (h.total_reqs || 0) + ")</div>" +
         "</div>";
 
       var now = new Date();
