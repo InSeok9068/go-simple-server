@@ -61,6 +61,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		CookieSecure:   config.IsProdEnv(),
 		CookieSameSite: http.SameSiteLaxMode,
 	}))
+	e.Use(dbg.MetricsMiddleware)
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
 		LogLatency:    true,
