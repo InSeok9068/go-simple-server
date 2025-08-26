@@ -184,7 +184,9 @@ const varsPage = `<!doctype html>
 
   <script>
     async function load() {
-      const r = await fetch('/debug/vars', { cache: 'no-store' });
+      const url = new URL(window.location.href);
+      const auth = url.searchParams.get('auth');
+      const r = await fetch("/debug/vars?auth=" + auth, { cache: 'no-store' });
       const d = await r.json();
       const a = d['%s'] || {};
       const m = a.mem || {};
