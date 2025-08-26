@@ -13,6 +13,7 @@ import (
 	"github.com/robfig/cron/v3"
 
 	"simple-server/internal/config"
+	dbg "simple-server/internal/debug"
 	"simple-server/internal/middleware"
 	"simple-server/internal/migration"
 
@@ -40,7 +41,8 @@ func main() {
 		return
 	}
 	defer database.Close()
-	// DB 지표 노출
+	// 디버그 지표 노출
+	dbg.Init(os.Getenv("SERVICE_NAME"), database)
 	config.PublishDBVars(database)
 	/* DB 초기화 */
 

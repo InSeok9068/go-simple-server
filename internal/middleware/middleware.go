@@ -8,6 +8,7 @@ import (
 	"os"
 	resources "simple-server"
 	"simple-server/internal/config"
+	dbg "simple-server/internal/debug"
 	"time"
 
 	ipfilter "github.com/crazy-max/echo-ipfilter"
@@ -94,6 +95,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	}
 	// expvar 핸들러
 	debugGroup.GET("/vars", echo.WrapHandler(expvar.Handler()))
+	debugGroup.GET("/vars/ui", echo.WrapHandler(http.HandlerFunc(dbg.VarsUI)))
 
 	return nil
 }
