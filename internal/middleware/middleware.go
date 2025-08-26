@@ -86,13 +86,29 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 
 	// Debug
 	debugGroup := e.Group("/debug")
+	authHeader := os.Getenv("DEBUG_AUTH_HEADER")
 	if config.IsProdEnv() {
 		debugGroup.Use(ipfilter.MiddlewareWithConfig(ipfilter.Config{
 			WhiteList: []string{
 				"121.190.49.104/32",
 			},
 			BlockByDefault: true,
+			Skipper: func(c echo.Context) bool {
+				if authHeader == "" {
+					return false
+				}
+				return c.Request().Header.Get("Authorization") == authHeader
+			},
 		}))
+	} else if authHeader != "" {
+		debugGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+			return func(c echo.Context) error {
+				if c.Request().Header.Get("Authorization") != authHeader {
+					return echo.NewHTTPError(http.StatusUnauthorized, "인증 실패")
+				}
+				return next(c)
+			}
+		})
 	}
 	// expvar 핸들러
 	debugGroup.GET("/vars", echo.WrapHandler(expvar.Handler()))
