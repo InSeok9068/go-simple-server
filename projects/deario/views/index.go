@@ -26,6 +26,7 @@ func Index(title string, date string, mood string) Node {
 			shared.HeadGoogleFonts("Gamja Flower"),
 			shared.HeadFlatpickr(),
 			shared.HeadMarked(),
+			shared.HeadHammer(),
 			[]Node{
 				Meta(Name("description"), Content("AI 피드백 일기 서비스")),
 				Link(Rel("manifest"), Href("/manifest.json")),
@@ -42,15 +43,15 @@ func Index(title string, date string, mood string) Node {
 			/* Header */
 
 			/* Body */
-			Main(
+			Main(ID("diary-main"),
 				Nav(
-					A(Href(fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1))),
+					A(ID("prev-day"), Href(fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1))),
 						I(Text("arrow_back_ios")),
 					),
-					A(Href(fmt.Sprintf("/?date=%s", time.Now().Format("20060102"))),
+					A(ID("today-day"), Href(fmt.Sprintf("/?date=%s", time.Now().Format("20060102"))),
 						Button(Class("small-round small"), Text("Today")),
 					),
-					A(Href(fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1))),
+					A(ID("next-day"), Href(fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1))),
 						I(Text("arrow_forward_ios")),
 					),
 					Div(Class("max"),
