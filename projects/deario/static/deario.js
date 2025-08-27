@@ -21,3 +21,24 @@ function showAiFeedback() {
   }
   showModal("#ai-feedback-dialog");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const mainEl = document.getElementById("diary-main");
+  if (!mainEl) return;
+
+  const prev = document.getElementById("prev-day");
+  const next = document.getElementById("next-day");
+
+  const hammer = new Hammer(mainEl);
+  hammer
+    .get("swipe")
+    .set({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 60 });
+
+  hammer.on("swipeleft", () => {
+    if (next) location.href = next.href;
+  });
+
+  hammer.on("swiperight", () => {
+    if (prev) location.href = prev.href;
+  });
+});
