@@ -8,7 +8,7 @@ import (
 )
 
 func SessionUID(c echo.Context) (string, error) {
-	sess, err := session.Get("session", c)
+	sess, err := session.Get("session_v2", c)
 	if err != nil {
 		return "", echo.NewHTTPError(http.StatusInternalServerError, "세션을 가져오는 중 오류가 발생했습니다.")
 	}

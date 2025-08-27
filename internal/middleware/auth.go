@@ -46,6 +46,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 	}
 
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))))
+
 	e.POST("/create-session", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		auth, err := App.Auth(ctx)
@@ -65,7 +66,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
 		}
 
-		sess, err := session.Get("session", c)
+		sess, err := session.Get("session_v2", c)
 		if err != nil {
 			return err
 		}

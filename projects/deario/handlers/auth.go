@@ -17,7 +17,7 @@ func LoginPage(c echo.Context) error {
 
 // Logout은 사용자 세션을 종료한다.
 func Logout(c echo.Context) error {
-	sess, err := session.Get("session", c)
+	sess, err := session.Get("session_v2", c)
 	if err != nil {
 		return err
 	}
