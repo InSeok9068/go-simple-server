@@ -101,15 +101,30 @@ sudo journalctl -u litestream -f
 # If you make changes to Litestream configuration file, you’ll need to restart the service
 # /etc/litestream.yml
 sudo systemctl restart litestream
+
+sudo nano /etc/systemd/system/litestream.service.d/override.conf
+sudo systemctl daemon-reload
+sudo systemctl restart litestream
+sudo journalctl -u litestream -f
+```
+
+### override.conf
+
+```ini
+[Service]
+Environment="GOOGLE_APPLICATION_CREDENTIALS=/etc/secrets/litestream.json"
+ExecStart=
+ExecStart=/usr/bin/litestream replicate -config /etc/litestream.yml
 ```
 
 ### litestream.yml
 
 ```yml
+# /etc/litestream.yml
 dbs:
   - path: /srv/deario/data/data.db
     replicas:
-      - url: gcs://BUCKET/PATH
-        # snapshot-interval: 1h     # 1시간마다 전체 스냅샷
-        # retention: 7d             # 7일 지나면 자동 정리
+      - url: gcs://warm-braid-383411.firebasestorage.app/litestream/deario/prod
+        snapshot-interval: 24h # 하루마다 스냅샷
+        retention: 168h # 7일 보관
 ```
