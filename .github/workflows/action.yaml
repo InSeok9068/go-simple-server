@@ -31,6 +31,7 @@ jobs:
             OPEN_AI_KEY=${{ secrets.OPEN_AI_KEY }}
             FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
             DEBUG_AUTH_PARAM=${{ secrets.DEBUG_AUTH_PARAM }}
+            SESSION_SECRET=${{ secrets.SESSION_SECRET }}
           EOF
 
       # 4. Go 설치

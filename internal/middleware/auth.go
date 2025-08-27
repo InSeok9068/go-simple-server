@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"os"
 	"simple-server/internal/config"
 	"simple-server/internal/connection"
 	"simple-server/pkg/util/authutil"
@@ -44,7 +45,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 		return err
 	}
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))))
 	e.POST("/create-session", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		auth, err := App.Auth(ctx)
