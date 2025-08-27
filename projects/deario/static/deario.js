@@ -14,6 +14,9 @@ document.addEventListener("alpine:init", () => {
   });
 });
 
+/**
+ * AI 피드백 마크다운으로 랜더링 후 다이얼로그로 띄웁니다.
+ */
 function showAiFeedback() {
   const mdEl = document.getElementById("ai-feedback-markdown");
   if (mdEl && mdEl.textContent) {
@@ -22,6 +25,9 @@ function showAiFeedback() {
   showModal("#ai-feedback-dialog");
 }
 
+/**
+ * 이전/다음 페이지 스와이프 핸들러를 등록합니다.
+ */
 document.addEventListener("DOMContentLoaded", () => {
   const mainEl = document.getElementById("diary-main");
   if (!mainEl) return;
