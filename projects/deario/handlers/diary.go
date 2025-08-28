@@ -203,28 +203,28 @@ func SaveDiary(c echo.Context) error {
 		Date: date,
 	})
 
-	if err != nil {
-		if _, err := queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
-			Uid:     uid,
-			Content: content,
-			Date:    date,
-		}); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "일기 저장에 실패했습니다. 다시 시도해주세요.")
-		}
-	} else {
-		if content == "" {
-			if err := queries.DeleteDiary(c.Request().Context(), diary.ID); err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
-			}
-		} else {
-			if _, err := queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
-				Content: content,
-				ID:      diary.ID,
-			}); err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
-			}
-		}
-	}
+    if err != nil {
+        if _, err := queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
+            Uid:     uid,
+            Content: content,
+            Date:    date,
+        }); err != nil {
+            return echo.NewHTTPError(http.StatusInternalServerError, "일기 저장에 실패했습니다. 다시 시도해주세요.")
+        }
+    } else {
+        if content == "" {
+            if err := queries.DeleteDiary(c.Request().Context(), diary.ID); err != nil {
+                return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
+            }
+        } else {
+            if _, err := queries.UpdateDiary(c.Request().Context(), db.UpdateDiaryParams{
+                Content: content,
+                ID:      diary.ID,
+            }); err != nil {
+                return echo.NewHTTPError(http.StatusInternalServerError, "수정 실패")
+            }
+        }
+    }
 
-	return nil
+    return c.NoContent(http.StatusNoContent)
 }

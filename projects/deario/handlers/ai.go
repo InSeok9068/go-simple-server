@@ -118,15 +118,15 @@ func SaveAIFeedback(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "작성한 일기가 없습니다.")
 	}
 
-	if err := queries.UpdateDiaryOfAiFeedback(c.Request().Context(), db.UpdateDiaryOfAiFeedbackParams{
-		ID:         diary.ID,
-		AiFeedback: aiFeedback,
-		AiImage:    aiImage,
-	}); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "일기요정 저장에 실패하였습니다.")
-	}
+    if err := queries.UpdateDiaryOfAiFeedback(c.Request().Context(), db.UpdateDiaryOfAiFeedbackParams{
+        ID:         diary.ID,
+        AiFeedback: aiFeedback,
+        AiImage:    aiImage,
+    }); err != nil {
+        return echo.NewHTTPError(http.StatusInternalServerError, "일기요정 저장에 실패하였습니다.")
+    }
 
-	return nil
+    return c.NoContent(http.StatusNoContent)
 }
 
 // GetAIFeedback는 저장된 피드백이나 이미지를 반환한다.
@@ -177,9 +177,9 @@ func GenerateAIReport(c echo.Context) error {
 	}
 
 	// 큐에 작업 추가
-	if err := jobs.Create(c.Request().Context(), tasks.AiReportQ, "ai-report", []byte(uid)); err != nil {
-		slog.Error("AI 리포트 발송 실패", "error", err)
-	}
+    if err := jobs.Create(c.Request().Context(), tasks.AiReportQ, "ai-report", []byte(uid)); err != nil {
+        slog.Error("AI 리포트 발송 실패", "error", err)
+    }
 
-	return nil
+    return c.NoContent(http.StatusAccepted)
 }

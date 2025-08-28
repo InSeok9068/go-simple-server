@@ -28,12 +28,12 @@ func RegisterPushToken(c echo.Context) error {
 		return err
 	}
 
-	if err := queries.UpsertPushKey(c.Request().Context(), db.UpsertPushKeyParams{
-		Uid:       uid,
-		PushToken: token,
-	}); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 저장 실패")
-	}
+    if err := queries.UpsertPushKey(c.Request().Context(), db.UpsertPushKeyParams{
+        Uid:       uid,
+        PushToken: token,
+    }); err != nil {
+        return echo.NewHTTPError(http.StatusInternalServerError, "푸시 키 저장 실패")
+    }
 
-	return nil
+    return c.NoContent(http.StatusNoContent)
 }
