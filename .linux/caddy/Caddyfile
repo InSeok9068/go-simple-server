@@ -30,3 +30,8 @@ deario.toy-project.n-e.kr {
 log.toy-project.n-e.kr {
     reverse_proxy 127.0.0.1:9000
 }
+
+# theProtector 대시보드
+protector.toy-project.n-e.kr {
+    reverse_proxy 127.0.0.1:8080
+}
