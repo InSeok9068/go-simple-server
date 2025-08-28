@@ -56,6 +56,32 @@
 
 참고: 200 OK + 빈 본문은 HTMX 기본 스왑으로 대상 영역을 비워버릴 수 있음. 바디가 없을 때는 204를 사용해 의도(스왑 없음)를 분명히 한다.
 
+## 런타임 모드
+
+- 개발 모드: GoVisual로 실행(`TransferEchoToGoVisualServerOnlyDev`), 정적 파일은 로컬 디스크 사용.
+- 운영 모드: Echo 단독 실행, 정적 파일은 `embed.FS` 사용, Gzip 활성화.
+- 요청 타임아웃: 1분, 요청당 바디 제한: 5MB, 레이트리미트: 초당 20회.
+
+## 정적/임베드 자원
+
+- 공통 정적: `/shared/static` → `shared/static/*`
+- 프로젝트 정적: `/static` → `projects/{name}/static/*`
+- PWA/서비스워커: `/manifest.json`, `/firebase-messaging-sw.js` 매핑.
+- Dev: `os.DirFS`, Prod: `resources.EmbeddedFiles`(embed) 사용.
+
+## 인증/권한
+
+- 인증: Firebase ID 토큰을 `/create-session`에 전달 → `session_v2` 쿠키 저장(Lax, 운영은 Secure).
+- 사용자 식별: `authutil.SessionUID(c)` 사용(없으면 에러 처리).
+- 권한: Casbin(SQL 어댑터). `obj=c.Path()`, `act=METHOD`. 모델은 `model.conf`(embed), 정책은 DB 저장.
+
+## 라우팅/핸들러 가이드
+
+- 공개 라우트: 인덱스/로그인/프라이버시/리스트 조회 등.
+- 보호 라우트: 저장/수정/삭제/검색/통계 등(세션 + 권한 필요).
+- 바인딩/검증: `c.Bind(...)` + 최소한의 검증, 잘못된 입력은 400/422.
+- 에러: `echo.NewHTTPError`로 4xx/5xx와 한글 메시지 반환.
+
 ## 테스트 가이드
 
 - ❗ **중요**: CI 환경에는 데이터베이스가 없어. 반드시 Mock 기반의 순수 유닛 테스트만 작성해줘.
