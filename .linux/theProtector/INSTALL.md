@@ -24,6 +24,11 @@ sudo ./theprotector.sh systemd
 ## 대시보드 실행
 
 ```shell
+nohup bash -lc 'tail -f /dev/null | ./theprotector.sh api' \
+  >~/theprotector-dashboard.log 2>&1 &
+```
+
+```shell
 # tmux 세션 실행
 tmux new -d -s protector 'sudo -E ./theprotector.sh dashboard'
 ```
