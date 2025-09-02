@@ -54,7 +54,7 @@ func Index(title string, date string, mood string) Node {
 					A(ID("next-day"), Href(fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1))),
 						I(Text("arrow_forward_ios")),
 					),
-					Button(Class("chip"),
+					Button(Class("chip"), Attr("data-ui", "#calendar-dialog"),
 						I(Text("calendar_month")),
 						Span(Class("bold"), Text(DateView(date))),
 					),
