@@ -120,6 +120,7 @@ func setUpServer() *echo.Echo {
 	authGroup.GET("/diary/images", handlers.DiaryImagesPage)
 	authGroup.POST("/diary/image", handlers.UploadDiaryImage)
 	authGroup.DELETE("/diary/image", handlers.DeleteDiaryImage)
+	authGroup.POST("/diary/transcribe", handlers.TranscribeDiaryVoice)
 	/* 권한 라우터 */
 
 	/* 큐 리시버 */
