@@ -5,7 +5,7 @@ async function toggleRecord(btn) {
   if (recorder && recorder.state === "recording") {
     recorder.stop();
     btn.classList.remove("primary");
-    btn.innerText = "mic";
+    btn.innerHTML = "<i>mic</i>";
     return;
   }
   try {
@@ -20,10 +20,16 @@ async function toggleRecord(btn) {
       const fd = new FormData();
       fd.append("audio", blob, "recording.webm");
       try {
-        const res = await fetch("/diary/transcribe", { method: "POST", body: fd });
+        const res = await fetch("/diary/transcribe", {
+          method: "POST",
+          headers: { "X-CSRF-Token": getCookie("_csrf") },
+          body: fd,
+        });
         if (res.ok) {
           const text = await res.text();
-          const textarea = document.querySelector("#diary textarea[name='content']");
+          const textarea = document.querySelector(
+            "#diary textarea[name='content']"
+          );
           if (textarea) {
             textarea.value += (textarea.value ? "\n" : "") + text;
             textarea.dispatchEvent(new Event("input"));
@@ -37,9 +43,8 @@ async function toggleRecord(btn) {
     };
     recorder.start();
     btn.classList.add("primary");
-    btn.innerText = "stop";
+    btn.innerHTML = "<i>stop</i>";
   } catch {
     showInfo("마이크 접근 실패");
   }
 }
-

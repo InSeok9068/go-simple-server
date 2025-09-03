@@ -24,11 +24,13 @@ func TranscribeAudio(ctx context.Context, data []byte, mimeType string) (string,
 		return "", fmt.Errorf("AI 클라이언트 생성 실패: %w", err)
 	}
 	parts := []*genai.Part{
-		{Text: "다음 오디오 내용을 한국어 텍스트로 변환해줘."},
+		{Text: "다음 오디오 내용을 해석하지말고 들리는 그대로를 한국어 텍스트로 변환해줘."},
 		{InlineData: &genai.Blob{Data: data, MIMEType: mimeType}},
 	}
 	contents := []*genai.Content{{Parts: parts}}
-	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash", contents, nil)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.5-flash", contents, &genai.GenerateContentConfig{
+		ResponseModalities: []string{"Text"},
+	})
 	if err != nil {
 		return "", fmt.Errorf("오디오 인식 요청 실패: %w", err)
 	}

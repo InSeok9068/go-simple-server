@@ -366,10 +366,8 @@ func DiaryContentForm(date string, content string) Node {
 				Text(content),
 			),
 		),
-		Nav(
-			Button(Type("button"), Class("chip circle"), Attr("onclick", "toggleRecord(this)"),
-				I(Text("mic")),
-			),
+		Button(Type("button"), Class("chip circle microphone"), Attr("onclick", "toggleRecord(this)"),
+			I(Text("mic")),
 		),
 	)
 }

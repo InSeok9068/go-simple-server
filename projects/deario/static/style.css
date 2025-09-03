@@ -114,3 +114,10 @@ body {
   background: var(--primary);
   border-radius: 50%;
 }
+
+.microphone {
+  position: absolute;
+  right: 3px;
+  top: 15rem;
+  z-index: 1;
+}
