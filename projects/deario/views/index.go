@@ -32,6 +32,7 @@ func Index(title string, date string, mood string) Node {
 				Link(Rel("manifest"), Href("/manifest.json")),
 				Script(Src("/static/deario.js")),
 				Script(Src("/static/calendar.js")),
+				Script(Src("/static/voice.js")),
 				Script(Type("module"), Src("/static/storage.js")),
 			},
 		),
@@ -363,6 +364,11 @@ func DiaryContentForm(date string, content string) Node {
 				Attr("aria-label", "일기 내용"),
 				Attr("placeholder", "오늘의 일기를 입력하세요"),
 				Text(content),
+			),
+		),
+		Nav(
+			Button(Type("button"), Class("chip circle"), Attr("onclick", "toggleRecord(this)"),
+				I(Text("mic")),
 			),
 		),
 	)
