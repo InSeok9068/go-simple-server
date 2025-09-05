@@ -17,6 +17,12 @@ func HeadsDefault(title string) []Node {
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/open-props.min.css';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/htmx.min.js';")),
+		Script(Src("https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@2.0.0/alpine-morph.js"),
+			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/alpine-morph.js';")),
+		Script(Src("https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"), Defer(),
+			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/persist.cdn.min.js';")),
+		Script(Src("https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js"), Defer(),
+			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/morph.cdn.min.js';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"), Defer(),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/cdn.min.js';")),
 		If(config.IsDevEnv(), Script(Text(`htmx.logAll();`), Defer())),
@@ -136,6 +142,7 @@ func HeadMarked() []Node {
 
 func HeadHammer() []Node {
 	return []Node{
-		Script(Src("https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js")),
+		Script(Src("https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"),
+			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/hammer.min.js';")),
 	}
 }
