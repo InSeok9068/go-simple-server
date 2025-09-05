@@ -13,7 +13,7 @@ func HeadsDefault(title string) []Node {
 	return []Node{
 		Meta(Name("viewport"), Content("width=device-width, initial-scale=1")),
 		Link(Rel("icon"), Href("/shared/static/favicon.ico")),
-		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/open-props@1.7.13/open-props.min.css"),
+		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/open-props@1.7.16/open-props.min.css"),
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/open-props.min.css';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/htmx.min.js';")),
@@ -36,7 +36,7 @@ func HeadsCustom() []Node {
 
 func HeadsWithBulma(title string) []Node {
 	bulma := []Node{
-		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"),
+		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"),
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/bulma.min.css';")),
 	}
 
@@ -77,9 +77,9 @@ func HeadsWithPicoAndTailwind(title string) []Node {
 
 func HeadsWithBeer(title string) []Node {
 	beer := []Node{
-		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/beercss@3.11.32/dist/cdn/beer.min.css"),
+		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/beercss@3.11.33/dist/cdn/beer.min.css"),
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/beer.min.css';")),
-		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/beercss@3.11.32/dist/cdn/beer.min.js"),
+		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/beercss@3.11.33/dist/cdn/beer.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/beer.min.js';")),
 		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';")),
