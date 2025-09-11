@@ -15,7 +15,7 @@ func HeadsDefault(title string) []Node {
 		Link(Rel("icon"), Href("/shared/static/favicon.ico")),
 		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/open-props@1.7.16/open-props.min.css"),
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/open-props.min.css';")),
-		Script(Src("https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"),
+		Script(Src("https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/htmx.min.js';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@2.0.0/alpine-morph.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/alpine-morph.js';")),
@@ -83,9 +83,9 @@ func HeadsWithPicoAndTailwind(title string) []Node {
 
 func HeadsWithBeer(title string) []Node {
 	beer := []Node{
-		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/beercss@3.11.33/dist/cdn/beer.min.css"),
+		Link(Rel("stylesheet"), Href("https://cdn.jsdelivr.net/npm/beercss@3.12.0/dist/cdn/beer.min.css"),
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/beer.min.css';")),
-		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/beercss@3.11.33/dist/cdn/beer.min.js"),
+		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/beercss@3.12.0/dist/cdn/beer.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/beer.min.js';")),
 		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';")),
