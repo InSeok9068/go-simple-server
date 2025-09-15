@@ -95,6 +95,7 @@ body {
 
 .u-fit-h‑18rem {
   block-size: 18rem !important;
+  max-block-size: 18rem !important;
 }
 
 .u-text-ellipsis‑65px {
