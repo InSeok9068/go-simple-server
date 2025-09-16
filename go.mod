@@ -11,7 +11,7 @@ tool github.com/golangci/golangci-lint/cmd/golangci-lint
 tool golang.org/x/vuln/cmd/govulncheck
 
 require (
-	cloud.google.com/go/storage v1.56.1
+	cloud.google.com/go/storage v1.56.2
 	firebase.google.com/go/v4 v4.18.0
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/Blank-Xu/sql-adapter v1.1.2
@@ -40,7 +40,7 @@ require (
 	maragu.dev/gomponents v1.2.0
 	maragu.dev/gomponents-htmx v0.6.1
 	maragu.dev/goqite v0.3.1
-	modernc.org/sqlite v1.38.2
+	modernc.org/sqlite v1.39.0
 )
 
 require (
