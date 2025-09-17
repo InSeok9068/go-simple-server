@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # notepad ~/.bash_profile
-# source "scripts/task-completion.sh"
+## task.sh 자동 완성 스크립트 불러오기
+#if [ -f "scripts/task-completion.sh" ]; then
+#  source "scripts/task-completion.sh"
+#fi
 
 # Git Bash for Windows용 task.sh 자동 완성 스크립트
 
