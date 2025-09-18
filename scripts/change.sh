@@ -21,6 +21,9 @@ case "$SERVICE" in
   deario)
     PORT=8002
     ;;
+  portfolio)
+    PORT=8003
+    ;;
   sample)
     PORT=8999
     ;;

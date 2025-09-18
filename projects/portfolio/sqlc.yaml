@@ -1,0 +1,11 @@
+# sqlc generate -f ./projects/portfolio/sqlc.yaml
+
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "query.sql"
+    schema: "migrations/*"
+    gen:
+      go:
+        package: "db"
+        out: "db"

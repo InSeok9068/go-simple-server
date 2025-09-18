@@ -1,0 +1,14 @@
+[Unit]
+Description=Portfolio Service
+After=network.target
+
+[Service]
+ExecStart=/home/ubuntu/app/portfolio
+WorkingDirectory=/home/ubuntu/app
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+
