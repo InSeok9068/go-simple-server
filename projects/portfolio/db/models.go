@@ -8,6 +8,68 @@ import (
 	"database/sql"
 )
 
+type Account struct {
+	ID             string
+	Uid            string
+	CategoryID     string
+	Name           string
+	Provider       string
+	Balance        int64
+	MonthlyContrib int64
+	Note           string
+	Created        sql.NullString
+	Updated        sql.NullString
+}
+
+type AllocationTarget struct {
+	ID           string
+	Uid          string
+	CategoryID   string
+	TargetWeight float64
+	TargetAmount int64
+	Note         string
+}
+
+type BudgetEntry struct {
+	ID        string
+	Uid       string
+	Name      string
+	Direction string
+	Class     string
+	Planned   int64
+	Actual    int64
+	Note      string
+	Created   sql.NullString
+	Updated   sql.NullString
+}
+
+type Category struct {
+	ID           string
+	Uid          string
+	Name         string
+	Role         string
+	ParentID     sql.NullString
+	DisplayOrder int64
+}
+
+type ContributionPlan struct {
+	ID         string
+	Uid        string
+	SecurityID string
+	Weight     float64
+	Amount     int64
+	Note       string
+}
+
+type Holding struct {
+	ID           string
+	Uid          string
+	SecurityID   string
+	Amount       int64
+	TargetAmount int64
+	Note         string
+}
+
 type PushKey struct {
 	ID      string
 	Uid     string
@@ -16,10 +78,45 @@ type PushKey struct {
 	Updated sql.NullString
 }
 
+type Security struct {
+	ID         string
+	Uid        string
+	Symbol     string
+	Name       string
+	Type       string
+	CategoryID sql.NullString
+	Currency   string
+	Note       string
+}
+
 type User struct {
 	Uid     string
 	Name    string
 	Email   string
 	Created sql.NullString
 	Updated sql.NullString
+}
+
+type VCategoryAllocation struct {
+	Uid          string
+	CategoryID   string
+	CategoryName string
+	Amount       interface{}
+	WeightPct    float64
+}
+
+type VRebalanceGap struct {
+	Uid            string
+	CategoryID     string
+	TargetWeight   float64
+	TargetAmount   int64
+	CurrentAmount  interface{}
+	TargetByWeight float64
+	TargetFinal    interface{}
+	GapAmount      int64
+}
+
+type VTotalAsset struct {
+	Uid         string
+	TotalAmount int64
 }
