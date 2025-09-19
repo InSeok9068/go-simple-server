@@ -113,16 +113,11 @@ func Index(title string, snapshot *services.PortfolioSnapshot) Node {
 		),
 		Body: []Node{
 			shared.Snackbar(),
-			Main(Class("container"),
-				Div(Class("max-width-3 margin-auto padding"),
-					H1(Class("margin-bottom"), Text("포트폴리오 대시보드")),
-					If(snapshot.IsDemo,
-						Div(Class("note warning margin-bottom"),
-							Text("로그인이 되어 있지 않아 데모 데이터를 보여주고 있어요."),
-						),
-					),
+			Main(Class("portfolio-page"),
+				Div(Class("portfolio-shell"),
 					Div(
 						ID("portfolio-dashboard"),
+						Class("portfolio-dashboard"),
 						DashboardContent(snapshot),
 					),
 				),
@@ -133,47 +128,112 @@ func Index(title string, snapshot *services.PortfolioSnapshot) Node {
 
 func DashboardContent(snapshot *services.PortfolioSnapshot) Node {
 	return Group([]Node{
-		TotalSection(snapshot),
-		CategorySection(snapshot),
-		RebalanceSection(snapshot),
-		SecuritySection(snapshot),
-		AccountSection(snapshot),
-		HoldingSection(snapshot),
-		BudgetSection(snapshot),
-		ContributionSection(snapshot),
+		OverviewSection(snapshot),
+		Div(
+			Class("grid large-space responsive portfolio-grid"),
+			Div(Class("s12 l6"), CategorySection(snapshot)),
+			Div(Class("s12 l6"), RebalanceSection(snapshot)),
+			Div(Class("s12 l6"), AccountSection(snapshot)),
+			Div(Class("s12 l6"), HoldingSection(snapshot)),
+			Div(Class("s12 l6"), SecuritySection(snapshot)),
+			Div(Class("s12 l6"), ContributionSection(snapshot)),
+			Div(Class("s12"), BudgetSection(snapshot)),
+		),
 	})
 }
 
-func cardSection(id string, title string, form Node, headers []string, rows []Node) Node {
+func OverviewSection(snapshot *services.PortfolioSnapshot) Node {
+	monthlyContribution := sumMonthlyContribution(snapshot.Accounts)
+	monthlyPlan := sumContributionAmount(snapshot.ContributionPlans)
+	incomePlan, expensePlan, incomeActual, expenseActual := budgetTotals(snapshot.BudgetEntries)
+	plannedNet := incomePlan - expensePlan
+	actualNet := incomeActual - expenseActual
+
+	return Section(
+		Class("portfolio-hero surface-container-highest shadow round"),
+		Div(Class("hero-headline"),
+			Div(Class("hero-text"),
+				H1(Class("hero-title"), Text("포트폴리오 대시보드")),
+				P(Class("hero-description"),
+					Text("현재 자산 현황과 월간 계획을 한눈에 확인하고 필요한 항목을 바로 추가할 수 있어요."),
+				),
+			),
+			If(snapshot.IsDemo,
+				Div(Class("chip demo-chip"),
+					I(Class("icon"), Text("visibility")),
+					Span(Text("로그인하지 않아 데모 데이터를 보고 있어요")),
+				),
+			),
+		),
+		Div(
+			Class("grid large-space responsive"),
+			Div(Class("s12 m6 l3"), overviewMetric("총자산", formatCurrency(snapshot.TotalAsset), fmt.Sprintf("카테고리 %d개", len(snapshot.Categories)))),
+			Div(Class("s12 m6 l3"), overviewMetric("계좌", fmt.Sprintf("%d개", len(snapshot.Accounts)), fmt.Sprintf("월 납입 %s", formatCurrency(monthlyContribution)))),
+			Div(Class("s12 m6 l3"), overviewMetric("보유 종목", fmt.Sprintf("%d개", len(snapshot.Holdings)), fmt.Sprintf("평가금액 %s", formatCurrency(sumHoldingsAmount(snapshot.Holdings))))),
+			Div(Class("s12 m6 l3"), overviewMetric("월 적립 계획", formatCurrency(monthlyPlan), fmt.Sprintf("실행 중 %d건", len(snapshot.ContributionPlans)))),
+		),
+		Div(Class("hero-budget"),
+			Div(Class("budget-card surface-container-high shadow round"),
+				Div(Class("budget-label"), Text("월 수입/지출 요약")),
+				Div(Class("budget-values"),
+					Div(Class("budget-column"),
+						Span(Class("budget-chip chip"), Text("계획")),
+						Strong(Class("budget-amount"), Text(formatSignedCurrency(plannedNet))),
+					),
+					Div(Class("budget-column"),
+						Span(Class("budget-chip chip"), Text("실적")),
+						Strong(Class("budget-amount"), Text(formatSignedCurrency(actualNet))),
+					),
+				),
+				P(Class("budget-helper"),
+					Text("양수는 잉여, 음수는 부족을 의미해요."),
+				),
+			),
+		),
+	)
+}
+
+func overviewMetric(title string, value string, helper string) Node {
+	return Div(Class("metric-card surface-container-high shadow round"),
+		Span(Class("metric-title"), Text(title)),
+		Strong(Class("metric-value"), Text(value)),
+		If(helper != "",
+			Span(Class("metric-helper"), Text(helper)),
+		),
+	)
+}
+
+func cardSection(id string, title string, subtitle string, form Node, headers []string, rows []Node) Node {
 	headerNodes := make([]Node, 0, len(headers))
 	for _, text := range headers {
 		headerNodes = append(headerNodes, Th(Text(text)))
 	}
 
-	children := []Node{H2(Text(title))}
-	if form != nil {
-		children = append(children, Div(Class("margin-bottom"), form))
-	}
-	children = append(children,
-		Table(
-			THead(Tr(headerNodes...)),
-			TBody(Group(rows)),
+	headerChildren := []Node{
+		Div(Class("card-heading"),
+			H2(Class("card-title"), Text(title)),
+			If(subtitle != "",
+				P(Class("card-subtitle"), Text(subtitle)),
+			),
 		),
-	)
+	}
+
+	if panel := ifFormPanel(title, form); panel != nil {
+		headerChildren = append(headerChildren, panel)
+	}
 
 	return Section(
 		ID(id),
-		Class("card margin-bottom"),
-		Group(children),
-	)
-}
-
-func TotalSection(snapshot *services.PortfolioSnapshot) Node {
-	return Section(
-		ID("total-section"),
-		Class("card margin-bottom"),
-		H2(Text("총자산")),
-		Strong(Class("text-large"), Text(formatCurrency(snapshot.TotalAsset))),
+		Class("portfolio-card surface-container-high shadow round"),
+		Group([]Node{
+			Div(Class("card-header"), Group(headerChildren)),
+			Div(Class("table-container"),
+				Table(
+					THead(Tr(headerNodes...)),
+					TBody(Group(rows)),
+				),
+			),
+		}),
 	)
 }
 
@@ -197,6 +257,7 @@ func CategorySection(snapshot *services.PortfolioSnapshot) Node {
 	return cardSection(
 		"category-section",
 		"카테고리별 자산 배분",
+		fmt.Sprintf("총 %s · %d개 카테고리", formatCurrency(sumCategoryAmount(snapshot.CategoryAllocations)), len(snapshot.Categories)),
 		form,
 		headers,
 		rows,
@@ -226,6 +287,7 @@ func RebalanceSection(snapshot *services.PortfolioSnapshot) Node {
 	return cardSection(
 		"rebalance-section",
 		"리밸런싱 목표 대비 현황",
+		fmt.Sprintf("목표 %d개 · 추가 필요 %s", len(snapshot.RebalanceGaps), formatCurrency(sumPositiveGap(snapshot.RebalanceGaps))),
 		form,
 		headers,
 		rows,
@@ -255,6 +317,7 @@ func SecuritySection(snapshot *services.PortfolioSnapshot) Node {
 	return cardSection(
 		"security-section",
 		"종목 마스터",
+		fmt.Sprintf("등록 %d개 · 카테고리 연결 %d개", len(snapshot.Securities), countLinkedSecurities(snapshot.Securities)),
 		form,
 		headers,
 		rows,
@@ -284,6 +347,7 @@ func AccountSection(snapshot *services.PortfolioSnapshot) Node {
 	return cardSection(
 		"account-section",
 		"계좌 현황",
+		fmt.Sprintf("총 잔액 %s · 월 납입 %s", formatCurrency(sumAccountBalance(snapshot.Accounts)), formatCurrency(sumMonthlyContribution(snapshot.Accounts))),
 		form,
 		headers,
 		rows,
@@ -314,6 +378,11 @@ func HoldingSection(snapshot *services.PortfolioSnapshot) Node {
 	return cardSection(
 		"holding-section",
 		"보유 종목",
+		fmt.Sprintf("평가금액 %s · 목표 합계 %s (%d건)",
+			formatCurrency(sumHoldingsAmount(snapshot.Holdings)),
+			formatCurrency(sumHoldingTarget(snapshot.Holdings)),
+			countHoldingsWithTarget(snapshot.Holdings),
+		),
 		form,
 		headers,
 		rows,
@@ -340,9 +409,17 @@ func BudgetSection(snapshot *services.PortfolioSnapshot) Node {
 		form = budgetForm()
 	}
 
+	incomePlan, expensePlan, incomeActual, expenseActual := budgetTotals(snapshot.BudgetEntries)
+
 	return cardSection(
 		"budget-section",
 		"월 수입/지출",
+		fmt.Sprintf("계획 수입 %s · 지출 %s | 실적 %s · %s",
+			formatCurrency(incomePlan),
+			formatCurrency(expensePlan),
+			formatCurrency(incomeActual),
+			formatCurrency(expenseActual),
+		),
 		form,
 		headers,
 		rows,
@@ -372,6 +449,7 @@ func ContributionSection(snapshot *services.PortfolioSnapshot) Node {
 	return cardSection(
 		"contribution-section",
 		"주식 월 적립 계획",
+		fmt.Sprintf("월 적립 합계 %s · %d건", formatCurrency(sumContributionAmount(snapshot.ContributionPlans)), len(snapshot.ContributionPlans)),
 		form,
 		headers,
 		rows,
@@ -384,7 +462,7 @@ func hxForm(action string, submitLabel string, fields ...Node) Node {
 	nodes = append(nodes, Div(Class("form-actions"), Button(Class("button primary"), Type("submit"), Text(submitLabel))))
 
 	return Form(
-		Class("grid gap-small"),
+		Class("form-grid"),
 		Method("post"),
 		Attr("hx-post", action),
 		Attr("hx-target", "#portfolio-dashboard"),
@@ -422,6 +500,27 @@ func categoryForm(categories []services.CategorySummary) Node {
 			Label(For("category-order"), Text("정렬 순서")),
 			Input(ID("category-order"), Name("display_order"), Type("number"), Attr("min", "0")),
 		),
+	)
+}
+
+func ifFormPanel(title string, form Node) Node {
+	if form == nil {
+		return nil
+	}
+
+	label := "새 항목 추가"
+	if parts := strings.Fields(title); len(parts) > 0 {
+		label = fmt.Sprintf("%s 추가", parts[0])
+	}
+
+	return Details(
+		Class("form-panel"),
+		Summary(
+			Class("form-summary"),
+			I(Class("icon"), Text("add")),
+			Span(Text(label)),
+		),
+		Div(Class("form-body"), form),
 	)
 }
 
@@ -744,4 +843,100 @@ func emptyFallback(value string) string {
 		return "-"
 	}
 	return value
+}
+
+func sumCategoryAmount(items []services.CategoryAllocation) int64 {
+	var total int64
+	for _, item := range items {
+		total += item.Amount
+	}
+	return total
+}
+
+func sumAccountBalance(accounts []services.Account) int64 {
+	var total int64
+	for _, account := range accounts {
+		total += account.Balance
+	}
+	return total
+}
+
+func sumMonthlyContribution(accounts []services.Account) int64 {
+	var total int64
+	for _, account := range accounts {
+		total += account.MonthlyContrib
+	}
+	return total
+}
+
+func sumHoldingsAmount(holdings []services.Holding) int64 {
+	var total int64
+	for _, holding := range holdings {
+		total += holding.Amount
+	}
+	return total
+}
+
+func sumHoldingTarget(holdings []services.Holding) int64 {
+	var total int64
+	for _, holding := range holdings {
+		total += holding.TargetAmount
+	}
+	return total
+}
+
+func sumContributionAmount(plans []services.ContributionPlan) int64 {
+	var total int64
+	for _, plan := range plans {
+		total += plan.Amount
+	}
+	return total
+}
+
+func countLinkedSecurities(securities []services.SecuritySummary) int {
+	count := 0
+	for _, security := range securities {
+		if strings.TrimSpace(security.CategoryID) != "" {
+			count++
+		}
+	}
+	return count
+}
+
+func countHoldingsWithTarget(holdings []services.Holding) int {
+	count := 0
+	for _, holding := range holdings {
+		if holding.TargetAmount > 0 {
+			count++
+		}
+	}
+	return count
+}
+
+func sumPositiveGap(gaps []services.RebalanceGap) int64 {
+	var total int64
+	for _, gap := range gaps {
+		if gap.GapAmount > 0 {
+			total += gap.GapAmount
+		}
+	}
+	return total
+}
+
+func budgetTotals(entries []services.BudgetEntry) (int64, int64, int64, int64) {
+	var incomePlan int64
+	var expensePlan int64
+	var incomeActual int64
+	var expenseActual int64
+	for _, entry := range entries {
+		switch entry.Direction {
+		case "income":
+			incomePlan += entry.Planned
+			incomeActual += entry.Actual
+		case "expense":
+			expensePlan += entry.Planned
+			expenseActual += entry.Actual
+		}
+	}
+	return incomePlan, expensePlan, incomeActual, expenseActual
 }
