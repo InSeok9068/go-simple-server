@@ -10,6 +10,19 @@ import (
 	"database/sql"
 )
 
+const countCategories = `-- name: CountCategories :one
+SELECT COUNT(1)
+FROM category
+WHERE uid = ?
+`
+
+func (q *Queries) CountCategories(ctx context.Context, uid string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countCategories, uid)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createAccount = `-- name: CreateAccount :exec
 INSERT INTO account (uid, category_id, name, provider, balance, monthly_contrib, note)
 VALUES (?, ?, ?, ?, ?, ?, ?)

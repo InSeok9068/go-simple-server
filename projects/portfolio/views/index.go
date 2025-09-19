@@ -467,6 +467,7 @@ func hxForm(action string, submitLabel string, fields ...Node) Node {
 		Attr("hx-post", action),
 		Attr("hx-target", "#portfolio-dashboard"),
 		Attr("hx-swap", "innerHTML"),
+		Attr("hx-on::after-request", "if (event.detail.successful) this.reset()"),
 		Group(nodes),
 	)
 }
