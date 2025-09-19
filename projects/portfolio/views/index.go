@@ -149,31 +149,44 @@ func OverviewSection(snapshot *services.PortfolioSnapshot) Node {
 	plannedNet := incomePlan - expensePlan
 	actualNet := incomeActual - expenseActual
 
-	return Section(
-		Class("portfolio-hero surface-container-highest shadow round"),
-		Div(Class("hero-headline"),
-			Div(Class("hero-text"),
-				H1(Class("hero-title"), Text("포트폴리오 대시보드")),
-				P(Class("hero-description"),
-					Text("현재 자산 현황과 월간 계획을 한눈에 확인하고 필요한 항목을 바로 추가할 수 있어요."),
-				),
+	headerColumns := []Node{
+		Div(
+			Class("s12 m8 l7 hero-text"),
+			H1(Class("hero-title"), Text("포트폴리오 대시보드")),
+			P(Class("hero-description"),
+				Text("현재 자산 현황과 월간 계획을 한눈에 확인하고 필요한 항목을 바로 추가할 수 있어요."),
 			),
-			If(snapshot.IsDemo,
+		),
+	}
+
+	if snapshot.IsDemo {
+		headerColumns = append(headerColumns,
+			Div(
+				Class("s12 m4 l5 hero-actions"),
 				Div(Class("chip demo-chip"),
 					I(Class("icon"), Text("visibility")),
 					Span(Text("로그인하지 않아 데모 데이터를 보고 있어요")),
 				),
 			),
+		)
+	}
+
+	return Section(
+		Class("portfolio-hero surface-container-highest shadow round"),
+		Div(
+			Class("hero-headline grid large-space responsive"),
+			Group(headerColumns),
 		),
 		Div(
-			Class("grid large-space responsive"),
+			Class("hero-metrics grid large-space responsive"),
 			Div(Class("s12 m6 l3"), overviewMetric("총자산", formatCurrency(snapshot.TotalAsset), fmt.Sprintf("카테고리 %d개", len(snapshot.Categories)))),
 			Div(Class("s12 m6 l3"), overviewMetric("계좌", fmt.Sprintf("%d개", len(snapshot.Accounts)), fmt.Sprintf("월 납입 %s", formatCurrency(monthlyContribution)))),
 			Div(Class("s12 m6 l3"), overviewMetric("보유 종목", fmt.Sprintf("%d개", len(snapshot.Holdings)), fmt.Sprintf("평가금액 %s", formatCurrency(sumHoldingsAmount(snapshot.Holdings))))),
 			Div(Class("s12 m6 l3"), overviewMetric("월 적립 계획", formatCurrency(monthlyPlan), fmt.Sprintf("실행 중 %d건", len(snapshot.ContributionPlans)))),
 		),
-		Div(Class("hero-budget"),
-			Div(Class("budget-card surface-container-high shadow round"),
+		Div(
+			Class("hero-budget grid responsive right-align"),
+			Div(Class("budget-card surface-container-high shadow round s12 m8 l4"),
 				Div(Class("budget-label"), Text("월 수입/지출 요약")),
 				Div(Class("budget-values"),
 					Div(Class("budget-column"),
@@ -227,7 +240,7 @@ func cardSection(id string, title string, subtitle string, form Node, headers []
 		Class("portfolio-card surface-container-high shadow round"),
 		Group([]Node{
 			Div(Class("card-header"), Group(headerChildren)),
-			Div(Class("table-container"),
+			Div(Class("table-container scroll"),
 				Table(
 					THead(Tr(headerNodes...)),
 					TBody(Group(rows)),

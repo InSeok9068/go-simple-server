@@ -43,15 +43,20 @@ main.portfolio-page {
 }
 
 .hero-headline {
-  display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 1.75rem;
-  flex-wrap: wrap;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .hero-text {
   max-width: 520px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -69,6 +74,10 @@ main.portfolio-page {
   color: var(--on-surface-variant);
   font-size: 1.05rem;
   line-height: 1.6;
+}
+
+.hero-metrics {
+  --_gap: 1.5rem;
 }
 
 .demo-chip {
@@ -117,8 +126,13 @@ main.portfolio-page {
 }
 
 .hero-budget {
-  display: flex;
+  --_gap: 1.25rem;
   justify-content: flex-end;
+  justify-items: end;
+}
+
+.hero-budget .budget-card {
+  justify-self: end;
 }
 
 .budget-card {
@@ -368,6 +382,10 @@ main.portfolio-page {
   .metric-card {
     padding: 1.4rem 1.25rem;
   }
+
+  .hero-actions {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 640px) {
@@ -393,5 +411,78 @@ main.portfolio-page {
 
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero-headline {
+    gap: 1.5rem;
+  }
+
+  .hero-text {
+    max-width: none;
+  }
+
+  .hero-actions {
+    justify-content: flex-start;
+  }
+
+  .hero-budget {
+    justify-content: stretch;
+    justify-items: stretch;
+  }
+
+  .hero-budget .budget-card {
+    justify-self: stretch;
+  }
+
+  .budget-values {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.9rem;
+  }
+
+  .portfolio-dashboard {
+    gap: 2rem;
+  }
+
+  .hero-metrics {
+    --_gap: 1.25rem;
+  }
+
+  .portfolio-grid {
+    --_gap: 1.5rem;
+  }
+
+  .portfolio-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .metric-card {
+    padding: 1.25rem 1.1rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .form-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .budget-card {
+    padding: 1.1rem 1.1rem 1.25rem;
+  }
+
+  .budget-amount {
+    font-size: 1.2rem;
+  }
+
+  .table-container th,
+  .table-container td {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.9rem;
   }
 }
