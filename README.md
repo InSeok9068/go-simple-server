@@ -222,7 +222,9 @@ https://ntorga.com/full-stack-go-app-with-htmx-and-alpinejs/
 
 ---
 
-## 이미 Merge된 브랜치 제거
+## 브랜치 정리
+
+### 이미 Merge된 브랜치 정리
 
 ```bash
 for branch in $(git for-each-ref refs/remotes/origin/ --format='%(refname:short)' \
@@ -233,6 +235,29 @@ for branch in $(git for-each-ref refs/remotes/origin/ --format='%(refname:short)
     git push origin --delete "${branch#origin/}"
   fi
 done
+```
+
+### 규칙에 의한 브랜치 정리
+
+**로컬**
+
+```bash
+git branch | grep 'feature/' | xargs git branch -D
+git branch | grep 'codex/' | xargs git branch -D
+```
+
+**원격**
+
+```bash
+git branch -r | grep 'origin/feature/' | sed 's/origin\///' | xargs -I {} git push origin --delete {}
+git branch -r | grep 'origin/codex/' | sed 's/origin\///' | xargs -I {} git push origin --delete {}
+```
+
+### 특정 브랜드 제거
+
+```bash
+git push origin --delete og70vp-codex/refactor-initcasbin-to-manage-db-connection
+git push origin --delete fu4e2s-codex
 ```
 
 ---
