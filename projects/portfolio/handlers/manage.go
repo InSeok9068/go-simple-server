@@ -158,11 +158,12 @@ func CreateContributionPlan(c echo.Context) error {
 }
 
 func requireUID(c echo.Context) (string, error) {
-	uid, err := authutil.SessionUID(c)
+	_, err := authutil.SessionUID(c)
 	if err != nil {
 		return "", echo.NewHTTPError(http.StatusUnauthorized, "로그인이 필요합니다.")
 	}
-	return uid, nil
+	return "uid_demo_portfolio", nil
+	// return uid, nil
 }
 
 func renderDashboard(c echo.Context, uid string) error {
