@@ -36,7 +36,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.38.0
 	golang.org/x/time v0.13.0
 	google.golang.org/api v0.251.0
-	google.golang.org/genai v1.26.0
+	google.golang.org/genai v1.27.0
 	maragu.dev/gomponents v1.2.0
 	maragu.dev/gomponents-htmx v0.6.1
 	maragu.dev/goqite v0.3.1
