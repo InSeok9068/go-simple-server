@@ -65,6 +65,7 @@ htmx.on("htmx:afterRequest", (event) => {
 
   const isResponseError = event.detail.xhr.status === 401;
   if (isResponseError && !reauthInProgress) {
+    showInfo("자동 로그인 재시도중입니다.");
     reauthInProgress = true;
     auth.authStateReady().then(() => {
       if (auth.currentUser === undefined) {
@@ -85,9 +86,12 @@ htmx.on("htmx:afterRequest", (event) => {
         })
         .then((response) => {
           if (response.ok) {
-            location.reload();
+            showInfo("로그인이 완료되었습니다.");
+            setTimeout(() => {
+              location.reload();
+            }, 500);
           } else {
-            showError("재 로그인 실패");
+            showError("자동 로그인에 실패했습니다.");
           }
         })
         .catch((err) => {
