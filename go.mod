@@ -26,7 +26,7 @@ require (
 	github.com/labstack/echo-contrib v0.17.4
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/lmittmann/tint v1.1.2
-	github.com/pressly/goose/v3 v3.25.0
+	github.com/pressly/goose/v3 v3.26.0
 	github.com/qustavo/sqlhooks/v2 v2.1.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/willoma/bulma-gomponents v0.13.0
@@ -36,7 +36,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.38.0
 	golang.org/x/time v0.13.0
 	google.golang.org/api v0.251.0
-	google.golang.org/genai v1.27.0
+	google.golang.org/genai v1.28.0
 	maragu.dev/gomponents v1.2.0
 	maragu.dev/gomponents-htmx v0.6.1
 	maragu.dev/goqite v0.3.1
