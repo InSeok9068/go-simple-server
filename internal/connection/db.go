@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/XSAM/otelsql"
 	"github.com/qustavo/sqlhooks/v2"
 
 	"modernc.org/sqlite"
@@ -44,9 +45,9 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 		once.Do(func() {
 			sql.Register(driverName, sqlhooks.Wrap(&sqlite.Driver{}, &Hooks{}))
 		})
-		db, err = sql.Open(driverName, os.Getenv("APP_DATABASE_URL"))
+		db, err = otelsql.Open(driverName, os.Getenv("APP_DATABASE_URL"))
 	} else {
-		db, err = sql.Open("sqlite", os.Getenv("APP_DATABASE_URL"))
+		db, err = otelsql.Open("sqlite", os.Getenv("APP_DATABASE_URL"))
 	}
 	if err != nil {
 		return nil, fmt.Errorf("데이터베이스 연결 실패: %w", err)

@@ -14,7 +14,7 @@ import (
 	ipfilter "github.com/crazy-max/echo-ipfilter"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 	"golang.org/x/time/rate"
 )
 
@@ -72,17 +72,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 			return c.Path() == "/metrics"
 		},
 	}))
-
-	// Tracing
-	tracer := otel.Tracer(serviceName)
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			ctx, span := tracer.Start(c.Request().Context(), c.Request().Method+" "+c.Path())
-			defer span.End()
-			c.SetRequest(c.Request().WithContext(ctx))
-			return next(c)
-		}
-	})
+	e.Use(otelecho.Middleware(serviceName))
 
 	// Debug
 	// https://{서버주소}/debug/vars/ui?auth={인증값}
