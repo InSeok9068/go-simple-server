@@ -35,7 +35,8 @@ func (h *Hooks) After(ctx context.Context, query string, args ...interface{}) (c
 }
 
 func AppDBOpen(hooked ...bool) (*sql.DB, error) {
-	isHooked := os.Getenv("ENV") == "dev"
+	// isHooked := os.Getenv("ENV") == "dev"
+	isHooked := true
 
 	if len(hooked) > 0 {
 		isHooked = hooked[0]
