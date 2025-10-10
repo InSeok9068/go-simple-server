@@ -32,6 +32,7 @@ jobs:
             FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
             DEBUG_AUTH_PARAM=${{ secrets.DEBUG_AUTH_PARAM }}
             SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+            NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
           EOF
 
       # 4. Go 설치
