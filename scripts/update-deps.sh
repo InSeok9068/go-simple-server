@@ -70,7 +70,8 @@ print_done "모든 Go 모듈 업데이트"
 print_step "2. Go 도구 설치 중..."
 
 tools=(
-    "github.com/air-verse/air@latest"
+    "github.com/air-verse/air@v1.62.0"
+    # "github.com/air-verse/air@latest"
     "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"
     "github.com/sqlc-dev/sqlc/cmd/sqlc@latest"
     "golang.org/x/vuln/cmd/govulncheck@latest"
