@@ -62,6 +62,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		CookieSameSite: http.SameSiteLaxMode,
 	}))
 	e.Use(debug.MetricsMiddleware)
+	e.Use(otelecho.Middleware(serviceName))
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
 		LogLatency:    true,
@@ -72,7 +73,6 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 			return c.Path() == "/metrics"
 		},
 	}))
-	e.Use(otelecho.Middleware(serviceName))
 
 	// Debug
 	// https://{서버주소}/debug/vars/ui?auth={인증값}

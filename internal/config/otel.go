@@ -4,8 +4,16 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"time"
 
+	hostinstrumentation "go.opentelemetry.io/contrib/instrumentation/host"
+	runtimeinstrumentation "go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
@@ -15,29 +23,244 @@ var shutdown func(context.Context) error
 
 func InitTracer() {
 	ctx := context.Background()
+	shutdown = nil
+
+	serviceName := os.Getenv("SERVICE_NAME")
+	deployEnv := os.Getenv("ENV")
+
+	resourceAttributes := []attribute.KeyValue{
+		semconv.ServiceName(serviceName),
+	}
+	if deployEnv != "" {
+		resourceAttributes = append(resourceAttributes, semconv.DeploymentEnvironment(deployEnv))
+	}
 
 	res, err := resource.New(ctx,
-		resource.WithAttributes(
-			semconv.ServiceName(os.Getenv("SERVICE_NAME")),
-		),
+		resource.WithFromEnv(),
+		resource.WithHost(),
+		resource.WithOS(),
+		resource.WithProcess(),
+		resource.WithTelemetrySDK(),
+		resource.WithAttributes(resourceAttributes...),
 	)
 	if err != nil {
 		slog.Error("리소스 생성 실패", "error", err)
 		return
 	}
 
+	licenseKey := os.Getenv("NEW_RELIC_LICENSE_KEY")
+	if licenseKey == "" {
+		initLocalProviders(res)
+		slog.Warn("NewRelic 라이선스 키가 없어 로컬 OTEL 프로바이더만 활성화합니다")
+		return
+	}
+
+	endpoint := os.Getenv("NEW_RELIC_OTLP_ENDPOINT")
+	if endpoint == "" {
+		endpoint = "https://otlp.nr-data.net:4318"
+	}
+
+	var shutdowns []func(context.Context) error
+	registerShutdown := func(fn func(context.Context) error) {
+		shutdowns = append(shutdowns, fn)
+	}
+
+	traceErr := initTraceProvider(ctx, res, endpoint, licenseKey, registerShutdown)
+	metricErr := initMetricProvider(ctx, res, endpoint, licenseKey, registerShutdown)
+
+	switch {
+	case traceErr != nil && metricErr != nil:
+		slog.Error("OTel 원격 초기화 실패, 로컬 프로바이더로 대체합니다", "trace_error", traceErr, "metric_error", metricErr)
+		initLocalProviders(res)
+		return
+	case traceErr != nil:
+		slog.Error("추적 프로바이더 초기화 실패, 로컬 트레이서로 대체합니다", "error", traceErr)
+		initLocalTraceProvider(res, registerShutdown)
+	case metricErr != nil:
+		slog.Error("메트릭 프로바이더 초기화 실패, 로컬 메트릭으로 대체합니다", "error", metricErr)
+		initLocalMetricProvider(res, registerShutdown)
+	default:
+		meterProvider := otel.GetMeterProvider()
+		if err := runtimeinstrumentation.Start(
+			runtimeinstrumentation.WithMeterProvider(meterProvider),
+			runtimeinstrumentation.WithMinimumReadMemStatsInterval(15*time.Second),
+		); err != nil {
+			slog.Warn("런타임 메트릭 수집 초기화 실패", "error", err)
+		}
+		if err := hostinstrumentation.Start(
+			hostinstrumentation.WithMeterProvider(meterProvider),
+		); err != nil {
+			slog.Warn("호스트 메트릭 수집 초기화 실패", "error", err)
+		}
+	}
+
+	if len(shutdowns) == 0 {
+		return
+	}
+
+	shutdown = func(ctx context.Context) error {
+		var firstErr error
+		for i := len(shutdowns) - 1; i >= 0; i-- {
+			if err := shutdowns[i](ctx); err != nil {
+				if firstErr == nil {
+					firstErr = err
+				} else {
+					slog.Warn("추가 종료 중 오류 발생", "error", err)
+				}
+			}
+		}
+		return firstErr
+	}
+
+	slog.Info("OpenTelemetry 추적/메트릭을 NewRelic으로 전송합니다", "endpoint", endpoint, "service", serviceName, "env", deployEnv)
+}
+
+func initTraceProvider(
+	ctx context.Context,
+	res *resource.Resource,
+	endpoint, licenseKey string,
+	registerShutdown func(func(context.Context) error),
+) error {
+	client := otlptracehttp.NewClient(
+		otlptracehttp.WithEndpointURL(endpoint),
+		otlptracehttp.WithHeaders(map[string]string{
+			"api-key": licenseKey,
+		}),
+	)
+
+	exporterCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	exporter, err := otlptrace.New(exporterCtx, client)
+	if err != nil {
+		return err
+	}
+
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithResource(res),
+		sdktrace.WithSpanProcessor(sdktrace.NewBatchSpanProcessor(exporter)),
 	)
 
 	otel.SetTracerProvider(tp)
-	shutdown = tp.Shutdown
+	registerShutdown(func(ctx context.Context) error {
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+		return tp.Shutdown(ctx)
+	})
+
+	return nil
+}
+
+func initMetricProvider(
+	ctx context.Context,
+	res *resource.Resource,
+	endpoint, licenseKey string,
+	registerShutdown func(func(context.Context) error),
+) error {
+	exporterCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	exporter, err := otlpmetrichttp.New(
+		exporterCtx,
+		otlpmetrichttp.WithEndpointURL(endpoint),
+		otlpmetrichttp.WithHeaders(map[string]string{
+			"api-key": licenseKey,
+		}),
+	)
+	if err != nil {
+		return err
+	}
+
+	reader := metric.NewPeriodicReader(exporter, metric.WithInterval(15*time.Second))
+
+	mp := metric.NewMeterProvider(
+		metric.WithResource(res),
+		metric.WithReader(reader),
+	)
+
+	otel.SetMeterProvider(mp)
+	registerShutdown(func(ctx context.Context) error {
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+		return mp.Shutdown(ctx)
+	})
+
+	return nil
+}
+
+func initLocalTraceProvider(res *resource.Resource, registerShutdown func(func(context.Context) error)) *sdktrace.TracerProvider {
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithResource(res),
+	)
+	otel.SetTracerProvider(tp)
+
+	if registerShutdown != nil {
+		registerShutdown(func(ctx context.Context) error {
+			ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			defer cancel()
+			return tp.Shutdown(ctx)
+		})
+	}
+
+	return tp
+}
+
+func initLocalMetricProvider(res *resource.Resource, registerShutdown func(func(context.Context) error)) *metric.MeterProvider {
+	mp := metric.NewMeterProvider(
+		metric.WithResource(res),
+	)
+	otel.SetMeterProvider(mp)
+
+	if registerShutdown != nil {
+		registerShutdown(func(ctx context.Context) error {
+			ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			defer cancel()
+			return mp.Shutdown(ctx)
+		})
+	}
+
+	return mp
+}
+
+func initLocalProviders(res *resource.Resource) {
+	tp := initLocalTraceProvider(res, nil)
+	mp := initLocalMetricProvider(res, nil)
+
+	shutdown = func(ctx context.Context) error {
+		var firstErr error
+
+		if tp != nil {
+			if err := func() error {
+				ctxTrace, cancel := context.WithTimeout(ctx, 5*time.Second)
+				defer cancel()
+				return tp.Shutdown(ctxTrace)
+			}(); err != nil {
+				firstErr = err
+			}
+		}
+
+		if mp != nil {
+			if err := func() error {
+				ctxMetric, cancel := context.WithTimeout(ctx, 5*time.Second)
+				defer cancel()
+				return mp.Shutdown(ctxMetric)
+			}(); err != nil {
+				if firstErr == nil {
+					firstErr = err
+				} else {
+					slog.Warn("메트릭 종료 실패", "error", err)
+				}
+			}
+		}
+
+		return firstErr
+	}
 }
 
 func ShutdownTracer(ctx context.Context) {
 	if shutdown != nil {
 		if err := shutdown(ctx); err != nil {
-			slog.Error("트레이서 종료 실패", "error", err)
+			slog.Error("OTel 리소스 종료 실패", "error", err)
 		}
 	}
 }

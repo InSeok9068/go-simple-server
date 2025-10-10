@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/XSAM/otelsql"
 	"github.com/qustavo/sqlhooks/v2"
+	"go.opentelemetry.io/otel/attribute"
 
 	"modernc.org/sqlite"
 )
@@ -45,7 +47,13 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 		once.Do(func() {
 			sql.Register(driverName, sqlhooks.Wrap(&sqlite.Driver{}, &Hooks{}))
 		})
-		db, err = otelsql.Open(driverName, os.Getenv("APP_DATABASE_URL"))
+		db, err = otelsql.Open(driverName, os.Getenv("APP_DATABASE_URL"),
+			otelsql.WithAttributes(
+				attribute.String("db.system", "sqlite"),
+				attribute.String("db.name", os.Getenv("SERVICE_NAME")),
+			),
+			otelsql.WithSpanNameFormatter(sqlSpanNameFormatter),
+		)
 	} else {
 		db, err = otelsql.Open("sqlite", os.Getenv("APP_DATABASE_URL"))
 	}
@@ -91,4 +99,37 @@ func LogDBOpen() (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func sqlSpanNameFormatter(_ context.Context, method otelsql.Method, query string) string {
+	if name := extractQueryName(query); name != "" {
+		return "SQL " + name
+	}
+
+	return "SQL " + string(method)
+}
+
+func extractQueryName(query string) string {
+	if query == "" {
+		return ""
+	}
+
+	lowerPrefix := "-- name:"
+	for _, line := range strings.Split(query, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" || !strings.HasPrefix(strings.ToLower(trimmed), lowerPrefix) {
+			continue
+		}
+		rest := strings.TrimSpace(trimmed[len(lowerPrefix):])
+		if rest == "" {
+			return ""
+		}
+		parts := strings.Fields(rest)
+		if len(parts) == 0 {
+			return ""
+		}
+		return parts[0]
+	}
+
+	return ""
 }
