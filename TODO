@@ -4,6 +4,7 @@ Icon:
 
 Common Project:
   New:
+    ☐ Uptrace 연동 (otelhttp/otelecho/otelsql)
     ☐ AI CLI 활용하여 스캐폴드 (서비스 생성, 삭제, 배포, 제거) 구현
       - SCAFFOLD.md 자세히 구현 방법 정의
 
