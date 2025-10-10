@@ -41,13 +41,18 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 		isHooked = hooked[0]
 	}
 
-	var db *sql.DB
-	var err error
+	var (
+		db  *sql.DB
+		err error
+	)
+
 	if isHooked {
 		once.Do(func() {
 			sql.Register(driverName, sqlhooks.Wrap(&sqlite.Driver{}, &Hooks{}))
 		})
-		db, err = otelsql.Open(driverName, os.Getenv("APP_DATABASE_URL"),
+		db, err = otelsql.Open(
+			driverName,
+			os.Getenv("APP_DATABASE_URL"),
 			otelsql.WithAttributes(
 				attribute.String("db.system", "sqlite"),
 				attribute.String("db.name", os.Getenv("SERVICE_NAME")),
@@ -55,7 +60,7 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 			otelsql.WithSpanNameFormatter(sqlSpanNameFormatter),
 		)
 	} else {
-		db, err = otelsql.Open("sqlite", os.Getenv("APP_DATABASE_URL"))
+		db, err = sql.Open("sqlite", os.Getenv("APP_DATABASE_URL"))
 	}
 	if err != nil {
 		return nil, fmt.Errorf("데이터베이스 연결 실패: %w", err)
@@ -68,6 +73,7 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 	// db.SetConnMaxIdleTime(1 * time.Hour) // 1h 유휴 연결 유지 시간
 
 	// 연결 테스트
+
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if err := db.PingContext(ctx); err != nil {
@@ -79,8 +85,10 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 }
 
 func LogDBOpen() (*sql.DB, error) {
-	var db *sql.DB
-	var err error
+	var (
+		db  *sql.DB
+		err error
+	)
 	db, err = sql.Open("sqlite", os.Getenv("LOG_DATABASE_URL"))
 	if err != nil {
 		return nil, fmt.Errorf("로그 데이터베이스 연결 실패: %w", err)
@@ -114,20 +122,27 @@ func extractQueryName(query string) string {
 		return ""
 	}
 
-	lowerPrefix := "-- name:"
+	const prefix = "-- name:"
+
 	for _, line := range strings.Split(query, "\n") {
 		trimmed := strings.TrimSpace(line)
-		if trimmed == "" || !strings.HasPrefix(strings.ToLower(trimmed), lowerPrefix) {
+		if trimmed == "" {
 			continue
 		}
-		rest := strings.TrimSpace(trimmed[len(lowerPrefix):])
+		if !strings.HasPrefix(strings.ToLower(trimmed), prefix) {
+			continue
+		}
+
+		rest := strings.TrimSpace(trimmed[len(prefix):])
 		if rest == "" {
 			return ""
 		}
+
 		parts := strings.Fields(rest)
 		if len(parts) == 0 {
 			return ""
 		}
+
 		return parts[0]
 	}
 
