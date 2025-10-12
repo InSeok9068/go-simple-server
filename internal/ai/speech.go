@@ -3,7 +3,6 @@ package aiclient
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"simple-server/internal/config"
 
 	"google.golang.org/genai"
@@ -20,9 +19,6 @@ func TranscribeAudio(ctx context.Context, data []byte, mimeType string) (string,
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
-		HTTPClient: &http.Client{
-			Transport: http.DefaultTransport,
-		},
 	})
 	if err != nil {
 		return "", fmt.Errorf("AI 클라이언트 생성 실패: %w", err)

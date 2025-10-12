@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"net/http"
 	"simple-server/internal/config"
 
 	"google.golang.org/genai"
@@ -18,9 +17,6 @@ func Request(ctx context.Context, prompt string, model ...string) (string, error
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
-		HTTPClient: &http.Client{
-			Transport: http.DefaultTransport,
-		},
 	})
 	if err != nil {
 		return "", fmt.Errorf("AI 클라이언트 생성 실패: %w", err)
@@ -47,9 +43,6 @@ func ImageRequest(ctx context.Context, prompt string, model ...string) (string, 
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
-		HTTPClient: &http.Client{
-			Transport: http.DefaultTransport,
-		},
 	})
 	if err != nil {
 		return "", fmt.Errorf("AI 클라이언트 생성 실패: %w", err)
