@@ -39,6 +39,8 @@ modules=(
     "github.com/labstack/echo-contrib@latest"
     "github.com/labstack/echo/v4@latest"
     "github.com/lmittmann/tint@latest"
+    "github.com/newrelic/go-agent/v3@latest"
+    "github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrslog@latest"
     "github.com/pressly/goose/v3@latest"
     "github.com/qustavo/sqlhooks/v2@latest"
     "github.com/robfig/cron/v3@latest"
