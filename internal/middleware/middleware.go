@@ -103,28 +103,33 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 }
 
 func isSkippedPath(path string) bool {
+	fmt.Println(path)
 	// 메트릭스 경로는 추적하지 않음
-	if path == "/metrics" {
+	if path == "/metrics" || strings.HasPrefix(path, "/metrics*") {
 		return true
 	}
 	// 정적 파일은 추적하지 않음
-	if strings.HasPrefix(path, "/static/") {
+	if strings.HasPrefix(path, "/static/") || strings.HasPrefix(path, "/static*") {
 		return true
 	}
 	// 공통 정적 파일은 추적하지 않음
-	if strings.HasPrefix(path, "/shared/static/") {
+	if strings.HasPrefix(path, "/shared/static/") || strings.HasPrefix(path, "/shared/static*") {
 		return true
 	}
 	// manifest.json은 추적하지 않음
-	if strings.HasPrefix(path, "/manifest.json") {
+	if strings.HasPrefix(path, "/manifest.json") || strings.HasPrefix(path, "/manifest.json*") {
 		return true
 	}
 	// firebase-messaging-sw.js는 추적하지 않음
-	if strings.HasPrefix(path, "/firebase-messaging-sw.js") {
+	if strings.HasPrefix(path, "/firebase-messaging-sw.js") || strings.HasPrefix(path, "/firebase-messaging-sw.js*") {
 		return true
 	}
 	// service-worker.js는 추적하지 않음
-	if strings.HasPrefix(path, "/service-worker.js") {
+	if strings.HasPrefix(path, "/service-worker.js") || strings.HasPrefix(path, "/service-worker.js*") {
+		return true
+	}
+	// favicon.ico는 추적하지 않음
+	if strings.HasPrefix(path, "/favicon.ico") || strings.HasPrefix(path, "/favicon.ico*") {
 		return true
 	}
 	return false
