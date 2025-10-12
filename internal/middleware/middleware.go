@@ -62,7 +62,9 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		CookieSameSite: http.SameSiteLaxMode,
 	}))
 	e.Use(debug.MetricsMiddleware)
-	e.Use(otelecho.Middleware(serviceName))
+	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
+		return c.Path() == "/metrics"
+	})))
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
 		LogLatency:    true,
