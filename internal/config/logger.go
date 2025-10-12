@@ -15,6 +15,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/lmittmann/tint"
+	"github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrslog"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"go.opentelemetry.io/otel/trace"
 	_ "modernc.org/sqlite"
 )
@@ -33,10 +35,6 @@ func NewMultiHandler(handlers ...slog.Handler) *MultiHandler {
 
 // Handle : 모든 핸들러에 로그를 전달
 func (m *MultiHandler) Handle(ctx context.Context, r slog.Record) error {
-	spanCtx := trace.SpanFromContext(ctx).SpanContext()
-	if spanCtx.IsValid() {
-		r.AddAttrs(slog.String("trace_id", spanCtx.TraceID().String()))
-	}
 	for _, handler := range m.handlers {
 		rec := r.Clone()
 		if err := handler.Handle(ctx, rec); err != nil {
@@ -72,6 +70,36 @@ func (m *MultiHandler) WithGroup(name string) slog.Handler {
 		newHandlers = append(newHandlers, handler.WithGroup(name))
 	}
 	return NewMultiHandler(newHandlers...)
+}
+
+// ContextAttrsHandler: 컨텍스트에서 trace/span을 추출해 레코드에 먼저 주입
+type ContextAttrsHandler struct {
+	next slog.Handler
+}
+
+func NewContextAttrsHandler(next slog.Handler) slog.Handler { return &ContextAttrsHandler{next: next} }
+
+func (h *ContextAttrsHandler) Enabled(ctx context.Context, lvl slog.Level) bool {
+	return h.next.Enabled(ctx, lvl)
+}
+
+func (h *ContextAttrsHandler) Handle(ctx context.Context, r slog.Record) error {
+	if sc := trace.SpanFromContext(ctx).SpanContext(); sc.IsValid() {
+		r.AddAttrs(
+			slog.String("trace_id", sc.TraceID().String()),
+			slog.String("span_id", sc.SpanID().String()),
+			slog.String("trace.id", sc.TraceID().String()),
+			slog.String("span.id", sc.SpanID().String()),
+		)
+	}
+	return h.next.Handle(ctx, r)
+}
+
+func (h *ContextAttrsHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return &ContextAttrsHandler{next: h.next.WithAttrs(attrs)}
+}
+func (h *ContextAttrsHandler) WithGroup(name string) slog.Handler {
+	return &ContextAttrsHandler{next: h.next.WithGroup(name)}
 }
 
 type logEntry struct {
@@ -207,9 +235,33 @@ func InitLoggerWithDatabase() {
 			})
 		}
 
-		// MultiHandler: Combine all handlers
+		// MultiHandler: Combine console + database
 		multiHandler := NewMultiHandler(consoleHandler, databaseHandler)
-		slog.SetDefault(slog.New(multiHandler))
+
+		// nrslog로 New Relic Logs in Context + Forwarding 적용(라이선스 존재 시)
+		var root slog.Handler = multiHandler
+		if lic := os.Getenv("NEW_RELIC_LICENSE_KEY"); lic != "" {
+			appName := os.Getenv("SERVICE_NAME")
+			if appName == "" {
+				appName = "app"
+			}
+			if app, err := newrelic.NewApplication(
+				newrelic.ConfigAppName(appName),
+				newrelic.ConfigLicense(lic),
+				newrelic.ConfigEnabled(true),
+				newrelic.ConfigDistributedTracerEnabled(true),
+				newrelic.ConfigAppLogForwardingEnabled(true),
+			); err == nil {
+				root = nrslog.WrapHandler(app, multiHandler)
+				slog.Info("New Relic nrslog 활성화", "app", appName)
+			} else {
+				slog.Warn("New Relic 애플리케이션 초기화 실패, nrslog 비활성", "error", err)
+			}
+		}
+
+		// trace/span을 먼저 주입하는 핸들러를 최상단에 배치
+		root = NewContextAttrsHandler(root)
+		slog.SetDefault(slog.New(root))
 		log.SetOutput(os.Stderr)
 	})
 }
