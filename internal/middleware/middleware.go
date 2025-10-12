@@ -9,6 +9,7 @@ import (
 	resources "simple-server"
 	"simple-server/internal/config"
 	"simple-server/internal/debug"
+	"strings"
 	"time"
 
 	ipfilter "github.com/crazy-max/echo-ipfilter"
@@ -63,7 +64,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	}))
 	e.Use(debug.MetricsMiddleware)
 	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
-		return c.Path() == "/metrics"
+		return isSkippedPath(c.Path())
 	})))
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
@@ -72,7 +73,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		LogRemoteIP:   true,
 		LogValuesFunc: config.CustomLogValuesFunc,
 		Skipper: func(c echo.Context) bool {
-			return c.Path() == "/metrics"
+			return isSkippedPath(c.Path())
 		},
 	}))
 
@@ -99,4 +100,32 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	debugGroup.GET("/vars/ui", echo.WrapHandler(http.HandlerFunc(debug.VarsUI)))
 
 	return nil
+}
+
+func isSkippedPath(path string) bool {
+	// 메트릭스 경로는 추적하지 않음
+	if path == "/metrics" {
+		return true
+	}
+	// 정적 파일은 추적하지 않음
+	if strings.HasPrefix(path, "/static/") {
+		return true
+	}
+	// 공통 정적 파일은 추적하지 않음
+	if strings.HasPrefix(path, "/shared/static/") {
+		return true
+	}
+	// manifest.json은 추적하지 않음
+	if strings.HasPrefix(path, "/manifest.json") {
+		return true
+	}
+	// firebase-messaging-sw.js는 추적하지 않음
+	if strings.HasPrefix(path, "/firebase-messaging-sw.js") {
+		return true
+	}
+	// service-worker.js는 추적하지 않음
+	if strings.HasPrefix(path, "/service-worker.js") {
+		return true
+	}
+	return false
 }
