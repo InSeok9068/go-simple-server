@@ -3,10 +3,12 @@ package config
 import (
 	"context"
 	"log/slog"
+	"net/http"
 	"os"
 	"time"
 
 	hostinstrumentation "go.opentelemetry.io/contrib/instrumentation/host"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	runtimeinstrumentation "go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -24,6 +26,7 @@ var shutdown func(context.Context) error
 func InitTracer() {
 	ctx := context.Background()
 	shutdown = nil
+	defer setupHTTPInstrumentation()
 
 	serviceName := os.Getenv("SERVICE_NAME")
 	deployEnv := os.Getenv("ENV")
@@ -44,14 +47,14 @@ func InitTracer() {
 		resource.WithAttributes(resourceAttributes...),
 	)
 	if err != nil {
-		slog.Error("리소스 생성 실패", "error", err)
+		slog.Error("리소스 초기화 실패", "error", err)
 		return
 	}
 
 	licenseKey := os.Getenv("NEW_RELIC_LICENSE_KEY")
 	if licenseKey == "" {
 		initLocalProviders(res)
-		slog.Warn("NewRelic 라이선스 키가 없어 로컬 OTEL 프로바이더만 활성화합니다")
+		slog.Warn("NewRelic 라이선스를 찾지 못해 로컬 OTEL 프로바이더만 활성화합니다")
 		return
 	}
 
@@ -60,6 +63,37 @@ func InitTracer() {
 		endpoint = "https://otlp.nr-data.net:4318"
 	}
 
+	shutdowns, ok := setupRemoteProviders(ctx, res, endpoint, licenseKey)
+	if !ok {
+		return
+	}
+
+	if len(shutdowns) == 0 {
+		return
+	}
+
+	shutdown = func(ctx context.Context) error {
+		var firstErr error
+		for i := len(shutdowns) - 1; i >= 0; i-- {
+			if err := shutdowns[i](ctx); err != nil {
+				if firstErr == nil {
+					firstErr = err
+				} else {
+					slog.Warn("추가 종료 오류 발생", "error", err)
+				}
+			}
+		}
+		return firstErr
+	}
+
+	slog.Info("OpenTelemetry 추적/메트릭을 NewRelic으로 전송합니다", "endpoint", endpoint, "service", serviceName, "env", deployEnv)
+}
+
+func setupRemoteProviders(
+	ctx context.Context,
+	res *resource.Resource,
+	endpoint, licenseKey string,
+) ([]func(context.Context) error, bool) {
 	var shutdowns []func(context.Context) error
 	registerShutdown := func(fn func(context.Context) error) {
 		shutdowns = append(shutdowns, fn)
@@ -72,7 +106,7 @@ func InitTracer() {
 	case traceErr != nil && metricErr != nil:
 		slog.Error("OTel 원격 초기화 실패, 로컬 프로바이더로 대체합니다", "trace_error", traceErr, "metric_error", metricErr)
 		initLocalProviders(res)
-		return
+		return nil, false
 	case traceErr != nil:
 		slog.Error("추적 프로바이더 초기화 실패, 로컬 트레이서로 대체합니다", "error", traceErr)
 		initLocalTraceProvider(res, registerShutdown)
@@ -94,25 +128,7 @@ func InitTracer() {
 		}
 	}
 
-	if len(shutdowns) == 0 {
-		return
-	}
-
-	shutdown = func(ctx context.Context) error {
-		var firstErr error
-		for i := len(shutdowns) - 1; i >= 0; i-- {
-			if err := shutdowns[i](ctx); err != nil {
-				if firstErr == nil {
-					firstErr = err
-				} else {
-					slog.Warn("추가 종료 중 오류 발생", "error", err)
-				}
-			}
-		}
-		return firstErr
-	}
-
-	slog.Info("OpenTelemetry 추적/메트릭을 NewRelic으로 전송합니다", "endpoint", endpoint, "service", serviceName, "env", deployEnv)
+	return shutdowns, true
 }
 
 func initTraceProvider(
@@ -255,6 +271,18 @@ func initLocalProviders(res *resource.Resource) {
 
 		return firstErr
 	}
+}
+
+func setupHTTPInstrumentation() {
+	base := http.DefaultTransport
+	if base == nil {
+		base = &http.Transport{}
+	}
+	if _, ok := base.(*otelhttp.Transport); ok {
+		http.DefaultTransport = base
+		return
+	}
+	http.DefaultTransport = otelhttp.NewTransport(base)
 }
 
 func ShutdownTracer(ctx context.Context) {

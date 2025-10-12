@@ -3,6 +3,7 @@ package aiclient
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"simple-server/internal/config"
 
 	"google.golang.org/genai"
@@ -11,20 +12,23 @@ import (
 // TranscribeAudio는 음성 데이터를 텍스트로 변환한다.
 func TranscribeAudio(ctx context.Context, data []byte, mimeType string) (string, error) {
 	if len(data) == 0 {
-		return "", fmt.Errorf("오디오 데이터가 비어있습니다")
+		return "", fmt.Errorf("오디오 데이터가 비어 있습니다")
 	}
 	if config.EnvMap["GEMINI_AI_KEY"] == "" {
-		return "", fmt.Errorf("AI 키가 설정되지 않았습니다")
+		return "", fmt.Errorf("AI 키 설정을 찾을 수 없습니다")
 	}
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
 		Backend: genai.BackendGeminiAPI,
+		HTTPClient: &http.Client{
+			Transport: http.DefaultTransport,
+		},
 	})
 	if err != nil {
 		return "", fmt.Errorf("AI 클라이언트 생성 실패: %w", err)
 	}
 	parts := []*genai.Part{
-		{Text: "다음 오디오 내용을 해석하지말고 들리는 그대로를 한국어 텍스트로 변환해줘."},
+		{Text: "음성 데이터 내용을 분석하지 말고 그대로 한국어 텍스트로 변환해줘"},
 		{InlineData: &genai.Blob{Data: data, MIMEType: mimeType}},
 	}
 	contents := []*genai.Content{{Parts: parts}}
@@ -32,10 +36,10 @@ func TranscribeAudio(ctx context.Context, data []byte, mimeType string) (string,
 		ResponseModalities: []string{"Text"},
 	})
 	if err != nil {
-		return "", fmt.Errorf("오디오 인식 요청 실패: %w", err)
+		return "", fmt.Errorf("오디오 변환 요청 실패: %w", err)
 	}
 	if len(result.Candidates) == 0 || len(result.Candidates[0].Content.Parts) == 0 {
-		return "", fmt.Errorf("응답이 비어있습니다")
+		return "", fmt.Errorf("응답이 비어 있습니다")
 	}
 	return result.Candidates[0].Content.Parts[0].Text, nil
 }

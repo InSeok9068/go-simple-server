@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -31,7 +32,7 @@ func main() {
 	/* 로깅 및 트레이서 초기화 */
 	config.InitLoggerWithDatabase()
 	config.InitTracer()
-	// defer config.ShutdownTracer(context.Background())
+	defer config.ShutdownTracer(context.Background())
 	/* 로깅 및 트레이서 초기화 */
 
 	/* DB 초기화 */
