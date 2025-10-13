@@ -16,11 +16,11 @@ import (
 	ipfilter "github.com/crazy-max/echo-ipfilter"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 	"golang.org/x/time/rate"
 )
 
 func RegisterCommonMiddleware(e *echo.Echo) error {
+	// 공통 오류 핸들러
 	RegisterErrorHandler(e)
 
 	serviceName := os.Getenv("SERVICE_NAME")
@@ -64,9 +64,6 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		CookieSameSite: http.SameSiteLaxMode,
 	}))
 	e.Use(debug.MetricsMiddleware)
-	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
-		return isSkippedPath(c.Path())
-	})))
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
 		LogLatency:    true,
@@ -77,6 +74,15 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 			return isSkippedPath(c.Path())
 		},
 	}))
+	// OtelEcho Fork (자체 에러 수정)
+	e.Use(OtelEchoMiddleware(
+		serviceName,
+		WithSkipper(func(c echo.Context) bool { return isSkippedPath(c.Path()) }),
+		WithSpanNameFormatter(func(c echo.Context) string {
+			return c.Request().Method + " " + c.Path()
+		}),
+	))
+
 	// 전역 검증기 등록 (go-playground/validator, 한국어 번역)
 	e.Validator = validate.NewEchoValidator()
 
