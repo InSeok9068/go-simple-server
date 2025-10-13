@@ -24,7 +24,7 @@ type Payload struct {
 var pushQ *goqite.Queue
 
 func PushSendCron(c *cron.Cron) {
-	queries, err := db.GetQueries()
+	queries, err := db.GetQueries(false)
 	if err != nil {
 		slog.Error("쿼리 로드 실패", "error", err)
 		return
