@@ -103,7 +103,6 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 }
 
 func isSkippedPath(path string) bool {
-	fmt.Println(path)
 	// 메트릭스 경로는 추적하지 않음
 	if path == "/metrics" || strings.HasPrefix(path, "/metrics*") {
 		return true
