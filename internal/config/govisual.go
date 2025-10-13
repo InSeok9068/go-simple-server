@@ -11,7 +11,7 @@ import (
 )
 
 func TransferEchoToGoVisualServerOnlyDev(e *echo.Echo, port string) *http.Server {
-	url := "file:./shared/log/govisual.db?_pragma=journal_mode(WAL)&mode=rwc"
+	url := "file:./shared/log/govisual.db?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&mode=rwc"
 	db, err := sql.Open("sqlite", url)
 	if err != nil {
 		slog.Error("[Govisual] 로그 데이터베이스 연결 실패", "error", err)
