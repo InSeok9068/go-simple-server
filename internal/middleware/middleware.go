@@ -16,12 +16,16 @@ import (
 	ipfilter "github.com/crazy-max/echo-ipfilter"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 	"golang.org/x/time/rate"
 )
 
 func RegisterCommonMiddleware(e *echo.Echo) error {
-	// 공통 오류 핸들러
+	// 공통 오류 핸들러 등록
 	RegisterErrorHandler(e)
+
+	// 전역 검증기 등록 (go-playground/validator, 한국어 번역)
+	e.Validator = validate.NewEchoValidator()
 
 	serviceName := os.Getenv("SERVICE_NAME")
 
@@ -51,10 +55,6 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	}
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORS())
-	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Timeout:      1 * time.Minute,
-		ErrorMessage: "요청 처리 시간이 지연되었습니다. 다시 시도해주세요.",
-	}))
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.BodyLimit("5M"))
@@ -63,7 +63,6 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		CookieSecure:   config.IsProdEnv(),
 		CookieSameSite: http.SameSiteLaxMode,
 	}))
-	e.Use(debug.MetricsMiddleware)
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
 		LogLatency:    true,
@@ -74,17 +73,14 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 			return isSkippedPath(c.Path())
 		},
 	}))
-	// OtelEcho Fork (자체 에러 수정)
-	e.Use(OtelEchoMiddleware(
-		serviceName,
-		WithSkipper(func(c echo.Context) bool { return isSkippedPath(c.Path()) }),
-		WithSpanNameFormatter(func(c echo.Context) string {
-			return c.Request().Method + " " + c.Path()
-		}),
-	))
-
-	// 전역 검증기 등록 (go-playground/validator, 한국어 번역)
-	e.Validator = validate.NewEchoValidator()
+	e.Use(debug.MetricsMiddleware)
+	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
+		return isSkippedPath(c.Path())
+	})))
+	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+		Timeout:      1 * time.Minute,
+		ErrorMessage: "요청 처리 시간이 지연되었습니다. 다시 시도해주세요.",
+	}))
 
 	// Debug
 	// https://{서버주소}/debug/vars/ui?auth={인증값}

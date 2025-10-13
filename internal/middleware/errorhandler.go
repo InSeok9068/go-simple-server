@@ -12,6 +12,10 @@ import (
 // RegisterErrorHandler : 에코 전역 에러 핸들러 등록
 func RegisterErrorHandler(e *echo.Echo) {
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		if c.Response().Committed {
+			return
+		}
+
 		var (
 			he      *echo.HTTPError
 			code    int

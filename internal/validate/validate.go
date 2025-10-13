@@ -3,6 +3,7 @@ package validate
 import (
 	"log/slog"
 	"reflect"
+	"strings"
 
 	localesko "github.com/go-playground/locales/ko"
 	ut "github.com/go-playground/universal-translator"
@@ -51,29 +52,71 @@ func Init() {
 
 // ErrorMessage는 validator 오류를 한국어 메시지로 합쳐 반환한다.
 func ErrorMessage(err error) string {
+	return ErrorMessageOf(nil, err)
+}
+
+// target(검증했던 원본 구조체 or 포인터)을 주면 그 안의 `message` 태그를 우선 적용
+func ErrorMessageOf(target any, err error) string {
 	if err == nil {
 		return ""
 	}
-	// ValidationErrors인 경우, 각 필드의 번역 메시지를 결합
-	if verrs, ok := err.(validator.ValidationErrors); ok {
-		msgs := make([]string, 0, len(verrs))
-		for _, fe := range verrs {
-			if Trans != nil {
-				msgs = append(msgs, fe.Translate(Trans))
-			} else {
-				msgs = append(msgs, fe.Error())
-			}
+	verrs, ok := err.(validator.ValidationErrors)
+	if !ok {
+		return err.Error()
+	}
+
+	msgs := make([]string, 0, len(verrs))
+	for _, fe := range verrs {
+		// 1) message 태그 우선 (심플하게: 최상위 구조체의 바로 그 필드만)
+		if m, ok := lookupFieldMessageTag(target, fe); ok && m != "" {
+			msgs = append(msgs, m)
+			continue
 		}
-		// 한 줄로 합치되, 다수 필드면 문장 구분을 위해 "; " 사용
-		out := ""
-		for i, m := range msgs {
-			if i > 0 {
-				out += "; "
-			}
-			out += m
+		// 2) 번역(ko) 있으면 번역, 없으면 기본 에러
+		if Trans != nil {
+			msgs = append(msgs, fe.Translate(Trans))
+		} else {
+			msgs = append(msgs, fe.Error())
+		}
+	}
+	return joinMessages(msgs)
+}
+
+// 최상위 구조체에서 해당 필드의 `message` 태그를 찾아 반환
+func lookupFieldMessageTag(target any, fe validator.FieldError) (string, bool) {
+	if target == nil {
+		return "", false
+	}
+	t := reflect.TypeOf(target)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	if t.Kind() != reflect.Struct {
+		return "", false
+	}
+
+	// v10에선 Top/Parent가 없으므로, 간단히 최상위 구조체의 필드만 본다.
+	// (중첩 구조는 필요해지면 확장)
+	// fe.StructField()는 Go 필드명 반환 (JSON 이름 아님)
+	if fld, ok := t.FieldByName(fe.StructField()); ok {
+		if msg := fld.Tag.Get("message"); strings.TrimSpace(msg) != "" {
+			return msg, true
+		}
+	}
+	return "", false
+}
+
+func joinMessages(msgs []string) string {
+	switch len(msgs) {
+	case 0:
+		return ""
+	case 1:
+		return msgs[0]
+	default:
+		out := msgs[0]
+		for _, m := range msgs[1:] {
+			out += "; " + m
 		}
 		return out
 	}
-	// 알 수 없는 오류는 기본 문자열 반환
-	return err.Error()
 }

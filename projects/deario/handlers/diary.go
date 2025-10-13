@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"simple-server/internal/validate"
 	"simple-server/pkg/util/authutil"
 	"simple-server/pkg/util/dateutil"
 	"simple-server/projects/deario/db"
@@ -188,11 +189,20 @@ func SaveDiary(c echo.Context) error {
 		return err
 	}
 
-	date := c.FormValue("date")
-	content := c.FormValue("content")
-	if date == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "날짜는 필수 입력값입니다.")
+	type saveDiaryDTO struct {
+		Date    string `json:"date" validate:"required" message:"날짜가 필요합니다."`
+		Content string `json:"content"`
 	}
+	var dto saveDiaryDTO
+	if err := c.Bind(&dto); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "요청 본문이 올바르지 않습니다.")
+	}
+	if err := c.Validate(&dto); err != nil {
+		return validate.HTTPError(err, &dto)
+	}
+
+	date := dto.Date
+	content := dto.Content
 
 	queries, err := db.GetQueries()
 	if err != nil {

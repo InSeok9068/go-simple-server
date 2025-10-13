@@ -11,22 +11,21 @@ import (
 )
 
 // RegisterPushToken은 푸시 토큰을 등록한다.
-type registerPushTokenDTO struct {
-	Token string `json:"token" validate:"required,gt=0"`
-}
-
 func RegisterPushToken(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
 
+	type registerPushTokenDTO struct {
+		Token string `json:"token" validate:"required,gt=0"`
+	}
 	var dto registerPushTokenDTO
 	if err := c.Bind(&dto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "요청 본문이 올바르지 않습니다.")
 	}
 	if err := c.Validate(&dto); err != nil {
-		return validate.HTTPError(err)
+		return validate.HTTPError(err, &dto)
 	}
 
 	queries, err := db.GetQueries()
