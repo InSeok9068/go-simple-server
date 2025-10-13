@@ -66,7 +66,6 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(20)))) // 1초당 20회
 		e.Use(middleware.Gzip())                                                            // 응답 압축 (거부될 요청은 레이트리미터가 먼저 컷)
 	}
-
 	e.Use(middleware.BodyLimit("5M"))
 
 	// 6) CSRF는 본문 파싱/쿠키 세팅 이후
@@ -89,7 +88,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	// 8) 커스텀 메트릭 (트레이싱/로깅 이후~타임아웃 이전)
 	e.Use(debug.MetricsMiddleware)
 
-	// 9) 타임아웃: *항상 가장 안쪽* (Writer 바꿔치기 → 200 이슈 방지)
+	// 9) 타임아웃: 항상 가장 안쪽 (Writer 바꿔치기 → 200 이슈 방지)
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Timeout:      1 * time.Minute,
 		ErrorMessage: "요청 처리 시간이 지연되었습니다. 다시 시도해주세요.",
