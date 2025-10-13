@@ -17,7 +17,7 @@ func HeadsDefault(title string) []Node {
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/open-props.min.css';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/htmx.min.js';")),
-		Script(Src("https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@2.0.0/alpine-morph.js"),
+		Script(Src("https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@2.0.1/alpine-morph.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/alpine-morph.js';")),
 		Script(Src("https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"), Defer(),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/persist.cdn.min.js';")),

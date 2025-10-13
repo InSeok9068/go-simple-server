@@ -108,7 +108,7 @@ print_step "4. 프론트엔드 라이브러리 버전 확인 중..."
 
 frontend_libs=(
     "htmx.org|2.0.7|https://cdn.jsdelivr.net/npm/htmx.org@%s/dist/htmx.min.js"
-    "htmx-ext-alpine-morph|2.0.0|https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@%s/alpine-morph.js"
+    "htmx-ext-alpine-morph|2.0.1|https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@%s/alpine-morph.js"
     "@alpinejs/persist|3.x.x|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
     "@alpinejs/morph|3.x.x|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
     "alpinejs|3.x.x|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
