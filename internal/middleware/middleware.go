@@ -9,6 +9,7 @@ import (
 	resources "simple-server"
 	"simple-server/internal/config"
 	"simple-server/internal/debug"
+	"simple-server/internal/validate"
 	"strings"
 	"time"
 
@@ -76,6 +77,8 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 			return isSkippedPath(c.Path())
 		},
 	}))
+	// 전역 검증기 등록 (go-playground/validator, 한국어 번역)
+	e.Validator = validate.NewEchoValidator()
 
 	// Debug
 	// https://{서버주소}/debug/vars/ui?auth={인증값}
@@ -103,28 +106,28 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 }
 
 func isSkippedPath(path string) bool {
-    // 추적에서 제외할 경로/패턴의 접두어 목록
-    // c.Path()가 라우트 패턴("/static*")을 반환하는 경우도 고려해 '*'가 포함된 접두어도 함께 둔다.
-    prefixes := []string{
-        "/metrics",
-        "/metrics*",
-        "/static/",
-        "/static*",
-        "/shared/static/",
-        "/shared/static*",
-        "/manifest.json",
-        "/manifest.json*",
-        "/firebase-messaging-sw.js",
-        "/firebase-messaging-sw.js*",
-        "/service-worker.js",
-        "/service-worker.js*",
-        "/favicon.ico",
-        "/favicon.ico*",
-    }
-    for _, p := range prefixes {
-        if strings.HasPrefix(path, p) {
-            return true
-        }
-    }
-    return false
+	// 추적에서 제외할 경로/패턴의 접두어 목록
+	// c.Path()가 라우트 패턴("/static*")을 반환하는 경우도 고려해 '*'가 포함된 접두어도 함께 둔다.
+	prefixes := []string{
+		"/metrics",
+		"/metrics*",
+		"/static/",
+		"/static*",
+		"/shared/static/",
+		"/shared/static*",
+		"/manifest.json",
+		"/manifest.json*",
+		"/firebase-messaging-sw.js",
+		"/firebase-messaging-sw.js*",
+		"/service-worker.js",
+		"/service-worker.js*",
+		"/favicon.ico",
+		"/favicon.ico*",
+	}
+	for _, p := range prefixes {
+		if strings.HasPrefix(path, p) {
+			return true
+		}
+	}
+	return false
 }

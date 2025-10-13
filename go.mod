@@ -21,6 +21,9 @@ require (
 	github.com/doganarif/govisual v0.2.0
 	github.com/eduardolat/gomponents-lucide v1.4.0
 	github.com/glsubri/gomponents-alpine v0.2.2
+	github.com/go-playground/locales v0.14.1
+	github.com/go-playground/universal-translator v0.18.1
+	github.com/go-playground/validator/v10 v10.28.0
 	github.com/go-rod/rod v0.116.2
 	github.com/gorilla/sessions v1.4.0
 	github.com/joho/godotenv v1.5.1
@@ -133,6 +136,7 @@ require (
 	github.com/firefart/nonamedreturns v1.0.5 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fzipp/gocyclo v0.6.0 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
 	github.com/ghostiam/protogetter v0.3.9 // indirect
 	github.com/go-critic/go-critic v0.12.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.1 // indirect
@@ -210,6 +214,7 @@ require (
 	github.com/ldez/grignotin v0.9.0 // indirect
 	github.com/ldez/tagliatelle v0.7.1 // indirect
 	github.com/ldez/usetesting v0.4.2 // indirect
+	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/leonklingele/grouper v1.1.2 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/lufia/plan9stats v0.0.0-20250827001030-24949be3fa54 // indirect
