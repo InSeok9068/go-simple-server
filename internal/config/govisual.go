@@ -1,8 +1,9 @@
 package config
 
 import (
+	"database/sql"
+	"log/slog"
 	"net/http"
-	"simple-server/internal/connection"
 	"time"
 
 	"github.com/doganarif/govisual"
@@ -10,7 +11,12 @@ import (
 )
 
 func TransferEchoToGoVisualServerOnlyDev(e *echo.Echo, port string) *http.Server {
-	db, _ := connection.LogDBOpen()
+	url := "file:./shared/log/govisual.db?mode=rwc"
+	db, err := sql.Open("sqlite", url)
+	if err != nil {
+		slog.Error("[Govisual] 로그 데이터베이스 연결 실패", "error", err)
+		return nil
+	}
 
 	server := govisual.Wrap(
 		e,
