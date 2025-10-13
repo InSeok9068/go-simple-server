@@ -48,38 +48,52 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
 
-	// 개발환경은 GoVisual 확인을 위해서 Gzip 미적용
-	if config.IsProdEnv() {
-		e.Use(middleware.Gzip())
-		e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(20)))) // 1초당 20회 제한
-	}
+	// 1) 트레이싱: 가장 바깥에서 전체 구간을 감싸기
+	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool { return isSkippedPath(c.Path()) })))
+
+	// 2) 패닉 방지: 안쪽에서 회복해 트레이스에도 잡히게
+	e.Use(middleware.Recover())
+
+	// 3) 요청 식별은 초기에 부여 (로그/트레이스 속성에 활용)
+	e.Use(middleware.RequestID())
+
+	// 4) 보안/프리플라이트 등 가벼운 것들을 먼저 처리
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORS())
-	e.Use(middleware.Recover())
-	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
-		return isSkippedPath(c.Path())
-	})))
-	e.Use(middleware.RequestID())
+
+	// 5) QoS/용량 제한: 비용 큰 작업 전에 컷
+	if config.IsProdEnv() {
+		e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(20)))) // 1초당 20회
+		e.Use(middleware.Gzip())                                                            // 응답 압축 (거부될 요청은 레이트리미터가 먼저 컷)
+	}
+
 	e.Use(middleware.BodyLimit("5M"))
+
+	// 6) CSRF는 본문 파싱/쿠키 세팅 이후
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookieHTTPOnly: false,
 		CookieSecure:   config.IsProdEnv(),
 		CookieSameSite: http.SameSiteLaxMode,
 	}))
+
+	// 7) 요청 로깅 (스킵 경로 동일 적용 권장)
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
 		LogLatency:    true,
 		LogError:      true,
 		LogRemoteIP:   true,
 		LogValuesFunc: config.CustomLogValuesFunc,
-		Skipper: func(c echo.Context) bool {
-			return isSkippedPath(c.Path())
-		},
+		Skipper:       func(c echo.Context) bool { return isSkippedPath(c.Path()) },
 	}))
+
+	// 8) 커스텀 메트릭 (트레이싱/로깅 이후~타임아웃 이전)
 	e.Use(debug.MetricsMiddleware)
+
+	// 9) 타임아웃: *항상 가장 안쪽* (Writer 바꿔치기 → 200 이슈 방지)
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Timeout:      1 * time.Minute,
 		ErrorMessage: "요청 처리 시간이 지연되었습니다. 다시 시도해주세요.",
+		Skipper:      func(c echo.Context) bool { return isSkippedPath(c.Path()) },
 	}))
 
 	// Debug
@@ -88,16 +102,9 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	authParam := os.Getenv("DEBUG_AUTH_PARAM")
 	if config.IsProdEnv() {
 		debugGroup.Use(ipfilter.MiddlewareWithConfig(ipfilter.Config{
-			WhiteList: []string{
-				"121.190.49.104/32",
-			},
+			WhiteList:      []string{"121.190.49.104/32"},
 			BlockByDefault: true,
-			Skipper: func(c echo.Context) bool {
-				if authParam == "" {
-					return false
-				}
-				return c.Request().URL.Query().Get("auth") == authParam
-			},
+			Skipper:        func(c echo.Context) bool { return authParam != "" && c.QueryParam("auth") == authParam },
 		}))
 	}
 	// expvar 핸들러
