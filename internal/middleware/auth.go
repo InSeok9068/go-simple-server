@@ -90,7 +90,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 			}
 		}
 
-		return c.NoContent(http.StatusOK)
+		return c.NoContent(http.StatusNoContent)
 	})
 
 	return nil
@@ -146,13 +146,13 @@ func RegisterCasbinMiddleware(e *echo.Group) error {
 				Enforcer.EnableLog(true)
 			}
 
-			_, _ = Enforcer.Enforce(uid, obj, act)
-			// if err != nil {
-			// 	return echo.NewHTTPError(http.StatusInternalServerError, "권한 검사 실패")
-			// }
-			// if !ok {
-			// 	return echo.NewHTTPError(http.StatusForbidden, "권한이 없습니다.")
-			// }
+			ok, err := Enforcer.Enforce(uid, obj, act)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "권한 검사 실패")
+			}
+			if !ok {
+				return echo.NewHTTPError(http.StatusForbidden, "권한이 없습니다.")
+			}
 
 			return next(c)
 		}
