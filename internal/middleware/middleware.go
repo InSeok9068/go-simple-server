@@ -103,33 +103,28 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 }
 
 func isSkippedPath(path string) bool {
-	// 메트릭스 경로는 추적하지 않음
-	if path == "/metrics" || strings.HasPrefix(path, "/metrics*") {
-		return true
-	}
-	// 정적 파일은 추적하지 않음
-	if strings.HasPrefix(path, "/static/") || strings.HasPrefix(path, "/static*") {
-		return true
-	}
-	// 공통 정적 파일은 추적하지 않음
-	if strings.HasPrefix(path, "/shared/static/") || strings.HasPrefix(path, "/shared/static*") {
-		return true
-	}
-	// manifest.json은 추적하지 않음
-	if strings.HasPrefix(path, "/manifest.json") || strings.HasPrefix(path, "/manifest.json*") {
-		return true
-	}
-	// firebase-messaging-sw.js는 추적하지 않음
-	if strings.HasPrefix(path, "/firebase-messaging-sw.js") || strings.HasPrefix(path, "/firebase-messaging-sw.js*") {
-		return true
-	}
-	// service-worker.js는 추적하지 않음
-	if strings.HasPrefix(path, "/service-worker.js") || strings.HasPrefix(path, "/service-worker.js*") {
-		return true
-	}
-	// favicon.ico는 추적하지 않음
-	if strings.HasPrefix(path, "/favicon.ico") || strings.HasPrefix(path, "/favicon.ico*") {
-		return true
-	}
-	return false
+    // 추적에서 제외할 경로/패턴의 접두어 목록
+    // c.Path()가 라우트 패턴("/static*")을 반환하는 경우도 고려해 '*'가 포함된 접두어도 함께 둔다.
+    prefixes := []string{
+        "/metrics",
+        "/metrics*",
+        "/static/",
+        "/static*",
+        "/shared/static/",
+        "/shared/static*",
+        "/manifest.json",
+        "/manifest.json*",
+        "/firebase-messaging-sw.js",
+        "/firebase-messaging-sw.js*",
+        "/service-worker.js",
+        "/service-worker.js*",
+        "/favicon.ico",
+        "/favicon.ico*",
+    }
+    for _, p := range prefixes {
+        if strings.HasPrefix(path, p) {
+            return true
+        }
+    }
+    return false
 }
