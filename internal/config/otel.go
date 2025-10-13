@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -94,13 +95,18 @@ func setupRemoteProviders(
 	res *resource.Resource,
 	endpoint, licenseKey string,
 ) ([]func(context.Context) error, bool) {
+	if os.Getenv("LOCAL_PROVIDER") == "true" {
+		initLocalProviders(res)
+		return nil, false
+	}
+
 	var shutdowns []func(context.Context) error
 	registerShutdown := func(fn func(context.Context) error) {
 		shutdowns = append(shutdowns, fn)
 	}
 
-	traceErr := initTraceProvider(ctx, res, endpoint, licenseKey, registerShutdown)
-	metricErr := initMetricProvider(ctx, res, endpoint, licenseKey, registerShutdown)
+	tp, traceErr := initTraceProvider(ctx, res, endpoint, licenseKey, registerShutdown)
+	mp, metricErr := initMetricProvider(ctx, res, endpoint, licenseKey, registerShutdown)
 
 	switch {
 	case traceErr != nil && metricErr != nil:
@@ -114,6 +120,18 @@ func setupRemoteProviders(
 		slog.Error("메트릭 프로바이더 초기화 실패, 로컬 메트릭으로 대체합니다", "error", metricErr)
 		initLocalMetricProvider(res, registerShutdown)
 	default:
+		// 원격 전송 경로 검증을 위한 1회 핑(스팬/메트릭 전송 후 즉시 flush)
+		if err := pingOTel(ctx, tp, mp); err != nil {
+			slog.Error("OTel 원격 전송 핑 실패, 로컬로 폴백합니다", "error", err)
+			// 이미 생성된 원격 프로바이더 정리
+			for i := len(shutdowns) - 1; i >= 0; i-- {
+				_ = shutdowns[i](context.Background())
+			}
+			initLocalProviders(res)
+			return nil, false
+		}
+
+		// 핑 성공 후 런타임/호스트 메트릭 수집 시작
 		meterProvider := otel.GetMeterProvider()
 		if err := runtimeinstrumentation.Start(
 			runtimeinstrumentation.WithMeterProvider(meterProvider),
@@ -136,7 +154,7 @@ func initTraceProvider(
 	res *resource.Resource,
 	endpoint, licenseKey string,
 	registerShutdown func(func(context.Context) error),
-) error {
+) (*sdktrace.TracerProvider, error) {
 	client := otlptracehttp.NewClient(
 		otlptracehttp.WithEndpointURL(endpoint),
 		otlptracehttp.WithHeaders(map[string]string{
@@ -149,7 +167,7 @@ func initTraceProvider(
 
 	exporter, err := otlptrace.New(exporterCtx, client)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tp := sdktrace.NewTracerProvider(
@@ -164,7 +182,7 @@ func initTraceProvider(
 		return tp.Shutdown(ctx)
 	})
 
-	return nil
+	return tp, nil
 }
 
 func initMetricProvider(
@@ -172,7 +190,7 @@ func initMetricProvider(
 	res *resource.Resource,
 	endpoint, licenseKey string,
 	registerShutdown func(func(context.Context) error),
-) error {
+) (*metric.MeterProvider, error) {
 	exporterCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -184,7 +202,7 @@ func initMetricProvider(
 		}),
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	reader := metric.NewPeriodicReader(exporter, metric.WithInterval(15*time.Second))
@@ -201,7 +219,7 @@ func initMetricProvider(
 		return mp.Shutdown(ctx)
 	})
 
-	return nil
+	return mp, nil
 }
 
 func initLocalTraceProvider(res *resource.Resource, registerShutdown func(func(context.Context) error)) *sdktrace.TracerProvider {
@@ -291,4 +309,37 @@ func ShutdownTracer(ctx context.Context) {
 			slog.Error("OTel 리소스 종료 실패", "error", err)
 		}
 	}
+}
+
+// pingOTel은 초기화 직후 원격 수집기로의 전송 가능 여부를 확인하기 위해
+// 짧은 스팬/메트릭을 전송하고 즉시 Flush 합니다. 실패 시 에러를 반환합니다.
+func pingOTel(ctx context.Context, tp *sdktrace.TracerProvider, mp *metric.MeterProvider) error {
+	// Trace ping
+	{
+		tctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+		defer cancel()
+		tracer := tp.Tracer("otel-init")
+		_, span := tracer.Start(tctx, "otel.init.ping")
+		span.SetAttributes(attribute.String("ping", "true"))
+		span.End()
+		if err := tp.ForceFlush(tctx); err != nil {
+			return fmt.Errorf("trace flush 실패: %w", err)
+		}
+	}
+
+	// Metric ping
+	{
+		mctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+		defer cancel()
+		meter := mp.Meter("otel-init")
+		if counter, err := meter.Int64Counter("otel_init_ping"); err == nil {
+			counter.Add(mctx, 1)
+		}
+		if err := mp.ForceFlush(mctx); err != nil {
+			return fmt.Errorf("metric flush 실패: %w", err)
+		}
+	}
+
+	slog.Debug("OTel 원격 핑 성공")
+	return nil
 }
