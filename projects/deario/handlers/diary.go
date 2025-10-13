@@ -190,8 +190,8 @@ func SaveDiary(c echo.Context) error {
 	}
 
 	type saveDiaryDTO struct {
-		Date    string `json:"date" validate:"required" message:"날짜가 필요합니다."`
-		Content string `json:"content"`
+		Date    string `form:"date" validate:"required" message:"날짜가 필요합니다."`
+		Content string `form:"content"`
 	}
 	var dto saveDiaryDTO
 	if err := c.Bind(&dto); err != nil {

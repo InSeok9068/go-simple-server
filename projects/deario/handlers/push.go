@@ -18,7 +18,7 @@ func RegisterPushToken(c echo.Context) error {
 	}
 
 	type registerPushTokenDTO struct {
-		Token string `json:"token" validate:"required,gt=0"`
+		Token string `json:"token" validate:"required"`
 	}
 	var dto registerPushTokenDTO
 	if err := c.Bind(&dto); err != nil {

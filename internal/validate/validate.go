@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"errors"
 	"log/slog"
 	"reflect"
 	"strings"
@@ -33,9 +34,12 @@ func Init() {
 
 	v := validator.New(validator.WithRequiredStructEnabled())
 
-	// 필드명은 json 태그 사용(없으면 Go 필드명)
+	// 필드명은 json 태그 사용(없으면 form 태그 사용, 없으면 Go 필드명)
 	v.RegisterTagNameFunc(func(fld reflect.StructField) string {
 		if name := fld.Tag.Get("json"); name != "" && name != "-" {
+			return name
+		}
+		if name := fld.Tag.Get("form"); name != "" && name != "-" {
 			return name
 		}
 		return fld.Name
@@ -60,8 +64,8 @@ func ErrorMessageOf(target any, err error) string {
 	if err == nil {
 		return ""
 	}
-	verrs, ok := err.(validator.ValidationErrors)
-	if !ok {
+	var verrs validator.ValidationErrors
+	if !errors.As(err, &verrs) {
 		return err.Error()
 	}
 
