@@ -28,7 +28,7 @@ var shutdown func(context.Context) error
 const (
 	otlpInitTimeout        = 5 * time.Second
 	otlpPingTimeout        = 1 * time.Second
-	metricReadInterval     = 15 * time.Second
+	metricReadInterval     = 300 * time.Second
 	defaultNewRelicOTLPEnd = "https://otlp.nr-data.net:4318"
 )
 
