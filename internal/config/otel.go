@@ -24,6 +24,14 @@ import (
 
 var shutdown func(context.Context) error
 
+// OTEL 설정 상수 (매직넘버 제거)
+const (
+	otlpInitTimeout        = 5 * time.Second
+	otlpPingTimeout        = 1 * time.Second
+	metricReadInterval     = 15 * time.Second
+	defaultNewRelicOTLPEnd = "https://otlp.nr-data.net:4318"
+)
+
 func InitTracer() {
 	ctx := context.Background()
 	shutdown = nil
@@ -32,21 +40,7 @@ func InitTracer() {
 	serviceName := os.Getenv("SERVICE_NAME")
 	deployEnv := os.Getenv("ENV")
 
-	resourceAttributes := []attribute.KeyValue{
-		semconv.ServiceName(serviceName),
-	}
-	if deployEnv != "" {
-		resourceAttributes = append(resourceAttributes, semconv.DeploymentEnvironment(deployEnv))
-	}
-
-	res, err := resource.New(ctx,
-		resource.WithFromEnv(),
-		resource.WithHost(),
-		resource.WithOS(),
-		resource.WithProcess(),
-		resource.WithTelemetrySDK(),
-		resource.WithAttributes(resourceAttributes...),
-	)
+	res, err := buildResource(ctx, serviceName, deployEnv)
 	if err != nil {
 		slog.Error("리소스 초기화 실패", "error", err)
 		return
@@ -65,33 +59,14 @@ func InitTracer() {
 		return
 	}
 
-	endpoint := os.Getenv("NEW_RELIC_OTLP_ENDPOINT")
-	if endpoint == "" {
-		endpoint = "https://otlp.nr-data.net:4318"
-	}
+	endpoint := getNewRelicEndpoint()
 
 	shutdowns, ok := setupRemoteProviders(ctx, res, endpoint, licenseKey)
-	if !ok {
+	if !ok || len(shutdowns) == 0 {
 		return
 	}
 
-	if len(shutdowns) == 0 {
-		return
-	}
-
-	shutdown = func(ctx context.Context) error {
-		var firstErr error
-		for i := len(shutdowns) - 1; i >= 0; i-- {
-			if err := shutdowns[i](ctx); err != nil {
-				if firstErr == nil {
-					firstErr = err
-				} else {
-					slog.Warn("추가 종료 오류 발생", "error", err)
-				}
-			}
-		}
-		return firstErr
-	}
+	shutdown = composeShutdown(shutdowns)
 
 	slog.Info("OpenTelemetry 추적/메트릭을 NewRelic으로 전송합니다", "endpoint", endpoint, "service", serviceName, "env", deployEnv)
 }
@@ -145,7 +120,7 @@ func initTraceProvider(
 		}),
 	)
 
-	exporterCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	exporterCtx, cancel := context.WithTimeout(ctx, otlpInitTimeout)
 	defer cancel()
 
 	exporter, err := otlptrace.New(exporterCtx, client)
@@ -160,7 +135,7 @@ func initTraceProvider(
 
 	otel.SetTracerProvider(tp)
 	registerShutdown(func(ctx context.Context) error {
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, otlpInitTimeout)
 		defer cancel()
 		return tp.Shutdown(ctx)
 	})
@@ -174,7 +149,7 @@ func initMetricProvider(
 	endpoint, licenseKey string,
 	registerShutdown func(func(context.Context) error),
 ) (*metric.MeterProvider, error) {
-	exporterCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	exporterCtx, cancel := context.WithTimeout(ctx, otlpInitTimeout)
 	defer cancel()
 
 	exporter, err := otlpmetrichttp.New(
@@ -188,7 +163,7 @@ func initMetricProvider(
 		return nil, err
 	}
 
-	reader := metric.NewPeriodicReader(exporter, metric.WithInterval(15*time.Second))
+	reader := metric.NewPeriodicReader(exporter, metric.WithInterval(metricReadInterval))
 
 	mp := metric.NewMeterProvider(
 		metric.WithResource(res),
@@ -197,7 +172,7 @@ func initMetricProvider(
 
 	otel.SetMeterProvider(mp)
 	registerShutdown(func(ctx context.Context) error {
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, otlpInitTimeout)
 		defer cancel()
 		return mp.Shutdown(ctx)
 	})
@@ -213,7 +188,7 @@ func initLocalTraceProvider(res *resource.Resource, registerShutdown func(func(c
 
 	if registerShutdown != nil {
 		registerShutdown(func(ctx context.Context) error {
-			ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			ctx, cancel := context.WithTimeout(ctx, otlpInitTimeout)
 			defer cancel()
 			return tp.Shutdown(ctx)
 		})
@@ -230,7 +205,7 @@ func initLocalMetricProvider(res *resource.Resource, registerShutdown func(func(
 
 	if registerShutdown != nil {
 		registerShutdown(func(ctx context.Context) error {
-			ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			ctx, cancel := context.WithTimeout(ctx, otlpInitTimeout)
 			defer cancel()
 			return mp.Shutdown(ctx)
 		})
@@ -248,7 +223,7 @@ func initLocalProviders(res *resource.Resource) {
 
 		if tp != nil {
 			if err := func() error {
-				ctxTrace, cancel := context.WithTimeout(ctx, 5*time.Second)
+				ctxTrace, cancel := context.WithTimeout(ctx, otlpInitTimeout)
 				defer cancel()
 				return tp.Shutdown(ctxTrace)
 			}(); err != nil {
@@ -258,7 +233,7 @@ func initLocalProviders(res *resource.Resource) {
 
 		if mp != nil {
 			if err := func() error {
-				ctxMetric, cancel := context.WithTimeout(ctx, 5*time.Second)
+				ctxMetric, cancel := context.WithTimeout(ctx, otlpInitTimeout)
 				defer cancel()
 				return mp.Shutdown(ctxMetric)
 			}(); err != nil {
@@ -274,6 +249,15 @@ func initLocalProviders(res *resource.Resource) {
 	}
 }
 
+func ShutdownTracer(ctx context.Context) {
+	if shutdown != nil {
+		if err := shutdown(ctx); err != nil {
+			slog.Error("OTel 리소스 종료 실패", "error", err)
+		}
+	}
+}
+
+// setupHTTPInstrumentation은 HTTP 트랜스포트를 OTel HTTP 인터셉터로 래핑합니다.
 func setupHTTPInstrumentation() {
 	base := http.DefaultTransport
 	if base == nil {
@@ -284,14 +268,6 @@ func setupHTTPInstrumentation() {
 		return
 	}
 	http.DefaultTransport = otelhttp.NewTransport(base)
-}
-
-func ShutdownTracer(ctx context.Context) {
-	if shutdown != nil {
-		if err := shutdown(ctx); err != nil {
-			slog.Error("OTel 리소스 종료 실패", "error", err)
-		}
-	}
 }
 
 // ensureRemoteReady는 핑 전송으로 원격 경로를 검증하고,
@@ -315,7 +291,7 @@ func ensureRemoteReady(
 	meterProvider := otel.GetMeterProvider()
 	if err := runtimeinstrumentation.Start(
 		runtimeinstrumentation.WithMeterProvider(meterProvider),
-		runtimeinstrumentation.WithMinimumReadMemStatsInterval(15*time.Second),
+		runtimeinstrumentation.WithMinimumReadMemStatsInterval(metricReadInterval),
 	); err != nil {
 		slog.Warn("런타임 메트릭 수집 초기화 실패", "error", err)
 	}
@@ -327,12 +303,54 @@ func ensureRemoteReady(
 	return true
 }
 
+// buildResource는 서비스/배포 환경 정보를 포함한 OTel Resource를 생성합니다.
+func buildResource(ctx context.Context, serviceName, deployEnv string) (*resource.Resource, error) {
+	attrs := []attribute.KeyValue{semconv.ServiceName(serviceName)}
+	if deployEnv != "" {
+		attrs = append(attrs, semconv.DeploymentEnvironment(deployEnv))
+	}
+	return resource.New(
+		ctx,
+		resource.WithFromEnv(),
+		resource.WithHost(),
+		resource.WithOS(),
+		resource.WithProcess(),
+		resource.WithTelemetrySDK(),
+		resource.WithAttributes(attrs...),
+	)
+}
+
+// getNewRelicEndpoint는 환경변수 값을 우선 사용하고, 미설정 시 기본 엔드포인트를 반환합니다.
+func getNewRelicEndpoint() string {
+	if ep := os.Getenv("NEW_RELIC_OTLP_ENDPOINT"); ep != "" {
+		return ep
+	}
+	return defaultNewRelicOTLPEnd
+}
+
+// composeShutdown은 생성된 종료 함수들을 역순으로 호출하는 합성 종료 함수를 제공합니다.
+func composeShutdown(shutdowns []func(context.Context) error) func(context.Context) error {
+	return func(ctx context.Context) error {
+		var firstErr error
+		for i := len(shutdowns) - 1; i >= 0; i-- {
+			if err := shutdowns[i](ctx); err != nil {
+				if firstErr == nil {
+					firstErr = err
+				} else {
+					slog.Warn("추가 종료 오류 발생", "error", err)
+				}
+			}
+		}
+		return firstErr
+	}
+}
+
 // pingOTel은 초기화 직후 원격 수집기로의 전송 가능 여부를 확인하기 위해
 // 짧은 스팬/메트릭을 전송하고 즉시 Flush 합니다. 실패 시 에러를 반환합니다.
 func pingOTel(ctx context.Context, tp *sdktrace.TracerProvider, mp *metric.MeterProvider) error {
 	// Trace ping
 	{
-		tctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+		tctx, cancel := context.WithTimeout(ctx, otlpPingTimeout)
 		defer cancel()
 		tracer := tp.Tracer("otel-init")
 		_, span := tracer.Start(tctx, "otel.init.ping")
@@ -345,7 +363,7 @@ func pingOTel(ctx context.Context, tp *sdktrace.TracerProvider, mp *metric.Meter
 
 	// Metric ping
 	{
-		mctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+		mctx, cancel := context.WithTimeout(ctx, otlpPingTimeout)
 		defer cancel()
 		meter := mp.Meter("otel-init")
 		if counter, err := meter.Int64Counter("otel_init_ping"); err == nil {
