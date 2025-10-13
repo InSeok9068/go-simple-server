@@ -53,8 +53,10 @@ onAuthStateChanged(auth, (user) => {
 
 let reauthInProgress = false;
 htmx.on("htmx:afterRequest", (event) => {
-  const contentType = event.detail.xhr.getResponseHeader("Content-Type");
-  if (contentType !== "application/json") {
+  const contentType = (
+    event.detail.xhr.getResponseHeader("Content-Type") || ""
+  ).toLowerCase();
+  if (!contentType.includes("application/json")) {
     return;
   }
 
