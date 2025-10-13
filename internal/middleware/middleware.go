@@ -56,6 +56,9 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORS())
 	e.Use(middleware.Recover())
+	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
+		return isSkippedPath(c.Path())
+	})))
 	e.Use(middleware.RequestID())
 	e.Use(middleware.BodyLimit("5M"))
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
@@ -74,9 +77,6 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		},
 	}))
 	e.Use(debug.MetricsMiddleware)
-	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
-		return isSkippedPath(c.Path())
-	})))
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Timeout:      1 * time.Minute,
 		ErrorMessage: "요청 처리 시간이 지연되었습니다. 다시 시도해주세요.",
