@@ -240,11 +240,9 @@ func InitLoggerWithDatabase() {
 
 		// nrslog로 New Relic Logs in Context + Forwarding 적용(라이선스 존재 시)
 		var root slog.Handler = multiHandler
+		var enableNrslog bool
+		appName := os.Getenv("SERVICE_NAME")
 		if lic := os.Getenv("NEW_RELIC_LICENSE_KEY"); lic != "" {
-			appName := os.Getenv("SERVICE_NAME")
-			if appName == "" {
-				appName = "app"
-			}
 			if app, err := newrelic.NewApplication(
 				newrelic.ConfigAppName(appName),
 				newrelic.ConfigLicense(lic),
@@ -252,10 +250,8 @@ func InitLoggerWithDatabase() {
 				newrelic.ConfigDistributedTracerEnabled(true),
 				newrelic.ConfigAppLogForwardingEnabled(true),
 			); err == nil {
+				enableNrslog = true
 				root = nrslog.WrapHandler(app, multiHandler)
-				slog.Info("New Relic nrslog 활성화", "app", appName)
-			} else {
-				slog.Warn("New Relic 애플리케이션 초기화 실패, nrslog 비활성", "error", err)
 			}
 		}
 
@@ -263,6 +259,12 @@ func InitLoggerWithDatabase() {
 		root = NewContextAttrsHandler(root)
 		slog.SetDefault(slog.New(root))
 		log.SetOutput(os.Stderr)
+
+		if enableNrslog {
+			slog.Info("New Relic nrslog 활성화", "app", appName)
+		} else {
+			slog.Info("New Relic nrslog 비활성화")
+		}
 	})
 }
 
