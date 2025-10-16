@@ -79,7 +79,7 @@ jobs:
 
           scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./${SERVICE_NAME}.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:./app
 
-          scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./.env ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:./app
+          scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./.env ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:/tmp/.env.new
 
           rm ssh_key.pem
 
@@ -103,14 +103,34 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
           script: |
+            set -euo pipefail
+
             SERVICE_NAME=${{ env.SERVICE_NAME }}
-            cd ./app
-            sudo tar -xzvf ${SERVICE_NAME}.tar.gz
-            sudo chmod +x ${SERVICE_NAME}
-            sudo chown root:root .env
-            sudo chmod 600 .env
-            sudo rm ${SERVICE_NAME}.tar.gz
-            sudo systemctl restart ${SERVICE_NAME}.service
+            APP_DIR=./app
+            ENV_TARGET=$APP_DIR/.env
+            ENV_TMP=/tmp/.env.new
+
+            cd "$APP_DIR"
+
+            # 바이너리 전개
+            sudo tar -xzvf "${SERVICE_NAME}.tar.gz"
+            sudo chmod +x "${SERVICE_NAME}"
+            sudo rm -f "${SERVICE_NAME}.tar.gz"
+
+            # .env 무조건 교체 (원하면 백업 한 줄 추가)
+            if [ -f "$ENV_TMP" ]; then
+              # 선택) 기존 .env 백업: sudo cp "$ENV_TARGET" "$APP_DIR/.env.bak_$(date +%Y%m%d%H%M%S)" || true
+              sudo install -m 600 "$ENV_TMP" "$ENV_TARGET"
+              sudo chown root:root "$ENV_TARGET"
+              sudo rm -f "$ENV_TMP"
+              echo "Replaced .env"
+            else
+              echo "No /tmp/.env.new uploaded; skipping env replace."
+            fi
+
+            # 서비스 재시작
+            sudo systemctl restart "${SERVICE_NAME}.service"
+            echo "Restarted ${SERVICE_NAME}.service"
 
       # 12. 커밋 메시지 준비 (텔레그램 메시지 길이 제한 해결)
       - name: Prepare Commit Message
