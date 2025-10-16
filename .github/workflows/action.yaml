@@ -79,6 +79,8 @@ jobs:
 
           scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./${SERVICE_NAME}.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:./app
 
+          scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./.env ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:./app
+
           rm ssh_key.pem
 
       # # 10. SCP 파일 전송 (라이브 러리 사용) -> 속도 이슈
@@ -103,9 +105,11 @@ jobs:
           script: |
             SERVICE_NAME=${{ env.SERVICE_NAME }}
             cd ./app
-            tar -xzvf ${SERVICE_NAME}.tar.gz
-            chmod +x ${SERVICE_NAME}
-            rm ${SERVICE_NAME}.tar.gz
+            sudo tar -xzvf ${SERVICE_NAME}.tar.gz
+            sudo chmod +x ${SERVICE_NAME}
+            sudo chown root:root .env
+            sudo chmod 600 .env
+            sudo rm ${SERVICE_NAME}.tar.gz
             sudo systemctl restart ${SERVICE_NAME}.service
 
       # 12. 커밋 메시지 준비 (텔레그램 메시지 길이 제한 해결)

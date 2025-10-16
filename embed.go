@@ -4,7 +4,6 @@ import (
 	"embed"
 )
 
-//go:embed .env
 //go:embed model.conf
 //go:embed shared/static/*
 //go:embed projects/deario/migrations/*.sql
