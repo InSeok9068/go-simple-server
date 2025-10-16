@@ -50,6 +50,7 @@ export const resizeOnUpload = onObjectFinalized(
   {
     region: "us-west1",
     retry: false,
+    eventFilters: { namePrefix: "diary/" },
     // 필요하면 특정 버킷만 필터링: eventFilters: { bucket: "your-bucket-name" },
   },
   async (event) => {
