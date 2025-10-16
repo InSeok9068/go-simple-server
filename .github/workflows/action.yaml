@@ -103,34 +103,25 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
           script: |
-            set -euo pipefail
-
             SERVICE_NAME=${{ env.SERVICE_NAME }}
-            APP_DIR=./app
-            ENV_TARGET=$APP_DIR/.env
-            ENV_TMP=/tmp/.env.new
+            cd ./app
 
-            cd "$APP_DIR"
+            sudo tar -xzvf ${SERVICE_NAME}.tar.gz
+            sudo chmod +x ${SERVICE_NAME}
+            sudo rm -f ${SERVICE_NAME}.tar.gz
 
-            # 바이너리 전개
-            sudo tar -xzvf "${SERVICE_NAME}.tar.gz"
-            sudo chmod +x "${SERVICE_NAME}"
-            sudo rm -f "${SERVICE_NAME}.tar.gz"
-
-            # .env 무조건 교체 (원하면 백업 한 줄 추가)
-            if [ -f "$ENV_TMP" ]; then
-              # 선택) 기존 .env 백업: sudo cp "$ENV_TARGET" "$APP_DIR/.env.bak_$(date +%Y%m%d%H%M%S)" || true
-              sudo install -m 600 "$ENV_TMP" "$ENV_TARGET"
-              sudo chown root:root "$ENV_TARGET"
-              sudo rm -f "$ENV_TMP"
+            # ⬇️ 여기만 추가: /tmp/.env.new 를 ./app/.env 로 교체
+            if [ -f /tmp/.env.new ]; then
+              # (선택) 백업: sudo cp .env .env.bak_$(date +%Y%m%d%H%M%S) || true
+              sudo install -m 600 /tmp/.env.new .env
+              sudo chown root:root .env
+              sudo rm -f /tmp/.env.new
               echo "Replaced .env"
             else
               echo "No /tmp/.env.new uploaded; skipping env replace."
             fi
 
-            # 서비스 재시작
-            sudo systemctl restart "${SERVICE_NAME}.service"
-            echo "Restarted ${SERVICE_NAME}.service"
+            sudo systemctl restart ${SERVICE_NAME}.service
 
       # 12. 커밋 메시지 준비 (텔레그램 메시지 길이 제한 해결)
       - name: Prepare Commit Message
