@@ -78,7 +78,6 @@ jobs:
           chmod 600 ssh_key.pem
 
           scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./${SERVICE_NAME}.tar.gz ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:./app
-
           scp -o StrictHostKeyChecking=no -C -i ssh_key.pem -P 22 ./.env ${{ secrets.REMOTE_ID }}@${{ secrets.REMOTE_IP }}:/tmp/.env.new
 
           rm ssh_key.pem
@@ -129,38 +128,32 @@ jobs:
         run: echo "commit_message=$(echo "${{ github.event.head_commit.message }}" | head -n 1 | cut -c -200)" >> $GITHUB_OUTPUT
 
       # 13-1. 빌드 성공 메세지 발송
-      - name: Send Build Success Message
-        uses: appleboy/telegram-action@master
+      - name: Send Build Success
         if: success()
+        uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: markdown
           message: |
-            Status: 😚 **Success**
-
-            Branch: ${{ github.ref_name }}
-
-            Commit message: ${{ steps.prep_commit.outputs.commit_message }}
-
-            [See changes](https://github.com/${{ github.repository }}/commit/${{github.sha}})
+            ✅ **Build Success**
+            *Branch:* `${{ github.ref_name }}`
+            *Commit:* `${{ steps.prep_commit.outputs.commit_message }}`
+            [View Commit](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
 
       # 13-2. 빌드 실패 메세지 발송
-      - name: Send Build Failure Message
-        uses: appleboy/telegram-action@master
+      - name: Send Build Failure
         if: failure()
+        uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: markdown
           message: |
-            Status: 😱 **Failure**
-
-            Branch: ${{ github.ref_name }}
-
-            Commit message: ${{ steps.prep_commit.outputs.commit_message }}
-
-            [link](https://github.com/${{ github.repository }}/actions)
+            ❌ **Build Failed**
+            *Branch:* `${{ github.ref_name }}`
+            *Commit:* `${{ steps.prep_commit.outputs.commit_message }}`
+            [View Logs](https://github.com/${{ github.repository }}/actions)
 
 # Repository: ${{ github.repository }}
 # Author: ${{github.actor}}
