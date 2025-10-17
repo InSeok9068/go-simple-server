@@ -26,7 +26,6 @@ module.exports = {
     "object-curly-spacing": ["error", "always"],
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
-    "indent": ["error", 2],
 
     /* index.ts 전용 */
     "require-jsdoc": ["off"],
@@ -34,5 +33,6 @@ module.exports = {
     "operator-linebreak": ["off"],
     "@typescript-eslint/no-explicit-any": ["off"],
     "max-len": ["off"],
+    "indent": ["off"],
   },
 };
