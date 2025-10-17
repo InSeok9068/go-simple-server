@@ -62,6 +62,7 @@ func main() {
 	if config.IsDevEnv() {
 		server := config.TransferEchoToGoVisualServerOnlyDev(e, "8002")
 		slog.Info("[✅ GoVisual] http server started on [::]:8002")
+		slog.Info("Browser Open : http://localhost:8080")
 		if err := server.ListenAndServe(); err != nil {
 			e.Logger.Fatal("GoVisual 서버 시작 실패", "error", err)
 		}
