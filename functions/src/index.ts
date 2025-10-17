@@ -116,7 +116,7 @@ export const resizeOnUpload = onCustomEventPublished<CloudAuditLogData | any>(
 
     // 정확 매칭 필터 (스토리지 오브젝트 생성에 해당)
     // storage.objects.create 가 object finalize와 동일 취지의 "생성" 시점을 커버
-    eventFilters: {
+    filters: {
       serviceName: "storage.googleapis.com",
       methodName: "storage.objects.create",
     },
