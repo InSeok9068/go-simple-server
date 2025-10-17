@@ -3,6 +3,7 @@ package connection
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
 	"fmt"
 	"log/slog"
 	"os"
@@ -54,10 +55,31 @@ func AppDBOpen(hooked ...bool) (*sql.DB, error) {
 		db, err = otelsql.Open(
 			driverName,
 			os.Getenv("APP_DATABASE_URL"),
+			// DB 기본정보 포함
 			otelsql.WithAttributes(
 				attribute.String("db.system", "sqlite"),
 				attribute.String("db.name", os.Getenv("SERVICE_NAME")),
 			),
+			// 실행 쿼리 파라미터 포함
+			otelsql.WithAttributesGetter(func(ctx context.Context, method otelsql.Method, query string, args []driver.NamedValue) []attribute.KeyValue {
+				if len(args) == 0 {
+					return nil
+				}
+
+				params := make([]string, 0, len(args))
+				for i, arg := range args {
+					paramName := arg.Name
+					if paramName == "" {
+						paramName = fmt.Sprintf("$%d", i+1)
+					}
+					params = append(params, fmt.Sprintf("%s=%v", paramName, arg.Value))
+				}
+
+				return []attribute.KeyValue{
+					attribute.String("db.parameters", strings.Join(params, ", ")),
+				}
+			}),
+			// span 이름 Query ID 사용
 			otelsql.WithSpanNameFormatter(sqlSpanNameFormatter),
 		)
 	} else {
