@@ -88,8 +88,6 @@ func (h *ContextAttrsHandler) Handle(ctx context.Context, r slog.Record) error {
 		r.AddAttrs(
 			slog.String("trace_id", sc.TraceID().String()),
 			slog.String("span_id", sc.SpanID().String()),
-			slog.String("trace.id", sc.TraceID().String()),
-			slog.String("span.id", sc.SpanID().String()),
 		)
 	}
 	return h.next.Handle(ctx, r)
