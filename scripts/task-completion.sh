@@ -6,52 +6,79 @@
 #  source "scripts/task-completion.sh"
 #fi
 
-# Git Bash for Windows용 task.sh 자동 완성 스크립트
+_task_projects_list() {
+  # projects 디렉토리 기준: find 대신 glob 사용 (Windows Git Bash에서 훨씬 빠름)
+  local root projects_dir
+  if root="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+    projects_dir="${root}/projects"
+  else
+    projects_dir="projects"
+  fi
 
-_task_completion() {
-    local cur prev opts
-    COMPREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
+  shopt -s nullglob
+  local dirs=("${projects_dir}"/*/)
+  shopt -u nullglob
 
-    # 메인 명령어 목록
-    # ./task.sh [TAB] 을 누를 때 (두 번째 단어 완성)
-    if [ ${COMP_CWORD} -eq 1 ]; then
-        opts="help switch check deps build-linux release install-tailwind sqlc-generate service"
-        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-        return 0
-    fi
-
-    # 하위 명령어 목록 (이전 단어를 기반으로)
-    case "${prev}" in
-        switch|release|sqlc-generate)
-            # projects/ 디렉터리 아래의 서비스 이름을 동적으로 찾아 제안
-            local project_dirs
-            # 프로젝트 루트에서 실행한다고 가정
-            if [ -d "projects" ]; then
-                project_dirs=$(find projects -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
-                COMPREPLY=( $(compgen -W "${project_dirs}" -- "${cur}") )
-            fi
-            ;;
-        check)
-            opts="build test lint"
-            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-            ;;
-        install-tailwind)
-            opts="window linux"
-            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-            ;;
-        service)
-            opts="create deploy remove undeploy"
-            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-            ;;
-        *)
-            # 다른 명령어에 대한 기본 완성은 없음
-            COMPREPLY=()
-            ;;
-    esac
+  local out=()
+  for d in "${dirs[@]}"; do
+    # 디렉토리명만
+    d="${d%/}"; d="${d##*/}"
+    out+=("$d")
+  done
+  printf "%s\n" "${out[@]}"
 }
 
-# 'task.sh'와 './task.sh' 명령어에 대해 _task_completion 함수를 등록
+_task_completion() {
+  local cur prev prev2 cmd
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  prev2="${COMP_WORDS[COMP_CWORD-2]:-}"
+  cmd="${COMP_WORDS[1]:-}"
+
+  # 1단계: 메인 명령어
+  if [[ ${COMP_CWORD} -eq 1 ]]; then
+    local opts="help switch check deps build-linux release install-tailwind sqlc-generate service"
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    return 0
+  fi
+
+  # 공통 프로젝트 후보
+  local projects; projects="$(_task_projects_list 2>/dev/null)"
+
+  # 2단계: 하위 문맥
+  case "${cmd}" in
+    switch|release|sqlc-generate)
+      COMPREPLY=( $(compgen -W "${projects}" -- "${cur}") )
+      ;;
+
+    check)
+      COMPREPLY=( $(compgen -W "build test lint" -- "${cur}") )
+      ;;
+
+    install-tailwind)
+      COMPREPLY=( $(compgen -W "win linux" -- "${cur}") )   # ← win 으로 수정
+      ;;
+
+    service)
+      # ./task.sh service [create|deploy|remove|undeploy] [name]
+      case "${prev}" in
+        create|deploy|remove|undeploy)
+          # 서비스명 자동완성: projects/* 디렉터리
+          COMPREPLY=( $(compgen -W "${projects}" -- "${cur}") )
+          ;;
+        *)
+          COMPREPLY=( $(compgen -W "create deploy remove undeploy" -- "${cur}") )
+          ;;
+      esac
+      ;;
+
+    *)
+      COMPREPLY=()
+      ;;
+  esac
+}
+
+# 등록
 complete -F _task_completion task.sh
 complete -F _task_completion ./task.sh
