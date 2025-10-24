@@ -67,7 +67,6 @@ htmx.on("htmx:afterRequest", (event) => {
 
   const isResponseError = event.detail.xhr.status === 401;
   if (isResponseError && !reauthInProgress) {
-    showInfo("자동 로그인 재시도중입니다.");
     reauthInProgress = true;
     auth.authStateReady().then(() => {
       if (auth.currentUser === undefined) {
