@@ -11,7 +11,7 @@ tool github.com/golangci/golangci-lint/cmd/golangci-lint
 tool golang.org/x/vuln/cmd/govulncheck
 
 require (
-	cloud.google.com/go/storage v1.57.0
+	cloud.google.com/go/storage v1.57.1
 	firebase.google.com/go/v4 v4.18.0
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/Blank-Xu/sql-adapter v1.1.2
@@ -50,7 +50,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.38.0
 	golang.org/x/time v0.14.0
 	google.golang.org/api v0.254.0
-	google.golang.org/genai v1.32.0
+	google.golang.org/genai v1.33.0
 	maragu.dev/gomponents v1.2.0
 	maragu.dev/gomponents-htmx v0.6.1
 	maragu.dev/goqite v0.3.1
