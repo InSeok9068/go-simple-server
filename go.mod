@@ -16,7 +16,7 @@ require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/Blank-Xu/sql-adapter v1.1.2
 	github.com/XSAM/otelsql v0.40.0
-	github.com/casbin/casbin/v2 v2.128.0
+	github.com/casbin/casbin/v2 v2.131.0
 	github.com/crazy-max/echo-ipfilter v1.12.0
 	github.com/doganarif/govisual v0.2.0
 	github.com/eduardolat/gomponents-lucide v1.4.0
