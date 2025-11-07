@@ -135,7 +135,11 @@ HAVING (
             FROM item_tags it2
             JOIN tags t2 ON t2.id = it2.tag_id
             WHERE it2.item_id = i.id
-              AND t2.name IN (SELECT value FROM json_each(sqlc.arg(tag_json)))
+              AND t2.name IN (
+                  SELECT je.value
+                  FROM (SELECT ?2 AS json_data) payload
+                  CROSS JOIN json_each(payload.json_data) AS je
+              )
         ), 0)
     END
 ) >= CASE

@@ -36,6 +36,7 @@ const (
 var kindOrder = []string{"top", "bottom", "shoes", "accessory"}
 
 // UploadItem은 옷장 아이템을 업로드한다.
+// nolint:cyclop // 업로드 파이프라인의 단계가 많아 임시로 순환 복잡도 검사를 무시한다.
 func UploadItem(c echo.Context) error {
 	queries, err := db.GetQueries()
 	if err != nil {
@@ -95,7 +96,11 @@ func UploadItem(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer func() {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil && !errors.Is(rollbackErr, sql.ErrTxDone) {
+			slog.Warn("트랜잭션 롤백 실패", "error", rollbackErr)
+		}
+	}()
 
 	qtx := db.New(tx)
 
