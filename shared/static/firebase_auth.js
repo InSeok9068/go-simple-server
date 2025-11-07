@@ -73,6 +73,8 @@ htmx.on("htmx:afterRequest", (event) => {
         location.href = "/login";
       }
 
+      showInfo("로그인 중...");
+
       auth.currentUser
         .getIdToken(true)
         .then((idToken) => {
@@ -87,7 +89,7 @@ htmx.on("htmx:afterRequest", (event) => {
         })
         .then((response) => {
           if (response.ok) {
-            showInfo("로그인이 완료되었습니다.");
+            // showInfo("로그인이 완료되었습니다.");
             setTimeout(() => {
               location.reload();
             }, 500);
