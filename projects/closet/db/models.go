@@ -8,6 +8,36 @@ import (
 	"database/sql"
 )
 
+type Embedding struct {
+	ItemID int64
+	Model  string
+	Dim    int64
+	VecF32 []byte
+}
+
+type Item struct {
+	ID         int64
+	Kind       string
+	Filename   string
+	MimeType   string
+	Bytes      []byte
+	ThumbBytes []byte
+	Sha256     sql.NullString
+	Width      sql.NullInt64
+	Height     sql.NullInt64
+	CreatedAt  int64
+}
+
+type ItemTag struct {
+	ItemID int64
+	TagID  int64
+}
+
+type Tag struct {
+	ID   int64
+	Name string
+}
+
 type User struct {
 	Uid     string
 	Name    string

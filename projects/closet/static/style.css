@@ -80,3 +80,55 @@ body.dark {
 body {
   font-family: var(--font-family);
 }
+
+#closet-main {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.closet-upload .caption {
+  color: var(--on-surface-variant);
+}
+
+.closet-filter .caption {
+  color: var(--on-surface-variant);
+}
+
+.closet-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.closet-card__media {
+  aspect-ratio: 3 / 4;
+  background-color: var(--surface-container-high);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.closet-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.closet-card .caption {
+  color: var(--on-surface-variant);
+}
+
+.closet-empty {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px dashed var(--outline);
+  text-align: center;
+}
+
+.closet-indicator {
+  display: none;
+  width: 32px;
+  margin: 0 auto;
+}

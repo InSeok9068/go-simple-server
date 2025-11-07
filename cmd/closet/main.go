@@ -91,6 +91,8 @@ func setUpServer() *echo.Echo {
 	e.GET("/", handlers.IndexPage)
 	e.GET("/login", handlers.LoginPage)
 	e.POST("/logout", handlers.Logout)
+	e.GET("/items", handlers.ListItems)
+	e.GET("/items/:id/image", handlers.ItemImage)
 	/* 공개 라우터 */
 
 	/* 권한 라우터 */
@@ -99,7 +101,7 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	// authGroup.GET("/diary/month", handlers.MonthlyDiaryDates)
+	authGroup.POST("/items", handlers.UploadItem)
 	/* 권한 라우터 */
 
 	return e

@@ -7,7 +7,50 @@ package db
 
 import (
 	"context"
+	"database/sql"
+	"strings"
 )
+
+const attachTag = `-- name: AttachTag :exec
+INSERT OR IGNORE INTO item_tags (item_id, tag_id) VALUES (?, ?)
+`
+
+type AttachTagParams struct {
+	ItemID int64
+	TagID  int64
+}
+
+func (q *Queries) AttachTag(ctx context.Context, arg AttachTagParams) error {
+	_, err := q.db.ExecContext(ctx, attachTag, arg.ItemID, arg.TagID)
+	return err
+}
+
+const getItemContent = `-- name: GetItemContent :one
+SELECT bytes, mime_type FROM items WHERE id = ?
+`
+
+type GetItemContentRow struct {
+	Bytes    []byte
+	MimeType string
+}
+
+func (q *Queries) GetItemContent(ctx context.Context, id int64) (GetItemContentRow, error) {
+	row := q.db.QueryRowContext(ctx, getItemContent, id)
+	var i GetItemContentRow
+	err := row.Scan(&i.Bytes, &i.MimeType)
+	return i, err
+}
+
+const getItemIDBySha = `-- name: GetItemIDBySha :one
+SELECT id FROM items WHERE sha256 = ?
+`
+
+func (q *Queries) GetItemIDBySha(ctx context.Context, sha256 sql.NullString) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getItemIDBySha, sha256)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
 
 const getUser = `-- name: GetUser :one
 
@@ -26,4 +69,219 @@ func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
 		&i.Updated,
 	)
 	return i, err
+}
+
+const insertItem = `-- name: InsertItem :one
+INSERT INTO items (
+    kind,
+    filename,
+    mime_type,
+    bytes,
+    thumb_bytes,
+    sha256,
+    width,
+    height
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+RETURNING id
+`
+
+type InsertItemParams struct {
+	Kind       string
+	Filename   string
+	MimeType   string
+	Bytes      []byte
+	ThumbBytes []byte
+	Sha256     sql.NullString
+	Width      sql.NullInt64
+	Height     sql.NullInt64
+}
+
+func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, insertItem,
+		arg.Kind,
+		arg.Filename,
+		arg.MimeType,
+		arg.Bytes,
+		arg.ThumbBytes,
+		arg.Sha256,
+		arg.Width,
+		arg.Height,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const listItems = `-- name: ListItems :many
+SELECT
+    i.id,
+    i.kind,
+    i.filename,
+    i.mime_type,
+    i.width,
+    i.height,
+    i.created_at,
+    IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
+FROM items i
+LEFT JOIN item_tags it ON it.item_id = i.id
+LEFT JOIN tags t ON t.id = it.tag_id
+WHERE (?1 = '' OR i.kind = ?1)
+GROUP BY i.id
+HAVING (
+    CASE
+        WHEN json_array_length(?2) = 0 THEN 1
+        ELSE IFNULL((
+            SELECT COUNT(DISTINCT t2.name)
+            FROM item_tags it2
+            JOIN tags t2 ON t2.id = it2.tag_id
+            WHERE it2.item_id = i.id
+              AND t2.name IN (SELECT value FROM json_each(sqlc.arg(tag_json)))
+        ), 0)
+    END
+) >= CASE
+        WHEN json_array_length(?2) = 0 THEN 1
+        ELSE json_array_length(?2)
+    END
+ORDER BY i.created_at DESC
+LIMIT ?4
+OFFSET ?3
+`
+
+type ListItemsParams struct {
+	KindFilter interface{}
+	TagJson    interface{}
+	Offset     int64
+	Limit      int64
+}
+
+type ListItemsRow struct {
+	ID        int64
+	Kind      string
+	Filename  string
+	MimeType  string
+	Width     sql.NullInt64
+	Height    sql.NullInt64
+	CreatedAt int64
+	Tags      interface{}
+}
+
+func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItems,
+		arg.KindFilter,
+		arg.TagJson,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemsRow
+	for rows.Next() {
+		var i ListItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Kind,
+			&i.Filename,
+			&i.MimeType,
+			&i.Width,
+			&i.Height,
+			&i.CreatedAt,
+			&i.Tags,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const loadEmbeddingsByIDs = `-- name: LoadEmbeddingsByIDs :many
+SELECT e.item_id, e.dim, e.vec_f32
+FROM embeddings e
+WHERE e.item_id IN (/*SLICE:ids*/?)
+`
+
+type LoadEmbeddingsByIDsRow struct {
+	ItemID int64
+	Dim    int64
+	VecF32 []byte
+}
+
+func (q *Queries) LoadEmbeddingsByIDs(ctx context.Context, ids []int64) ([]LoadEmbeddingsByIDsRow, error) {
+	query := loadEmbeddingsByIDs
+	var queryParams []interface{}
+	if len(ids) > 0 {
+		for _, v := range ids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LoadEmbeddingsByIDsRow
+	for rows.Next() {
+		var i LoadEmbeddingsByIDsRow
+		if err := rows.Scan(&i.ItemID, &i.Dim, &i.VecF32); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const putEmbedding = `-- name: PutEmbedding :exec
+INSERT INTO embeddings (item_id, model, dim, vec_f32)
+VALUES (?, ?, ?, ?)
+ON CONFLICT(item_id) DO UPDATE
+SET model = excluded.model,
+    dim = excluded.dim,
+    vec_f32 = excluded.vec_f32
+`
+
+type PutEmbeddingParams struct {
+	ItemID int64
+	Model  string
+	Dim    int64
+	VecF32 []byte
+}
+
+func (q *Queries) PutEmbedding(ctx context.Context, arg PutEmbeddingParams) error {
+	_, err := q.db.ExecContext(ctx, putEmbedding,
+		arg.ItemID,
+		arg.Model,
+		arg.Dim,
+		arg.VecF32,
+	)
+	return err
+}
+
+const upsertTag = `-- name: UpsertTag :one
+INSERT INTO tags (name) VALUES (?)
+ON CONFLICT(name) DO UPDATE SET name = excluded.name
+RETURNING id
+`
+
+func (q *Queries) UpsertTag(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, upsertTag, name)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
