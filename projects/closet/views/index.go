@@ -46,7 +46,7 @@ func Index(title string, groups map[string][]ClosetItem) Node {
 			),
 
 			Main(ID("closet-main"), Class("responsive"),
-				Section(Class("page stack gap-lg"),
+				Section(Class("stack gap-lg"),
 					Div(Class("grid gap-lg"),
 						Div(Class("s12 m6 l4"), uploadCard()),
 						Div(Class("s12 m6 l8"), filterCard()),
