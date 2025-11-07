@@ -1,9 +1,9 @@
 [Unit]
-Description=Portfolio Service
+Description=Closet Service
 After=network.target
 
 [Service]
-ExecStart=/home/ubuntu/app/portfolio
+ExecStart=/home/ubuntu/app/closet
 WorkingDirectory=/home/ubuntu/app
 Restart=always
 User=root

@@ -31,7 +31,7 @@ Deario Project:
     ☐ 계속해서 쓸 수 있도록 사용자의 작성 유도를 위한 '배지' 기능 추가 고려
   Done:
 
-MyCloset:
+Closet:
     나만의 옷장 데이터를 기반으로 스타일 추천
     New:
       ☐ 이미지 임베딩 => AI 요청 ?

@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"os"
 	resources "simple-server"
-	"simple-server/projects/portfolio/db"
-	"simple-server/projects/portfolio/handlers"
-	"simple-server/projects/portfolio/services"
+	"simple-server/projects/closet/db"
+	"simple-server/projects/closet/handlers"
+	"simple-server/projects/closet/services"
 
 	"simple-server/internal/config"
 	"simple-server/internal/debug"
@@ -21,8 +21,8 @@ import (
 func main() {
 	/* 환경 설정 */
 	config.LoadEnv()
-	os.Setenv("SERVICE_NAME", "portfolio")
-	os.Setenv("APP_TITLE", "Portfolio")
+	os.Setenv("SERVICE_NAME", "closet")
+	os.Setenv("APP_TITLE", "Closet")
 	os.Setenv("APP_DATABASE_URL", config.AppDatabaseURL(os.Getenv("SERVICE_NAME")))
 	/* 환경 설정 */
 
@@ -42,7 +42,7 @@ func main() {
 	/* DB 초기화 */
 
 	/* DB 마이그레이션 */
-	migrations, _ := fs.Sub(resources.EmbeddedFiles, "projects/portfolio/migrations")
+	migrations, _ := fs.Sub(resources.EmbeddedFiles, "projects/closet/migrations")
 	if err := migration.Up(database, migrations); err != nil {
 		slog.Error("마이그레이션 실패", "error", err)
 		return
@@ -64,7 +64,7 @@ func main() {
 			e.Logger.Fatal("GoVisual 서버 시작 실패", "error", err)
 		}
 	} else {
-		e.Logger.Fatal(e.Start(":8003"))
+		e.Logger.Fatal(e.Start(":8002"))
 	}
 }
 
@@ -72,7 +72,7 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	// PWA 파일
-	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/portfolio/static/manifest.json")
+	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/closet/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)
 
 	// Web Push 서비스워커 파일
@@ -89,6 +89,8 @@ func setUpServer() *echo.Echo {
 		os.Exit(1)
 	}
 	e.GET("/", handlers.IndexPage)
+	e.GET("/login", handlers.LoginPage)
+	e.POST("/logout", handlers.Logout)
 	/* 공개 라우터 */
 
 	/* 권한 라우터 */
@@ -97,6 +99,7 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
+	// authGroup.GET("/diary/month", handlers.MonthlyDiaryDates)
 	/* 권한 라우터 */
 
 	return e

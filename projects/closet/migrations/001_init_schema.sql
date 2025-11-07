@@ -1,0 +1,11 @@
+-- +goose Up
+CREATE TABLE IF NOT EXISTS user (
+    uid TEXT PRIMARY KEY,
+    name TEXT DEFAULT '' NOT NULL,
+    email TEXT UNIQUE DEFAULT '' NOT NULL,
+    created TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- +goose Down
+DROP TABLE user;

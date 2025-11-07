@@ -1,4 +1,4 @@
-# sqlc generate -f ./projects/portfolio/sqlc.yaml
+# sqlc generate -f ./projects/deario/sqlc.yaml
 
 version: "2"
 sql:

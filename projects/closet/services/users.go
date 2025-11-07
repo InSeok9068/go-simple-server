@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"simple-server/internal/middleware"
-	"simple-server/projects/portfolio/db"
+	"simple-server/projects/deario/db"
 )
 
 func EnsureUser(ctx context.Context, uid string) error {
