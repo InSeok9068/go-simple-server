@@ -121,6 +121,51 @@ func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (int64, 
 	return id, err
 }
 
+const listEmbeddingItems = `-- name: ListEmbeddingItems :many
+SELECT
+    i.id,
+    i.kind,
+    e.dim,
+    e.vec_f32
+FROM embeddings e
+JOIN items i ON i.id = e.item_id
+`
+
+type ListEmbeddingItemsRow struct {
+	ID     int64
+	Kind   string
+	Dim    int64
+	VecF32 []byte
+}
+
+func (q *Queries) ListEmbeddingItems(ctx context.Context) ([]ListEmbeddingItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listEmbeddingItems)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListEmbeddingItemsRow
+	for rows.Next() {
+		var i ListEmbeddingItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Kind,
+			&i.Dim,
+			&i.VecF32,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listItems = `-- name: ListItems :many
 SELECT
     i.id,
@@ -192,6 +237,76 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 	var items []ListItemsRow
 	for rows.Next() {
 		var i ListItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Kind,
+			&i.Filename,
+			&i.MimeType,
+			&i.Width,
+			&i.Height,
+			&i.CreatedAt,
+			&i.Tags,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemsByIDs = `-- name: ListItemsByIDs :many
+SELECT
+    i.id,
+    i.kind,
+    i.filename,
+    i.mime_type,
+    i.width,
+    i.height,
+    i.created_at,
+    IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
+FROM items i
+LEFT JOIN item_tags it ON it.item_id = i.id
+LEFT JOIN tags t ON t.id = it.tag_id
+WHERE i.id IN (/*SLICE:ids*/?)
+GROUP BY i.id
+`
+
+type ListItemsByIDsRow struct {
+	ID        int64
+	Kind      string
+	Filename  string
+	MimeType  string
+	Width     sql.NullInt64
+	Height    sql.NullInt64
+	CreatedAt int64
+	Tags      interface{}
+}
+
+func (q *Queries) ListItemsByIDs(ctx context.Context, ids []int64) ([]ListItemsByIDsRow, error) {
+	query := listItemsByIDs
+	var queryParams []interface{}
+	if len(ids) > 0 {
+		for _, v := range ids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemsByIDsRow
+	for rows.Next() {
+		var i ListItemsByIDsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Kind,

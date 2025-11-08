@@ -81,5 +81,30 @@ SELECT e.item_id, e.dim, e.vec_f32
 FROM embeddings e
 WHERE e.item_id IN (sqlc.slice('ids'));
 
+-- name: ListEmbeddingItems :many
+SELECT
+    i.id,
+    i.kind,
+    e.dim,
+    e.vec_f32
+FROM embeddings e
+JOIN items i ON i.id = e.item_id;
+
+-- name: ListItemsByIDs :many
+SELECT
+    i.id,
+    i.kind,
+    i.filename,
+    i.mime_type,
+    i.width,
+    i.height,
+    i.created_at,
+    IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
+FROM items i
+LEFT JOIN item_tags it ON it.item_id = i.id
+LEFT JOIN tags t ON t.id = it.tag_id
+WHERE i.id IN (sqlc.slice('ids'))
+GROUP BY i.id;
+
 -- name: DeleteItem :exec
 DELETE FROM items WHERE id = ?;

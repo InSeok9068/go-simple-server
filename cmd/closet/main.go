@@ -103,6 +103,7 @@ func setUpServer() *echo.Echo {
 	}
 	authGroup.POST("/items", handlers.UploadItem)
 	authGroup.DELETE("/items/:id", handlers.DeleteItem)
+	authGroup.POST("/recommend", handlers.RecommendOutfit)
 	/* 권한 라우터 */
 
 	return e

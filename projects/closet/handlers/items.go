@@ -316,6 +316,10 @@ func nullableInt(v int) sql.NullInt64 {
 	return sql.NullInt64{Int64: int64(v), Valid: true}
 }
 
+func convertIDsRow(row db.ListItemsByIDsRow) db.ListItemsRow {
+	return db.ListItemsRow(row)
+}
+
 // DeleteItem은 업로드된 항목을 제거한다.
 func DeleteItem(c echo.Context) error {
 	queries, err := db.GetQueries()
@@ -333,4 +337,32 @@ func DeleteItem(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// RecommendOutfit은 날씨와 스타일 조건에 맞는 아이템을 추천한다.
+func RecommendOutfit(c echo.Context) error {
+	if err := c.Request().ParseForm(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "입력값을 확인해주세요.")
+	}
+	weather := strings.TrimSpace(c.FormValue("weather"))
+	style := strings.TrimSpace(c.FormValue("style"))
+
+	results, err := services.RecommendOutfit(c.Request().Context(), weather, style)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	viewResults := make([]views.RecommendationItem, 0, len(results))
+	for _, result := range results {
+		viewResults = append(viewResults, views.RecommendationItem{
+			Kind: result.Kind,
+			Item: views.NewClosetItem(convertIDsRow(result.Item)),
+		})
+	}
+
+	var builder strings.Builder
+	if err := views.RecommendationDialog(viewResults).Render(&builder); err != nil {
+		return err
+	}
+	return c.HTML(http.StatusOK, builder.String())
 }
