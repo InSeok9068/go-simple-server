@@ -10,14 +10,14 @@ document.addEventListener("htmx:responseError", (event) => {
 });
 
 document.addEventListener("htmx:send", (event) => {
-  const indicator = event.target?.querySelector?.(".closet-indicator");
+  const indicator = event.target?.querySelector?.(".htmx-indicator");
   if (indicator) {
     indicator.style.display = "inline-block";
   }
 });
 
 document.addEventListener("htmx:afterRequest", (event) => {
-  const indicator = event.target?.querySelector?.(".closet-indicator");
+  const indicator = event.target?.querySelector?.(".htmx-indicator");
   if (indicator) {
     indicator.style.display = "none";
   }
