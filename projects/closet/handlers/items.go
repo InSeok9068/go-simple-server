@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"image"
 	_ "image/gif"
 	_ "image/jpeg"
@@ -91,14 +92,24 @@ func UploadItem(c echo.Context) error {
 	shaString := hex.EncodeToString(sha[:])
 
 	width, height := imageDimensions(imageBytes)
+	ctx := c.Request().Context()
+
 	tags := parseTags(c.FormValue("tags"))
+	var aiMetadata *services.ImageMetadata
+	if metadata, metaErr := services.AnalyzeClosetImage(ctx, imageBytes, mimeType); metaErr != nil {
+		slog.Warn("이미지 메타데이터 생성 실패", "error", metaErr)
+	} else {
+		aiMetadata = metadata
+		tags = mergeTags(tags, buildMetadataTags(metadata)...)
+	}
+
+	embeddingText := buildEmbeddingContext(kind, tags, aiMetadata)
 
 	database, err := db.GetDB()
 	if err != nil {
 		return err
 	}
 
-	ctx := c.Request().Context()
 	tx, err := database.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -148,7 +159,7 @@ func UploadItem(c echo.Context) error {
 		return err
 	}
 
-	go services.EnqueueEmbeddingJob(itemID)
+	go services.EnqueueEmbeddingJob(itemID, embeddingText)
 
 	html, err := renderItemsHTML(ctx, queries, "", nil)
 	if err != nil {
@@ -254,6 +265,90 @@ func loadGroupedItems(ctx context.Context, queries *db.Queries, kind string, tag
 	}
 
 	return groups, nil
+}
+
+func buildMetadataTags(meta *services.ImageMetadata) []string {
+	if meta == nil {
+		return nil
+	}
+	extras := make([]string, 0, len(meta.Tags)+4)
+	extras = append(extras, meta.Tags...)
+	if meta.Season != "" {
+		extras = append(extras, fmt.Sprintf("season:%s", meta.Season))
+	}
+	if meta.Style != "" {
+		extras = append(extras, fmt.Sprintf("style:%s", meta.Style))
+	}
+	for _, color := range meta.Colors {
+		if color == "" {
+			continue
+		}
+		extras = append(extras, fmt.Sprintf("color:%s", color))
+	}
+	return extras
+}
+
+func mergeTags(base []string, extras ...string) []string {
+	if len(extras) == 0 {
+		return base
+	}
+	seen := make(map[string]struct{}, len(base)+len(extras))
+	merged := make([]string, 0, len(base)+len(extras))
+	for _, tag := range base {
+		tag = strings.TrimSpace(tag)
+		if tag == "" {
+			continue
+		}
+		if _, ok := seen[tag]; ok {
+			continue
+		}
+		seen[tag] = struct{}{}
+		merged = append(merged, tag)
+	}
+	for _, tag := range extras {
+		tag = strings.TrimSpace(tag)
+		if tag == "" {
+			continue
+		}
+		if _, ok := seen[tag]; ok {
+			continue
+		}
+		seen[tag] = struct{}{}
+		merged = append(merged, tag)
+	}
+	return merged
+}
+
+func buildEmbeddingContext(kind string, tags []string, meta *services.ImageMetadata) string {
+	var builder strings.Builder
+	builder.WriteString(fmt.Sprintf("종류: %s\n", kind))
+	if meta != nil {
+		if meta.Summary != "" {
+			builder.WriteString("요약: ")
+			builder.WriteString(meta.Summary)
+			builder.WriteString("\n")
+		}
+		if meta.Season != "" {
+			builder.WriteString("계절: ")
+			builder.WriteString(meta.Season)
+			builder.WriteString("\n")
+		}
+		if meta.Style != "" {
+			builder.WriteString("스타일: ")
+			builder.WriteString(meta.Style)
+			builder.WriteString("\n")
+		}
+		if len(meta.Colors) > 0 {
+			builder.WriteString("색상: ")
+			builder.WriteString(strings.Join(meta.Colors, ", "))
+			builder.WriteString("\n")
+		}
+	}
+	if len(tags) > 0 {
+		builder.WriteString("태그: ")
+		builder.WriteString(strings.Join(tags, ", "))
+	}
+	return builder.String()
 }
 
 func parseTags(input string) []string {
