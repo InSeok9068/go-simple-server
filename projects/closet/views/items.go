@@ -9,6 +9,9 @@ import (
 
 	"simple-server/projects/closet/db"
 
+	x "github.com/glsubri/gomponents-alpine"
+	h "maragu.dev/gomponents-htmx"
+
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
@@ -17,10 +20,10 @@ var kindLabels = map[string]string{
 	"top":       "상의",
 	"bottom":    "하의",
 	"shoes":     "신발",
-	"accessory": "악세사리",
+	"accessory": "액세서리",
 }
 
-// ClosetItem은 화면에 표시될 옷장 아이템 정보를 담는다.
+// ClosetItem은 화면에서 표시할 아이템 정보를 담는다.
 type ClosetItem struct {
 	ID           int64
 	Kind         string
@@ -53,7 +56,7 @@ func NewClosetItem(row db.ListItemsRow) ClosetItem {
 	}
 }
 
-// KindLabel은 kind 코드에 해당하는 한글 라벨을 반환한다.
+// KindLabel은 kind 코드에 대응하는 한글 라벨을 반환한다.
 func KindLabel(kind string) string {
 	label, ok := kindLabels[strings.ToLower(kind)]
 	if ok {
@@ -80,11 +83,9 @@ func itemGroup(kind string, items []ClosetItem) Node {
 	title := KindLabel(kind)
 	total := len(items)
 
-	gridItems := make([]Node, 0, total)
+	cardNodes := make([]Node, 0, total)
 	for _, item := range items {
-		gridItems = append(gridItems,
-			Div(Class("s12 m6 l4"), itemCard(item)),
-		)
+		cardNodes = append(cardNodes, itemCard(item))
 	}
 
 	return Section(Class("stack gap-sm"),
@@ -94,29 +95,47 @@ func itemGroup(kind string, items []ClosetItem) Node {
 		),
 		If(total == 0,
 			Div(Class("surface-container closet-empty"),
-				P(Class("caption"), Text("조건에 맞는 옷이 아직 없어요.")),
+				P(Class("caption"), Text("조건에 맞는 아이템이 아직 없어요.")),
 			),
 		),
 		If(total > 0,
-			Div(Class("grid gap-sm"), Group(gridItems)),
+			Div(Class("row scroll gap-sm"), Group(cardNodes)),
 		),
 	)
 }
 
 func itemCard(item ClosetItem) Node {
-	return Article(Class("card closet-card"),
-		Div(Class("closet-card__media"),
-			Img(Src(item.ImageURL), Alt(fmt.Sprintf("%s 이미지", item.KindLabel)), Loading("lazy")),
+	deleteAction := Button(
+		Class("button error small"),
+		h.Delete(fmt.Sprintf("/items/%d", item.ID)),
+		h.Target("closest article"),
+		Attr("hx-confirm", "정말 삭제할까요?"),
+		Attr("hx-on::after-request", "if(event.detail.successful){ this.closest('article').remove(); showInfo('아이템을 삭제했어요.'); }"),
+		Text("삭제"),
+	)
+
+	return Article(Class("card small-width border"),
+		Div(Class("center"),
+			Img(
+				Src(item.ImageURL),
+				Alt(fmt.Sprintf("%s 이미지", item.KindLabel)),
+				Width("200"),
+				Height("200"),
+				Loading("lazy"),
+			),
 		),
-		Div(Class("padding small stack gap-xs"),
-			Span(Class("chip small primary"), Text(item.KindLabel)),
-			If(len(item.Tags) > 0,
-				P(Class("caption"), Text("#"+strings.Join(item.Tags, " #"))),
+		Div(Class("padding stack gap-xs"),
+			H5(Class("title"), Text(item.KindLabel)),
+			If(item.TagLine != "",
+				P(Class("caption"), Text(item.TagLine)),
 			),
 			If(item.Dimension != "",
 				P(Class("caption muted"), Text(item.Dimension)),
 			),
 			P(Class("caption muted"), Text(item.CreatedLabel)),
+		),
+		Nav(x.Show("$store.auth.isAuthed"), Class("padding right-align"),
+			deleteAction,
 		),
 	)
 }

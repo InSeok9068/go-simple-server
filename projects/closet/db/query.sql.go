@@ -25,6 +25,15 @@ func (q *Queries) AttachTag(ctx context.Context, arg AttachTagParams) error {
 	return err
 }
 
+const deleteItem = `-- name: DeleteItem :exec
+DELETE FROM items WHERE id = ?
+`
+
+func (q *Queries) DeleteItem(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteItem, id)
+	return err
+}
+
 const getItemContent = `-- name: GetItemContent :one
 SELECT bytes, mime_type FROM items WHERE id = ?
 `

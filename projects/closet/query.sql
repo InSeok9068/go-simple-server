@@ -80,3 +80,6 @@ SET model = excluded.model,
 SELECT e.item_id, e.dim, e.vec_f32
 FROM embeddings e
 WHERE e.item_id IN (sqlc.slice('ids'));
+
+-- name: DeleteItem :exec
+DELETE FROM items WHERE id = ?;

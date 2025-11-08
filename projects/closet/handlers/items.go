@@ -315,3 +315,22 @@ func nullableInt(v int) sql.NullInt64 {
 	}
 	return sql.NullInt64{Int64: int64(v), Valid: true}
 }
+
+// DeleteItem은 업로드된 항목을 제거한다.
+func DeleteItem(c echo.Context) error {
+	queries, err := db.GetQueries()
+	if err != nil {
+		return err
+	}
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "잘못된 요청입니다.")
+	}
+
+	if err := queries.DeleteItem(c.Request().Context(), id); err != nil {
+		return err
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
