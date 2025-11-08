@@ -17,6 +17,7 @@ type Embedding struct {
 
 type Item struct {
 	ID          int64
+	UserUid     string
 	Kind        string
 	Filename    string
 	MimeType    string

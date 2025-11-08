@@ -26,36 +26,59 @@ func (q *Queries) AttachTag(ctx context.Context, arg AttachTagParams) error {
 }
 
 const deleteItem = `-- name: DeleteItem :exec
-DELETE FROM items WHERE id = ?
+DELETE FROM items
+WHERE id = ?1
+  AND user_uid = ?2
 `
 
-func (q *Queries) DeleteItem(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteItem, id)
+type DeleteItemParams struct {
+	ID      int64
+	UserUid string
+}
+
+func (q *Queries) DeleteItem(ctx context.Context, arg DeleteItemParams) error {
+	_, err := q.db.ExecContext(ctx, deleteItem, arg.ID, arg.UserUid)
 	return err
 }
 
 const getItemContent = `-- name: GetItemContent :one
-SELECT bytes, mime_type FROM items WHERE id = ?
+SELECT bytes, mime_type
+FROM items
+WHERE id = ?1
+  AND user_uid = ?2
 `
+
+type GetItemContentParams struct {
+	ID      int64
+	UserUid string
+}
 
 type GetItemContentRow struct {
 	Bytes    []byte
 	MimeType string
 }
 
-func (q *Queries) GetItemContent(ctx context.Context, id int64) (GetItemContentRow, error) {
-	row := q.db.QueryRowContext(ctx, getItemContent, id)
+func (q *Queries) GetItemContent(ctx context.Context, arg GetItemContentParams) (GetItemContentRow, error) {
+	row := q.db.QueryRowContext(ctx, getItemContent, arg.ID, arg.UserUid)
 	var i GetItemContentRow
 	err := row.Scan(&i.Bytes, &i.MimeType)
 	return i, err
 }
 
 const getItemIDBySha = `-- name: GetItemIDBySha :one
-SELECT id FROM items WHERE sha256 = ?
+SELECT id
+FROM items
+WHERE user_uid = ?1
+  AND sha256 = ?2
 `
 
-func (q *Queries) GetItemIDBySha(ctx context.Context, sha256 sql.NullString) (int64, error) {
-	row := q.db.QueryRowContext(ctx, getItemIDBySha, sha256)
+type GetItemIDByShaParams struct {
+	UserUid string
+	Sha256  sql.NullString
+}
+
+func (q *Queries) GetItemIDBySha(ctx context.Context, arg GetItemIDByShaParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getItemIDBySha, arg.UserUid, arg.Sha256)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
@@ -82,6 +105,7 @@ func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
 
 const insertItem = `-- name: InsertItem :one
 INSERT INTO items (
+    user_uid,
     kind,
     filename,
     mime_type,
@@ -94,11 +118,12 @@ INSERT INTO items (
     meta_season,
     meta_style,
     meta_colors
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING id
 `
 
 type InsertItemParams struct {
+	UserUid     string
 	Kind        string
 	Filename    string
 	MimeType    string
@@ -115,6 +140,7 @@ type InsertItemParams struct {
 
 func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, insertItem,
+		arg.UserUid,
 		arg.Kind,
 		arg.Filename,
 		arg.MimeType,
@@ -144,6 +170,7 @@ SELECT
     e.vec_f32
 FROM embeddings e
 JOIN items i ON i.id = e.item_id
+WHERE i.user_uid = ?1
 `
 
 type ListEmbeddingItemsRow struct {
@@ -156,8 +183,8 @@ type ListEmbeddingItemsRow struct {
 	VecF32     []byte
 }
 
-func (q *Queries) ListEmbeddingItems(ctx context.Context) ([]ListEmbeddingItemsRow, error) {
-	rows, err := q.db.QueryContext(ctx, listEmbeddingItems)
+func (q *Queries) ListEmbeddingItems(ctx context.Context, userUid string) ([]ListEmbeddingItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listEmbeddingItems, userUid)
 	if err != nil {
 		return nil, err
 	}
@@ -200,11 +227,12 @@ SELECT
 FROM items i
 LEFT JOIN item_tags it ON it.item_id = i.id
 LEFT JOIN tags t ON t.id = it.tag_id
-WHERE (?1 = '' OR i.kind = ?1)
+WHERE i.user_uid = ?1
+  AND (?2 = '' OR i.kind = ?2)
 GROUP BY i.id
 HAVING (
     CASE
-        WHEN json_array_length(?2) = 0 THEN 1
+        WHEN json_array_length(?3) = 0 THEN 1
         ELSE IFNULL((
             SELECT COUNT(DISTINCT t2.name)
             FROM item_tags it2
@@ -212,21 +240,22 @@ HAVING (
             WHERE it2.item_id = i.id
               AND t2.name IN (
                   SELECT je.value
-                  FROM (SELECT ?2 AS json_data) payload
+                  FROM (SELECT ?3 AS json_data) payload
                   CROSS JOIN json_each(payload.json_data) AS je
               )
         ), 0)
     END
 ) >= CASE
-        WHEN json_array_length(?2) = 0 THEN 1
-        ELSE json_array_length(?2)
+        WHEN json_array_length(?3) = 0 THEN 1
+        ELSE json_array_length(?3)
     END
 ORDER BY i.created_at DESC
-LIMIT ?4
-OFFSET ?3
+LIMIT ?5
+OFFSET ?4
 `
 
 type ListItemsParams struct {
+	UserUid    string
 	KindFilter interface{}
 	TagJson    interface{}
 	Offset     int64
@@ -246,6 +275,7 @@ type ListItemsRow struct {
 
 func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListItemsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listItems,
+		arg.UserUid,
 		arg.KindFilter,
 		arg.TagJson,
 		arg.Offset,
@@ -294,9 +324,15 @@ SELECT
 FROM items i
 LEFT JOIN item_tags it ON it.item_id = i.id
 LEFT JOIN tags t ON t.id = it.tag_id
-WHERE i.id IN (/*SLICE:ids*/?)
+WHERE i.user_uid = ?1
+  AND i.id IN (/*SLICE:ids*/?)
 GROUP BY i.id
 `
+
+type ListItemsByIDsParams struct {
+	UserUid string
+	Ids     []int64
+}
 
 type ListItemsByIDsRow struct {
 	ID        int64
@@ -309,14 +345,15 @@ type ListItemsByIDsRow struct {
 	Tags      interface{}
 }
 
-func (q *Queries) ListItemsByIDs(ctx context.Context, ids []int64) ([]ListItemsByIDsRow, error) {
+func (q *Queries) ListItemsByIDs(ctx context.Context, arg ListItemsByIDsParams) ([]ListItemsByIDsRow, error) {
 	query := listItemsByIDs
 	var queryParams []interface{}
-	if len(ids) > 0 {
-		for _, v := range ids {
+	queryParams = append(queryParams, arg.UserUid)
+	if len(arg.Ids) > 0 {
+		for _, v := range arg.Ids {
 			queryParams = append(queryParams, v)
 		}
-		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(arg.Ids))[1:], 1)
 	} else {
 		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
 	}

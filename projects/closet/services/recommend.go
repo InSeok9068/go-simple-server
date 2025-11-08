@@ -24,7 +24,11 @@ type RecommendationResult struct {
 
 var kindOrder = []string{"top", "bottom", "shoes", "accessory"}
 
-func RecommendOutfit(ctx context.Context, weather, style, skipRaw string, locks map[string]int64) ([]RecommendationResult, string, bool, error) {
+func RecommendOutfit(ctx context.Context, uid string, weather, style, skipRaw string, locks map[string]int64) ([]RecommendationResult, string, bool, error) {
+	if strings.TrimSpace(uid) == "" {
+		return nil, skipRaw, false, errors.New("로그인이 필요해요.")
+	}
+
 	query := strings.TrimSpace(weather + " " + style)
 	if query == "" {
 		return nil, skipRaw, false, errors.New("조건을 입력해주세요.")
@@ -47,7 +51,7 @@ func RecommendOutfit(ctx context.Context, weather, style, skipRaw string, locks 
 		return nil, skipRaw, false, err
 	}
 
-	embeddings, err := queries.ListEmbeddingItems(ctx)
+	embeddings, err := queries.ListEmbeddingItems(ctx, uid)
 	if err != nil {
 		return nil, skipRaw, false, err
 	}
@@ -68,7 +72,10 @@ func RecommendOutfit(ctx context.Context, weather, style, skipRaw string, locks 
 		return nil, skipRaw, false, errors.New("조건에 맞는 추천을 찾지 못했어요.")
 	}
 
-	items, err := queries.ListItemsByIDs(ctx, selectedIDs)
+	items, err := queries.ListItemsByIDs(ctx, db.ListItemsByIDsParams{
+		UserUid: uid,
+		Ids:     selectedIDs,
+	})
 	if err != nil {
 		return nil, skipRaw, false, err
 	}

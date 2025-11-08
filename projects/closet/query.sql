@@ -5,6 +5,7 @@ SELECT * FROM user WHERE uid = ?;
 
 -- name: InsertItem :one
 INSERT INTO items (
+    user_uid,
     kind,
     filename,
     mime_type,
@@ -17,11 +18,14 @@ INSERT INTO items (
     meta_season,
     meta_style,
     meta_colors
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING id;
 
 -- name: GetItemIDBySha :one
-SELECT id FROM items WHERE sha256 = ?;
+SELECT id
+FROM items
+WHERE user_uid = sqlc.arg(user_uid)
+  AND sha256 = sqlc.arg(sha256);
 
 -- name: UpsertTag :one
 INSERT INTO tags (name) VALUES (?)
@@ -44,7 +48,8 @@ SELECT
 FROM items i
 LEFT JOIN item_tags it ON it.item_id = i.id
 LEFT JOIN tags t ON t.id = it.tag_id
-WHERE (sqlc.arg(kind_filter) = '' OR i.kind = sqlc.arg(kind_filter))
+WHERE i.user_uid = sqlc.arg(user_uid)
+  AND (sqlc.arg(kind_filter) = '' OR i.kind = sqlc.arg(kind_filter))
 GROUP BY i.id
 HAVING (
     CASE
@@ -70,7 +75,10 @@ LIMIT sqlc.arg(limit)
 OFFSET sqlc.arg(offset);
 
 -- name: GetItemContent :one
-SELECT bytes, mime_type FROM items WHERE id = ?;
+SELECT bytes, mime_type
+FROM items
+WHERE id = sqlc.arg(id)
+  AND user_uid = sqlc.arg(user_uid);
 
 -- name: PutEmbedding :exec
 INSERT INTO embeddings (item_id, model, dim, vec_f32)
@@ -95,7 +103,8 @@ SELECT
     e.dim,
     e.vec_f32
 FROM embeddings e
-JOIN items i ON i.id = e.item_id;
+JOIN items i ON i.id = e.item_id
+WHERE i.user_uid = sqlc.arg(user_uid);
 
 -- name: ListItemsByIDs :many
 SELECT
@@ -110,8 +119,11 @@ SELECT
 FROM items i
 LEFT JOIN item_tags it ON it.item_id = i.id
 LEFT JOIN tags t ON t.id = it.tag_id
-WHERE i.id IN (sqlc.slice('ids'))
+WHERE i.user_uid = sqlc.arg(user_uid)
+  AND i.id IN (sqlc.slice('ids'))
 GROUP BY i.id;
 
 -- name: DeleteItem :exec
-DELETE FROM items WHERE id = ?;
+DELETE FROM items
+WHERE id = sqlc.arg(id)
+  AND user_uid = sqlc.arg(user_uid);

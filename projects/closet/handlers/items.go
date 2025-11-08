@@ -24,6 +24,7 @@ import (
 	"time"
 	"unicode"
 
+	"simple-server/pkg/util/authutil"
 	"simple-server/projects/closet/db"
 	"simple-server/projects/closet/services"
 	"simple-server/projects/closet/views"
@@ -50,6 +51,11 @@ var (
 // nolint:cyclop // 업로드 파이프라인의 단계가 많아 임시로 순환 복잡도 검사를 무시한다.
 func UploadItem(c echo.Context) error {
 	queries, err := db.GetQueries()
+	if err != nil {
+		return err
+	}
+
+	uid, err := authutil.SessionUID(c)
 	if err != nil {
 		return err
 	}
@@ -135,6 +141,7 @@ func UploadItem(c echo.Context) error {
 	qtx := db.New(tx)
 
 	itemID, err := qtx.InsertItem(ctx, db.InsertItemParams{
+		UserUid:     uid,
 		Kind:        kind,
 		Filename:    filename,
 		MimeType:    mimeType,
@@ -151,7 +158,10 @@ func UploadItem(c echo.Context) error {
 	if err != nil {
 		var sqliteErr *sqlite.Error
 		if errors.As(err, &sqliteErr) && sqliteErr.Code() == int(sqlite3.SQLITE_CONSTRAINT_UNIQUE) {
-			existingID, lookupErr := qtx.GetItemIDBySha(ctx, sql.NullString{String: shaString, Valid: true})
+			existingID, lookupErr := qtx.GetItemIDBySha(ctx, db.GetItemIDByShaParams{
+				UserUid: uid,
+				Sha256:  sql.NullString{String: shaString, Valid: true},
+			})
 			if lookupErr != nil {
 				return lookupErr
 			}
@@ -175,9 +185,9 @@ func UploadItem(c echo.Context) error {
 		return err
 	}
 
-	go services.EnqueueEmbeddingJob(itemID, embeddingText)
+	go services.EnqueueEmbeddingJob(itemID, uid, embeddingText)
 
-	html, err := renderItemsHTML(ctx, queries, "", nil)
+	html, err := renderItemsHTML(ctx, queries, uid, "", nil)
 	if err != nil {
 		return err
 	}
@@ -192,10 +202,15 @@ func ListItems(c echo.Context) error {
 		return err
 	}
 
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
 	kind := normalizeKind(strings.TrimSpace(c.QueryParam("kind")))
 	tags := parseTags(c.QueryParam("tags"))
 
-	html, err := renderItemsHTML(c.Request().Context(), queries, kind, tags)
+	html, err := renderItemsHTML(c.Request().Context(), queries, uid, kind, tags)
 	if err != nil {
 		return err
 	}
@@ -210,12 +225,20 @@ func ItemImage(c echo.Context) error {
 		return err
 	}
 
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "잘못된 요청입니다.")
 	}
 
-	row, err := queries.GetItemContent(c.Request().Context(), id)
+	row, err := queries.GetItemContent(c.Request().Context(), db.GetItemContentParams{
+		ID:      id,
+		UserUid: uid,
+	})
 	if errors.Is(err, sql.ErrNoRows) {
 		return echo.NewHTTPError(http.StatusNotFound, "이미지를 찾을 수 없습니다.")
 	}
@@ -231,8 +254,8 @@ func ItemImage(c echo.Context) error {
 	return nil
 }
 
-func renderItemsHTML(ctx context.Context, queries *db.Queries, kind string, tags []string) (string, error) {
-	groups, err := loadGroupedItems(ctx, queries, kind, tags)
+func renderItemsHTML(ctx context.Context, queries *db.Queries, uid string, kind string, tags []string) (string, error) {
+	groups, err := loadGroupedItems(ctx, queries, uid, kind, tags)
 	if err != nil {
 		return "", err
 	}
@@ -244,7 +267,7 @@ func renderItemsHTML(ctx context.Context, queries *db.Queries, kind string, tags
 	return builder.String(), nil
 }
 
-func loadGroupedItems(ctx context.Context, queries *db.Queries, kind string, tags []string) (map[string][]views.ClosetItem, error) {
+func loadGroupedItems(ctx context.Context, queries *db.Queries, uid string, kind string, tags []string) (map[string][]views.ClosetItem, error) {
 	targetKinds := kindOrder
 	if kind != "" {
 		targetKinds = []string{kind}
@@ -253,8 +276,23 @@ func loadGroupedItems(ctx context.Context, queries *db.Queries, kind string, tag
 	tagJSON := tagsToJSON(tags)
 	groups := make(map[string][]views.ClosetItem, len(targetKinds))
 
+	if uid == "" {
+		for _, k := range targetKinds {
+			groups[k] = []views.ClosetItem{}
+		}
+		if kind == "" {
+			for _, k := range kindOrder {
+				if _, ok := groups[k]; !ok {
+					groups[k] = []views.ClosetItem{}
+				}
+			}
+		}
+		return groups, nil
+	}
+
 	for _, k := range targetKinds {
 		rows, err := queries.ListItems(ctx, db.ListItemsParams{
+			UserUid:    uid,
 			KindFilter: k,
 			TagJson:    tagJSON,
 			Offset:     0,
@@ -453,12 +491,20 @@ func DeleteItem(c echo.Context) error {
 		return err
 	}
 
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil || id <= 0 {
 		return echo.NewHTTPError(http.StatusBadRequest, "잘못된 요청입니다.")
 	}
 
-	if err := queries.DeleteItem(c.Request().Context(), id); err != nil {
+	if err := queries.DeleteItem(c.Request().Context(), db.DeleteItemParams{
+		ID:      id,
+		UserUid: uid,
+	}); err != nil {
 		return err
 	}
 
@@ -467,6 +513,11 @@ func DeleteItem(c echo.Context) error {
 
 // RecommendOutfit은 날씨와 스타일 조건에 맞는 아이템을 추천한다.
 func RecommendOutfit(c echo.Context) error {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
 	if err := c.Request().ParseForm(); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "입력값을 확인해주세요.")
 	}
@@ -475,7 +526,7 @@ func RecommendOutfit(c echo.Context) error {
 	skipIDs := strings.TrimSpace(c.FormValue("skip_ids"))
 	locks := parseLockSelections(c)
 
-	results, cacheToken, hasMore, err := services.RecommendOutfit(c.Request().Context(), weather, style, skipIDs, locks)
+	results, cacheToken, hasMore, err := services.RecommendOutfit(c.Request().Context(), uid, weather, style, skipIDs, locks)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

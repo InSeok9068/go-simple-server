@@ -23,11 +23,11 @@ const (
 
 // EnqueueEmbeddingJob은 업로드 직후 이미지 임베딩 생성을 처리한다.
 // UploadItem에서 goroutine으로 호출되므로 호출자는 반환만 확인하면 된다.
-func EnqueueEmbeddingJob(itemID int64, contextText string) {
+func EnqueueEmbeddingJob(itemID int64, userUID, contextText string) {
 	ctx, cancel := context.WithTimeout(context.Background(), embeddingTimeout)
 	defer cancel()
 
-	if err := ImageEmbedding(ctx, itemID, contextText); err != nil {
+	if err := ImageEmbedding(ctx, userUID, itemID, contextText); err != nil {
 		slog.Error("이미지 임베딩 생성 실패", "item_id", itemID, "error", err)
 		return
 	}
@@ -35,7 +35,7 @@ func EnqueueEmbeddingJob(itemID int64, contextText string) {
 }
 
 // ImageEmbedding은 업로드된 이미지를 불러와 Gemini 모델로 임베딩을 생성하고 결과를 DB에 저장한다.
-func ImageEmbedding(ctx context.Context, itemID int64, contextText string) error {
+func ImageEmbedding(ctx context.Context, userUID string, itemID int64, contextText string) error {
 	apiKey := config.EnvMap["GEMINI_AI_KEY"]
 	if apiKey == "" {
 		return fmt.Errorf("gemini api 키가 비어 있습니다")
@@ -46,7 +46,10 @@ func ImageEmbedding(ctx context.Context, itemID int64, contextText string) error
 		return fmt.Errorf("쿼리 객체 생성 실패: %w", err)
 	}
 
-	item, err := queries.GetItemContent(ctx, itemID)
+	item, err := queries.GetItemContent(ctx, db.GetItemContentParams{
+		ID:      itemID,
+		UserUid: userUID,
+	})
 	if err != nil {
 		return fmt.Errorf("아이템 이미지를 조회하지 못했어요: %w", err)
 	}
