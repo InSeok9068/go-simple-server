@@ -16,25 +16,25 @@ import (
 )
 
 const (
-	// gemini-embedding-001? ?띿뒪???꾩슜 ?꾨쿋??紐⑤뜽?대떎.
+	// gemini-embedding-001은 텍스트 전용 임베딩 모델이다.
 	embeddingModelName = "gemini-embedding-001"
 	embeddingTimeout   = time.Minute
 )
 
-// EnqueueEmbeddingJob? ?낅줈??吏곹썑 ?대?吏 ?꾨쿋???앹꽦??泥섎━?쒕떎.
-// UploadItem?먯꽌 goroutine?쇰줈 ?몄텧?섎?濡? ?ш린?쒕뒗 ?숆린?곸쑝濡쒕쭔 ?ㅽ뻾?쒕떎.
+// EnqueueEmbeddingJob은 업로드 직후 이미지 임베딩 생성을 처리한다.
+// UploadItem에서 goroutine으로 호출되므로 호출자는 반환만 확인하면 된다.
 func EnqueueEmbeddingJob(itemID int64, contextText string) {
 	ctx, cancel := context.WithTimeout(context.Background(), embeddingTimeout)
 	defer cancel()
 
 	if err := ImageEmbedding(ctx, itemID, contextText); err != nil {
-		slog.Error("?대?吏 ?꾨쿋???앹꽦 ?ㅽ뙣", "item_id", itemID, "error", err)
+		slog.Error("이미지 임베딩 생성 실패", "item_id", itemID, "error", err)
 		return
 	}
-	slog.Info("?대?吏 ?꾨쿋???앹꽦 ?꾨즺", "item_id", itemID)
+	slog.Info("이미지 임베딩 생성 완료", "item_id", itemID)
 }
 
-// ImageEmbedding? ??λ맂 ?대?吏瑜?遺덈윭? Gemini 紐⑤뜽???꾨쿋?⑹쓣 ?붿껌?섍퀬 寃곌낵瑜?DB????ν븳??
+// ImageEmbedding은 업로드된 이미지를 불러와 Gemini 모델로 임베딩을 생성하고 결과를 DB에 저장한다.
 func ImageEmbedding(ctx context.Context, itemID int64, contextText string) error {
 	apiKey := config.EnvMap["GEMINI_AI_KEY"]
 	if apiKey == "" {
