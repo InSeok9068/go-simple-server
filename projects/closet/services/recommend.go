@@ -22,7 +22,9 @@ type RecommendationResult struct {
 	Score float64
 }
 
-func RecommendOutfit(ctx context.Context, weather, style, skipRaw string) ([]RecommendationResult, string, bool, error) {
+var kindOrder = []string{"top", "bottom", "shoes", "accessory"}
+
+func RecommendOutfit(ctx context.Context, weather, style, skipRaw string, locks map[string]int64) ([]RecommendationResult, string, bool, error) {
 	query := strings.TrimSpace(weather + " " + style)
 	if query == "" {
 		return nil, skipRaw, false, errors.New("조건을 입력해주세요.")
@@ -30,6 +32,10 @@ func RecommendOutfit(ctx context.Context, weather, style, skipRaw string) ([]Rec
 
 	preference := derivePreference(weather, style)
 	skipSet := parseSkipIDs(skipRaw)
+	locks = normalizeLocks(locks)
+	for _, id := range locks {
+		skipSet[id] = struct{}{}
+	}
 
 	queryVec, err := textEmbedding(ctx, query)
 	if err != nil {
@@ -56,7 +62,7 @@ func RecommendOutfit(ctx context.Context, weather, style, skipRaw string) ([]Rec
 		mergeMissingKinds(bestByKind, fallback)
 	}
 
-	selected, hasMore := pickCandidates(bestByKind, skipSet)
+	selected, hasMore := pickCandidates(bestByKind, skipSet, locks)
 	selectedIDs := collectIDs(selected)
 	if len(selectedIDs) == 0 {
 		return nil, skipRaw, false, errors.New("조건에 맞는 추천을 찾지 못했어요.")
@@ -99,7 +105,7 @@ func rankByKind(queryVec []float32, embeddings []db.ListEmbeddingItemsRow, pref 
 
 func collectIDs(selected map[string]scoreItem) []int64 {
 	var ids []int64
-	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
+	for _, kind := range kindOrder {
 		if item, ok := selected[kind]; ok {
 			ids = append(ids, item.ItemID)
 		}
@@ -109,7 +115,7 @@ func collectIDs(selected map[string]scoreItem) []int64 {
 
 func buildResults(selected map[string]scoreItem, items map[int64]db.ListItemsByIDsRow) []RecommendationResult {
 	results := make([]RecommendationResult, 0, len(selected))
-	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
+	for _, kind := range kindOrder {
 		if candidate, ok := selected[kind]; ok {
 			if item, ok := items[candidate.ItemID]; ok {
 				results = append(results, RecommendationResult{
@@ -123,9 +129,25 @@ func buildResults(selected map[string]scoreItem, items map[int64]db.ListItemsByI
 	return results
 }
 
-func pickCandidates(best map[string][]scoreItem, skip map[int64]struct{}) (map[string]scoreItem, bool) {
+func pickCandidates(best map[string][]scoreItem, skip map[int64]struct{}, locks map[string]int64) (map[string]scoreItem, bool) {
 	selected := make(map[string]scoreItem)
-	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
+
+	for kind, id := range locks {
+		if id <= 0 {
+			continue
+		}
+		if candidate, ok := findCandidateByID(best[kind], id); ok {
+			selected[kind] = candidate
+		} else {
+			selected[kind] = scoreItem{ItemID: id, Score: math.MaxFloat32}
+		}
+		skip[id] = struct{}{}
+	}
+
+	for _, kind := range kindOrder {
+		if _, locked := locks[kind]; locked {
+			continue
+		}
 		list := best[kind]
 		for _, candidate := range list {
 			if _, exists := skip[candidate.ItemID]; exists {
@@ -138,16 +160,17 @@ func pickCandidates(best map[string][]scoreItem, skip map[int64]struct{}) (map[s
 	}
 
 	hasMore := false
-	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
+kindLoop:
+	for _, kind := range kindOrder {
+		if _, locked := locks[kind]; locked {
+			continue
+		}
 		list := best[kind]
 		for _, candidate := range list {
 			if _, exists := skip[candidate.ItemID]; !exists {
 				hasMore = true
-				break
+				break kindLoop
 			}
-		}
-		if hasMore {
-			break
 		}
 	}
 	return selected, hasMore
@@ -402,6 +425,28 @@ func formatSkipToken(skip map[int64]struct{}) string {
 	return strings.Join(parts, ",")
 }
 
+func findCandidateByID(list []scoreItem, id int64) (scoreItem, bool) {
+	for _, candidate := range list {
+		if candidate.ItemID == id {
+			return candidate, true
+		}
+	}
+	return scoreItem{}, false
+}
+
+func normalizeLocks(input map[string]int64) map[string]int64 {
+	if len(input) == 0 {
+		return nil
+	}
+	normalized := make(map[string]int64, len(input))
+	for _, kind := range kindOrder {
+		if id, ok := input[kind]; ok && id > 0 {
+			normalized[kind] = id
+		}
+	}
+	return normalized
+}
+
 func hasMissingKinds(best map[string][]scoreItem) bool {
 	required := []string{"top", "bottom"}
 	for _, kind := range required {
@@ -413,7 +458,7 @@ func hasMissingKinds(best map[string][]scoreItem) bool {
 }
 
 func mergeMissingKinds(base, fallback map[string][]scoreItem) {
-	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
+	for _, kind := range kindOrder {
 		if len(base[kind]) == 0 && len(fallback[kind]) > 0 {
 			base[kind] = fallback[kind]
 		}

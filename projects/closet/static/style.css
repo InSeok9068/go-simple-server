@@ -170,3 +170,34 @@ body {
   border-radius: 14px;
   object-fit: cover;
 }
+
+.recommend-card--empty {
+  color: var(--on-surface-variant);
+  font-size: 0.9rem;
+  justify-content: center;
+  text-align: center;
+}
+
+.recommend-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.recommend-kind {
+  min-width: 0;
+}
+
+.recommend-kind .caption {
+  color: var(--on-surface-variant);
+}
+
+.lock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--surface-container-low);
+}

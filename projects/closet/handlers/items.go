@@ -473,8 +473,9 @@ func RecommendOutfit(c echo.Context) error {
 	weather := strings.TrimSpace(c.FormValue("weather"))
 	style := strings.TrimSpace(c.FormValue("style"))
 	skipIDs := strings.TrimSpace(c.FormValue("skip_ids"))
+	locks := parseLockSelections(c)
 
-	results, cacheToken, hasMore, err := services.RecommendOutfit(c.Request().Context(), weather, style, skipIDs)
+	results, cacheToken, hasMore, err := services.RecommendOutfit(c.Request().Context(), weather, style, skipIDs, locks)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -488,10 +489,30 @@ func RecommendOutfit(c echo.Context) error {
 	}
 
 	var builder strings.Builder
-	if err := views.RecommendationDialog(viewResults, weather, style, cacheToken, hasMore).Render(&builder); err != nil {
+	if err := views.RecommendationDialog(viewResults, weather, style, cacheToken, hasMore, locks).Render(&builder); err != nil {
 		return err
 	}
 	return c.HTML(http.StatusOK, builder.String())
+}
+
+func parseLockSelections(c echo.Context) map[string]int64 {
+	locks := make(map[string]int64)
+	for _, kind := range kindOrder {
+		field := fmt.Sprintf("lock_%s", kind)
+		value := strings.TrimSpace(c.FormValue(field))
+		if value == "" {
+			continue
+		}
+		id, err := strconv.ParseInt(value, 10, 64)
+		if err != nil || id <= 0 {
+			continue
+		}
+		locks[kind] = id
+	}
+	if len(locks) == 0 {
+		return nil
+	}
+	return locks
 }
 func readUploadedFile(fileHeader *multipart.FileHeader) ([]byte, string, error) {
 	src, err := fileHeader.Open()
