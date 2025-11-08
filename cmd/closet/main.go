@@ -64,7 +64,7 @@ func main() {
 			e.Logger.Fatal("GoVisual 서버 시작 실패", "error", err)
 		}
 	} else {
-		e.Logger.Fatal(e.Start(":8002"))
+		e.Logger.Fatal(e.Start(":8003"))
 	}
 }
 
