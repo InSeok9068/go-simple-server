@@ -105,32 +105,22 @@ func itemGroup(kind string, items []ClosetItem) Node {
 }
 
 func itemCard(item ClosetItem) Node {
-	deleteAction := Button(
-		Class("button error small"),
-		h.Delete(fmt.Sprintf("/items/%d", item.ID)),
-		h.Target("closest article"),
-		Attr("hx-confirm", "정말 삭제할까요?"),
-		Attr("hx-on::after-request", "if(event.detail.successful){ this.closest('article').remove(); showInfo('아이템을 삭제했어요.'); }"),
-		Text("삭제"),
-	)
-
-	return Article(Class("card small-width border"),
+	return Article(Class("card border relative"),
 		Div(Class("center"),
 			Img(
 				Src(item.ImageURL),
 				Alt(fmt.Sprintf("%s 이미지", item.KindLabel)),
-				Width("200"),
-				Height("200"),
+				Width("150"),
+				Height("150"),
 				Loading("lazy"),
 			),
 		),
-		Div(Class("padding stack gap-xs"),
-			If(item.TagLine != "",
-				P(Class("caption"), Text(item.TagLine)),
-			),
-		),
-		Nav(x.Show("$store.auth.isAuthed"), Class("padding right-align"),
-			deleteAction,
+		Div(x.Show("$store.auth.isAuthed"), Class("closet-card__delete"),
+			h.Delete(fmt.Sprintf("/items/%d", item.ID)),
+			h.Target("closest article"),
+			Attr("hx-confirm", "정말 삭제할까요?"),
+			Attr("hx-on::after-request", "if(event.detail.successful){ this.closest('article').remove(); showInfo('아이템을 삭제했어요.'); }"),
+			I(Class("icon"), Text("close")),
 		),
 	)
 }

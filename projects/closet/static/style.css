@@ -80,3 +80,25 @@ body.dark {
 body {
   font-family: var(--font-family);
 }
+
+.closet-card__delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--error);
+  color: var(--on-error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.closet-card__delete:hover {
+  background: var(--error-container);
+  color: var(--error);
+}
