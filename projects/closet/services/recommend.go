@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strconv"
 	"strings"
 
 	"simple-server/internal/config"
@@ -21,56 +22,61 @@ type RecommendationResult struct {
 	Score float64
 }
 
-const recommendTopK = 1
-
-func RecommendOutfit(ctx context.Context, weather, style string) ([]RecommendationResult, error) {
+func RecommendOutfit(ctx context.Context, weather, style, skipRaw string) ([]RecommendationResult, string, bool, error) {
 	query := strings.TrimSpace(weather + " " + style)
 	if query == "" {
-		return nil, errors.New("조건을 입력해주세요.")
+		return nil, skipRaw, false, errors.New("조건을 입력해주세요.")
 	}
 
 	preference := derivePreference(weather, style)
+	skipSet := parseSkipIDs(skipRaw)
 
 	queryVec, err := textEmbedding(ctx, query)
 	if err != nil {
-		return nil, err
+		return nil, skipRaw, false, err
 	}
 
 	queries, err := db.GetQueries()
 	if err != nil {
-		return nil, err
+		return nil, skipRaw, false, err
 	}
 
 	embeddings, err := queries.ListEmbeddingItems(ctx)
 	if err != nil {
-		return nil, err
+		return nil, skipRaw, false, err
 	}
 	if len(embeddings) == 0 {
-		return nil, errors.New("아직 추천에 활용할 데이터가 없어요.")
+		return nil, skipRaw, false, errors.New("아직 추천에 활용할 데이터가 없어요.")
 	}
 
 	filtered := filterEmbeddings(embeddings, preference)
 	bestByKind := rankByKind(queryVec, filtered, preference)
+	if hasMissingKinds(bestByKind) {
+		fallback := rankByKind(queryVec, embeddings, preference)
+		mergeMissingKinds(bestByKind, fallback)
+	}
 
-	selectedIDs := collectIDs(bestByKind)
+	selected, hasMore := pickCandidates(bestByKind, skipSet)
+	selectedIDs := collectIDs(selected)
 	if len(selectedIDs) == 0 {
-		return nil, errors.New("조건에 맞는 추천을 찾지 못했어요.")
+		return nil, skipRaw, false, errors.New("조건에 맞는 추천을 찾지 못했어요.")
 	}
 
 	items, err := queries.ListItemsByIDs(ctx, selectedIDs)
 	if err != nil {
-		return nil, err
+		return nil, skipRaw, false, err
 	}
 	itemMap := make(map[int64]db.ListItemsByIDsRow, len(items))
 	for _, row := range items {
 		itemMap[row.ID] = row
 	}
 
-	results := buildResults(bestByKind, itemMap)
+	results := buildResults(selected, itemMap)
 	if len(results) == 0 {
-		return nil, errors.New("추천 결과를 구성하지 못했어요.")
+		return nil, skipRaw, false, errors.New("추천 결과를 구성하지 못했어요.")
 	}
-	return results, nil
+	nextCache := formatSkipToken(skipSet)
+	return results, nextCache, hasMore, nil
 }
 
 func rankByKind(queryVec []float32, embeddings []db.ListEmbeddingItemsRow, pref metadataPreference) map[string][]scoreItem {
@@ -86,28 +92,25 @@ func rankByKind(queryVec []float32, embeddings []db.ListEmbeddingItemsRow, pref 
 		sort.SliceStable(list, func(i, j int) bool {
 			return list[i].Score > list[j].Score
 		})
-		if len(list) > recommendTopK {
-			list = list[:recommendTopK]
-		}
 		bestByKind[row.Kind] = list
 	}
 	return bestByKind
 }
 
-func collectIDs(best map[string][]scoreItem) []int64 {
+func collectIDs(selected map[string]scoreItem) []int64 {
 	var ids []int64
 	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
-		for _, item := range best[kind] {
+		if item, ok := selected[kind]; ok {
 			ids = append(ids, item.ItemID)
 		}
 	}
 	return ids
 }
 
-func buildResults(best map[string][]scoreItem, items map[int64]db.ListItemsByIDsRow) []RecommendationResult {
-	results := make([]RecommendationResult, 0, len(items))
+func buildResults(selected map[string]scoreItem, items map[int64]db.ListItemsByIDsRow) []RecommendationResult {
+	results := make([]RecommendationResult, 0, len(selected))
 	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
-		for _, candidate := range best[kind] {
+		if candidate, ok := selected[kind]; ok {
 			if item, ok := items[candidate.ItemID]; ok {
 				results = append(results, RecommendationResult{
 					Kind:  kind,
@@ -118,6 +121,36 @@ func buildResults(best map[string][]scoreItem, items map[int64]db.ListItemsByIDs
 		}
 	}
 	return results
+}
+
+func pickCandidates(best map[string][]scoreItem, skip map[int64]struct{}) (map[string]scoreItem, bool) {
+	selected := make(map[string]scoreItem)
+	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
+		list := best[kind]
+		for _, candidate := range list {
+			if _, exists := skip[candidate.ItemID]; exists {
+				continue
+			}
+			selected[kind] = candidate
+			skip[candidate.ItemID] = struct{}{}
+			break
+		}
+	}
+
+	hasMore := false
+	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
+		list := best[kind]
+		for _, candidate := range list {
+			if _, exists := skip[candidate.ItemID]; !exists {
+				hasMore = true
+				break
+			}
+		}
+		if hasMore {
+			break
+		}
+	}
+	return selected, hasMore
 }
 
 type scoreItem struct {
@@ -329,4 +362,60 @@ func splitTokens(value string) []string {
 		}
 	}
 	return result
+}
+
+func parseSkipIDs(raw string) map[int64]struct{} {
+	skip := make(map[int64]struct{})
+	if strings.TrimSpace(raw) == "" {
+		return skip
+	}
+	parts := strings.Split(raw, ",")
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		id, err := strconv.ParseInt(part, 10, 64)
+		if err != nil || id <= 0 {
+			continue
+		}
+		skip[id] = struct{}{}
+	}
+	return skip
+}
+
+func formatSkipToken(skip map[int64]struct{}) string {
+	if len(skip) == 0 {
+		return ""
+	}
+	ids := make([]int64, 0, len(skip))
+	for id := range skip {
+		ids = append(ids, id)
+	}
+	sort.Slice(ids, func(i, j int) bool {
+		return ids[i] < ids[j]
+	})
+	parts := make([]string, 0, len(ids))
+	for _, id := range ids {
+		parts = append(parts, strconv.FormatInt(id, 10))
+	}
+	return strings.Join(parts, ",")
+}
+
+func hasMissingKinds(best map[string][]scoreItem) bool {
+	required := []string{"top", "bottom"}
+	for _, kind := range required {
+		if len(best[kind]) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func mergeMissingKinds(base, fallback map[string][]scoreItem) {
+	for _, kind := range []string{"top", "bottom", "shoes", "accessory"} {
+		if len(base[kind]) == 0 && len(fallback[kind]) > 0 {
+			base[kind] = fallback[kind]
+		}
+	}
 }

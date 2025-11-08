@@ -472,8 +472,9 @@ func RecommendOutfit(c echo.Context) error {
 	}
 	weather := strings.TrimSpace(c.FormValue("weather"))
 	style := strings.TrimSpace(c.FormValue("style"))
+	skipIDs := strings.TrimSpace(c.FormValue("skip_ids"))
 
-	results, err := services.RecommendOutfit(c.Request().Context(), weather, style)
+	results, cacheToken, hasMore, err := services.RecommendOutfit(c.Request().Context(), weather, style, skipIDs)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -487,7 +488,7 @@ func RecommendOutfit(c echo.Context) error {
 	}
 
 	var builder strings.Builder
-	if err := views.RecommendationDialog(viewResults).Render(&builder); err != nil {
+	if err := views.RecommendationDialog(viewResults, weather, style, cacheToken, hasMore).Render(&builder); err != nil {
 		return err
 	}
 	return c.HTML(http.StatusOK, builder.String())

@@ -102,3 +102,71 @@ body {
   background: var(--error-container);
   color: var(--error);
 }
+
+.upload-form {
+  position: relative;
+}
+
+.upload-overlay {
+  position: fixed;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  border-radius: 24px;
+  z-index: 1000;
+  color: var(--on-primary);
+  text-align: center;
+}
+
+.upload-overlay__content {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  width: min(320px, 90%);
+}
+
+.upload-overlay__text {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.upload-form .upload-overlay {
+  display: none;
+}
+
+.upload-form.htmx-request .upload-overlay {
+  display: flex;
+}
+
+.recommend-dialog {
+  width: min(520px, 90vw);
+  border-radius: 28px;
+  padding: 1.5rem;
+}
+
+.recommend-grid {
+  justify-content: center;
+}
+
+.recommend-card {
+  width: 140px;
+  height: 140px;
+  border-radius: 18px;
+  background: var(--surface-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.recommend-card img {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  object-fit: cover;
+}
