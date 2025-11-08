@@ -16,16 +16,20 @@ type Embedding struct {
 }
 
 type Item struct {
-	ID         int64
-	Kind       string
-	Filename   string
-	MimeType   string
-	Bytes      []byte
-	ThumbBytes []byte
-	Sha256     sql.NullString
-	Width      sql.NullInt64
-	Height     sql.NullInt64
-	CreatedAt  int64
+	ID          int64
+	Kind        string
+	Filename    string
+	MimeType    string
+	Bytes       []byte
+	ThumbBytes  []byte
+	Sha256      sql.NullString
+	Width       sql.NullInt64
+	Height      sql.NullInt64
+	CreatedAt   int64
+	MetaSummary sql.NullString
+	MetaSeason  sql.NullString
+	MetaStyle   sql.NullString
+	MetaColors  sql.NullString
 }
 
 type ItemTag struct {

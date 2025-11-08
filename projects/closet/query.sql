@@ -12,8 +12,12 @@ INSERT INTO items (
     thumb_bytes,
     sha256,
     width,
-    height
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    height,
+    meta_summary,
+    meta_season,
+    meta_style,
+    meta_colors
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING id;
 
 -- name: GetItemIDBySha :one
@@ -85,6 +89,9 @@ WHERE e.item_id IN (sqlc.slice('ids'));
 SELECT
     i.id,
     i.kind,
+    i.meta_season,
+    i.meta_style,
+    i.meta_colors,
     e.dim,
     e.vec_f32
 FROM embeddings e

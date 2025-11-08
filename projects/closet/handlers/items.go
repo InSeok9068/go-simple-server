@@ -87,6 +87,7 @@ func UploadItem(c echo.Context) error {
 	default:
 		return echo.NewHTTPError(http.StatusBadRequest, "이미지 파일이나 URL 중 하나를 선택해 주세요.")
 	}
+	mimeType = normalizeMimeType(mimeType)
 
 	sha := sha256.Sum256(imageBytes)
 	shaString := hex.EncodeToString(sha[:])
@@ -101,6 +102,17 @@ func UploadItem(c echo.Context) error {
 	} else {
 		aiMetadata = metadata
 		tags = mergeTags(tags, buildMetadataTags(metadata)...)
+	}
+
+	metaSummary := sql.NullString{}
+	metaSeason := sql.NullString{}
+	metaStyle := sql.NullString{}
+	metaColors := sql.NullString{}
+	if aiMetadata != nil {
+		metaSummary = toNullString(aiMetadata.Summary)
+		metaSeason = toNullString(aiMetadata.Season)
+		metaStyle = toNullString(aiMetadata.Style)
+		metaColors = toNullString(strings.Join(aiMetadata.Colors, ","))
 	}
 
 	embeddingText := buildEmbeddingContext(kind, tags, aiMetadata)
@@ -123,14 +135,18 @@ func UploadItem(c echo.Context) error {
 	qtx := db.New(tx)
 
 	itemID, err := qtx.InsertItem(ctx, db.InsertItemParams{
-		Kind:       kind,
-		Filename:   filename,
-		MimeType:   mimeType,
-		Bytes:      imageBytes,
-		ThumbBytes: nil,
-		Sha256:     sql.NullString{String: shaString, Valid: true},
-		Width:      nullableInt(width),
-		Height:     nullableInt(height),
+		Kind:        kind,
+		Filename:    filename,
+		MimeType:    mimeType,
+		Bytes:       imageBytes,
+		ThumbBytes:  nil,
+		Sha256:      sql.NullString{String: shaString, Valid: true},
+		Width:       nullableInt(width),
+		Height:      nullableInt(height),
+		MetaSummary: metaSummary,
+		MetaSeason:  metaSeason,
+		MetaStyle:   metaStyle,
+		MetaColors:  metaColors,
 	})
 	if err != nil {
 		var sqliteErr *sqlite.Error
@@ -351,6 +367,14 @@ func buildEmbeddingContext(kind string, tags []string, meta *services.ImageMetad
 	return builder.String()
 }
 
+func toNullString(value string) sql.NullString {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return sql.NullString{}
+	}
+	return sql.NullString{String: trimmed, Valid: true}
+}
+
 func parseTags(input string) []string {
 	if strings.TrimSpace(input) == "" {
 		return nil
@@ -491,6 +515,7 @@ func readUploadedFile(fileHeader *multipart.FileHeader) ([]byte, string, error) 
 	if mimeType == "" {
 		mimeType = http.DetectContentType(data)
 	}
+	mimeType = normalizeMimeType(mimeType)
 	if !strings.HasPrefix(mimeType, "image/") {
 		return nil, "", echo.NewHTTPError(http.StatusBadRequest, "이미지 파일만 업로드할 수 있어요.")
 	}
@@ -538,6 +563,7 @@ func downloadImageFromURL(ctx context.Context, rawURL string) (string, string, [
 	if mimeType == "" {
 		mimeType = http.DetectContentType(data)
 	}
+	mimeType = normalizeMimeType(mimeType)
 	if !strings.HasPrefix(mimeType, "image/") {
 		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL만 허용돼요.")
 	}
@@ -559,4 +585,17 @@ func sanitizeRemoteFilename(u *url.URL) string {
 		name = "remote-image"
 	}
 	return name
+}
+
+func normalizeMimeType(mimeType string) string {
+	if mimeType == "" {
+		return ""
+	}
+	switch strings.ToLower(strings.TrimSpace(mimeType)) {
+	case "image/jpg":
+		return "image/jpeg"
+	case "image/x-png":
+		return "image/png"
+	}
+	return mimeType
 }

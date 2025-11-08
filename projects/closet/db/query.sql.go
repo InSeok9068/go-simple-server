@@ -89,20 +89,28 @@ INSERT INTO items (
     thumb_bytes,
     sha256,
     width,
-    height
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    height,
+    meta_summary,
+    meta_season,
+    meta_style,
+    meta_colors
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING id
 `
 
 type InsertItemParams struct {
-	Kind       string
-	Filename   string
-	MimeType   string
-	Bytes      []byte
-	ThumbBytes []byte
-	Sha256     sql.NullString
-	Width      sql.NullInt64
-	Height     sql.NullInt64
+	Kind        string
+	Filename    string
+	MimeType    string
+	Bytes       []byte
+	ThumbBytes  []byte
+	Sha256      sql.NullString
+	Width       sql.NullInt64
+	Height      sql.NullInt64
+	MetaSummary sql.NullString
+	MetaSeason  sql.NullString
+	MetaStyle   sql.NullString
+	MetaColors  sql.NullString
 }
 
 func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (int64, error) {
@@ -115,6 +123,10 @@ func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (int64, 
 		arg.Sha256,
 		arg.Width,
 		arg.Height,
+		arg.MetaSummary,
+		arg.MetaSeason,
+		arg.MetaStyle,
+		arg.MetaColors,
 	)
 	var id int64
 	err := row.Scan(&id)
@@ -125,6 +137,9 @@ const listEmbeddingItems = `-- name: ListEmbeddingItems :many
 SELECT
     i.id,
     i.kind,
+    i.meta_season,
+    i.meta_style,
+    i.meta_colors,
     e.dim,
     e.vec_f32
 FROM embeddings e
@@ -132,10 +147,13 @@ JOIN items i ON i.id = e.item_id
 `
 
 type ListEmbeddingItemsRow struct {
-	ID     int64
-	Kind   string
-	Dim    int64
-	VecF32 []byte
+	ID         int64
+	Kind       string
+	MetaSeason sql.NullString
+	MetaStyle  sql.NullString
+	MetaColors sql.NullString
+	Dim        int64
+	VecF32     []byte
 }
 
 func (q *Queries) ListEmbeddingItems(ctx context.Context) ([]ListEmbeddingItemsRow, error) {
@@ -150,6 +168,9 @@ func (q *Queries) ListEmbeddingItems(ctx context.Context) ([]ListEmbeddingItemsR
 		if err := rows.Scan(
 			&i.ID,
 			&i.Kind,
+			&i.MetaSeason,
+			&i.MetaStyle,
+			&i.MetaColors,
 			&i.Dim,
 			&i.VecF32,
 		); err != nil {
