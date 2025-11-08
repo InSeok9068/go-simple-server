@@ -14,9 +14,13 @@ import (
 	_ "image/png"
 	"io"
 	"log/slog"
+	"mime/multipart"
 	"net/http"
+	"net/url"
+	"path"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 
 	"simple-server/projects/closet/db"
@@ -33,7 +37,13 @@ const (
 	itemsPerKind  = 12
 )
 
-var kindOrder = []string{"top", "bottom", "shoes", "accessory"}
+var (
+	kindOrder = []string{"top", "bottom", "shoes", "accessory"}
+
+	remoteFetchClient = &http.Client{
+		Timeout: 15 * time.Second,
+	}
+)
 
 // UploadItem은 옷장 아이템을 업로드한다.
 // nolint:cyclop // 업로드 파이프라인의 단계가 많아 임시로 순환 복잡도 검사를 무시한다.
@@ -48,42 +58,39 @@ func UploadItem(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "의상 종류를 선택해주세요.")
 	}
 
-	file, err := c.FormFile("image")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "이미지 파일을 선택해주세요.")
+	fileHeader, fileErr := c.FormFile("image")
+	if fileErr != nil && !errors.Is(fileErr, http.ErrMissingFile) {
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지를 불러오지 못했어요.")
 	}
 
-	src, err := file.Open()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "이미지를 열 수 없습니다.")
-	}
-	defer src.Close()
+	imageURL := strings.TrimSpace(c.FormValue("image_url"))
 
-	limited := io.LimitReader(src, maxUploadSize+1)
-	buf, err := io.ReadAll(limited)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "이미지를 읽을 수 없습니다.")
-	}
-	if len(buf) == 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, "빈 파일은 업로드할 수 없습니다.")
-	}
-	if len(buf) > maxUploadSize {
-		return echo.NewHTTPError(http.StatusRequestEntityTooLarge, "이미지는 20MB 이하로 업로드해주세요.")
+	var (
+		imageBytes []byte
+		filename   string
+		mimeType   string
+	)
+
+	switch {
+	case fileHeader != nil:
+		imageBytes, mimeType, err = readUploadedFile(fileHeader)
+		if err != nil {
+			return err
+		}
+		filename = fileHeader.Filename
+	case imageURL != "":
+		filename, mimeType, imageBytes, err = downloadImageFromURL(c.Request().Context(), imageURL)
+		if err != nil {
+			return err
+		}
+	default:
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지 파일이나 URL 중 하나를 선택해 주세요.")
 	}
 
-	sha := sha256.Sum256(buf)
+	sha := sha256.Sum256(imageBytes)
 	shaString := hex.EncodeToString(sha[:])
 
-	mimeType := file.Header.Get("Content-Type")
-	if mimeType == "" {
-		mimeType = http.DetectContentType(buf)
-	}
-	if !strings.HasPrefix(mimeType, "image/") {
-		return echo.NewHTTPError(http.StatusBadRequest, "이미지 파일만 업로드할 수 있습니다.")
-	}
-
-	width, height := imageDimensions(buf)
-
+	width, height := imageDimensions(imageBytes)
 	tags := parseTags(c.FormValue("tags"))
 
 	database, err := db.GetDB()
@@ -106,9 +113,9 @@ func UploadItem(c echo.Context) error {
 
 	itemID, err := qtx.InsertItem(ctx, db.InsertItemParams{
 		Kind:       kind,
-		Filename:   file.Filename,
+		Filename:   filename,
 		MimeType:   mimeType,
-		Bytes:      buf,
+		Bytes:      imageBytes,
 		ThumbBytes: nil,
 		Sha256:     sql.NullString{String: shaString, Valid: true},
 		Width:      nullableInt(width),
@@ -365,4 +372,96 @@ func RecommendOutfit(c echo.Context) error {
 		return err
 	}
 	return c.HTML(http.StatusOK, builder.String())
+}
+func readUploadedFile(fileHeader *multipart.FileHeader) ([]byte, string, error) {
+	src, err := fileHeader.Open()
+	if err != nil {
+		return nil, "", echo.NewHTTPError(http.StatusBadRequest, "이미지를 열 수 없어요.")
+	}
+	defer src.Close()
+
+	limited := io.LimitReader(src, maxUploadSize+1)
+	data, err := io.ReadAll(limited)
+	if err != nil {
+		return nil, "", echo.NewHTTPError(http.StatusInternalServerError, "이미지를 읽는 중 문제가 발생했어요.")
+	}
+	if len(data) == 0 {
+		return nil, "", echo.NewHTTPError(http.StatusBadRequest, "빈 파일은 업로드할 수 없어요.")
+	}
+	if len(data) > maxUploadSize {
+		return nil, "", echo.NewHTTPError(http.StatusRequestEntityTooLarge, "이미지는 20MB 이하로 올려 주세요.")
+	}
+
+	mimeType := fileHeader.Header.Get("Content-Type")
+	if mimeType == "" {
+		mimeType = http.DetectContentType(data)
+	}
+	if !strings.HasPrefix(mimeType, "image/") {
+		return nil, "", echo.NewHTTPError(http.StatusBadRequest, "이미지 파일만 업로드할 수 있어요.")
+	}
+
+	return data, mimeType, nil
+}
+
+func downloadImageFromURL(ctx context.Context, rawURL string) (string, string, []byte, error) {
+	parsed, err := url.Parse(rawURL)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "올바른 이미지 URL을 입력해 주세요.")
+	}
+	if parsed.Scheme != "http" && parsed.Scheme != "https" {
+		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL은 http 또는 https만 허용돼요.")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsed.String(), nil)
+	if err != nil {
+		return "", "", nil, err
+	}
+
+	resp, err := remoteFetchClient.Do(req)
+	if err != nil {
+		return "", "", nil, echo.NewHTTPError(http.StatusBadGateway, "이미지 URL에 접근하지 못했어요.")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL 응답이 정상이 아니에요.")
+	}
+
+	limited := io.LimitReader(resp.Body, maxUploadSize+1)
+	data, err := io.ReadAll(limited)
+	if err != nil {
+		return "", "", nil, echo.NewHTTPError(http.StatusBadGateway, "이미지를 다운로드하지 못했어요.")
+	}
+	if len(data) == 0 {
+		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL에서 데이터를 찾지 못했어요.")
+	}
+	if len(data) > maxUploadSize {
+		return "", "", nil, echo.NewHTTPError(http.StatusRequestEntityTooLarge, "이미지는 20MB 이하여야 해요.")
+	}
+
+	mimeType := resp.Header.Get("Content-Type")
+	if mimeType == "" {
+		mimeType = http.DetectContentType(data)
+	}
+	if !strings.HasPrefix(mimeType, "image/") {
+		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL만 허용돼요.")
+	}
+
+	filename := sanitizeRemoteFilename(parsed)
+
+	return filename, mimeType, data, nil
+}
+
+func sanitizeRemoteFilename(u *url.URL) string {
+	if u == nil {
+		return "remote-image"
+	}
+	name := strings.TrimSpace(path.Base(u.Path))
+	if name == "" || name == "." || name == "/" {
+		name = strings.TrimSpace(u.Host)
+	}
+	if name == "" {
+		name = "remote-image"
+	}
+	return name
 }
