@@ -28,6 +28,14 @@
   - 여러 프로젝트가 같은 UI 조각을 재사용한다면 `shared/views` 혹은 `shared/static/js`로 승격하고, 프로젝트 고유 변수만 래핑해 덮어쓰는 식으로 중복을 막아.
   - Alpine 상태는 클라이언트에서만 결정 가능한 미세 상호작용(모달 토글 등)에 집중하고, 서버 데이터 의존 상태는 HTMX 응답으로 덮는 것을 기본값으로 삼아.
 
+## CSS 라이브러리 사용 정의
+
+- **BeerCSS**
+  - 기본 CSS 프레임워크로, HTML 마크업 내에서 직접 CSS 클래스를 사용하여 레이아웃과 스타일을 정의.
+  - 공식 문서 : https://beercss.com/
+  - 사용 법 : `.doc/css/beercss/SUMMARY.md`를 참고. ※ BeerCSS에서 사용되지 않는 CSS 클래스는 사용 금지
+  - 예외적으로 BeerCSS에서는 표현이 불가능한 경우 커스텀 CSS를 사용할 수 있다. (각 프로젝트의 static/style.css)
+
 ## 폴더 구조
 
 - `cmd/{프로젝트명}/main.go`: 해당 프로젝트의 서버 실행 파일 (entrypoint).
