@@ -152,7 +152,7 @@ func uploadDialog() Node {
 }
 
 func itemDetailDialog() Node {
-	return Dialog(Class("top"), ID("item-detail-dialog"), x.Data(""),
+	return Dialog(Class("max"), ID("item-detail-dialog"), x.Data(""),
 		Div(
 			H5(Text("아이템 상세 정보")),
 			P(Class("caption"), Text("카드를 선택하면 자세한 정보를 볼 수 있어요.")),
@@ -196,10 +196,7 @@ func searchDialog() Node {
 				),
 				Div(Class("row"),
 					Button(Class("button"), Type("submit"), Text("검색")),
-					Button(Class("button"), Type("button"),
-						Attr("onclick", "const form=this.form; form.reset(); closeModal('#search-dialog');"),
-						Text("닫기"),
-					),
+					Button(Class("button"), Type("button"), Attr("data-ui", "#search-dialog"), Text("닫기")),
 				),
 				Img(Class("htmx-indicator"), Src("/shared/static/spinner.svg"), Alt("로딩 중")),
 			),
