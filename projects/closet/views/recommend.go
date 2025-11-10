@@ -15,6 +15,13 @@ type RecommendationItem struct {
 	Item ClosetItem
 }
 
+const (
+	recommendDialogID        = "recommend-dialog"
+	recommendDialogSelector  = "#recommend-dialog"
+	recommendDialogBodyID    = "recommend-dialog-body"
+	recommendDialogBodyQuery = "#recommend-dialog-body"
+)
+
 var recommendationKindOrder = []string{"top", "bottom", "shoes", "accessory"}
 
 func RecommendationDialog(results []RecommendationItem, weather, style, cacheToken string, hasMore bool, locks map[string]int64) Node {
@@ -43,7 +50,7 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 			P(Class("caption"), Text("추천 가능한 옷이 아직 없어요.")),
 			Div(Class("row"),
 				Button(Class("button"), Type("button"),
-					Attr("onclick", "this.closest('dialog').remove()"),
+					Attr("data-ui", recommendDialogSelector),
 					Text("닫기"),
 				),
 			),
@@ -52,7 +59,7 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 		body = append(body,
 			Form(
 				h.Post("/recommend"),
-				h.Target("#recommend-result"),
+				h.Target(recommendDialogBodyQuery),
 				h.Swap("innerHTML"),
 				Input(Type("hidden"), Name("weather"), Value(weather)),
 				Input(Type("hidden"), Name("style"), Value(style)),
@@ -60,7 +67,7 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 				Div(Group(rows)),
 				Div(Class("row"),
 					Button(Class("button"), Type("button"),
-						Attr("onclick", "this.closest('dialog').remove()"),
+						Attr("data-ui", recommendDialogSelector),
 						Text("닫기"),
 					),
 					If(hasMore,
@@ -76,10 +83,7 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 		)
 	}
 
-	return Dialog(Class("active recommend-dialog"),
-		DataAttr("recommend-cache", cacheToken),
-		Div(Group(body)),
-	)
+	return recommendationDialogContent(body)
 }
 
 func renderRecommendationRow(kind string, item *ClosetItem, lockID int64) Node {
@@ -112,5 +116,31 @@ func renderRecommendationRow(kind string, item *ClosetItem, lockID int64) Node {
 	return Div(Class("recommend-row row"),
 		figure,
 		lockControl,
+	)
+}
+
+func recommendationDialogContent(body []Node) Node {
+	return Div(Class("padding"), Group(body))
+}
+
+func recommendDialogPlaceholder() Node {
+	return recommendationDialogContent([]Node{
+		H5(Text("추천 결과")),
+		P(Class("caption"), Text("조건을 입력하면 추천 결과가 여기에 표시돼요.")),
+		Div(Class("row"),
+			Button(Class("button"), Type("button"),
+				Attr("data-ui", recommendDialogSelector),
+				Text("닫기"),
+			),
+		),
+	})
+}
+
+func RecommendDialogContainer() Node {
+	return Dialog(Class("top recommend-dialog"),
+		ID(recommendDialogID),
+		Div(ID(recommendDialogBodyID),
+			recommendDialogPlaceholder(),
+		),
 	)
 }
