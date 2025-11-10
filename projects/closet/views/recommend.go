@@ -41,8 +41,8 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 	if len(results) == 0 {
 		body = append(body,
 			P(Class("caption"), Text("추천 가능한 옷이 아직 없어요.")),
-			Div(Class("row end"),
-				Button(Class("button outline"), Type("button"),
+			Div(Class("row"),
+				Button(Class("button"), Type("button"),
 					Attr("onclick", "this.closest('dialog').remove()"),
 					Text("닫기"),
 				),
@@ -58,8 +58,8 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 				Input(Type("hidden"), Name("style"), Value(style)),
 				Input(Type("hidden"), Name("skip_ids"), Value(cacheToken)),
 				Div(Group(rows)),
-				Div(Class("row end"),
-					Button(Class("button outline"), Type("button"),
+				Div(Class("row"),
+					Button(Class("button"), Type("button"),
 						Attr("onclick", "this.closest('dialog').remove()"),
 						Text("닫기"),
 					),
@@ -109,7 +109,7 @@ func renderRecommendationRow(kind string, item *ClosetItem, lockID int64) Node {
 		lockControl = Div()
 	}
 
-	return Div(Class("recommend-row row align-center"),
+	return Div(Class("recommend-row row"),
 		figure,
 		lockControl,
 	)

@@ -49,7 +49,7 @@ func Index(title string, groups map[string][]ClosetItem) Node {
 				Section(
 					Div(Class("row"),
 						Button(Class("button"), Attr("onclick", "document.getElementById('upload-dialog').showModal()"), Text("옷장에 추가")),
-						Button(Class("button outline"), Attr("onclick", "document.getElementById('search-dialog').showModal()"), Text("옷장에서 찾기")),
+						Button(Class("button"), Attr("onclick", "document.getElementById('search-dialog').showModal()"), Text("옷장에서 찾기")),
 					),
 					recommendCard(),
 					Br(),
@@ -66,7 +66,7 @@ func Index(title string, groups map[string][]ClosetItem) Node {
 func uploadDialog() Node {
 	return Dialog(Class("top"), ID("upload-dialog"), x.Data(""),
 		Div(
-			H5(Class("title"), Text("내 옷장에 추가")),
+			H5(Text("내 옷장에 추가")),
 			P(Class("caption"), Text("이미지와 태그를 입력하면 검색과 추천에 활용돼요.")),
 			Div(x.Show("$store.auth.isAuthed"),
 				Form(Class("upload-form"), x.Data("{ mode: 'file', fileName: '' }"),
@@ -127,9 +127,9 @@ func uploadDialog() Node {
 						),
 						Small(Class("caption"), Text("URL도 20MB 이하만 허용돼요.")),
 					),
-					Div(Class("row end"),
+					Div(Class("row"),
 						Button(Class("button"), Text("업로드")),
-						Button(Class("button outline"), Type("button"), Attr("onclick", "document.getElementById('upload-dialog').close()"), Text("닫기")),
+						Button(Class("button"), Type("button"), Attr("onclick", "document.getElementById('upload-dialog').close()"), Text("닫기")),
 					),
 					Div(Class("upload-overlay htmx-indicator"),
 						DataAttr("indicator-mode", "overlay"),
@@ -143,7 +143,7 @@ func uploadDialog() Node {
 			),
 			Div(x.Show("!$store.auth.isAuthed"),
 				P(Class("caption"), Text("로그인해야 옷장을 만들 수 있어요.")),
-				A(Class("button outline"), Href("/login"), Text("로그인하기")),
+				A(Class("button"), Href("/login"), Text("로그인하기")),
 			),
 		),
 	)
@@ -152,7 +152,7 @@ func uploadDialog() Node {
 func searchDialog() Node {
 	return Dialog(Class("top"), ID("search-dialog"),
 		Div(Class("padding"),
-			H5(Class("title"), Text("옷장 찾기")),
+			H5(Text("옷장 찾기")),
 			P(Class("caption"), Text("원하는 태그와 종류로 빠르게 찾아보세요.")),
 			Form(
 				h.Get("/items"),
@@ -174,9 +174,9 @@ func searchDialog() Node {
 					Input(Type("text"), Name("tags")),
 					Label(Text("태그")),
 				),
-				Div(Class("row end"),
+				Div(Class("row"),
 					Button(Class("button"), Type("submit"), Text("검색")),
-					Button(Class("button outline"), Type("button"),
+					Button(Class("button"), Type("button"),
 						Attr("onclick", "const form=this.form; form.reset(); document.getElementById('search-dialog').close();"),
 						Text("닫기"),
 					),
@@ -188,9 +188,9 @@ func searchDialog() Node {
 }
 
 func recommendCard() Node {
-	return Article(Class("card padding"), x.Data(""),
+	return Article(Class("padding"), x.Data(""),
 		Div(
-			H6(Class("title"), Text("AI 옷장 추천")),
+			H6(Text("AI 옷장 추천")),
 			Br(),
 			Div(x.Show("$store.auth.isAuthed"),
 				Form(
@@ -206,7 +206,7 @@ func recommendCard() Node {
 						Input(Type("text"), Name("style")),
 						Label(Text("스타일")),
 					),
-					Div(Class("row end"),
+					Div(Class("row"),
 						Button(Class("button"), Type("submit"), Text("추천받기")),
 					),
 				),
@@ -214,7 +214,7 @@ func recommendCard() Node {
 			),
 			Div(x.Show("!$store.auth.isAuthed"),
 				P(Class("caption"), Text("로그인하면 AI 추천을 받아볼 수 있어요.")),
-				A(Class("button outline"), Href("/login"), Text("로그인하기")),
+				A(Class("button"), Href("/login"), Text("로그인하기")),
 			),
 		),
 	)

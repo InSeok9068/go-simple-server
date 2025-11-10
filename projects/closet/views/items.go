@@ -89,9 +89,9 @@ func itemGroup(kind string, items []ClosetItem) Node {
 	}
 
 	return Section(
-		Nav(Class("between align-center"),
-			H6(Class("title"), Text(title)),
-			Span(Class("caption muted"), Text(fmt.Sprintf("%d개", total))),
+		Nav(
+			H6(Text(title)),
+			Span(Class("caption"), Text(fmt.Sprintf("%d개", total))),
 		),
 		If(total == 0,
 			Div(Class("surface-container"),
@@ -105,8 +105,8 @@ func itemGroup(kind string, items []ClosetItem) Node {
 }
 
 func itemCard(item ClosetItem) Node {
-	return Article(Class("card border relative"),
-		Div(Class("center"),
+	return Article(Class("border"),
+		Div(
 			Img(
 				Src(item.ImageURL),
 				Alt(fmt.Sprintf("%s 이미지", item.KindLabel)),
