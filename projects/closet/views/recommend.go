@@ -50,15 +50,15 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 		)
 	} else {
 		body = append(body,
-			Form(Class("stack gap-md"),
+			Form(
 				h.Post("/recommend"),
 				h.Target("#recommend-result"),
 				h.Swap("innerHTML"),
 				Input(Type("hidden"), Name("weather"), Value(weather)),
 				Input(Type("hidden"), Name("style"), Value(style)),
 				Input(Type("hidden"), Name("skip_ids"), Value(cacheToken)),
-				Div(Class("stack gap-sm"), Group(rows)),
-				Div(Class("row end gap-sm"),
+				Div(Group(rows)),
+				Div(Class("row end"),
 					Button(Class("button outline"), Type("button"),
 						Attr("onclick", "this.closest('dialog').remove()"),
 						Text("닫기"),
@@ -78,7 +78,7 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 
 	return Dialog(Class("active recommend-dialog"),
 		DataAttr("recommend-cache", cacheToken),
-		Div(Class("stack gap-md"), Group(body)),
+		Div(Group(body)),
 	)
 }
 
@@ -109,7 +109,7 @@ func renderRecommendationRow(kind string, item *ClosetItem, lockID int64) Node {
 		lockControl = Div()
 	}
 
-	return Div(Class("recommend-row row gap-sm align-center"),
+	return Div(Class("recommend-row row align-center"),
 		figure,
 		lockControl,
 	)

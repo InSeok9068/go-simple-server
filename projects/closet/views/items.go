@@ -76,7 +76,7 @@ func ItemsSection(groups map[string][]ClosetItem) Node {
 		}
 		sections = append(sections, itemGroup(kind, items))
 	}
-	return Div(ID("items-list"), Class("stack gap-lg"), Group(sections))
+	return Div(ID("items-list"), Group(sections))
 }
 
 func itemGroup(kind string, items []ClosetItem) Node {
@@ -88,7 +88,7 @@ func itemGroup(kind string, items []ClosetItem) Node {
 		cardNodes = append(cardNodes, itemCard(item))
 	}
 
-	return Section(Class("stack gap-sm"),
+	return Section(
 		Nav(Class("between align-center"),
 			H6(Class("title"), Text(title)),
 			Span(Class("caption muted"), Text(fmt.Sprintf("%d개", total))),
@@ -99,7 +99,7 @@ func itemGroup(kind string, items []ClosetItem) Node {
 			),
 		),
 		If(total > 0,
-			Div(Class("row scroll gap-sm"), Group(cardNodes)),
+			Div(Class("row scroll"), Group(cardNodes)),
 		),
 	)
 }
