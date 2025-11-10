@@ -35,7 +35,7 @@
   - 기본 CSS 프레임워크로, HTML 마크업 내에서 직접 CSS 클래스를 사용하여 레이아웃과 스타일을 정의.
   - 공식 문서 : https://beercss.com/
   - 사용 법 : `.doc/css/beercss/SUMMARY.md`를 참고. ※ BeerCSS에서 사용되지 않는 CSS 클래스는 사용 금지
-  - 예외적으로 BeerCSS에서는 표현이 불가능한 경우 커스텀 CSS를 사용할 수 있다. (각 프로젝트의 static/style.css)
+  - 임의로 커스텀 CSS를 만들지 말것! 직접 커스텀 CSS를 활용하라는 명령이 아니라면 무조건 BeerCSS를 사용해!
 
 ## 폴더 구조
 
