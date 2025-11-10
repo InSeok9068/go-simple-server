@@ -127,3 +127,36 @@ GROUP BY i.id;
 DELETE FROM items
 WHERE id = sqlc.arg(id)
   AND user_uid = sqlc.arg(user_uid);
+
+-- name: GetItemDetail :one
+SELECT
+    i.id,
+    i.kind,
+    i.filename,
+    i.width,
+    i.height,
+    i.created_at,
+    i.meta_summary,
+    i.meta_season,
+    i.meta_style,
+    i.meta_colors,
+    IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
+FROM items i
+LEFT JOIN item_tags it ON it.item_id = i.id
+LEFT JOIN tags t ON t.id = it.tag_id
+WHERE i.id = sqlc.arg(id)
+  AND i.user_uid = sqlc.arg(user_uid)
+GROUP BY i.id;
+
+-- name: UpdateItemMetadata :exec
+UPDATE items
+SET meta_summary = ?,
+    meta_season = ?,
+    meta_style = ?,
+    meta_colors = ?
+WHERE id = ?
+  AND user_uid = ?;
+
+-- name: DeleteItemTags :exec
+DELETE FROM item_tags
+WHERE item_id = ?;

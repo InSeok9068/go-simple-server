@@ -41,6 +41,16 @@ func (q *Queries) DeleteItem(ctx context.Context, arg DeleteItemParams) error {
 	return err
 }
 
+const deleteItemTags = `-- name: DeleteItemTags :exec
+DELETE FROM item_tags
+WHERE item_id = ?
+`
+
+func (q *Queries) DeleteItemTags(ctx context.Context, itemID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteItemTags, itemID)
+	return err
+}
+
 const getItemContent = `-- name: GetItemContent :one
 SELECT bytes, mime_type
 FROM items
@@ -62,6 +72,65 @@ func (q *Queries) GetItemContent(ctx context.Context, arg GetItemContentParams) 
 	row := q.db.QueryRowContext(ctx, getItemContent, arg.ID, arg.UserUid)
 	var i GetItemContentRow
 	err := row.Scan(&i.Bytes, &i.MimeType)
+	return i, err
+}
+
+const getItemDetail = `-- name: GetItemDetail :one
+SELECT
+    i.id,
+    i.kind,
+    i.filename,
+    i.width,
+    i.height,
+    i.created_at,
+    i.meta_summary,
+    i.meta_season,
+    i.meta_style,
+    i.meta_colors,
+    IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
+FROM items i
+LEFT JOIN item_tags it ON it.item_id = i.id
+LEFT JOIN tags t ON t.id = it.tag_id
+WHERE i.id = ?1
+  AND i.user_uid = ?2
+GROUP BY i.id
+`
+
+type GetItemDetailParams struct {
+	ID      int64
+	UserUid string
+}
+
+type GetItemDetailRow struct {
+	ID          int64
+	Kind        string
+	Filename    string
+	Width       sql.NullInt64
+	Height      sql.NullInt64
+	CreatedAt   int64
+	MetaSummary sql.NullString
+	MetaSeason  sql.NullString
+	MetaStyle   sql.NullString
+	MetaColors  sql.NullString
+	Tags        interface{}
+}
+
+func (q *Queries) GetItemDetail(ctx context.Context, arg GetItemDetailParams) (GetItemDetailRow, error) {
+	row := q.db.QueryRowContext(ctx, getItemDetail, arg.ID, arg.UserUid)
+	var i GetItemDetailRow
+	err := row.Scan(
+		&i.ID,
+		&i.Kind,
+		&i.Filename,
+		&i.Width,
+		&i.Height,
+		&i.CreatedAt,
+		&i.MetaSummary,
+		&i.MetaSeason,
+		&i.MetaStyle,
+		&i.MetaColors,
+		&i.Tags,
+	)
 	return i, err
 }
 
@@ -455,6 +524,37 @@ func (q *Queries) PutEmbedding(ctx context.Context, arg PutEmbeddingParams) erro
 		arg.Model,
 		arg.Dim,
 		arg.VecF32,
+	)
+	return err
+}
+
+const updateItemMetadata = `-- name: UpdateItemMetadata :exec
+UPDATE items
+SET meta_summary = ?,
+    meta_season = ?,
+    meta_style = ?,
+    meta_colors = ?
+WHERE id = ?
+  AND user_uid = ?
+`
+
+type UpdateItemMetadataParams struct {
+	MetaSummary sql.NullString
+	MetaSeason  sql.NullString
+	MetaStyle   sql.NullString
+	MetaColors  sql.NullString
+	ID          int64
+	UserUid     string
+}
+
+func (q *Queries) UpdateItemMetadata(ctx context.Context, arg UpdateItemMetadataParams) error {
+	_, err := q.db.ExecContext(ctx, updateItemMetadata,
+		arg.MetaSummary,
+		arg.MetaSeason,
+		arg.MetaStyle,
+		arg.MetaColors,
+		arg.ID,
+		arg.UserUid,
 	)
 	return err
 }

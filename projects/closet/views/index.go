@@ -58,6 +58,7 @@ func Index(title string, groups map[string][]ClosetItem) Node {
 			),
 
 			uploadDialog(),
+			itemDetailDialog(),
 			searchDialog(),
 			RecommendDialogContainer(),
 		},
@@ -150,6 +151,24 @@ func uploadDialog() Node {
 	)
 }
 
+func itemDetailDialog() Node {
+	return Dialog(Class("max"), ID("item-detail-dialog"), x.Data(""),
+		Div(
+			H5(Text("아이템 상세 정보")),
+			P(Class("caption"), Text("카드를 선택하면 자세한 정보를 볼 수 있어요.")),
+		),
+		Div(ID("item-detail-content"),
+			Div(Class("padding"),
+				P(Class("caption"), Text("아이템 카드를 눌러 상세 정보를 확인해 주세요.")),
+			),
+		),
+		Div(ID("item-detail-loading"), Class("padding center-align htmx-indicator"),
+			I(Class("icon"), Text("hourglass_empty")),
+			P(Class("caption"), Text("불러오는 중이에요...")),
+		),
+	)
+}
+
 func searchDialog() Node {
 	return Dialog(Class("top"), ID("search-dialog"),
 		Div(Class("padding"),
@@ -177,10 +196,7 @@ func searchDialog() Node {
 				),
 				Div(Class("row"),
 					Button(Class("button"), Type("submit"), Text("검색")),
-					Button(Class("button"), Type("button"),
-						Attr("onclick", "const form=this.form; form.reset(); closeModal('#search-dialog');"),
-						Text("닫기"),
-					),
+					Button(Class("button"), Type("button"), Attr("data-ui", "#search-dialog"), Text("닫기")),
 				),
 				Img(Class("htmx-indicator"), Src("/shared/static/spinner.svg"), Alt("로딩 중")),
 			),

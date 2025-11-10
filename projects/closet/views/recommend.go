@@ -137,7 +137,7 @@ func recommendDialogPlaceholder() Node {
 }
 
 func RecommendDialogContainer() Node {
-	return Dialog(Class("top recommend-dialog"),
+	return Dialog(Class("max recommend-dialog"),
 		ID(recommendDialogID),
 		Div(ID(recommendDialogBodyID),
 			recommendDialogPlaceholder(),
