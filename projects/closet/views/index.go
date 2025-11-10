@@ -64,8 +64,8 @@ func Index(title string, groups map[string][]ClosetItem) Node {
 }
 
 func uploadDialog() Node {
-	return Dialog(ID("upload-dialog"), x.Data(""),
-		Div(Class("padding stack gap-sm"),
+	return Dialog(Class("top"), ID("upload-dialog"), x.Data(""),
+		Div(
 			H5(Class("title"), Text("내 옷장에 추가")),
 			P(Class("caption"), Text("이미지와 태그를 입력하면 검색과 추천에 활용돼요.")),
 			Div(x.Show("$store.auth.isAuthed"),
@@ -87,16 +87,15 @@ func uploadDialog() Node {
 						),
 						Label(Text("종류")),
 					),
-					Div(Class("stack gap-xxs"),
+					Div(
 						Div(Class("field label border"),
 							Input(Type("text"), Name("tags")),
 							Label(Text("태그")),
+							Span(Class("helper"), Text("콤마(,)로 여러 태그를 입력해 주세요.")),
 						),
-						Small(Class("caption"), Text("콤마(,)로 여러 태그를 입력해 주세요.")),
 					),
-					Div(Class("stack gap-xxs"),
-						Span(Class("caption"), Text("이미지 입력 방식")),
-						Div(Class("field middle-align"),
+					Div(
+						Div(Class("padding"),
 							Nav(
 								Label(Class("radio"),
 									Input(Type("radio"), Name("input_mode"), Value("file"), x.Model("mode"), Checked()),
@@ -110,7 +109,7 @@ func uploadDialog() Node {
 							),
 						),
 					),
-					Div(x.Show("mode === 'file'"), Class("stack gap-xxs"),
+					Div(x.Show("mode === 'file'"),
 						Label(Class("chip primary"),
 							I(Class("icon"), Text("attach_file")),
 							Span(Text("이미지 선택")),
@@ -120,7 +119,7 @@ func uploadDialog() Node {
 						),
 						Div(Class("caption"), x.Show("fileName"), x.Text("'선택한 파일: ' + fileName")),
 					),
-					Div(x.Show("mode === 'url'"), Class("stack gap-xxs"),
+					Div(x.Show("mode === 'url'"),
 						Div(Class("field label"),
 							Input(Type("url"), Name("image_url"), x.Bind("required", "mode === 'url'"),
 								Style("border:none;border-bottom:2px solid #6c5ce7;border-radius:0;background:transparent;padding-left:0;")),
@@ -134,7 +133,7 @@ func uploadDialog() Node {
 					),
 					Div(Class("upload-overlay htmx-indicator"),
 						DataAttr("indicator-mode", "overlay"),
-						Div(Class("upload-overlay__content stack gap-sm"),
+						Div(Class("upload-overlay__content"),
 							I(Class("icon"), Text("hourglass_empty")),
 							P(Class("upload-overlay__text"), Text("이미지를 분석 중이에요...")),
 							Small(Class("caption"), Text("잠시만 기다려 주세요.")),
@@ -142,7 +141,7 @@ func uploadDialog() Node {
 					),
 				),
 			),
-			Div(x.Show("!$store.auth.isAuthed"), Class("stack gap-sm"),
+			Div(x.Show("!$store.auth.isAuthed"),
 				P(Class("caption"), Text("로그인해야 옷장을 만들 수 있어요.")),
 				A(Class("button outline"), Href("/login"), Text("로그인하기")),
 			),
@@ -151,11 +150,11 @@ func uploadDialog() Node {
 }
 
 func searchDialog() Node {
-	return Dialog(ID("search-dialog"),
-		Div(Class("padding stack gap-sm"),
+	return Dialog(Class("top"), ID("search-dialog"),
+		Div(Class("padding"),
 			H5(Class("title"), Text("옷장 찾기")),
 			P(Class("caption"), Text("원하는 태그와 종류로 빠르게 찾아보세요.")),
-			Form(Class("stack gap-sm"),
+			Form(
 				h.Get("/items"),
 				h.Target("#items-list"),
 				h.Swap("outerHTML"),
@@ -190,11 +189,11 @@ func searchDialog() Node {
 
 func recommendCard() Node {
 	return Article(Class("card padding"), x.Data(""),
-		Div(Class("stack gap-sm"),
+		Div(
 			H6(Class("title"), Text("AI 옷장 추천")),
 			Br(),
 			Div(x.Show("$store.auth.isAuthed"),
-				Form(Class("stack gap-sm"),
+				Form(
 					h.Post("/recommend"),
 					h.Target("#recommend-result"),
 					h.Swap("innerHTML"),
