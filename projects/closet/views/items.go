@@ -105,7 +105,7 @@ func itemGroup(kind string, items []ClosetItem) Node {
 }
 
 func itemCard(item ClosetItem) Node {
-	return Article(Class("border"),
+	return Article(Class("border small-padding"),
 		Div(
 			Img(
 				Src(item.ImageURL),
@@ -120,7 +120,7 @@ func itemCard(item ClosetItem) Node {
 			h.Target("closest article"),
 			Attr("hx-confirm", "정말 삭제할까요?"),
 			Attr("hx-on::after-request", "if(event.detail.successful){ this.closest('article').remove(); showInfo('아이템을 삭제했어요.'); }"),
-			I(Class("icon"), Text("close")),
+			Text("X"),
 		),
 	)
 }
