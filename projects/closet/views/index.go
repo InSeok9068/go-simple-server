@@ -191,8 +191,6 @@ func searchDialog() Node {
 func recommendCard() Node {
 	return Article(Class("padding"), x.Data(""),
 		Div(
-			H6(Text("AI 옷장 추천")),
-			Br(),
 			Div(x.Show("$store.auth.isAuthed"),
 				Form(
 					h.Post("/recommend"),
