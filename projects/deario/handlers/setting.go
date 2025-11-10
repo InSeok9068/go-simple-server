@@ -48,14 +48,14 @@ func UpdateSettings(c echo.Context) error {
 		return err
 	}
 
-    if err := queries.UpsertUserSetting(c.Request().Context(), db.UpsertUserSettingParams{
-        Uid:         uid,
-        IsPush:      maputil.GetInt64(data, "is_push", 0),
-        PushTime:    maputil.GetString(data, "push_time", ""),
-        RandomRange: maputil.GetInt64(data, "random_range", 365),
-    }); err != nil {
-        return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정 저장 실패")
-    }
+	if err := queries.UpsertUserSetting(c.Request().Context(), db.UpsertUserSettingParams{
+		Uid:         uid,
+		IsPush:      maputil.GetInt64(data, "is_push", 0),
+		PushTime:    maputil.GetString(data, "push_time", ""),
+		RandomRange: maputil.GetInt64(data, "random_range", 365),
+	}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정 저장 실패")
+	}
 
-    return c.NoContent(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }

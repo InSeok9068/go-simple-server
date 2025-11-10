@@ -25,21 +25,15 @@ type RecommendationResult struct {
 var kindOrder = []string{"top", "bottom", "shoes", "accessory"}
 
 func RecommendOutfit(ctx context.Context, uid string, weather, style, skipRaw string, locks map[string]int64) ([]RecommendationResult, string, bool, error) {
-	if strings.TrimSpace(uid) == "" {
-		return nil, skipRaw, false, errors.New("로그인이 필요해요.")
-	}
-
-	query := strings.TrimSpace(weather + " " + style)
-	if query == "" {
-		return nil, skipRaw, false, errors.New("조건을 입력해주세요.")
+	query, err := validateRecommendInput(uid, weather, style)
+	if err != nil {
+		return nil, skipRaw, false, err
 	}
 
 	preference := derivePreference(weather, style)
 	skipSet := parseSkipIDs(skipRaw)
 	locks = normalizeLocks(locks)
-	for _, id := range locks {
-		skipSet[id] = struct{}{}
-	}
+	applyLocksToSkipSet(skipSet, locks)
 
 	queryVec, err := textEmbedding(ctx, query)
 	if err != nil {
@@ -51,12 +45,9 @@ func RecommendOutfit(ctx context.Context, uid string, weather, style, skipRaw st
 		return nil, skipRaw, false, err
 	}
 
-	embeddings, err := queries.ListEmbeddingItems(ctx, uid)
+	embeddings, err := fetchEmbeddingsForUser(ctx, queries, uid)
 	if err != nil {
 		return nil, skipRaw, false, err
-	}
-	if len(embeddings) == 0 {
-		return nil, skipRaw, false, errors.New("아직 추천에 활용할 데이터가 없어요.")
 	}
 
 	filtered := filterEmbeddings(embeddings, preference)
@@ -69,7 +60,7 @@ func RecommendOutfit(ctx context.Context, uid string, weather, style, skipRaw st
 	selected, hasMore := pickCandidates(bestByKind, skipSet, locks)
 	selectedIDs := collectIDs(selected)
 	if len(selectedIDs) == 0 {
-		return nil, skipRaw, false, errors.New("조건에 맞는 추천을 찾지 못했어요.")
+		return nil, skipRaw, false, errors.New("조건에 맞는 추천을 찾지 못했어요")
 	}
 
 	items, err := queries.ListItemsByIDs(ctx, db.ListItemsByIDsParams{
@@ -86,10 +77,41 @@ func RecommendOutfit(ctx context.Context, uid string, weather, style, skipRaw st
 
 	results := buildResults(selected, itemMap)
 	if len(results) == 0 {
-		return nil, skipRaw, false, errors.New("추천 결과를 구성하지 못했어요.")
+		return nil, skipRaw, false, errors.New("추천 결과를 구성하지 못했어요")
 	}
 	nextCache := formatSkipToken(skipSet)
 	return results, nextCache, hasMore, nil
+}
+
+func validateRecommendInput(uid, weather, style string) (string, error) {
+	if strings.TrimSpace(uid) == "" {
+		return "", errors.New("로그인이 필요해요")
+	}
+	query := strings.TrimSpace(weather + " " + style)
+	if query == "" {
+		return "", errors.New("조건을 입력해주세요")
+	}
+	return query, nil
+}
+
+func applyLocksToSkipSet(skip map[int64]struct{}, locks map[string]int64) {
+	for _, id := range locks {
+		if id <= 0 {
+			continue
+		}
+		skip[id] = struct{}{}
+	}
+}
+
+func fetchEmbeddingsForUser(ctx context.Context, queries *db.Queries, uid string) ([]db.ListEmbeddingItemsRow, error) {
+	embeddings, err := queries.ListEmbeddingItems(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+	if len(embeddings) == 0 {
+		return nil, errors.New("아직 추천에 활용할 데이터가 없어요")
+	}
+	return embeddings, nil
 }
 
 func rankByKind(queryVec []float32, embeddings []db.ListEmbeddingItemsRow, pref metadataPreference) map[string][]scoreItem {
@@ -138,7 +160,12 @@ func buildResults(selected map[string]scoreItem, items map[int64]db.ListItemsByI
 
 func pickCandidates(best map[string][]scoreItem, skip map[int64]struct{}, locks map[string]int64) (map[string]scoreItem, bool) {
 	selected := make(map[string]scoreItem)
+	applyLockedCandidates(selected, best, skip, locks)
+	fillUnlockedCandidates(selected, best, skip, locks)
+	return selected, hasAdditionalCandidates(best, skip, locks)
+}
 
+func applyLockedCandidates(selected map[string]scoreItem, best map[string][]scoreItem, skip map[int64]struct{}, locks map[string]int64) {
 	for kind, id := range locks {
 		if id <= 0 {
 			continue
@@ -150,7 +177,9 @@ func pickCandidates(best map[string][]scoreItem, skip map[int64]struct{}, locks 
 		}
 		skip[id] = struct{}{}
 	}
+}
 
+func fillUnlockedCandidates(selected map[string]scoreItem, best map[string][]scoreItem, skip map[int64]struct{}, locks map[string]int64) {
 	for _, kind := range kindOrder {
 		if _, locked := locks[kind]; locked {
 			continue
@@ -165,22 +194,20 @@ func pickCandidates(best map[string][]scoreItem, skip map[int64]struct{}, locks 
 			break
 		}
 	}
+}
 
-	hasMore := false
-kindLoop:
+func hasAdditionalCandidates(best map[string][]scoreItem, skip map[int64]struct{}, locks map[string]int64) bool {
 	for _, kind := range kindOrder {
 		if _, locked := locks[kind]; locked {
 			continue
 		}
-		list := best[kind]
-		for _, candidate := range list {
+		for _, candidate := range best[kind] {
 			if _, exists := skip[candidate.ItemID]; !exists {
-				hasMore = true
-				break kindLoop
+				return true
 			}
 		}
 	}
-	return selected, hasMore
+	return false
 }
 
 type scoreItem struct {

@@ -306,57 +306,70 @@ func renderItemsHTML(ctx context.Context, queries *db.Queries, uid string, kind 
 }
 
 func loadGroupedItems(ctx context.Context, queries *db.Queries, uid string, kind string, tags []string) (map[string][]views.ClosetItem, error) {
-	targetKinds := kindOrder
-	if kind != "" {
-		targetKinds = []string{kind}
-	}
-
-	tagJSON := tagsToJSON(tags)
-	groups := make(map[string][]views.ClosetItem, len(targetKinds))
+	targetKinds := determineTargetKinds(kind)
+	groups := initializeGroups(targetKinds)
 
 	if uid == "" {
-		for _, k := range targetKinds {
-			groups[k] = []views.ClosetItem{}
-		}
-		if kind == "" {
-			for _, k := range kindOrder {
-				if _, ok := groups[k]; !ok {
-					groups[k] = []views.ClosetItem{}
-				}
-			}
-		}
+		ensureAllKinds(groups, kind)
 		return groups, nil
 	}
 
+	tagJSON := tagsToJSON(tags)
 	for _, k := range targetKinds {
-		rows, err := queries.ListItems(ctx, db.ListItemsParams{
-			UserUid:    uid,
-			KindFilter: k,
-			TagJson:    tagJSON,
-			Offset:     0,
-			Limit:      int64(itemsPerKind),
-		})
+		items, err := fetchClosetItems(ctx, queries, uid, k, tagJSON)
 		if err != nil {
 			return nil, err
-		}
-
-		items := make([]views.ClosetItem, 0, len(rows))
-		for _, row := range rows {
-			item := views.NewClosetItem(row)
-			items = append(items, item)
 		}
 		groups[k] = items
 	}
 
+	ensureAllKinds(groups, kind)
+	return groups, nil
+}
+
+func determineTargetKinds(kind string) []string {
 	if kind == "" {
-		for _, k := range kindOrder {
-			if _, ok := groups[k]; !ok {
-				groups[k] = []views.ClosetItem{}
-			}
+		return kindOrder
+	}
+	return []string{kind}
+}
+
+func initializeGroups(kinds []string) map[string][]views.ClosetItem {
+	groups := make(map[string][]views.ClosetItem, len(kinds))
+	for _, k := range kinds {
+		groups[k] = []views.ClosetItem{}
+	}
+	return groups
+}
+
+func ensureAllKinds(groups map[string][]views.ClosetItem, requestedKind string) {
+	if requestedKind != "" {
+		return
+	}
+	for _, k := range kindOrder {
+		if _, ok := groups[k]; !ok {
+			groups[k] = []views.ClosetItem{}
 		}
 	}
+}
 
-	return groups, nil
+func fetchClosetItems(ctx context.Context, queries *db.Queries, uid, kind, tagJSON string) ([]views.ClosetItem, error) {
+	rows, err := queries.ListItems(ctx, db.ListItemsParams{
+		UserUid:    uid,
+		KindFilter: kind,
+		TagJson:    tagJSON,
+		Offset:     0,
+		Limit:      int64(itemsPerKind),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]views.ClosetItem, 0, len(rows))
+	for _, row := range rows {
+		items = append(items, views.NewClosetItem(row))
+	}
+	return items, nil
 }
 
 func buildMetadataTags(meta *services.ImageMetadata) []string {
@@ -561,40 +574,45 @@ func UpdateItem(c echo.Context) error {
 		return err
 	}
 
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	if err != nil || id <= 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, "잘못된 요청입니다.")
+	ctx := c.Request().Context()
+	id, row, err := fetchItemForUpdate(ctx, queries, uid, c.Param("id"))
+	if err != nil {
+		return err
 	}
 
-	ctx := c.Request().Context()
+	meta, mergedTags := parseUpdateItemForm(c)
+	if err := updateItemMetadataAndTags(ctx, id, uid, meta, mergedTags); err != nil {
+		return err
+	}
+
+	kind := strings.ToLower(row.Kind)
+	go services.EnqueueEmbeddingJob(id, uid, buildEmbeddingContext(kind, mergedTags, meta))
+
+	return c.NoContent(http.StatusNoContent)
+}
+
+func fetchItemForUpdate(ctx context.Context, queries *db.Queries, uid, rawID string) (int64, db.GetItemDetailRow, error) {
+	id, err := strconv.ParseInt(rawID, 10, 64)
+	if err != nil || id <= 0 {
+		return 0, db.GetItemDetailRow{}, echo.NewHTTPError(http.StatusBadRequest, "잘못된 요청입니다.")
+	}
+
 	row, err := queries.GetItemDetail(ctx, db.GetItemDetailParams{
 		ID:      id,
 		UserUid: uid,
 	})
 	if errors.Is(err, sql.ErrNoRows) {
-		return echo.NewHTTPError(http.StatusNotFound, "아이템을 찾지 못했어요.")
+		return 0, db.GetItemDetailRow{}, echo.NewHTTPError(http.StatusNotFound, "아이템을 찾지 못했어요.")
 	}
 	if err != nil {
-		return err
+		return 0, db.GetItemDetailRow{}, err
 	}
 
-	summary := strings.TrimSpace(c.FormValue("meta_summary"))
-	season := strings.TrimSpace(c.FormValue("meta_season"))
-	style := strings.TrimSpace(c.FormValue("meta_style"))
-	colors := parseTags(c.FormValue("meta_colors"))
-	tags := parseTags(c.FormValue("tags"))
+	return id, row, nil
+}
 
-	colorText := strings.Join(colors, ",")
-
-	meta := &services.ImageMetadata{
-		Summary: summary,
-		Season:  season,
-		Style:   style,
-		Colors:  colors,
-	}
-
-	mergedTags := mergeTags(tags, buildMetadataTags(meta)...)
-
+func updateItemMetadataAndTags(ctx context.Context, itemID int64, uid string, meta *services.ImageMetadata, tags []string) error {
+	colorText := strings.Join(meta.Colors, ",")
 	database, err := db.GetDB()
 	if err != nil {
 		return err
@@ -611,40 +629,22 @@ func UpdateItem(c echo.Context) error {
 	}()
 
 	qtx := db.New(tx)
-
 	if err := qtx.UpdateItemMetadata(ctx, db.UpdateItemMetadataParams{
-		MetaSummary: toNullString(summary),
-		MetaSeason:  toNullString(season),
-		MetaStyle:   toNullString(style),
+		MetaSummary: toNullString(meta.Summary),
+		MetaSeason:  toNullString(meta.Season),
+		MetaStyle:   toNullString(meta.Style),
 		MetaColors:  toNullString(colorText),
-		ID:          id,
+		ID:          itemID,
 		UserUid:     uid,
 	}); err != nil {
 		return err
 	}
 
-	if err := qtx.DeleteItemTags(ctx, id); err != nil {
+	if err := persistItemTags(ctx, qtx, itemID, tags); err != nil {
 		return err
 	}
 
-	for _, tag := range mergedTags {
-		tagID, tagErr := qtx.UpsertTag(ctx, tag)
-		if tagErr != nil {
-			return tagErr
-		}
-		if attachErr := qtx.AttachTag(ctx, db.AttachTagParams{ItemID: id, TagID: tagID}); attachErr != nil {
-			return attachErr
-		}
-	}
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	kind := strings.ToLower(row.Kind)
-	go services.EnqueueEmbeddingJob(id, uid, buildEmbeddingContext(kind, mergedTags, meta))
-
-	return c.NoContent(http.StatusNoContent)
+	return tx.Commit()
 }
 
 // RecommendOutfit은 날씨와 스타일 조건에 맞는 아이템을 추천한다.
@@ -701,6 +701,39 @@ func parseLockSelections(c echo.Context) map[string]int64 {
 	}
 	return locks
 }
+func parseUpdateItemForm(c echo.Context) (*services.ImageMetadata, []string) {
+	summary := strings.TrimSpace(c.FormValue("meta_summary"))
+	season := strings.TrimSpace(c.FormValue("meta_season"))
+	style := strings.TrimSpace(c.FormValue("meta_style"))
+	colors := parseTags(c.FormValue("meta_colors"))
+	tags := parseTags(c.FormValue("tags"))
+
+	meta := &services.ImageMetadata{
+		Summary: summary,
+		Season:  season,
+		Style:   style,
+		Colors:  colors,
+	}
+
+	return meta, mergeTags(tags, buildMetadataTags(meta)...)
+}
+
+func persistItemTags(ctx context.Context, qtx *db.Queries, itemID int64, tags []string) error {
+	if err := qtx.DeleteItemTags(ctx, itemID); err != nil {
+		return err
+	}
+
+	for _, tag := range tags {
+		tagID, err := qtx.UpsertTag(ctx, tag)
+		if err != nil {
+			return err
+		}
+		if err := qtx.AttachTag(ctx, db.AttachTagParams{ItemID: itemID, TagID: tagID}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 func readUploadedFile(fileHeader *multipart.FileHeader) ([]byte, string, error) {
 	src, err := fileHeader.Open()
 	if err != nil {
@@ -733,39 +766,57 @@ func readUploadedFile(fileHeader *multipart.FileHeader) ([]byte, string, error) 
 }
 
 func downloadImageFromURL(ctx context.Context, rawURL string) (string, string, []byte, error) {
-	parsed, err := url.Parse(rawURL)
-	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
-		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "올바른 이미지 URL을 입력해 주세요.")
-	}
-	if parsed.Scheme != "http" && parsed.Scheme != "https" {
-		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL은 http 또는 https만 허용돼요.")
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsed.String(), nil)
+	parsed, err := validateImageURL(rawURL)
 	if err != nil {
 		return "", "", nil, err
 	}
 
+	mimeType, data, err := fetchRemoteImageData(ctx, parsed)
+	if err != nil {
+		return "", "", nil, err
+	}
+
+	filename := sanitizeRemoteFilename(parsed)
+	return filename, mimeType, data, nil
+}
+
+func validateImageURL(rawURL string) (*url.URL, error) {
+	parsed, err := url.Parse(rawURL)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "올바른 이미지 URL을 입력해 주세요.")
+	}
+	if parsed.Scheme != "http" && parsed.Scheme != "https" {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL은 http 또는 https만 허용돼요.")
+	}
+	return parsed, nil
+}
+
+func fetchRemoteImageData(ctx context.Context, parsed *url.URL) (string, []byte, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsed.String(), nil)
+	if err != nil {
+		return "", nil, err
+	}
+
 	resp, err := remoteFetchClient.Do(req)
 	if err != nil {
-		return "", "", nil, echo.NewHTTPError(http.StatusBadGateway, "이미지 URL에 접근하지 못했어요.")
+		return "", nil, echo.NewHTTPError(http.StatusBadGateway, "이미지 URL에 접근하지 못했어요.")
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL 응답이 정상이 아니에요.")
+		return "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL 응답이 정상이 아니에요.")
 	}
 
 	limited := io.LimitReader(resp.Body, maxUploadSize+1)
 	data, err := io.ReadAll(limited)
 	if err != nil {
-		return "", "", nil, echo.NewHTTPError(http.StatusBadGateway, "이미지를 다운로드하지 못했어요.")
+		return "", nil, echo.NewHTTPError(http.StatusBadGateway, "이미지를 다운로드하지 못했어요.")
 	}
 	if len(data) == 0 {
-		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL에서 데이터를 찾지 못했어요.")
+		return "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL에서 데이터를 찾지 못했어요.")
 	}
 	if len(data) > maxUploadSize {
-		return "", "", nil, echo.NewHTTPError(http.StatusRequestEntityTooLarge, "이미지는 20MB 이하여야 해요.")
+		return "", nil, echo.NewHTTPError(http.StatusRequestEntityTooLarge, "이미지는 20MB 이하여야 해요.")
 	}
 
 	mimeType := resp.Header.Get("Content-Type")
@@ -774,12 +825,10 @@ func downloadImageFromURL(ctx context.Context, rawURL string) (string, string, [
 	}
 	mimeType = normalizeMimeType(mimeType)
 	if !strings.HasPrefix(mimeType, "image/") {
-		return "", "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL만 허용돼요.")
+		return "", nil, echo.NewHTTPError(http.StatusBadRequest, "이미지 URL만 허용돼요.")
 	}
 
-	filename := sanitizeRemoteFilename(parsed)
-
-	return filename, mimeType, data, nil
+	return mimeType, data, nil
 }
 
 func sanitizeRemoteFilename(u *url.URL) string {

@@ -36,14 +36,14 @@ func UpdateDiaryMood(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "일기를 먼저 작성해주세요.")
 	}
 
-    if err := queries.UpdateDiaryOfMood(c.Request().Context(), db.UpdateDiaryOfMoodParams{
-        ID:   diary.ID,
-        Mood: maputil.GetString(data, "mood", "0"),
-    }); err != nil {
-        return echo.NewHTTPError(http.StatusInternalServerError, "일기요정 저장 실패")
-    }
+	if err := queries.UpdateDiaryOfMood(c.Request().Context(), db.UpdateDiaryOfMoodParams{
+		ID:   diary.ID,
+		Mood: maputil.GetString(data, "mood", "0"),
+	}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "일기요정 저장 실패")
+	}
 
-    return c.NoContent(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }
 
 // diaryMood는 일기에서 기분 값을 추출한다.
