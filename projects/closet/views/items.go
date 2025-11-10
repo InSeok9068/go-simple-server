@@ -155,7 +155,7 @@ func itemCard(item ClosetItem) Node {
 		h.Swap("innerHTML"),
 		h.Trigger("click, keyup[key=='Enter']"),
 		Attr("hx-indicator", "#item-detail-loading"),
-		Attr("hx-on::before-request", "showModal('#item-detail-dialog')"),
+		Attr("hx-on::before-request", "showModal('#item-detail-dialog', true);"),
 		Attr("hx-on::after-request", "if(!event.detail.successful){ closeModal('#item-detail-dialog'); }"),
 		Div(
 			Img(

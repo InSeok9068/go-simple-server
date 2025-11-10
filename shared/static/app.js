@@ -189,12 +189,22 @@ function showError(msg, ms) {
   Alpine.store("snackbar").error(msg, ms);
 }
 
-function showModal(querySelector) {
-  document.querySelector(querySelector).showModal();
+function showModal(querySelector, isScrollTop = false) {
+  const modal = document.querySelector(querySelector);
+  modal?.showModal();
+
+  if (isScrollTop) {
+    modal.scrollTo({ top: 0, behavior: "auto" });
+  }
 }
 
-function closeModal(querySelector) {
-  document.querySelector(querySelector).close();
+function closeModal(querySelector, isScrollTop = false) {
+  const modal = document.querySelector(querySelector);
+  modal?.close();
+
+  if (isScrollTop) {
+    modal.scrollTo({ top: 0, behavior: "auto" });
+  }
 }
 
 function getCookie(name) {
