@@ -110,8 +110,8 @@ func itemCard(item ClosetItem) Node {
 			Img(
 				Src(item.ImageURL),
 				Alt(fmt.Sprintf("%s 이미지", item.KindLabel)),
-				Width("150"),
-				Height("150"),
+				Width("70"),
+				Height("70"),
 				Loading("lazy"),
 			),
 		),
