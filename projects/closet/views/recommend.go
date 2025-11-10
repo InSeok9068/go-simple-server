@@ -35,7 +35,7 @@ func RecommendationDialog(results []RecommendationItem, weather, style, cacheTok
 	}
 
 	body := []Node{
-		H3(Text("추천 결과")),
+		H5(Text("추천 결과")),
 	}
 
 	if len(results) == 0 {

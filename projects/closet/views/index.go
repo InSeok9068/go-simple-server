@@ -52,6 +52,7 @@ func Index(title string, groups map[string][]ClosetItem) Node {
 						Button(Class("button outline"), Attr("onclick", "document.getElementById('search-dialog').showModal()"), Text("내 옷장에서 찾기")),
 					),
 					recommendCard(),
+					Br(),
 					ItemsSection(groups),
 				),
 			),
@@ -65,7 +66,7 @@ func Index(title string, groups map[string][]ClosetItem) Node {
 func uploadDialog() Node {
 	return Dialog(ID("upload-dialog"), x.Data(""),
 		Div(Class("padding stack gap-sm"),
-			H3(Class("title"), Text("내 옷장에 추가")),
+			H5(Class("title"), Text("내 옷장에 추가")),
 			P(Class("caption"), Text("이미지와 태그를 입력하면 검색과 추천에 활용돼요.")),
 			Div(x.Show("$store.auth.isAuthed"),
 				Form(Class("stack gap-sm upload-form"), x.Data("{ mode: 'file', fileName: '' }"),
@@ -91,7 +92,7 @@ func uploadDialog() Node {
 							Input(Type("text"), Name("tags")),
 							Label(Text("태그")),
 						),
-						Small(Class("caption"), Text("콤마(,) 또는 줄바꿈으로 여러 태그를 입력해 주세요.")),
+						Small(Class("caption"), Text("콤마(,)로 여러 태그를 입력해 주세요.")),
 					),
 					Div(Class("stack gap-xxs"),
 						Span(Class("caption"), Text("이미지 입력 방식")),
@@ -152,7 +153,7 @@ func uploadDialog() Node {
 func searchDialog() Node {
 	return Dialog(ID("search-dialog"),
 		Div(Class("padding stack gap-sm"),
-			H3(Class("title"), Text("옷장 찾기")),
+			H5(Class("title"), Text("옷장 찾기")),
 			P(Class("caption"), Text("원하는 태그와 종류로 빠르게 찾아보세요.")),
 			Form(Class("stack gap-sm"),
 				h.Get("/items"),
@@ -188,10 +189,10 @@ func searchDialog() Node {
 }
 
 func recommendCard() Node {
-	return Article(Class("card"), x.Data(""),
-		Div(Class("padding stack gap-sm"),
-			H3(Class("title"), Text("AI 옷장 추천")),
-			P(Class("caption"), Text("날씨와 스타일을 입력하면 가장 비슷한 조합을 추천해 드려요.")),
+	return Article(Class("card padding"), x.Data(""),
+		Div(Class("stack gap-sm"),
+			H6(Class("title"), Text("AI 옷장 추천")),
+			Br(),
 			Div(x.Show("$store.auth.isAuthed"),
 				Form(Class("stack gap-sm"),
 					h.Post("/recommend"),

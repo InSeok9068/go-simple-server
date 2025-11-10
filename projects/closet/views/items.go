@@ -90,7 +90,7 @@ func itemGroup(kind string, items []ClosetItem) Node {
 
 	return Section(Class("stack gap-sm"),
 		Nav(Class("between align-center"),
-			H4(Class("title"), Text(title)),
+			H6(Class("title"), Text(title)),
 			Span(Class("caption muted"), Text(fmt.Sprintf("%d개", total))),
 		),
 		If(total == 0,
