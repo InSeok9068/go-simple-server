@@ -27,8 +27,9 @@ func (q *Queries) AttachTag(ctx context.Context, arg AttachTagParams) error {
 
 const deleteItem = `-- name: DeleteItem :exec
 DELETE FROM items
-WHERE id = ?1
-  AND user_uid = ?2
+WHERE
+    id = ?1
+    AND user_uid = ?2
 `
 
 type DeleteItemParams struct {
@@ -42,8 +43,7 @@ func (q *Queries) DeleteItem(ctx context.Context, arg DeleteItemParams) error {
 }
 
 const deleteItemTags = `-- name: DeleteItemTags :exec
-DELETE FROM item_tags
-WHERE item_id = ?
+DELETE FROM item_tags WHERE item_id = ?
 `
 
 func (q *Queries) DeleteItemTags(ctx context.Context, itemID int64) error {
@@ -54,8 +54,9 @@ func (q *Queries) DeleteItemTags(ctx context.Context, itemID int64) error {
 const getItemContent = `-- name: GetItemContent :one
 SELECT bytes, mime_type
 FROM items
-WHERE id = ?1
-  AND user_uid = ?2
+WHERE
+    id = ?1
+    AND user_uid = ?2
 `
 
 type GetItemContentParams struct {
@@ -76,24 +77,16 @@ func (q *Queries) GetItemContent(ctx context.Context, arg GetItemContentParams) 
 }
 
 const getItemDetail = `-- name: GetItemDetail :one
-SELECT
-    i.id,
-    i.kind,
-    i.filename,
-    i.width,
-    i.height,
-    i.created_at,
-    i.meta_summary,
-    i.meta_season,
-    i.meta_style,
-    i.meta_colors,
-    IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
-FROM items i
-LEFT JOIN item_tags it ON it.item_id = i.id
-LEFT JOIN tags t ON t.id = it.tag_id
-WHERE i.id = ?1
-  AND i.user_uid = ?2
-GROUP BY i.id
+SELECT i.id, i.kind, i.filename, i.width, i.height, i.created_at, i.meta_summary, i.meta_season, i.meta_style, i.meta_colors, IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
+FROM
+    items i
+    LEFT JOIN item_tags it ON it.item_id = i.id
+    LEFT JOIN tags t ON t.id = it.tag_id
+WHERE
+    i.id = ?1
+    AND i.user_uid = ?2
+GROUP BY
+    i.id
 `
 
 type GetItemDetailParams struct {
@@ -137,8 +130,9 @@ func (q *Queries) GetItemDetail(ctx context.Context, arg GetItemDetailParams) (G
 const getItemIDBySha = `-- name: GetItemIDBySha :one
 SELECT id
 FROM items
-WHERE user_uid = ?1
-  AND sha256 = ?2
+WHERE
+    user_uid = ?1
+    AND sha256 = ?2
 `
 
 type GetItemIDByShaParams struct {
@@ -173,22 +167,37 @@ func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
 }
 
 const insertItem = `-- name: InsertItem :one
-INSERT INTO items (
-    user_uid,
-    kind,
-    filename,
-    mime_type,
-    bytes,
-    thumb_bytes,
-    sha256,
-    width,
-    height,
-    meta_summary,
-    meta_season,
-    meta_style,
-    meta_colors
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-RETURNING id
+INSERT INTO
+    items (
+        user_uid,
+        kind,
+        filename,
+        mime_type,
+        bytes,
+        thumb_bytes,
+        sha256,
+        width,
+        height,
+        meta_summary,
+        meta_season,
+        meta_style,
+        meta_colors
+    )
+VALUES (
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?
+    ) RETURNING id
 `
 
 type InsertItemParams struct {
@@ -229,17 +238,11 @@ func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (int64, 
 }
 
 const listEmbeddingItems = `-- name: ListEmbeddingItems :many
-SELECT
-    i.id,
-    i.kind,
-    i.meta_season,
-    i.meta_style,
-    i.meta_colors,
-    e.dim,
-    e.vec_f32
+SELECT i.id, i.kind, i.meta_season, i.meta_style, i.meta_colors, e.dim, e.vec_f32
 FROM embeddings e
-JOIN items i ON i.id = e.item_id
-WHERE i.user_uid = ?1
+    JOIN items i ON i.id = e.item_id
+WHERE
+    i.user_uid = ?1
 `
 
 type ListEmbeddingItemsRow struct {
@@ -318,7 +321,7 @@ HAVING (
         WHEN json_array_length(?3) = 0 THEN 1
         ELSE json_array_length(?3)
     END
-ORDER BY i.created_at DESC
+ORDER BY RANDOM()
 LIMIT ?5
 OFFSET ?4
 `
@@ -342,6 +345,7 @@ type ListItemsRow struct {
 	Tags      interface{}
 }
 
+// ORDER BY i.created_at DESC
 func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListItemsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listItems,
 		arg.UserUid,
@@ -381,21 +385,16 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 }
 
 const listItemsByIDs = `-- name: ListItemsByIDs :many
-SELECT
-    i.id,
-    i.kind,
-    i.filename,
-    i.mime_type,
-    i.width,
-    i.height,
-    i.created_at,
-    IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
-FROM items i
-LEFT JOIN item_tags it ON it.item_id = i.id
-LEFT JOIN tags t ON t.id = it.tag_id
-WHERE i.user_uid = ?1
-  AND i.id IN (/*SLICE:ids*/?)
-GROUP BY i.id
+SELECT i.id, i.kind, i.filename, i.mime_type, i.width, i.height, i.created_at, IFNULL(GROUP_CONCAT(t.name, ','), '') AS tags
+FROM
+    items i
+    LEFT JOIN item_tags it ON it.item_id = i.id
+    LEFT JOIN tags t ON t.id = it.tag_id
+WHERE
+    i.user_uid = ?1
+    AND i.id IN (/*SLICE:ids*/?)
+GROUP BY
+    i.id
 `
 
 type ListItemsByIDsParams struct {
@@ -460,7 +459,8 @@ func (q *Queries) ListItemsByIDs(ctx context.Context, arg ListItemsByIDsParams) 
 const loadEmbeddingsByIDs = `-- name: LoadEmbeddingsByIDs :many
 SELECT e.item_id, e.dim, e.vec_f32
 FROM embeddings e
-WHERE e.item_id IN (/*SLICE:ids*/?)
+WHERE
+    e.item_id IN (/*SLICE:ids*/?)
 `
 
 type LoadEmbeddingsByIDsRow struct {
@@ -503,10 +503,13 @@ func (q *Queries) LoadEmbeddingsByIDs(ctx context.Context, ids []int64) ([]LoadE
 }
 
 const putEmbedding = `-- name: PutEmbedding :exec
-INSERT INTO embeddings (item_id, model, dim, vec_f32)
+INSERT INTO
+    embeddings (item_id, model, dim, vec_f32)
 VALUES (?, ?, ?, ?)
-ON CONFLICT(item_id) DO UPDATE
-SET model = excluded.model,
+ON CONFLICT (item_id) DO
+UPDATE
+SET
+    model = excluded.model,
     dim = excluded.dim,
     vec_f32 = excluded.vec_f32
 `
@@ -530,12 +533,14 @@ func (q *Queries) PutEmbedding(ctx context.Context, arg PutEmbeddingParams) erro
 
 const updateItemMetadata = `-- name: UpdateItemMetadata :exec
 UPDATE items
-SET meta_summary = ?,
+SET
+    meta_summary = ?,
     meta_season = ?,
     meta_style = ?,
     meta_colors = ?
-WHERE id = ?
-  AND user_uid = ?
+WHERE
+    id = ?
+    AND user_uid = ?
 `
 
 type UpdateItemMetadataParams struct {
@@ -560,9 +565,13 @@ func (q *Queries) UpdateItemMetadata(ctx context.Context, arg UpdateItemMetadata
 }
 
 const upsertTag = `-- name: UpsertTag :one
-INSERT INTO tags (name) VALUES (?)
-ON CONFLICT(name) DO UPDATE SET name = excluded.name
-RETURNING id
+INSERT INTO
+    tags (name)
+VALUES (?)
+ON CONFLICT (name) DO
+UPDATE
+SET
+    name = excluded.name RETURNING id
 `
 
 func (q *Queries) UpsertTag(ctx context.Context, name string) (int64, error) {
