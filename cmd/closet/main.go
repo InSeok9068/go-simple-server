@@ -101,7 +101,9 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
+	authGroup.GET("/items/:id/detail", handlers.GetItemDetail)
 	authGroup.POST("/items", handlers.UploadItem)
+	authGroup.PUT("/items/:id", handlers.UpdateItem)
 	authGroup.DELETE("/items/:id", handlers.DeleteItem)
 	authGroup.POST("/recommend", handlers.RecommendOutfit)
 	/* 권한 라우터 */

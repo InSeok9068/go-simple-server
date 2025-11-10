@@ -58,6 +58,7 @@ func Index(title string, groups map[string][]ClosetItem) Node {
 			),
 
 			uploadDialog(),
+			itemDetailDialog(),
 			searchDialog(),
 			RecommendDialogContainer(),
 		},
@@ -146,6 +147,24 @@ func uploadDialog() Node {
 				P(Class("caption"), Text("로그인해야 옷장을 만들 수 있어요.")),
 				A(Class("button"), Href("/login"), Text("로그인하기")),
 			),
+		),
+	)
+}
+
+func itemDetailDialog() Node {
+	return Dialog(Class("top"), ID("item-detail-dialog"), x.Data(""),
+		Div(
+			H5(Text("아이템 상세 정보")),
+			P(Class("caption"), Text("카드를 선택하면 자세한 정보를 볼 수 있어요.")),
+		),
+		Div(ID("item-detail-content"),
+			Div(Class("padding"),
+				P(Class("caption"), Text("아이템 카드를 눌러 상세 정보를 확인해 주세요.")),
+			),
+		),
+		Div(ID("item-detail-loading"), Class("padding center-align htmx-indicator"),
+			I(Class("icon"), Text("hourglass_empty")),
+			P(Class("caption"), Text("불러오는 중이에요...")),
 		),
 	)
 }

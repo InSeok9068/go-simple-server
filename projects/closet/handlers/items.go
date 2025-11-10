@@ -218,6 +218,44 @@ func ListItems(c echo.Context) error {
 	return c.HTML(http.StatusOK, html)
 }
 
+// GetItemDetail은 아이템 상세 정보를 반환한다.
+func GetItemDetail(c echo.Context) error {
+	queries, err := db.GetQueries()
+	if err != nil {
+		return err
+	}
+
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "잘못된 요청입니다.")
+	}
+
+	row, err := queries.GetItemDetail(c.Request().Context(), db.GetItemDetailParams{
+		ID:      id,
+		UserUid: uid,
+	})
+	if errors.Is(err, sql.ErrNoRows) {
+		return echo.NewHTTPError(http.StatusNotFound, "아이템을 찾지 못했어요.")
+	}
+	if err != nil {
+		return err
+	}
+
+	detail := views.NewClosetItemDetail(row)
+
+	var builder strings.Builder
+	if err := views.ItemDetailContent(detail).Render(&builder); err != nil {
+		return err
+	}
+
+	return c.HTML(http.StatusOK, builder.String())
+}
+
 // ItemImage는 아이템 이미지를 반환한다.
 func ItemImage(c echo.Context) error {
 	queries, err := db.GetQueries()
@@ -507,6 +545,104 @@ func DeleteItem(c echo.Context) error {
 	}); err != nil {
 		return err
 	}
+
+	return c.NoContent(http.StatusNoContent)
+}
+
+// UpdateItem은 아이템의 메타데이터와 태그를 수정한다.
+func UpdateItem(c echo.Context) error {
+	queries, err := db.GetQueries()
+	if err != nil {
+		return err
+	}
+
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "잘못된 요청입니다.")
+	}
+
+	ctx := c.Request().Context()
+	row, err := queries.GetItemDetail(ctx, db.GetItemDetailParams{
+		ID:      id,
+		UserUid: uid,
+	})
+	if errors.Is(err, sql.ErrNoRows) {
+		return echo.NewHTTPError(http.StatusNotFound, "아이템을 찾지 못했어요.")
+	}
+	if err != nil {
+		return err
+	}
+
+	summary := strings.TrimSpace(c.FormValue("meta_summary"))
+	season := strings.TrimSpace(c.FormValue("meta_season"))
+	style := strings.TrimSpace(c.FormValue("meta_style"))
+	colors := parseTags(c.FormValue("meta_colors"))
+	tags := parseTags(c.FormValue("tags"))
+
+	colorText := strings.Join(colors, ",")
+
+	meta := &services.ImageMetadata{
+		Summary: summary,
+		Season:  season,
+		Style:   style,
+		Colors:  colors,
+	}
+
+	mergedTags := mergeTags(tags, buildMetadataTags(meta)...)
+
+	database, err := db.GetDB()
+	if err != nil {
+		return err
+	}
+
+	tx, err := database.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil && !errors.Is(rollbackErr, sql.ErrTxDone) {
+			slog.Warn("트랜잭션 롤백 실패", "error", rollbackErr)
+		}
+	}()
+
+	qtx := db.New(tx)
+
+	if err := qtx.UpdateItemMetadata(ctx, db.UpdateItemMetadataParams{
+		MetaSummary: toNullString(summary),
+		MetaSeason:  toNullString(season),
+		MetaStyle:   toNullString(style),
+		MetaColors:  toNullString(colorText),
+		ID:          id,
+		UserUid:     uid,
+	}); err != nil {
+		return err
+	}
+
+	if err := qtx.DeleteItemTags(ctx, id); err != nil {
+		return err
+	}
+
+	for _, tag := range mergedTags {
+		tagID, tagErr := qtx.UpsertTag(ctx, tag)
+		if tagErr != nil {
+			return tagErr
+		}
+		if attachErr := qtx.AttachTag(ctx, db.AttachTagParams{ItemID: id, TagID: tagID}); attachErr != nil {
+			return attachErr
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	kind := strings.ToLower(row.Kind)
+	go services.EnqueueEmbeddingJob(id, uid, buildEmbeddingContext(kind, mergedTags, meta))
 
 	return c.NoContent(http.StatusNoContent)
 }
