@@ -1,6 +1,7 @@
 package shared
 
 import (
+	"bytes"
 	"simple-server/internal/config"
 	"simple-server/pkg/util/gomutil"
 	"strings"
@@ -145,4 +146,13 @@ func HeadHammer() []Node {
 		Script(Src("https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/hammer.min.js';")),
 	}
+}
+
+func HeadsGomponentsToHtml(heads []Node) string {
+	var buf bytes.Buffer
+	// 곰포넌츠 Node를 버퍼에 렌더링
+	for _, head := range heads {
+		_ = head.Render(&buf)
+	}
+	return buf.String()
 }

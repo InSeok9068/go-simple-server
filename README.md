@@ -130,8 +130,8 @@ go get modernc.org/sqlite
 ### 개발 도구 종속성 최신화
 
 ```shell
-#go install github.com/a-h/templ/cmd/templ@latest
 go install github.com/air-verse/air@latest
+go install github.com/a-h/templ/cmd/templ@latest
 go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 go install golang.org/x/vuln/cmd/govulncheck@latest

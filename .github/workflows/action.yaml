@@ -52,6 +52,12 @@ jobs:
         run: |
           tailwind/tailwindcss -i tailwind/tailwindcss.css -o shared/static/tailwindcss.css  --minify
 
+      # 7. 템플릿 컴포넌트 생성 (템플릿 설치 후 실행)
+      - name: Install Templates
+        run: |
+          sudo go install github.com/a-h/templ/cmd/templ@latest
+          templ generate
+
       # # 7. Lint 실행
       # - name: golangci-lint
       #   uses: golangci/golangci-lint-action@v6

@@ -28,6 +28,7 @@ modules=(
     "github.com/AlecAivazis/survey/v2@latest"
     "github.com/Blank-Xu/sql-adapter@latest"
     "github.com/XSAM/otelsql@latest"
+    "github.com/a-h/templ@latest"
     "github.com/casbin/casbin/v2@latest"
     "github.com/crazy-max/echo-ipfilter@latest"
     "github.com/doganarif/govisual@latest"
@@ -79,6 +80,7 @@ print_step "2. Go 도구 설치 중..."
 
 tools=(
     "github.com/air-verse/air@v1.62.0"
+    "github.com/a-h/templ/cmd/templ@latest"
     # "github.com/air-verse/air@latest"
     "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"
     "github.com/sqlc-dev/sqlc/cmd/sqlc@latest"
