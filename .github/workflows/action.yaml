@@ -56,7 +56,6 @@ jobs:
       - name: Install Templates
         run: |
           sudo go install github.com/a-h/templ/cmd/templ@latest
-          templ generate
 
       # # 7. Lint 실행
       # - name: golangci-lint
@@ -70,6 +69,7 @@ jobs:
           GOOS: linux
           GOARCH: amd64
         run: |
+          templ generate
           go build -ldflags "-s -w" -o ./${SERVICE_NAME} ./cmd/${SERVICE_NAME}
 
       # 9. 바이너리 압축
