@@ -27,7 +27,7 @@ func HeadsDefault(title string) []Node {
 		Script(Src("https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"), Defer(),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/cdn.min.js';")),
 		If(config.IsDevEnv(), Script(Text(`htmx.logAll();`), Defer())),
-		Title(title),
+		TitleEl(Text(title)),
 	}
 }
 
