@@ -281,10 +281,10 @@ func ensureRemoteReady(
 ) bool {
 	if err := pingOTel(ctx, tp, mp); err != nil {
 		slog.Error("OTel 원격 전송 핑 실패, 로컬로 폴백합니다", "error", err)
+		initLocalProviders(res)
 		for i := len(shutdowns) - 1; i >= 0; i-- {
 			_ = shutdowns[i](context.Background())
 		}
-		initLocalProviders(res)
 		return false
 	}
 
