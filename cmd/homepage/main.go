@@ -49,6 +49,10 @@ func setUpServer() *echo.Echo {
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)
 
+	// // Prometheus 미들웨어
+	// e.Use(echoprometheus.NewMiddleware("homepage"))
+	// e.GET("/metrics", echoprometheus.NewHandler())
+
 	/* 라우터  */
 	if err := middleware.RegisterCommonMiddleware(e); err != nil {
 		slog.Error("공통 미들웨어 등록 실패", "error", err)
