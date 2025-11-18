@@ -1,0 +1,26 @@
+
+package shared
+
+import "simple-server/pkg/util/gomutil"
+
+templ LoginTempl() {
+	<!DOCTYPE html>
+	<html lang="ko">
+		<head>
+			@templ.Raw(HeadsGomponentsToHtml(gomutil.MergeHeads(
+				HeadsDefault("로그인"),
+				HeadsCustom(),
+				HeadWithFirebaseLogin(),
+			)))
+		</head>
+		<body>
+			<main class="login-page">
+				<div id="firebaseui-auth-container"></div>
+				<div id="loader">
+					<img src="/shared/static/spinner.svg" alt="로딩"/>
+					<span>로딩 중...</span>
+				</div>
+			</main>
+		</body>
+	</html>
+}

@@ -1,0 +1,12 @@
+package shared
+
+templ SnackbarTempl() {
+	<div
+		x-data="$store.snackbar"
+		x-show="visible"
+		:class="`${type} ${visible ? 'active' : ''}`"
+		class="snackbar"
+	>
+		<span x-text="message"></span>
+	</div>
+}
