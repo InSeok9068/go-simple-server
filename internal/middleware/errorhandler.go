@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/labstack/echo/v4"
 )
@@ -34,12 +35,16 @@ func RegisterErrorHandler(e *echo.Echo) {
 			message = http.StatusText(code)
 		}
 
-		slog.ErrorContext(c.Request().Context(), "요청 처리 실패",
+		logArgs := []any{
 			"error", err,
 			"status", code,
 			"method", c.Request().Method,
 			"path", c.Path(),
-		)
+		}
+		if code >= http.StatusInternalServerError {
+			logArgs = append(logArgs, "stack", string(debug.Stack()))
+		}
+		slog.ErrorContext(c.Request().Context(), "요청 처리 실패", logArgs...)
 
 		if !c.Response().Committed {
 			if c.Request().Method == http.MethodHead {
