@@ -152,6 +152,9 @@ func HeadsGomponentsToHtml(heads []Node) string {
 	var buf bytes.Buffer
 	// 곰포넌츠 Node를 버퍼에 렌더링
 	for _, head := range heads {
+		if head == nil {
+			continue
+		}
 		_ = head.Render(&buf)
 	}
 	return buf.String()

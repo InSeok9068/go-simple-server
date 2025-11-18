@@ -50,7 +50,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 
 	// 1) 트레이싱: 가장 바깥에서 전체 구간을 감싸기
 	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
-		return isSkippedPath(c.Path()) || serviceName == "homepage"
+		return isSkippedPath(c.Path())
 	})))
 
 	// 2) 패닉 방지: 안쪽에서 회복해 트레이스에도 잡히게
