@@ -11,6 +11,7 @@ import (
 	"simple-server/internal/middleware"
 	"simple-server/projects/homepage/views"
 
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 )
 
@@ -49,9 +50,9 @@ func setUpServer() *echo.Echo {
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)
 
-	// // Prometheus 미들웨어
-	// e.Use(echoprometheus.NewMiddleware("homepage"))
-	// e.GET("/metrics", echoprometheus.NewHandler())
+	// Prometheus 미들웨어
+	e.Use(echoprometheus.NewMiddleware("homepage"))
+	e.GET("/metrics", echoprometheus.NewHandler())
 
 	/* 라우터  */
 	if err := middleware.RegisterCommonMiddleware(e); err != nil {
