@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"simple-server/internal/middleware"
 	"simple-server/projects/homepage/views"
 
-	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,8 +23,8 @@ func main() {
 
 	/* 로깅 및 트레이서 초기화 */
 	config.InitLoggerWithDatabase()
-	// config.InitTracer()
-	// defer config.ShutdownTracer(context.Background())
+	config.InitTracer()
+	defer config.ShutdownTracer(context.Background())
 	/* 로깅 및 트레이서 초기화 */
 
 	e := setUpServer()
@@ -48,10 +48,6 @@ func setUpServer() *echo.Echo {
 	// PWA 파일
 	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/homepage/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)
-
-	// Prometheus 미들웨어
-	e.Use(echoprometheus.NewMiddleware("homepage"))
-	e.GET("/metrics", echoprometheus.NewHandler())
 
 	/* 라우터  */
 	if err := middleware.RegisterCommonMiddleware(e); err != nil {
