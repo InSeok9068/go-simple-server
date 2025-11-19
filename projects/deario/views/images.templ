@@ -2,13 +2,10 @@ package views
 
 import "fmt"
 
-templ DiaryImages(date, img1, img2, img3 string) {
-        { urls := []string{img1, img2, img3} }
-        { hasImage := false }
+templ DiaryImages(date string, img1 string, img2 string, img3 string) {
         <nav class="row scroll" id="diary-image-content">
-                for i, u := range urls {
+                for i, u := range []string{img1, img2, img3} {
                         if u != "" {
-                                { hasImage = true }
                                 <div>
                                         <img src={ u } class="small-width small-height"/>
                                         <button
@@ -25,7 +22,7 @@ templ DiaryImages(date, img1, img2, img3 string) {
                                 </div>
                         }
                 }
-                if !hasImage {
+                if img1 == "" && img2 == "" && img3 == "" {
                         <p>이미지가 없습니다.</p>
                 }
         </nav>

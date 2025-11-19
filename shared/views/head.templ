@@ -20,8 +20,8 @@ templ HeadsDefaultTempl(title string) {
 	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/cdn.min.js';"></script>
 	<title>{ title }</title>
 	if config.IsDevEnv() {
-		<script defer> 
-			htmx.logAll(); 
+		<script defer>
+			htmx.logAll();
 		</script>
 	}
 }
@@ -33,32 +33,32 @@ templ HeadsCustomTempl() {
 }
 
 templ HeadsWithBulmaTempl(title string) {
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" onerror="this.onerror=null;this.href='shared/static/lib/bulma.min.css';"/>
 	@HeadsDefaultTempl(title)
 	@HeadsCustomTempl()
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" onerror="this.onerror=null;this.href='shared/static/lib/bulma.min.css';"/>
 }
 
 templ HeadsWithTailwindTempl(title string) {
+	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
 	@HeadsDefaultTempl(title)
 	@HeadsCustomTempl()
-	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
 }
 
 templ HeadsWithPicoAndTailwindTempl(title string) {
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
 	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.classless.min.css';"/>
 	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
 	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
 }
 
 templ HeadsWithBeerTempl(title string) {
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beercss@3.12.13/dist/cdn/beer.min.css" onerror="this.onerror=null;this.href='shared/static/lib/beer.min.css';"/>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.12.13/dist/cdn/beer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/beer.min.js';"></script>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js" onerror="this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';"></script>
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
 }
 
 templ HeadsWithFirebaseLoginTempl() {
@@ -76,8 +76,8 @@ templ HeadsWithFirebaseAuthTempl() {
 templ HeadsWithGoogleFontsTempl(font ...string) {
 	<link
 		rel="stylesheet"
-		href={ "https://fonts.googleapis.com/css2?family=" + 
-               strings.Join(font, "&family=") + 
+		href={ "https://fonts.googleapis.com/css2?family=" +
+               strings.Join(font, "&family=") +
                "&display=swap&subset=korean" }
 	/>
 }

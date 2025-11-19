@@ -1,300 +1,309 @@
 package views
 
 import (
-        "fmt"
-        "time"
+	"fmt"
+	"time"
 
-        "simple-server/pkg/util/dateutil"
-        "simple-server/projects/deario/views/layout"
-        shared "simple-server/shared/views"
+	"simple-server/pkg/util/dateutil"
+	"simple-server/projects/deario/views/layout"
+	shared "simple-server/shared/views"
 )
 
 templ Index(title string, date string, mood string) {
-        <!DOCTYPE html>
-        <html lang="ko">
-                <head>
-                        @shared.HeadsWithBeerTempl(title)
-                        @shared.HeadsWithFirebaseAuthTempl()
-                        @shared.HeadsWithGoogleFontsTempl("Gamja Flower")
-                        <meta name="description" content="AI 피드백 일기 서비스"/>
-                        <link rel="manifest" href="/manifest.json"/>
-                        <script src="/static/deario.js"></script>
-                        <script src="/static/calendar.js"></script>
-                        <script src="/static/voice.js"></script>
-                        <script type="module" src="/static/storage.js"></script>
-                </head>
-                <body>
-                        @shared.SnackbarTempl()
-                        @layout.AppHeader()
-                        <main id="diary-main">
-                                <nav>
-                                        <a id="prev-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1)) }>
-                                                <i>arrow_back_ios</i>
-                                        </a>
-                                        <a id="today-day" href={ fmt.Sprintf("/?date=%s", time.Now().Format("20060102")) }>
-                                                <button class="small-round small">Today</button>
-                                        </a>
-                                        <a id="next-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1)) }>
-                                                <i>arrow_forward_ios</i>
-                                        </a>
-                                        <button class="chip" data-ui="#calendar-dialog">
-                                                <i>calendar_month</i>
-                                                <span class="bold">{ DateView(date) }</span>
-                                        </button>
-                                        <div class="max"></div>
-                                        <i x-data="" x-text="$store.save.isOk ? 'check' : 'sync'"></i>
-                                </nav>
-                                <hr class="medium"/>
-                                <form hx-get="/diary" hx-target="#diary" hx-trigger="load" hx-swap="outerHTML">
-                                        <input type="hidden" name="date" value={ date }/>
-                                </form>
-                                @DiaryContentForm(date, "")
-                                <nav>
-                                        <p class="bold">하루의 기분을 아이콘으로 표현해주세요 ✅</p>
-                                </nav>
-                                <nav>
-                                        <div x-data={ fmt.Sprintf("{ mood: '%s' }", mood) }>
-                                                <form
-                                                        hx-post="/diary/mood"
-                                                        hx-swap="none"
-                                                        hx-on:htmx:after-on-load="if (event.detail.successful) showInfo('저장되었습니다.')"
-                                                >
-                                                        <input type="hidden" name="date" value={ date }/>
-                                                        <input type="hidden" name="mood" x-model="mood"/>
-                                                        <button class="chip circle" :class="mood === '1' ? 'primary' : ''" x-on:click="mood = '1'" type="button">
-                                                                <i>sentiment_very_satisfied</i>
-                                                        </button>
-                                                        <button class="chip circle" :class="mood === '2' ? 'primary' : ''" x-on:click="mood = '2'" type="button">
-                                                                <i>sentiment_satisfied</i>
-                                                        </button>
-                                                        <button class="chip circle" :class="mood === '3' ? 'primary' : ''" x-on:click="mood = '3'" type="button">
-                                                                <i>sentiment_neutral</i>
-                                                        </button>
-                                                        <button class="chip circle" :class="mood === '4' ? 'primary' : ''" x-on:click="mood = '4'" type="button">
-                                                                <i>sentiment_frustrated</i>
-                                                        </button>
-                                                        <button class="chip circle" :class="mood === '5' ? 'primary' : ''" x-on:click="mood = '5'" type="button">
-                                                                <i>sentiment_extremely_dissatisfied</i>
-                                                        </button>
-                                                </form>
-                                        </div>
-                                </nav>
-                                <nav>
-                                        <button class="chip" data-ui="#cbt-dialog">
-                                                <i>psychology_alt</i>
-                                                CBT
-                                        </button>
-                                        <button class="chip" data-ui="#diary-image-dialog">
-                                                <i>image</i>
-                                                이미지
-                                        </button>
-                                        <div class="max"></div>
-                                        <img id="feedback-loading" class="htmx-indicator" src="/shared/static/spinner.svg" alt="로딩"/>
-                                        <nav class="min active">
-                                                <button data-ui="#ai-feedback">
-                                                        <span>일기요정</span>
-                                                </button>
-                                                <menu class="top transparent no-wrap left right-align" id="ai-feedback" data-ui="#ai-feedback">
-                                                        @aiFeedbackButton("1", "칭찬받기")
-                                                        @aiFeedbackButton("2", "위로받기")
-                                                        @aiFeedbackButton("3", "충고받기")
-                                                        @aiFeedbackButton("4", "그림일기")
-                                                        <li hx-get={ "/ai-feedback?date=" + date } hx-target="#ai-feedback-content" hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()">
-                                                                <button class="fill">
-                                                                        <span>다시보기</span>
-                                                                </button>
-                                                        </li>
-                                                </menu>
-                                        </nav>
-                                </nav>
-                        </main>
-                        <nav class="bottom">
-                                <a href="#" data-ui="#calendar-dialog">
-                                        <i>calendar_month</i>
-                                        달력
-                                </a>
-                                <a href="#" data-ui="#diary-list-dialog">
-                                        <i>list_alt</i>
-                                        일지
-                                </a>
-                                <a href="/diary/random" hx-get="/diary/random">
-                                        <i>casino</i>
-                                        랜덤
-                                </a>
-                                <a href="#" data-ui="#menu-dialog">
-                                        <i>menu_open</i>
-                                        메뉴
-                                </a>
-                        </nav>
-                        <dialog id="cbt-dialog" class="max">
-                                <h5>CBT 인지행동치료</h5>
-                                <nav>
-                                        <a class="link" href="https://gemini.google.com/gem/3ddb44f68f79">Gemini CBT Gem으로 이동하기</a>
-                                </nav>
-                                <p class="bold">CBT 일기</p>
-                                <ul class="list no-space">
-                                        <li>
-                                                떠오른 생각: 오늘 나를 힘들게 한 자동적 사고를 적기<br/>
-                                                👉 발표 망쳤어 난 바보야
-                                        </li>
-                                        <li>
-                                                생각 검토: 그 생각이 진짜인지, 다른 관점은 없는지 묻기<br/>
-                                                👉 정말 다 망쳤나? 잘한 건 없어?
-                                        </li>
-                                        <li>
-                                                새로운 생각: 더 나은 방식으로 다르게 생각해보기<br/>
-                                                👉 아쉬운 점도 있었지만, 다음엔 더 잘할거야
-                                        </li>
-                                </ul>
-                                <hr/>
-                                <nav></nav>
-                                <p class="bold">대화 자기 점검</p>
-                                <ul class="list no-space">
-                                        <li>
-                                                감정 인정: 상대 감정을 충분히 받아줬는가<br/>
-                                                👉 많이 힘들었겠네
-                                        </li>
-                                        <li>
-                                                숨은 의도: 말 뒤의 감정/의도를 추측했는가<br/>
-                                                👉 혹시 피곤해서 예민한 건가?
-                                        </li>
-                                        <li>
-                                                판단/변명: 내 스스로 판단하거나 변명하지 않았는가<br/>
-                                                👉 네가 서운했겠네. 미안해 (변명 X)
-                                        </li>
-                                </ul>
-                                <nav class="right-align">
-                                        <button data-ui="#cbt-dialog">닫기</button>
-                                </nav>
-                        </dialog>
-                        <dialog id="ai-feedback-dialog" class="max">
-                                <h5>일기 요정</h5>
-                                <form>
-                                        <input type="hidden" name="date" value={ date }/>
-                                        <div id="ai-feedback-content">안녕</div>
-                                        <nav class="right-align">
-                                                <button
-                                                        class="border"
-                                                        hx-post="/ai-feedback/save?"
-                                                        hx-swap="none"
-                                                        hx-on:htmx:after-on-load="if (event.detail.successful) closeModal('#ai-feedback-dialog'); showInfo('저장 되었습니다.')"
-                                                >
-                                                        <i>save</i>
-                                                        <span>저장</span>
-                                                </button>
-                                                <button type="button" onclick="closeModal('#ai-feedback-dialog')">닫기</button>
-                                        </nav>
-                                </form>
-                        </dialog>
-                        <dialog id="calendar-dialog" class="bottom">
-                                <h5>달력</h5>
-                                <div class="space"></div>
-                                <div id="calendar-picker"></div>
-                                <nav class="right-align">
-                                        <button data-ui="#calendar-dialog">닫기</button>
-                                </nav>
-                        </dialog>
-                        <dialog id="diary-image-dialog" class="bottom">
-                                <h5>이미지</h5>
-                                <div hx-get={ fmt.Sprintf("/diary/images?date=%s", date) } hx-trigger="load"></div>
-                                <div class="space"></div>
-                                <button>
-                                        <i>attach_file</i>
-                                        File
-                                        <input type="file" accept="image/*" id="diary-image-file" onchange="previewDiaryImage(this)"/>
-                                </button>
-                                <nav class="right-align">
-                                        <img id="diary-image-loading" src="/shared/static/spinner.svg" style="display:none" alt="로딩"/>
-                                        <button type="button" onclick={ fmt.Sprintf("uploadDiaryImage('%s')", date) }>업로드</button>
-                                </nav>
-                                <nav class="right-align">
-                                        <button data-ui="#diary-image-dialog">닫기</button>
-                                </nav>
-                        </dialog>
-                        <dialog id="diary-list-dialog" class="max">
-                                <h5>작성 일지</h5>
-                                <ul id="diary-list-content" class="list border"></ul>
-                                <div x-data="{ page : 1 }">
-                                        <nav class="center-align">
-                                                <button
-                                                        hx-get="/diary/list"
-                                                        hx-target="#diary-list-content"
-                                                        hx-trigger="load delay:0.5s, click"
-                                                        hx-swap="beforeend"
-                                                        @click="page++"
-                                                        :hx-vals="JSON.stringify({ page: page })"
-                                                >
-                                                        <i>arrow_drop_down</i>
-                                                </button>
-                                        </nav>
-                                        <nav class="right-align">
-                                                <button data-ui="#diary-list-dialog">닫기</button>
-                                        </nav>
-                                </div>
-                        </dialog>
-                        <dialog id="menu-dialog" class="right">
-                                <h5>메뉴</h5>
-                                <ul class="list">
-                                        <li class="wave round">
-                                                <a href="/statistic">
-                                                        <i>monitoring</i>
-                                                        통계
-                                                </a>
-                                        </li>
-                                        <li class="wave round">
-                                                <a href="/setting">
-                                                        <i>settings</i>
-                                                        설정
-                                                </a>
-                                        </li>
-                                        <li class="wave round">
-                                                <a href="/privacy">
-                                                        <i>admin_panel_settings</i>
-                                                        개인정보 처리방침
-                                                </a>
-                                        </li>
-                                </ul>
-                                <nav class="right-align">
-                                        <button data-ui="#menu-dialog">닫기</button>
-                                </nav>
-                        </dialog>
-                </body>
-        </html>
+	<!DOCTYPE html>
+	<html lang="ko">
+		<head>
+			@shared.HeadsWithBeerTempl(title)
+			@shared.HeadsWithFirebaseAuthTempl()
+			@shared.HeadsWithGoogleFontsTempl("Gamja Flower")
+			@shared.HeadsWithFlatpickrTempl()
+			@shared.HeadsWithMarkedTempl()
+			@shared.HeadsWithHammerTempl()
+			<meta name="description" content="AI 피드백 일기 서비스"/>
+			<link rel="manifest" href="/manifest.json"/>
+			<script src="/static/deario.js"></script>
+			<script src="/static/calendar.js"></script>
+			<script src="/static/voice.js"></script>
+			<script type="module" src="/static/storage.js"></script>
+		</head>
+		<body>
+			@shared.SnackbarTempl()
+			@layout.AppHeader()
+			<main id="diary-main">
+				<nav>
+					<a id="prev-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1)) }>
+						<i>arrow_back_ios</i>
+					</a>
+					<a id="today-day" href={ fmt.Sprintf("/?date=%s", time.Now().Format("20060102")) }>
+						<button class="small-round small">Today</button>
+					</a>
+					<a id="next-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1)) }>
+						<i>arrow_forward_ios</i>
+					</a>
+					<button class="chip" data-ui="#calendar-dialog">
+						<i>calendar_month</i>
+						<span class="bold">{ DateView(date) }</span>
+					</button>
+					<div class="max"></div>
+					<i x-data="" x-text="$store.save.isOk ? 'check' : 'sync'"></i>
+				</nav>
+				<hr class="medium"/>
+				<form hx-get="/diary" hx-target="#diary" hx-trigger="load" hx-swap="outerHTML">
+					<input type="hidden" name="date" value={ date }/>
+				</form>
+				@DiaryContentForm(date, "")
+				<nav>
+					<p class="bold">하루의 기분을 아이콘으로 표현해주세요 ✅</p>
+				</nav>
+				<nav>
+					<div x-data={ fmt.Sprintf("{ mood: '%s' }", mood) }>
+						<form
+							hx-post="/diary/mood"
+							hx-swap="none"
+							hx-on:htmx:after-on-load="if (event.detail.successful) showInfo('저장되었습니다.')"
+						>
+							<input type="hidden" name="date" value={ date }/>
+							<input type="hidden" name="mood" x-model="mood"/>
+							<button class="chip circle" :class="mood === '1' ? 'primary' : ''" x-on:click="mood = '1'">
+								<i>sentiment_very_satisfied</i>
+							</button>
+							<button class="chip circle" :class="mood === '2' ? 'primary' : ''" x-on:click="mood = '2'">
+								<i>sentiment_satisfied</i>
+							</button>
+							<button class="chip circle" :class="mood === '3' ? 'primary' : ''" x-on:click="mood = '3'">
+								<i>sentiment_neutral</i>
+							</button>
+							<button class="chip circle" :class="mood === '4' ? 'primary' : ''" x-on:click="mood = '4'">
+								<i>sentiment_frustrated</i>
+							</button>
+							<button class="chip circle" :class="mood === '5' ? 'primary' : ''" x-on:click="mood = '5'">
+								<i>sentiment_extremely_dissatisfied</i>
+							</button>
+						</form>
+					</div>
+				</nav>
+				<nav>
+					<button class="chip" data-ui="#cbt-dialog">
+						<i>psychology_alt</i>
+						CBT
+					</button>
+					<button class="chip" data-ui="#diary-image-dialog">
+						<i>image</i>
+						이미지
+					</button>
+					<div class="max"></div>
+					<img id="feedback-loading" class="htmx-indicator" src="/shared/static/spinner.svg" alt="로딩"/>
+					<nav class="min active">
+						<button data-ui="#ai-feedback">
+							<span>일기요정</span>
+						</button>
+						<menu class="top transparent no-wrap left right-align" id="ai-feedback" data-ui="#ai-feedback">
+							@aiFeedbackButton("1", "칭찬받기")
+							@aiFeedbackButton("2", "위로받기")
+							@aiFeedbackButton("3", "충고받기")
+							@aiFeedbackButton("4", "그림일기")
+							<li hx-get={ "/ai-feedback?date=" + date } hx-target="#ai-feedback-content" hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()">
+								<button class="fill">
+									<span>다시보기</span>
+								</button>
+							</li>
+						</menu>
+					</nav>
+				</nav>
+			</main>
+			<nav class="bottom">
+				<a href="#" data-ui="#calendar-dialog">
+					<i>calendar_month</i>
+					달력
+				</a>
+				<a href="#" data-ui="#diary-list-dialog">
+					<i>list_alt</i>
+					일지
+				</a>
+				<a href="/diary/random" hx-get="/diary/random">
+					<i>casino</i>
+					랜덤
+				</a>
+				<a href="#" data-ui="#menu-dialog">
+					<i>menu_open</i>
+					메뉴
+				</a>
+			</nav>
+			<dialog id="cbt-dialog" class="max">
+				<h5>CBT 인지행동치료</h5>
+				<nav>
+					<a class="link" href="https://gemini.google.com/gem/3ddb44f68f79">Gemini CBT Gem으로 이동하기</a>
+				</nav>
+				<p class="bold">CBT 일기</p>
+				<ul class="list no-space">
+					<li>
+						떠오른 생각: 오늘 나를 힘들게 한 자동적 사고를 적기
+						<br/>
+						👉 발표 망쳤어 난 바보야
+					</li>
+					<li>
+						생각 검토: 그 생각이 진짜인지, 다른 관점은 없는지 묻기
+						<br/>
+						👉 정말 다 망쳤나? 잘한 건 없어?
+					</li>
+					<li>
+						새로운 생각: 더 나은 방식으로 다르게 생각해보기
+						<br/>
+						👉 아쉬운 점도 있었지만, 다음엔 더 잘할거야
+					</li>
+				</ul>
+				<hr/>
+				<nav></nav>
+				<p class="bold">대화 자기 점검</p>
+				<ul class="list no-space">
+					<li>
+						감정 인정: 상대 감정을 충분히 받아줬는가
+						<br/>
+						👉 많이 힘들었겠네
+					</li>
+					<li>
+						숨은 의도: 말 뒤의 감정/의도를 추측했는가
+						<br/>
+						👉 혹시 피곤해서 예민한 건가?
+					</li>
+					<li>
+						판단/변명: 내 스스로 판단하거나 변명하지 않았는가
+						<br/>
+						👉 네가 서운했겠네. 미안해 (변명 X)
+					</li>
+				</ul>
+				<nav class="right-align">
+					<button data-ui="#cbt-dialog">닫기</button>
+				</nav>
+			</dialog>
+			<dialog id="ai-feedback-dialog" class="max">
+				<h5>일기 요정</h5>
+				<form>
+					<input type="hidden" name="date" value={ date }/>
+					<div id="ai-feedback-content">안녕</div>
+					<nav class="right-align">
+						<button
+							class="border"
+							hx-post="/ai-feedback/save?"
+							hx-swap="none"
+							hx-on:htmx:after-on-load="if (event.detail.successful) closeModal('#ai-feedback-dialog'); showInfo('저장 되었습니다.')"
+						>
+							<i>save</i>
+							<span>저장</span>
+						</button>
+						<button type="button" onclick="closeModal('#ai-feedback-dialog')">닫기</button>
+					</nav>
+				</form>
+			</dialog>
+			<dialog id="calendar-dialog" class="bottom">
+				<h5>달력</h5>
+				<div class="space"></div>
+				<div id="calendar-picker"></div>
+				<nav class="right-align">
+					<button data-ui="#calendar-dialog">닫기</button>
+				</nav>
+			</dialog>
+			<dialog id="diary-image-dialog" class="bottom">
+				<h5>이미지</h5>
+				<div hx-get={ fmt.Sprintf("/diary/images?date=%s", date) } hx-trigger="load"></div>
+				<div class="space"></div>
+				<button>
+					<i>attach_file</i>
+					File
+					<input type="file" accept="image/*" id="diary-image-file" onchange="previewDiaryImage(this)"/>
+				</button>
+				<nav class="right-align">
+					<img id="diary-image-loading" src="/shared/static/spinner.svg" style="display:none" alt="로딩"/>
+					<button type="button" onclick={ templ.JSFuncCall("uploadDiaryImage", date) }>업로드</button>
+				</nav>
+				<nav class="right-align">
+					<button data-ui="#diary-image-dialog">닫기</button>
+				</nav>
+			</dialog>
+			<dialog id="diary-list-dialog" class="max">
+				<h5>작성 일지</h5>
+				<ul id="diary-list-content" class="list border"></ul>
+				<div x-data="{ page : 1 }">
+					<nav class="center-align">
+						<button
+							hx-get="/diary/list"
+							hx-target="#diary-list-content"
+							hx-trigger="load delay:0.5s, click"
+							hx-swap="beforeend"
+							@click="page++"
+							:hx-vals="JSON.stringify({ page: page })"
+						>
+							<i>arrow_drop_down</i>
+						</button>
+					</nav>
+					<nav class="right-align">
+						<button data-ui="#diary-list-dialog">닫기</button>
+					</nav>
+				</div>
+			</dialog>
+			<dialog id="menu-dialog" class="right">
+				<h5>메뉴</h5>
+				<ul class="list">
+					<li class="wave round">
+						<a href="/statistic">
+							<i>monitoring</i>
+							통계
+						</a>
+					</li>
+					<li class="wave round">
+						<a href="/setting">
+							<i>settings</i>
+							설정
+						</a>
+					</li>
+					<li class="wave round">
+						<a href="/privacy">
+							<i>admin_panel_settings</i>
+							개인정보 처리방침
+						</a>
+					</li>
+				</ul>
+				<nav class="right-align">
+					<button data-ui="#menu-dialog">닫기</button>
+				</nav>
+			</dialog>
+		</body>
+	</html>
 }
 
 templ DiaryContentForm(date string, content string) {
-        <form id="diary">
-                <input type="hidden" name="date" value={ date }/>
-                <div class="field textarea border u-fit-h-18rem">
-                        <textarea
-                                name="content"
-                                autofocus
-                                x-data=""
-                                hx-post="/diary/save"
-                                hx-swap="none"
-                                hx-trigger="input delay:0.5s"
-                                @input="$store.save.unok()"
-                                @htmx:after-request="$store.save.ok()"
-                                aria-label="일기 내용"
-                                placeholder="오늘의 일기를 입력하세요"
-                        >{ content }</textarea>
-                </div>
-                <button type="button" class="chip circle microphone" onclick="toggleRecord(this)">
-                        <i>mic</i>
-                </button>
-        </form>
+	<form id="diary">
+		<input type="hidden" name="date" value={ date }/>
+		<div class="field textarea border u-fit-h‑18rem">
+			<textarea
+				name="content"
+				autofocus
+				x-data=""
+				hx-post="/diary/save"
+				hx-swap="none"
+				hx-trigger="input delay:0.5s"
+				@input="$store.save.unok()"
+				@htmx:after-request="$store.save.ok()"
+				aria-label="일기 내용"
+				placeholder="오늘의 일기를 입력하세요"
+			>{ content }</textarea>
+		</div>
+		<button type="button" class="chip circle microphone" onclick="toggleRecord(this)">
+			<i>mic</i>
+		</button>
+	</form>
 }
 
 templ aiFeedbackButton(strType string, title string) {
-        <li
-                hx-post={ fmt.Sprintf("/ai-feedback?type=%s", strType) }
-                hx-include="[name='content']"
-                hx-target="#ai-feedback-content"
-                hx-indicator="#feedback-loading"
-                hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()"
-        >
-                <button class="fill">
-                        <span>{ title }</span>
-                </button>
-        </li>
+	<li
+		hx-post={ fmt.Sprintf("/ai-feedback?type=%s", strType) }
+		hx-include="[name='content']"
+		hx-target="#ai-feedback-content"
+		hx-indicator="#feedback-loading"
+		hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()"
+	>
+		<button class="fill">
+			<span>{ title }</span>
+		</button>
+	</li>
 }
