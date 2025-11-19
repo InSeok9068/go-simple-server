@@ -675,8 +675,11 @@ func RecommendOutfit(c echo.Context) error {
 		})
 	}
 
+	rows := views.BuildRecommendationRows(viewResults)
+	hasResults := len(viewResults) > 0
+
 	var builder strings.Builder
-	if err := views.RecommendationDialog(viewResults, weather, style, cacheToken, hasMore, locks).Render(c.Request().Context(), &builder); err != nil {
+	if err := views.RecommendationDialog(rows, weather, style, cacheToken, hasMore, locks, hasResults).Render(c.Request().Context(), &builder); err != nil {
 		return err
 	}
 	return c.HTML(http.StatusOK, builder.String())
