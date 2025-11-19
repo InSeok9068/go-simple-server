@@ -1,0 +1,289 @@
+package views
+
+import (
+	"database/sql"
+	"fmt"
+	"sort"
+	"strings"
+	"time"
+
+	"simple-server/projects/closet/db"
+)
+
+var kindLabels = map[string]string{
+	"top":       "상의",
+	"bottom":    "하의",
+	"shoes":     "신발",
+	"accessory": "액세서리",
+}
+
+// ClosetItem은 화면에서 표시할 아이템 정보를 담는다.
+type ClosetItem struct {
+	ID           int64
+	Kind         string
+	KindLabel    string
+	Tags         []string
+	TagLine      string
+	Filename     string
+	CreatedAt    time.Time
+	CreatedLabel string
+	Dimension    string
+	ImageURL     string
+}
+
+type ClosetItemDetail struct {
+	ClosetItem
+	MetaSummary     string
+	MetaSeason      string
+	MetaStyle       string
+	MetaColors      []string
+	MetaColorsValue string
+	TagsValue       string
+}
+
+// NewClosetItem은 DB 조회 결과를 뷰 모델로 변환한다.
+func NewClosetItem(row db.ListItemsRow) ClosetItem {
+	tags := extractTags(row.Tags)
+	created := time.Unix(row.CreatedAt, 0)
+
+	return ClosetItem{
+		ID:           row.ID,
+		Kind:         strings.ToLower(row.Kind),
+		KindLabel:    KindLabel(row.Kind),
+		Tags:         tags,
+		TagLine:      formatTagLine(tags),
+		Filename:     row.Filename,
+		CreatedAt:    created,
+		CreatedLabel: created.Local().Format("2006.01.02 15:04"),
+		Dimension:    formatDimension(row.Width, row.Height),
+		ImageURL:     fmt.Sprintf("/items/%d/image", row.ID),
+	}
+}
+
+// NewClosetItemDetail은 상세 보기용 데이터를 구성한다.
+func NewClosetItemDetail(row db.GetItemDetailRow) ClosetItemDetail {
+	tags := extractTags(row.Tags)
+	created := time.Unix(row.CreatedAt, 0)
+
+	base := ClosetItem{
+		ID:           row.ID,
+		Kind:         strings.ToLower(row.Kind),
+		KindLabel:    KindLabel(row.Kind),
+		Tags:         tags,
+		TagLine:      formatTagLine(tags),
+		Filename:     row.Filename,
+		CreatedAt:    created,
+		CreatedLabel: created.Local().Format("2006.01.02 15:04"),
+		Dimension:    formatDimension(row.Width, row.Height),
+		ImageURL:     fmt.Sprintf("/items/%d/image", row.ID),
+	}
+
+	colors := extractTags(nullStringValue(row.MetaColors))
+
+	return ClosetItemDetail{
+		ClosetItem:      base,
+		MetaSummary:     nullStringValue(row.MetaSummary),
+		MetaSeason:      nullStringValue(row.MetaSeason),
+		MetaStyle:       nullStringValue(row.MetaStyle),
+		MetaColors:      colors,
+		MetaColorsValue: strings.Join(colors, ", "),
+		TagsValue:       strings.Join(tags, ", "),
+	}
+}
+
+// KindLabel은 kind 코드에 대응하는 한글 라벨을 반환한다.
+func KindLabel(kind string) string {
+	label, ok := kindLabels[strings.ToLower(kind)]
+	if ok {
+		return label
+	}
+	return "기타"
+}
+
+func extractTags(raw interface{}) []string {
+	var text string
+	switch v := raw.(type) {
+	case string:
+		text = v
+	case []byte:
+		text = string(v)
+	default:
+		return nil
+	}
+	if strings.TrimSpace(text) == "" {
+		return nil
+	}
+	parts := strings.Split(text, ",")
+	tags := make([]string, 0, len(parts))
+	seen := make(map[string]struct{}, len(parts))
+	for _, part := range parts {
+		tag := strings.TrimSpace(part)
+		if tag == "" {
+			continue
+		}
+		if _, ok := seen[tag]; ok {
+			continue
+		}
+		seen[tag] = struct{}{}
+		tags = append(tags, tag)
+	}
+	return tags
+}
+
+func formatTagLine(tags []string) string {
+	if len(tags) == 0 {
+		return ""
+	}
+	sorted := make([]string, len(tags))
+	copy(sorted, tags)
+	sort.Strings(sorted)
+	return "#" + strings.Join(sorted, " #")
+}
+
+func formatDimension(width sql.NullInt64, height sql.NullInt64) string {
+	if !width.Valid || !height.Valid {
+		return ""
+	}
+	return fmt.Sprintf("%dx%d", width.Int64, height.Int64)
+}
+
+func nullStringValue(v sql.NullString) string {
+	if !v.Valid {
+		return ""
+	}
+	return strings.TrimSpace(v.String)
+}
+
+templ ItemsSection(groups map[string][]ClosetItem) {
+        order := []string{"top", "bottom", "shoes", "accessory"}
+        <div id="items-list">
+                for _, kind := range order {
+                        items, ok := groups[kind]
+                        if !ok {
+                                continue
+                        }
+                        @itemGroup(kind, items)
+                }
+        </div>
+}
+
+templ itemGroup(kind string, items []ClosetItem) {
+        total := len(items)
+        <section>
+                <nav>
+                        <h6>{ KindLabel(kind) }</h6>
+                        <span class="caption">{ fmt.Sprintf("%d개", total) }</span>
+                </nav>
+                if total == 0 {
+                        <div class="surface-container">
+                                <p class="caption">조건에 맞는 아이템이 아직 없어요.</p>
+                        </div>
+                }
+                if total > 0 {
+                        <div class="row scroll">
+                                for _, item := range items {
+                                        @itemCard(item)
+                                }
+                        </div>
+                }
+        </section>
+}
+
+templ itemCard(item ClosetItem) {
+        <article
+                class="border small-padding"
+                role="button"
+                tabindex="0"
+                aria-label={ fmt.Sprintf("%s 상세 보기", item.KindLabel) }
+                hx-get={ fmt.Sprintf("/items/%d/detail", item.ID) }
+                hx-target="#item-detail-content"
+                hx-swap="innerHTML"
+                hx-trigger="click, keyup[key=='Enter']"
+                hx-indicator="#item-detail-loading"
+                hx-on::before-request="showModal('#item-detail-dialog', true);"
+                hx-on::after-request="if(!event.detail.successful){ closeModal('#item-detail-dialog'); }"
+        >
+                <div>
+                        <img
+                                src={ item.ImageURL }
+                                alt={ fmt.Sprintf("%s 이미지", item.KindLabel) }
+                                width="70"
+                                height="70"
+                                loading="lazy"
+                        />
+                </div>
+                <div
+                        class="closet-card__delete"
+                        x-show="$store.auth.isAuthed"
+                        onclick="event.stopPropagation();"
+                        hx-delete={ fmt.Sprintf("/items/%d", item.ID) }
+                        hx-target="closest article"
+                        hx-confirm="정말 삭제할까요?"
+                        hx-on::after-request="if(event.detail.successful){ this.closest('article').remove(); showInfo('아이템을 삭제했어요.'); }"
+                >
+                        X
+                </div>
+        </article>
+}
+
+templ ItemDetailContent(item ClosetItemDetail) {
+        <div>
+                <div class="padding center-align">
+                        <img
+                                src={ item.ImageURL }
+                                alt={ fmt.Sprintf("%s 확대 이미지", item.KindLabel) }
+                                width="220"
+                                loading="lazy"
+                        />
+                        <div>
+                                <h5>{ fmt.Sprintf("%s 상세 정보", item.KindLabel) }</h5>
+                                <p class="caption">{ fmt.Sprintf("파일명: %s", item.Filename) }</p>
+                                if item.Dimension != "" {
+                                        <p class="caption">{ fmt.Sprintf("이미지 크기: %s", item.Dimension) }</p>
+                                }
+                                if item.CreatedLabel != "" {
+                                        <p class="caption">{ fmt.Sprintf("업로드: %s", item.CreatedLabel) }</p>
+                                }
+                                if item.TagLine != "" {
+                                        <p class="caption">{ item.TagLine }</p>
+                                }
+                        </div>
+                </div>
+                <div class="padding">
+                        <form
+                                hx-put={ fmt.Sprintf("/items/%d", item.ID) }
+                                hx-indicator="#item-detail-loading"
+                                hx-on::after-request="if(event.detail.successful){ closeModal('#item-detail-dialog'); showInfo('아이템 정보를 업데이트했어요. 임베딩을 다시 준비합니다.'); }"
+                                hx-on:htmx:response-error="showError(event.detail.xhr.responseText || '업데이트에 실패했어요. 다시 시도해 주세요.');"
+                        >
+                                <div class="field textarea label border">
+                                        <textarea name="meta_summary" rows="1">{ item.MetaSummary }</textarea>
+                                        <label>요약</label>
+                                        <span class="helper">간단한 설명을 작성해 주세요.</span>
+                                </div>
+                                <div class="field label border">
+                                        <input type="text" name="meta_season" value={ item.MetaSeason }/>
+                                        <label>계절</label>
+                                </div>
+                                <div class="field label border">
+                                        <input type="text" name="meta_style" value={ item.MetaStyle }/>
+                                        <label>스타일</label>
+                                </div>
+                                <div class="field label border">
+                                        <input type="text" name="meta_colors" value={ item.MetaColorsValue }/>
+                                        <label>색상</label>
+                                        <span class="helper">콤마(,)로 여러 색상을 입력할 수 있어요.</span>
+                                </div>
+                                <div class="field textarea label border">
+                                        <textarea name="tags" rows="3">{ item.TagsValue }</textarea>
+                                        <label>태그</label>
+                                        <span class="helper">콤마(,)나 줄바꿈으로 여러 태그를 입력할 수 있어요.</span>
+                                </div>
+                                <div class="row">
+                                        <button class="button" type="submit">저장</button>
+                                        <button class="button border" type="button" onclick="closeModal('#item-detail-dialog')">닫기</button>
+                                </div>
+                        </form>
+                </div>
+        </div>
+}

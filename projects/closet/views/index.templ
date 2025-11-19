@@ -1,0 +1,243 @@
+package views
+
+import (
+    shared "simple-server/shared/views"
+)
+
+templ Index(title string, groups map[string][]ClosetItem) {
+    <!DOCTYPE html>
+    <html lang="ko">
+        <head>
+            @shared.HeadsWithBeerTempl(title)
+            @shared.HeadsWithFirebaseAuthTempl()
+            <meta name="description" content="개인 옷장 관리 서비스"/>
+            <link rel="manifest" href="/manifest.json"/>
+            <script src="/static/closet.js" defer></script>
+        </head>
+        <body>
+            @shared.SnackbarTempl()
+            <header class="primary">
+                <nav>
+                    <a class="max" href="/">
+                        <h3>Closet</h3>
+                    </a>
+                    <a id="login" href="/login" x-data="" x-show="!$store.auth.isAuthed">로그인</a>
+                    <a
+                        id="logout"
+                        href="#"
+                        x-data=""
+                        x-show="$store.auth.isAuthed"
+                        onclick="logoutUser()"
+                    >
+                        로그아웃
+                    </a>
+                </nav>
+            </header>
+            <main id="closet-main">
+                <section>
+                    <div class="row">
+                        <button class="button" data-ui="#upload-dialog">옷장에 추가</button>
+                        <button class="button" data-ui="#search-dialog">옷장에서 찾기</button>
+                    </div>
+                    @recommendCard()
+                    <br/>
+                    @ItemsSection(groups)
+                </section>
+            </main>
+            @uploadDialog()
+            @itemDetailDialog()
+            @searchDialog()
+            @RecommendDialogContainer()
+        </body>
+    </html>
+}
+
+templ uploadDialog() {
+    <dialog class="top" id="upload-dialog" x-data="">
+        <div>
+            <h5>내 옷장에 추가</h5>
+            <p class="caption">이미지와 태그를 입력하면 검색과 추천에 활용돼요.</p>
+            <div x-show="$store.auth.isAuthed">
+                <form
+                    class="upload-form"
+                    x-data="{ mode: 'file', fileName: '' }"
+                    hx-post="/items"
+                    hx-target="#items-list"
+                    hx-swap="outerHTML"
+                    hx-encoding="multipart/form-data"
+                    hx-on::after-request="if (event.detail.successful) { this.reset(); if (this.__x) { this.__x.$data.fileName = ''; } closeModal('#upload-dialog'); showInfo('새 옷을 추가했어요. 임베딩을 준비 중입니다.'); }"
+                    hx-on:htmx:response-error="showError(event.detail.xhr.responseText || '업로드에 실패했어요. 다시 시도해주세요.');"
+                    enctype="multipart/form-data"
+                >
+                    <div class="field label border">
+                        <select name="kind" required>
+                            <option value="" selected>종류 선택</option>
+                            <option value="top">상의</option>
+                            <option value="bottom">하의</option>
+                            <option value="shoes">신발</option>
+                            <option value="accessory">액세서리</option>
+                        </select>
+                        <label>종류</label>
+                    </div>
+                    <div>
+                        <div class="field label border">
+                            <input type="text" name="tags"/>
+                            <label>태그</label>
+                            <span class="helper">콤마(,)로 여러 태그를 입력해 주세요.</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="padding">
+                            <nav>
+                                <label class="radio">
+                                    <input type="radio" name="input_mode" value="file" x-model="mode" checked/>
+                                    <span>파일 업로드</span>
+                                </label>
+                                <label class="radio">
+                                    <input
+                                        type="radio"
+                                        name="input_mode"
+                                        value="url"
+                                        x-model="mode"
+                                        x-on:change="if ($event.target.checked && $refs.fileInput) { $refs.fileInput.value = ''; fileName = ''; }"
+                                    />
+                                    <span>이미지 URL</span>
+                                </label>
+                            </nav>
+                        </div>
+                    </div>
+                    <div x-show="mode === 'file'">
+                        <label class="chip primary">
+                            <i class="icon">attach_file</i>
+                            <span>이미지 선택</span>
+                            <input
+                                type="file"
+                                name="image"
+                                accept="image/*"
+                                x-bind:required="mode === 'file'"
+                                x-ref="fileInput"
+                                x-on:change="fileName = $event.target.files?.[0]?.name || ''"
+                            />
+                        </label>
+                        <div class="caption" x-show="fileName" x-text="'선택한 파일: ' + fileName"></div>
+                    </div>
+                    <div x-show="mode === 'url'">
+                        <div class="field label">
+                            <input
+                                type="url"
+                                name="image_url"
+                                x-bind:required="mode === 'url'"
+                                style="border:none;border-bottom:2px solid #6c5ce7;border-radius:0;background:transparent;padding-left:0;"
+                            />
+                            <label>이미지 URL</label>
+                        </div>
+                        <small class="caption">URL도 20MB 이하만 허용돼요.</small>
+                    </div>
+                    <div class="row">
+                        <button class="button">업로드</button>
+                        <button class="button" type="button" data-ui="#upload-dialog">닫기</button>
+                    </div>
+                    <div class="upload-overlay htmx-indicator" data-indicator-mode="overlay">
+                        <div class="upload-overlay__content">
+                            <i class="icon">hourglass_empty</i>
+                            <p class="upload-overlay__text">이미지를 분석 중이에요...</p>
+                            <small class="caption">잠시만 기다려 주세요.</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div x-show="!$store.auth.isAuthed">
+                <p class="caption">로그인해야 옷장을 만들 수 있어요.</p>
+                <a class="button" href="/login">로그인하기</a>
+            </div>
+        </div>
+    </dialog>
+}
+
+templ itemDetailDialog() {
+    <dialog class="max" id="item-detail-dialog" x-data="">
+        <div>
+            <h5>아이템 상세 정보</h5>
+            <p class="caption">카드를 선택하면 자세한 정보를 볼 수 있어요.</p>
+        </div>
+        <div id="item-detail-content">
+            <div class="padding">
+                <p class="caption">아이템 카드를 눌러 상세 정보를 확인해 주세요.</p>
+            </div>
+        </div>
+        <div id="item-detail-loading" class="padding center-align htmx-indicator">
+            <i class="icon">hourglass_empty</i>
+            <p class="caption">불러오는 중이에요...</p>
+        </div>
+    </dialog>
+}
+
+templ searchDialog() {
+    <dialog class="top" id="search-dialog">
+        <div class="padding">
+            <h5>옷장 찾기</h5>
+            <p class="caption">원하는 태그와 종류로 빠르게 찾아보세요.</p>
+            <form
+                hx-get="/items"
+                hx-target="#items-list"
+                hx-swap="outerHTML"
+                hx-trigger="change delay:300ms, keyup changed delay:500ms, submit"
+                hx-on:htmx:response-error="showError(event.detail.xhr.responseText || '검색에 실패했어요.');"
+            >
+                <div class="field label border">
+                    <select name="kind">
+                        <option value="" selected>전체</option>
+                        <option value="top">상의</option>
+                        <option value="bottom">하의</option>
+                        <option value="shoes">신발</option>
+                        <option value="accessory">액세서리</option>
+                    </select>
+                    <label>종류</label>
+                </div>
+                <div class="field label border">
+                    <input type="text" name="tags"/>
+                    <label>태그</label>
+                </div>
+                <div class="row">
+                    <button class="button" type="submit">검색</button>
+                    <button class="button" type="button" data-ui="#search-dialog">닫기</button>
+                </div>
+                <img class="htmx-indicator" src="/shared/static/spinner.svg" alt="로딩 중"/>
+            </form>
+        </div>
+    </dialog>
+}
+
+templ recommendCard() {
+    <article class="padding" x-data="">
+        <div>
+            <div x-show="$store.auth.isAuthed">
+                <form
+                    hx-post="/recommend"
+                    hx-target="#recommend-dialog-body"
+                    hx-swap="innerHTML"
+                    hx-on:htmx:after-request="if (event.detail.successful) { document.getElementById('recommend-dialog-trigger')?.click(); }"
+                    hx-on:htmx:response-error="showError(event.detail.xhr.responseText || '추천에 실패했어요.');"
+                >
+                    <div class="field label border">
+                        <input type="text" name="weather"/>
+                        <label>날씨</label>
+                    </div>
+                    <div class="field label border">
+                        <input type="text" name="style"/>
+                        <label>스타일</label>
+                    </div>
+                    <div class="row">
+                        <button class="button" type="submit">추천받기</button>
+                    </div>
+                </form>
+                <button type="button" id="recommend-dialog-trigger" data-ui="#recommend-dialog" style="display:none"></button>
+            </div>
+            <div x-show="!$store.auth.isAuthed">
+                <p class="caption">로그인하면 AI 추천을 받아볼 수 있어요.</p>
+                <a class="button" href="/login">로그인하기</a>
+            </div>
+        </div>
+    </article>
+}
+
