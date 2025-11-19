@@ -1,0 +1,32 @@
+package views
+
+import "fmt"
+
+templ DiaryImages(date, img1, img2, img3 string) {
+        { urls := []string{img1, img2, img3} }
+        { hasImage := false }
+        <nav class="row scroll" id="diary-image-content">
+                for i, u := range urls {
+                        if u != "" {
+                                { hasImage = true }
+                                <div>
+                                        <img src={ u } class="small-width small-height"/>
+                                        <button
+                                                class="transparent"
+                                                type="button"
+                                                style="position:absolute; right:1px;"
+                                                hx-delete="/diary/image"
+                                                hx-target="#diary-image-content"
+                                                hx-swap="outerHTML"
+                                                hx-vals={ fmt.Sprintf("{\"date\":\"%s\",\"slot\":%d}", date, i+1) }
+                                        >
+                                                <i>close</i>
+                                        </button>
+                                </div>
+                        }
+                }
+                if !hasImage {
+                        <p>이미지가 없습니다.</p>
+                }
+        </nav>
+}

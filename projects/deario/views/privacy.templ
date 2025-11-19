@@ -1,0 +1,34 @@
+package views
+
+import (
+        "simple-server/projects/deario/views/layout"
+        shared "simple-server/shared/views"
+)
+
+templ Privacy() {
+        <!DOCTYPE html>
+        <html lang="ko">
+                <head>
+                        @shared.HeadsWithBeerTempl("개인정보 처리방침")
+                        @shared.HeadsWithFirebaseAuthTempl()
+                        @shared.HeadsWithGoogleFontsTempl("Gamja Flower")
+                        <link rel="manifest" href="/manifest.json"/>
+                        <script src="/static/deario.js"></script>
+                </head>
+                <body>
+                        @shared.SnackbarTempl()
+                        @layout.AppHeader()
+                        <main class="responsive">
+                                <h5>개인정보 처리방침</h5>
+                                <p>Deario는 사용자의 개인정보를 소중히 여기며 다음과 같이 처리합니다.</p>
+                                <ul class="list border">
+                                        <li>- 수집 항목: 이메일, 닉네임, 일기 내용</li>
+                                        <li>- 이용 목적: 서비스 제공, 맞춤형 피드백 및 알림</li>
+                                        <li>- 보관 기간: 회원 탈퇴 시 즉시 파기</li>
+                                        <li>- 제3자 제공: 제공하지 않음</li>
+                                        <li>- 문의: dlstjr9068@gmail.com</li>
+                                </ul>
+                        </main>
+                </body>
+        </html>
+}

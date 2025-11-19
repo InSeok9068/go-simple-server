@@ -8,5 +8,5 @@ import (
 
 // PrivacyPage는 개인정보 처리방침 페이지를 렌더링한다.
 func PrivacyPage(c echo.Context) error {
-	return views.Privacy().Render(c.Response().Writer)
+	return views.Privacy().Render(c.Request().Context(), c.Response().Writer)
 }

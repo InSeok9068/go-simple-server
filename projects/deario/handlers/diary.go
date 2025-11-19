@@ -31,7 +31,7 @@ func IndexPage(c echo.Context) error {
 	uid, _ := authutil.SessionUID(c)
 
 	if uid == "" {
-		return views.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Response().Writer)
+		return views.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Request().Context(), c.Response().Writer)
 	}
 
 	queries, err := db.GetQueries()
@@ -50,7 +50,7 @@ func IndexPage(c echo.Context) error {
 
 	mood := diaryMood(diary, errDiary)
 
-	return views.Index(os.Getenv("APP_TITLE"), date, mood).Render(c.Response().Writer)
+	return views.Index(os.Getenv("APP_TITLE"), date, mood).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // GetDiary는 특정 날짜의 일기를 조회한다.
@@ -78,9 +78,9 @@ func GetDiary(c echo.Context) error {
 	})
 
 	if err != nil {
-		return views.DiaryContentForm(date, "").Render(c.Response().Writer)
+		return views.DiaryContentForm(date, "").Render(c.Request().Context(), c.Response().Writer)
 	}
-	return views.DiaryContentForm(diary.Date, diary.Content).Render(c.Response().Writer)
+	return views.DiaryContentForm(diary.Date, diary.Content).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // ListDiaries는 일기 날짜 목록을 반환한다.

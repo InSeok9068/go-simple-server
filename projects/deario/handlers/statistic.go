@@ -28,7 +28,7 @@ func StatsPage(c echo.Context) error {
 		return err
 	}
 
-	return views.Statistic().Render(c.Response().Writer)
+	return views.Statistic().Render(c.Request().Context(), c.Response().Writer)
 }
 
 // buildMoodMap은 월별 기분 데이터를 맵으로 변환한다.

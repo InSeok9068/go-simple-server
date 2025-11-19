@@ -1,0 +1,34 @@
+package layout
+
+templ AppHeader() {
+        <header class="fixed primary">
+                <nav>
+                        <a class="max" href="/">
+                                <h3>Deario</h3>
+                        </a>
+                        <button class="transparent circle" data-ui="#search-dialog">
+                                <i>search</i>
+                        </button>
+                        <a class="a-login" id="login" href="/login" x-data="" x-show="!$store.auth.isAuthed">
+                                로그인
+                        </a>
+                        <a class="a-login" id="logout" href="#" x-data="" x-show="$store.auth.isAuthed" onclick="logoutUser()">
+                                로그아웃
+                        </a>
+                </nav>
+        </header>
+        <dialog id="search-dialog">
+                <h5>검색</h5>
+                <form hx-get="/diary/search" hx-target="#search-result" hx-swap="innerHTML">
+                        <div class="field large prefix round fill">
+                                <i class="front">search</i>
+                                <input type="search" name="q" placeholder="검색어 입력"/>
+                        </div>
+                        <button type="submit">검색</button>
+                </form>
+                <ul id="search-result" class="list border"></ul>
+                <nav class="right-align">
+                        <button data-ui="#search-dialog">닫기</button>
+                </nav>
+        </dialog>
+}

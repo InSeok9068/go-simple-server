@@ -1,0 +1,40 @@
+package views
+
+import (
+        "simple-server/projects/deario/views/layout"
+        shared "simple-server/shared/views"
+)
+
+templ Statistic() {
+        <!DOCTYPE html>
+        <html lang="ko">
+                <head>
+                        @shared.HeadsWithBeerTempl("통계")
+                        @shared.HeadsWithFirebaseAuthTempl()
+                        @shared.HeadsWithGoogleFontsTempl("Gamja Flower")
+                        <link rel="manifest" href="/manifest.json"/>
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script src="/static/statistic.js"></script>
+                </head>
+                <body>
+                        @shared.SnackbarTempl()
+                        @layout.AppHeader()
+                        <main class="responsive">
+                                <h5>월별 일기 통계</h5>
+                                <canvas id="countChart"></canvas>
+                                <h5>월별 기분 분포</h5>
+                                <canvas id="moodStackChart"></canvas>
+                                <div class="large-space"></div>
+                                <button
+                                        class="responsive small-elevate large fill"
+                                        hx-post="/ai-report"
+                                        hx-swap="none"
+                                        hx-on:htmx:after-on-load="if (event.detail.successful) showInfo('리포트 생성 요청이 되었습니다.')"
+                                >
+                                        <span class="bold">AI 상담 리포트</span>
+                                </button>
+                                <p>※ 최근 30개의 일기내용을 참고해서 리포트가 작성됩니다.</p>
+                        </main>
+                </body>
+        </html>
+}
