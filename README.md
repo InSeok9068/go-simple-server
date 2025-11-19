@@ -42,17 +42,24 @@
 - **closet**: 옷장 관리
 - **sample**: 새로운 기능이나 라이브러리를 실험하는 샘플 프로젝트
 
-### 추가 구성 고려
+### CSS 구성 고려
 
-- Beer CSS : CSS 프레임워크 (Material 모바일 우선)
-- Pico CSS + Tailwind CSS : CSS 프레임워크 (커스터마이징 용이)
-- Bulma CSS : CSS 프레임워크 (심플한 관리자 UI)
-- Tabler : CSS 프레임워크 (복잡한 관리자 UI) - PC 환경
-- Shoelace : CSS 프레임워크 (바닐라 웹 컴포넌트) [Web Awesome]
-- TemplUI : CSS 프레임워크 (Templ 기반 컴포넌트)
-- DataStar : SSE 기반 서버주도 프레임워크
-- Unpoly : Htmx Like 프레임워크
-- ~~surreal.js : [surreal.js](https://cdn.jsdelivr.net/gh/gnat/surreal@main/surreal.js)~~
+| 라이브러리          | 강점                                           | 합리적인 사용 케이스                       |
+| ------------------- | ---------------------------------------------- | ------------------------------------------ |
+| **Beer CSS**        | 모바일 퍼스트, 간단한 Material UI, 매우 가벼움 | 퍼블릭 웹, 모바일 중심 서비스, 빠른 개발   |
+| **Pico + Tailwind** | 기본은 깔끔, 디테일은 강력한 커스터마이징      | UI 디테일 잡기 필요한 프로젝트             |
+| **Bulma**           | 단순하고 탄탄한 관리자 UI                      | 기본 백오피스, 운영툴                      |
+| **Tabler**          | 대시보드/관리자용 강력한 컴포넌트              | 복잡한 PC 기반 관리자 화면                 |
+| **Shoelace**        | 바닐라 Web Components, 접근성 최강             | Modal/Drawer 등 고급 UI가 필요한 특정 영역 |
+| **TemplUI**         | Templ 기반 컴포넌트화, 고생산성                | Templ로 만든 프로젝트 전용 UI              |
+
+### JS 라이브러리 구성 고려
+
+| 라이브러리         | 강점                         | 합리적인 사용 케이스 |
+| ------------------ | ---------------------------- | -------------------- |
+| **DataStar**       | SSE 기반 서버주도 프레임워크 |
+| **Unpoly**         | Htmx Like 프레임워크         |                      |
+| ~~**surreal.js**~~ |                              |                      |
 
 ---
 
