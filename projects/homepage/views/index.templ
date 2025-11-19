@@ -36,10 +36,7 @@ templ Index(title string) {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
-			@templ.Raw(shared.HeadsGomponentsToHtml(shared.HeadsWithTailwind(title)))
-			<link rel="preconnect" href="https://fonts.googleapis.com"/>
-			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
-			<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"/>
+			@shared.HeadsWithTailwindTempl(title)
 		</head>
 		<body class="font-sans bg-gray-50 text-gray-900 min-h-screen flex flex-col overflow-x-hidden" x-data="{ isMenuOpen: false, isScrolled: false }">
 			// 네비게이션 바 - 스크롤 시 배경 변경
