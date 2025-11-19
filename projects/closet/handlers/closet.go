@@ -25,5 +25,7 @@ func IndexPage(c echo.Context) error {
 		return err
 	}
 
-	return views.Index(os.Getenv("APP_TITLE"), groups).Render(c.Response().Writer)
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
+
+	return views.Index(os.Getenv("APP_TITLE"), groups).Render(c.Request().Context(), c.Response().Writer)
 }

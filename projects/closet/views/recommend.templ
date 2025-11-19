@@ -1,0 +1,90 @@
+package views
+
+import (
+        "fmt"
+        "strconv"
+)
+
+templ RecommendationDialog(results []RecommendationItem, weather, style, cacheToken string, hasMore bool, locks map[string]int64) {
+        itemMap := make(map[string]ClosetItem, len(results))
+        for _, result := range results {
+                itemMap[result.Kind] = result.Item
+        }
+
+        <div class="padding">
+                <h5>추천 결과</h5>
+                if len(results) == 0 {
+                        <p class="caption">추천 가능한 옷이 아직 없어요.</p>
+                        <div class="row">
+                                <button class="button" type="button" data-ui={ recommendDialogSelector }>닫기</button>
+                        </div>
+                } else {
+                        <form
+                                hx-post="/recommend"
+                                hx-target={ recommendDialogBodyQuery }
+                                hx-swap="innerHTML"
+                        >
+                                <input type="hidden" name="weather" value={ weather }/>
+                                <input type="hidden" name="style" value={ style }/>
+                                <input type="hidden" name="skip_ids" value={ cacheToken }/>
+                                <div>
+                                        for _, kind := range recommendationKindOrder {
+                                                item, ok := itemMap[kind]
+                                                if ok {
+                                                        itemCopy := item
+                                                        @renderRecommendationRow(kind, &itemCopy, locks[kind])
+                                                        continue
+                                                }
+                                                @renderRecommendationRow(kind, nil, 0)
+                                        }
+                                </div>
+                                <div class="row">
+                                        <button class="button" type="button" data-ui={ recommendDialogSelector }>닫기</button>
+                                        if hasMore {
+                                                <button class="button" type="submit">다시 추천받기</button>
+                                        } else {
+                                                <button class="button" type="button" disabled>더 추천할 옷이 없어요</button>
+                                        }
+                                </div>
+                        </form>
+                }
+        </div>
+}
+
+templ renderRecommendationRow(kind string, item *ClosetItem, lockID int64) {
+        <div class="recommend-row row">
+                if item != nil {
+                        value := strconv.FormatInt(item.ID, 10)
+                        <figure class="recommend-card">
+                                <img src={ item.ImageURL } alt={ fmt.Sprintf("%s 이미지", item.KindLabel) } width="140" height="140" loading="lazy"/>
+                        </figure>
+                        <label class="checkbox lock-toggle">
+                                <input type="checkbox" name={ fmt.Sprintf("lock_%s", kind) } value={ value } checked={ lockID == item.ID }/>
+                                <span>고정</span>
+                        </label>
+                } else {
+                        <div class="recommend-card recommend-card--empty">
+                                <span class="caption">추천 없음</span>
+                        </div>
+                        <div></div>
+                }
+        </div>
+}
+
+templ recommendDialogPlaceholder() {
+        <div class="padding">
+                <h5>추천 결과</h5>
+                <p class="caption">조건을 입력하면 추천 결과가 여기에 표시돼요.</p>
+                <div class="row">
+                        <button class="button" type="button" data-ui={ recommendDialogSelector }>닫기</button>
+                </div>
+        </div>
+}
+
+templ RecommendDialogContainer() {
+        <dialog class="max recommend-dialog" id={ recommendDialogID }>
+                <div id={ recommendDialogBodyID }>
+                        @recommendDialogPlaceholder()
+                </div>
+        </dialog>
+}
