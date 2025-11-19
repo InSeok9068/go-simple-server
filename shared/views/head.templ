@@ -1,0 +1,99 @@
+package shared
+
+import (
+	. "maragu.dev/gomponents"
+	. "maragu.dev/gomponents/html"
+	"simple-server/internal/config"
+	"strings"
+)
+
+templ HeadsDefaultTempl(title string) {
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<link rel="icon" href="/shared/static/favicon.ico"/>
+	<link
+		rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/open-props@1.7.16/open-props.min.css"
+		onerror="this.onerror=null;this.href='shared/static/lib/open-props.min.css';"
+	/>
+	<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" onerror="this.onerror=null;this.src='shared/static/lib/htmx.min.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@2.0.2/alpine-morph.js" onerror="this.onerror=null;this.src='shared/static/lib/alpine-morph.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/persist.cdn.min.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/morph.cdn.min.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/cdn.min.js';"></script>
+	<title>{ title }</title>
+	if config.IsDevEnv() {
+		<script defer> 
+			htmx.logAll(); 
+		</script>
+	}
+}
+
+templ HeadsCustomTempl() {
+	<link rel="stylesheet" href="/shared/static/style.css"/>
+	<link rel="stylesheet" href="/static/style.css"/>
+	<script src="/shared/static/app.js"></script>
+}
+
+templ HeadsWithBulmaTempl(title string) {
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" onerror="this.onerror=null;this.href='shared/static/lib/bulma.min.css';"/>
+}
+
+templ HeadsWithTailwindTempl(title string) {
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
+	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
+}
+
+templ HeadsWithPicoAndTailwindTempl(title string) {
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
+	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.classless.min.css';"/>
+	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
+	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
+}
+
+templ HeadsWithBeerTempl(title string) {
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beercss@3.12.13/dist/cdn/beer.min.css" onerror="this.onerror=null;this.href='shared/static/lib/beer.min.css';"/>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.12.13/dist/cdn/beer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/beer.min.js';"></script>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js" onerror="this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';"></script>
+}
+
+templ HeadsWithFirebaseLoginTempl() {
+	<link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css"/>
+	<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth__ko.js"></script>
+	<script src="/shared/static/firebase_login.js" defer></script>
+}
+
+templ HeadsWithFirebaseAuthTempl() {
+	<script type="module" src="/shared/static/firebase_auth.js" defer></script>
+}
+
+templ HeadsWithGoogleFontsTempl(font ...string) {
+	<link
+		rel="stylesheet"
+		href={ "https://fonts.googleapis.com/css2?family=" + 
+               strings.Join(fonts, "&family=") +
+               "&display=swap&subset=korean" }
+	/>
+}
+
+templ HeadsWithFlatpickrTempl() {
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css" onerror="this.onerror=null;this.href='shared/static/lib/flatpickr.min.css';"/>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js" onerror="this.onerror=null;this.src='shared/static/lib/flatpickr.min.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js" onerror="this.onerror=null;this.src='shared/static/lib/ko.js';"></script>
+}
+
+templ HeadsWithMarkedTempl() {
+	<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js" onerror="this.onerror=null;this.src='shared/static/lib/marked.umd.js';"></script>
+}
+
+templ HeadsWithHammerTempl() {
+	<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/hammer.min.js';"></script>
+}
