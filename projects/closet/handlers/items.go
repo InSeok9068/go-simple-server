@@ -249,7 +249,7 @@ func GetItemDetail(c echo.Context) error {
 	detail := views.NewClosetItemDetail(row)
 
 	var builder strings.Builder
-	if err := views.ItemDetailContent(detail).Render(&builder); err != nil {
+	if err := views.ItemDetailContent(detail).Render(c.Request().Context(), &builder); err != nil {
 		return err
 	}
 
@@ -299,7 +299,7 @@ func renderItemsHTML(ctx context.Context, queries *db.Queries, uid string, kind 
 	}
 
 	var builder strings.Builder
-	if err := views.ItemsSection(groups).Render(&builder); err != nil {
+	if err := views.ItemsSection(groups).Render(ctx, &builder); err != nil {
 		return "", err
 	}
 	return builder.String(), nil
@@ -675,8 +675,11 @@ func RecommendOutfit(c echo.Context) error {
 		})
 	}
 
+	rows := views.BuildRecommendationRows(viewResults)
+	hasResults := len(viewResults) > 0
+
 	var builder strings.Builder
-	if err := views.RecommendationDialog(viewResults, weather, style, cacheToken, hasMore, locks).Render(&builder); err != nil {
+	if err := views.RecommendationDialog(rows, weather, style, cacheToken, hasMore, locks, hasResults).Render(c.Request().Context(), &builder); err != nil {
 		return err
 	}
 	return c.HTML(http.StatusOK, builder.String())
