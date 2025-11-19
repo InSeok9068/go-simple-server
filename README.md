@@ -2,24 +2,24 @@
 
 **Host** : https://toy-project.n-e.kr
 
-| 구성                  | 사용 기술/도구                                                |
-| --------------------- | ------------------------------------------------------------- |
-| **언어**              | Go                                                            |
-| **백엔드 프레임워크** | Echo                                                          |
-| **프론트엔드 구성**   | HTMX + Alpine.js                                              |
-| **템플릿 엔진**       | Gomponents                                                    |
-| **CSS 프레임워크**    | 1. Beer CSS <br> 2. Pico CSS + Tailwind CSS <br> 3. Bulma CSS |
-| **데이터베이스**      | SQLite → PostgreSQL                                           |
-| **DB 관리 도구**      | Adminer                                                       |
-| **DB 마이그레이션**   | Goose                                                         |
-| **DB 복제/복구**      | Litestream (SQLite)                                           |
-| **인증**              | Firebase (With Cookie)                                        |
-| **객체 저장소**       | GCP Storage                                                   |
-| **메시지 큐**         | goqite                                                        |
-| **성능/로깅 도구**    | /debug/vars (Go 표준), trace_id (OTEL 연동)                   |
-| **로깅 대시보드 UI**  | PocketBase Admin                                              |
-| **모바일 대응**       | PWA → Capacitor                                               |
-| **웹 서버**           | Caddy                                                         |
+| 구성                  | 사용 기술/도구                                                               |
+| --------------------- | ---------------------------------------------------------------------------- |
+| **언어**              | Go                                                                           |
+| **백엔드 프레임워크** | Echo                                                                         |
+| **프론트엔드 구성**   | HTMX + Alpine.js                                                             |
+| **템플릿 엔진**       | Templ, ~~Gomponents(Deprecated)~~                                            |
+| **CSS 프레임워크**    | 1순위 : Beer CSS <br> 2순위 : Pico CSS + Tailwind CSS <br> 3순위 : Bulma CSS |
+| **데이터베이스**      | SQLite → PostgreSQL                                                          |
+| **DB 관리 도구**      | Adminer                                                                      |
+| **DB 마이그레이션**   | Goose                                                                        |
+| **DB 복제/복구**      | Litestream (SQLite)                                                          |
+| **인증**              | Firebase (With Cookie)                                                       |
+| **객체 저장소**       | GCP Storage                                                                  |
+| **메시지 큐**         | goqite                                                                       |
+| **성능/로깅 도구**    | /debug/vars (Go 표준), trace_id (OTEL 연동)                                  |
+| **로깅 대시보드 UI**  | PocketBase Admin                                                             |
+| **모바일 대응**       | PWA → Capacitor                                                              |
+| **웹 서버**           | Caddy                                                                        |
 
 ## 폴더 구조
 
@@ -39,7 +39,7 @@
 - **homepage**: 여러 서비스의 소개와 진입점을 제공하는 포털 (TailwindCSS 사용)
 - **ai-study**: 입력한 주제와 관련된 학습 주제를 AI가 제안
 - **deario**: 일기를 작성하면 AI가 피드백을 제공
-- **portfolio**: 자산 포트폴리오 관리
+- **closet**: 옷장 관리
 - **sample**: 새로운 기능이나 라이브러리를 실험하는 샘플 프로젝트
 
 ### 추가 구성 고려
@@ -48,10 +48,11 @@
 - Pico CSS + Tailwind CSS : CSS 프레임워크 (커스터마이징 용이)
 - Bulma CSS : CSS 프레임워크 (심플한 관리자 UI)
 - Tabler : CSS 프레임워크 (복잡한 관리자 UI) - PC 환경
-- Shoelace : CSS 프레임워크 (바닐라 웹 컴포넌트)
-- ~~surreal.js : [surreal.js](https://cdn.jsdelivr.net/gh/gnat/surreal@main/surreal.js)~~
+- Shoelace : CSS 프레임워크 (바닐라 웹 컴포넌트) [Web Awesome]
+- TemplUI : CSS 프레임워크 (Templ 기반 컴포넌트)
 - DataStar : SSE 기반 서버주도 프레임워크
 - Unpoly : Htmx Like 프레임워크
+- ~~surreal.js : [surreal.js](https://cdn.jsdelivr.net/gh/gnat/surreal@main/surreal.js)~~
 
 ---
 
