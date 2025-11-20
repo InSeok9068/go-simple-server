@@ -9,12 +9,13 @@
 
 - **언어**: Go
 - **서버 프레임워크**: Echo
-- **템플릿 라이브러리**: Templ
+- **템플릿 라이브러리**: Templ (Gomponents는 사용하지 않음)
 - **데이터베이스**: SQLite
 - **데이터베이스 마이그레이션**: Goose
 - **SQL 코드 제너레이터**: SQLC
 - **프론트엔드 라이브러리**: HTMX, Alpine.js
-- **CSS 프레임워크**: BeerCSS (기본), TailwindCSS (일부 프로젝트)
+- **CSS 프레임워크**: BeerCSS (기본), TailwindCSS (homepage 프로젝트)
+- **개발 서버**: GoVisual
 - **소스 관리**: Monorepo (여러 프로젝트를 한 저장소에서 관리)
 
 ## 프론트엔드 라이브러리 역할 정의
@@ -40,6 +41,9 @@
   - 공식 문서 : https://beercss.com/
   - 사용 법 : `.doc/css/beercss/SUMMARY.md`를 참고. ※ BeerCSS에서 사용되지 않는 CSS 클래스는 사용 금지
   - 임의로 커스텀 CSS를 만들지 말것! 직접 커스텀 CSS를 활용하라는 명령이 아니라면 무조건 BeerCSS를 사용해!
+- **TailwindCSS**
+  - `homepage` 프로젝트에서만 사용.
+  - `task.sh install-tailwind`로 설치 가능.
 
 ## 폴더 구조
 
@@ -51,7 +55,9 @@
   - `migrations`: `Goose`를 사용한 데이터베이스 스키마 마이그레이션 파일.
   - `query.sql`: `SQLC`가 사용할 SQL 쿼리.
 - `internal`: 여러 프로젝트에서 공유하지만 외부로 노출되지 않는 서버 측 공통 패키지 (DB 연결, 미들웨어 등).
-- `shared`: 여러 프로젝트에서 공유하는 프론트엔드 관련 공통 패키지 (공통 `views` 컴포넌트, `static` 파일 등).
+- `shared`: 여러 프로젝트에서 공유하는 프론트엔드 관련 공통 패키지.
+  - `views`: 공통 `Templ` 컴포넌트 (레이아웃, 헤더, 공통 UI 등).
+  - `static`: 공통 정적 파일.
 - `pkg`: 외부 의존성이 없는 순수 유틸리티 함수 패키지.
 
 ## 코딩 스타일 가이드
@@ -60,6 +66,7 @@
 - 로깅은 `slog` 패키지를 활용하며, 상황에 맞게 `DEBUG`, `INFO`, `WARN`, `ERROR` 레벨을 적절히 사용해. (로그 메시지는 한글로 명확하게 작성)
 - 에러 핸들링은 Go 표준 방식(`if err != nil`)을 따라 명시적으로 처리해.
 - `Templ`로 뷰를 작성할 때, 동적인 기능은 `hx-` 속성을 적극 활용하고, 클라이언트 측 상태 관리가 필요할 때만 `Alpine.js`를 사용해. JavaScript 코드는 별도 `.js` 파일로 분리해줘.
+- `.templ` 파일 수정 시 반드시 `templ generate`를 실행하여 Go 코드를 갱신해야 해.
 
 ## HTTP/HTMX 응답 규칙
 
@@ -103,11 +110,12 @@
 - ❗ **중요**: CI 환경에는 데이터베이스가 없어. 반드시 Mock 기반의 순수 유닛 테스트만 작성해줘.
 - 유닛 테스트는 원본 파일과 같은 경로에 `{파일}_test.go` 형식으로 작성해.
 
-## 스키마 및 쿼리 수정
+## 코드 생성 및 마이그레이션
 
 1.  **스키마 수정**: `./projects/{프로젝트명}/migrations/` 폴더에 `*.sql` 마이그레이션 파일을 추가해.
 2.  **쿼리 수정**: `./projects/{프로젝트명}/query.sql` 파일을 수정해.
-3.  **코드 생성**: 프로젝트 루트 디렉토리에서 `./task.sh sqlc-generate {프로젝트명}` 명령어를 실행해.
+3.  **SQL 코드 생성**: 프로젝트 루트 디렉토리에서 `./task.sh sqlc-generate {프로젝트명}` 명령어를 실행해.
+4.  **Templ 코드 생성**: `.templ` 파일 수정 후 `templ generate` 명령어를 실행해. (터미널에서 직접 실행)
 
 ## 프로젝트 설명
 
