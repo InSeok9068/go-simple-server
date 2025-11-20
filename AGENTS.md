@@ -32,12 +32,13 @@
 - **Templ**
   - 주요 역할: HTML과 매우 유사한 전용 템플릿 문법으로 UI 구조를 정의하면, 이를 타입이 붙은 Go 코드로 변환해주는 정적 템플릿 엔진.
   - 사용 목적: .templ 파일 안에서 HTML 마크업을 작성하듯이 컴포넌트를 정의하고, templ generate 명령으로 해당 템플릿을 Go 코드로 미리 컴파일해서(= Go 버전으로 변환해서) 사용함으로써, 런타임 템플릿 파싱 없이 타입 안정성과 성능을 확보.
-  - 코드 생성: `templ generate` 명령으로 .templ 파일을 Go 코드로 변환.
+  - **공통 컴포넌트**: `simple-server/shared/views` 패키지를 import하여 사용.
 
 ## CSS 라이브러리 사용 정의
 
 - **BeerCSS**
   - 기본 CSS 프레임워크로, HTML 마크업 내에서 직접 CSS 클래스를 사용하여 레이아웃과 스타일을 정의.
+  - **UI 제어**: `data-ui="#id"` 속성을 사용하여 모달, 메뉴, 사이드바 등을 제어(Alpine 불필요).
   - 공식 문서 : https://beercss.com/
   - 사용 법 : `.doc/css/beercss/SUMMARY.md`를 참고. ※ BeerCSS에서 사용되지 않는 CSS 클래스는 사용 금지
   - 임의로 커스텀 CSS를 만들지 말것! 직접 커스텀 CSS를 활용하라는 명령이 아니라면 무조건 BeerCSS를 사용해!
@@ -55,18 +56,63 @@
   - `migrations`: `Goose`를 사용한 데이터베이스 스키마 마이그레이션 파일.
   - `query.sql`: `SQLC`가 사용할 SQL 쿼리.
 - `internal`: 여러 프로젝트에서 공유하지만 외부로 노출되지 않는 서버 측 공통 패키지 (DB 연결, 미들웨어 등).
+  - `validate`: 요청 데이터 검증 패키지.
 - `shared`: 여러 프로젝트에서 공유하는 프론트엔드 관련 공통 패키지.
   - `views`: 공통 `Templ` 컴포넌트 (레이아웃, 헤더, 공통 UI 등).
-  - `static`: 공통 정적 파일.
+  - `static`: 공통 정적 파일 (JS 라이브러리, 공통 CSS 등).
 - `pkg`: 외부 의존성이 없는 순수 유틸리티 함수 패키지.
+  - `util/`: 유틸리티 함수 패키지.
 
 ## 코딩 스타일 가이드
 
-- 파일명, 함수명, 변수명은 Go 표준 컨벤션을 따라줘.
-- 로깅은 `slog` 패키지를 활용하며, 상황에 맞게 `DEBUG`, `INFO`, `WARN`, `ERROR` 레벨을 적절히 사용해. (로그 메시지는 한글로 명확하게 작성)
-- 에러 핸들링은 Go 표준 방식(`if err != nil`)을 따라 명시적으로 처리해.
-- `Templ`로 뷰를 작성할 때, 동적인 기능은 `hx-` 속성을 적극 활용하고, 클라이언트 측 상태 관리가 필요할 때만 `Alpine.js`를 사용해. JavaScript 코드는 별도 `.js` 파일로 분리해줘.
-- `.templ` 파일 수정 시 반드시 `templ generate`를 실행하여 Go 코드를 갱신해야 해.
+### 1. Handler 패턴
+
+1. **바인딩 & 검증**
+
+   - `c.Bind(&dto)` → `c.Validate(&dto)`
+   - 실패 시 `validate.HTTPError` 또는 `echo.NewHTTPError` 사용
+     (메시지는 **한글**로 명확하게 작성)
+
+2. **DB 접근**
+
+   - `queries, err := db.GetQueries()`
+   - `queries.Method(c.Request().Context(), params)`
+
+3. **응답**
+   - 정상 응답:
+     `views.Component(...).Render(c.Request().Context(), c.Response().Writer)`
+   - 오류 응답:
+     `echo.NewHTTPError(code, message)`
+
+### 2. 에러 핸들링 & 로깅
+
+- 에러는 Go 표준 (`if err != nil`) 으로 명시적으로 처리.
+- 오류 응답 시 `echo.NewHTTPError` 활용.
+- 로그는 `slog` 사용:
+  - `DEBUG`, `INFO`, `WARN`, `ERROR` 레벨을 상황에 맞게 기록.
+  - 로그 메시지는 **한글**로 명확하게 작성.
+
+### 3. Templ 작성 가이드
+
+- 템플릿은 `.templ` 파일에 HTML과 유사한 문법으로 작성.
+- 서버 주도 렌더링을 기본값으로 사용.
+
+**동적 기능은 다음 규칙을 따른다:**
+
+- **HTMX로 서버 기반 동적 처리**
+  - `hx-get`, `hx-post`, `hx-target`, `hx-swap` 등을 적극 활용.
+- **Alpine.js는 클라이언트 상태가 필요할 때만 사용**
+  - 상태 전환, 모달 토글 등의 가벼운 상호작용에 한정.
+  - JavaScript 로직은 반드시 별도 `.js` 파일로 분리.
+
+**중요:**
+
+- `.templ` 파일 수정 시 **반드시 `templ generate`** 실행해 Go 코드로 재생성해야 함.
+
+### 4. 네이밍 & 폴더 구조
+
+- 파일명, 함수명, 변수명은 Go 표준 컨벤션 준수.
+- 재사용 가능한 UI 요소는 `shared/views` 또는 `shared/static/js`로 승격하여 중복 제거.
 
 ## HTTP/HTMX 응답 규칙
 
@@ -112,10 +158,10 @@
 
 ## 코드 생성 및 마이그레이션
 
-1.  **스키마 수정**: `./projects/{프로젝트명}/migrations/` 폴더에 `*.sql` 마이그레이션 파일을 추가해.
-2.  **쿼리 수정**: `./projects/{프로젝트명}/query.sql` 파일을 수정해.
-3.  **SQL 코드 생성**: 프로젝트 루트 디렉토리에서 `./task.sh sqlc-generate {프로젝트명}` 명령어를 실행해.
-4.  **Templ 코드 생성**: `.templ` 파일 수정 후 `templ generate` 명령어를 실행해. (터미널에서 직접 실행)
+- **스키마 수정**: `./projects/{프로젝트명}/migrations/` 폴더에 `*.sql` 마이그레이션 파일을 추가해.
+- **쿼리 수정**: `./projects/{프로젝트명}/query.sql` 파일을 수정해.
+- **SQL 코드 생성**: 프로젝트 루트 디렉토리에서 `./task.sh sqlc-generate {프로젝트명}` 명령어를 실행해.
+- **Templ 코드 생성**: `.templ` 파일 수정 후 `templ generate` 명령어를 실행해. (터미널에서 직접 실행)
 
 ## 프로젝트 설명
 
