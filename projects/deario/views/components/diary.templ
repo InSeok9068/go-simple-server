@@ -1,0 +1,151 @@
+package components
+
+import (
+	"fmt"
+	"time"
+
+	"simple-server/pkg/util/dateutil"
+	"simple-server/projects/deario/views"
+)
+
+templ DiaryNavigation(date string) {
+	<nav>
+		<a id="prev-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1)) }>
+			<i>arrow_back_ios</i>
+		</a>
+		<a id="today-day" href={ fmt.Sprintf("/?date=%s", time.Now().Format("20060102")) }>
+			<button class="small-round small">Today</button>
+		</a>
+		<a id="next-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1)) }>
+			<i>arrow_forward_ios</i>
+		</a>
+		<button class="chip" data-ui="#calendar-dialog">
+			<i>calendar_month</i>
+			<span class="bold">{ views.DateView(date) }</span>
+		</button>
+		<div class="max"></div>
+		<i x-data="" x-text="$store.save.isOk ? 'check' : 'sync'"></i>
+	</nav>
+}
+
+templ DiaryContentForm(date string, content string) {
+	<form id="diary">
+		<input type="hidden" name="date" value={ date }/>
+		<div class="field textarea border u-fit-h‑18rem">
+			<textarea
+				name="content"
+				autofocus
+				x-data=""
+				hx-post="/diary/save"
+				hx-swap="none"
+				hx-trigger="input delay:0.5s"
+				@input="$store.save.unok()"
+				@htmx:after-request="$store.save.ok()"
+				aria-label="일기 내용"
+				placeholder="오늘의 일기를 입력하세요"
+			>{ content }</textarea>
+		</div>
+		<button type="button" class="chip circle microphone" onclick="toggleRecord(this)">
+			<i>mic</i>
+		</button>
+	</form>
+}
+
+templ MoodSection(date string, mood string) {
+	<nav>
+		<p class="bold">하루의 기분을 아이콘으로 표현해주세요 ✅</p>
+	</nav>
+	<nav>
+		<div x-data={ fmt.Sprintf("{ mood: '%s' }", mood) }>
+			<form
+				hx-post="/diary/mood"
+				hx-swap="none"
+				hx-on:htmx:after-on-load="if (event.detail.successful) showInfo('저장되었습니다.')"
+			>
+				<input type="hidden" name="date" value={ date }/>
+				<input type="hidden" name="mood" x-model="mood"/>
+				<button class="chip circle" :class="mood === '1' ? 'primary' : ''" x-on:click="mood = '1'">
+					<i>sentiment_very_satisfied</i>
+				</button>
+				<button class="chip circle" :class="mood === '2' ? 'primary' : ''" x-on:click="mood = '2'">
+					<i>sentiment_satisfied</i>
+				</button>
+				<button class="chip circle" :class="mood === '3' ? 'primary' : ''" x-on:click="mood = '3'">
+					<i>sentiment_neutral</i>
+				</button>
+				<button class="chip circle" :class="mood === '4' ? 'primary' : ''" x-on:click="mood = '4'">
+					<i>sentiment_frustrated</i>
+				</button>
+				<button class="chip circle" :class="mood === '5' ? 'primary' : ''" x-on:click="mood = '5'">
+					<i>sentiment_extremely_dissatisfied</i>
+				</button>
+			</form>
+		</div>
+	</nav>
+}
+
+templ FeedbackActions(date string) {
+	<nav>
+		<button class="chip" data-ui="#cbt-dialog">
+			<i>psychology_alt</i>
+			CBT
+		</button>
+		<button class="chip" data-ui="#diary-image-dialog">
+			<i>image</i>
+			이미지
+		</button>
+		<div class="max"></div>
+		<img id="feedback-loading" class="htmx-indicator" src="/shared/static/spinner.svg" alt="로딩"/>
+		<nav class="min active">
+			<button data-ui="#ai-feedback">
+				<span>일기요정</span>
+			</button>
+			<menu class="top transparent no-wrap left right-align" id="ai-feedback" data-ui="#ai-feedback">
+				@AiFeedbackButton("1", "칭찬받기")
+				@AiFeedbackButton("2", "위로받기")
+				@AiFeedbackButton("3", "충고받기")
+				@AiFeedbackButton("4", "그림일기")
+				<li hx-get={ "/ai-feedback?date=" + date } hx-target="#ai-feedback-content" hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()">
+					<button class="fill">
+						<span>다시보기</span>
+					</button>
+				</li>
+			</menu>
+		</nav>
+	</nav>
+}
+
+templ AiFeedbackButton(strType string, title string) {
+	<li
+		hx-post={ fmt.Sprintf("/ai-feedback?type=%s", strType) }
+		hx-include="[name='content']"
+		hx-target="#ai-feedback-content"
+		hx-indicator="#feedback-loading"
+		hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()"
+	>
+		<button class="fill">
+			<span>{ title }</span>
+		</button>
+	</li>
+}
+
+templ BottomNavigation() {
+	<nav class="bottom">
+		<a href="#" data-ui="#calendar-dialog">
+			<i>calendar_month</i>
+			달력
+		</a>
+		<a href="#" data-ui="#diary-list-dialog">
+			<i>list_alt</i>
+			일지
+		</a>
+		<a href="/diary/random" hx-get="/diary/random">
+			<i>casino</i>
+			랜덤
+		</a>
+		<a href="#" data-ui="#menu-dialog">
+			<i>menu_open</i>
+			메뉴
+		</a>
+	</nav>
+}

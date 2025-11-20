@@ -1,0 +1,48 @@
+package pages
+
+import (
+	"simple-server/projects/deario/views/components"
+	"simple-server/projects/deario/views/layout"
+	shared "simple-server/shared/views"
+)
+
+templ Index(title string, date string, mood string) {
+	<!DOCTYPE html>
+	<html lang="ko">
+		<head>
+			@shared.HeadsWithBeerTempl(title)
+			@shared.HeadsWithFirebaseAuthTempl()
+			@shared.HeadsWithGoogleFontsTempl("Gamja Flower")
+			@shared.HeadsWithFlatpickrTempl()
+			@shared.HeadsWithMarkedTempl()
+			@shared.HeadsWithHammerTempl()
+			<meta name="description" content="AI 피드백 일기 서비스"/>
+			<link rel="manifest" href="/manifest.json"/>
+			<script src="/static/deario.js"></script>
+			<script src="/static/calendar.js"></script>
+			<script src="/static/voice.js"></script>
+			<script type="module" src="/static/storage.js"></script>
+		</head>
+		<body>
+			@shared.SnackbarTempl()
+			@layout.AppHeader()
+			<main id="diary-main">
+				@components.DiaryNavigation(date)
+				<hr class="medium"/>
+				<form hx-get="/diary" hx-target="#diary" hx-trigger="load" hx-swap="outerHTML">
+					<input type="hidden" name="date" value={ date }/>
+				</form>
+				@components.DiaryContentForm(date, "")
+				@components.MoodSection(date, mood)
+				@components.FeedbackActions(date)
+			</main>
+			@components.BottomNavigation()
+			@components.CbtDialog()
+			@components.AiFeedbackDialog(date)
+			@components.CalendarDialog(date)
+			@components.DiaryImageDialog(date)
+			@components.DiaryListDialog()
+			@components.MenuDialog()
+		</body>
+	</html>
+}
