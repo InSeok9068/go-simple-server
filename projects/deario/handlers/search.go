@@ -2,18 +2,15 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"strings"
 	"unicode/utf8"
 
 	"simple-server/pkg/util/authutil"
-	"simple-server/pkg/util/dateutil"
 	"simple-server/projects/deario/db"
+	"simple-server/projects/deario/views"
 
 	"github.com/labstack/echo/v4"
-	. "maragu.dev/gomponents"
-	. "maragu.dev/gomponents/html"
 )
 
 // SearchDiaries는 내용에서 키워드를 검색해 일기 목록을 반환한다.
@@ -41,22 +38,18 @@ func SearchDiaries(c echo.Context) error {
 		return err
 	}
 
-	var lis []Node
+	items := make([]views.SearchResultItem, 0, len(diarys))
 	for _, d := range diarys {
-		lis = append(lis,
-			Li(
-				A(Href(fmt.Sprintf("/?date=%s", d.Date)),
-					Div(Text(dateutil.MustFormatDateKorSimpleWithWeekDay(d.Date))),
-					Div(snippetNodes(d.Content, q)...),
-				),
-			),
-		)
+		items = append(items, views.SearchResultItem{
+			Date:    d.Date,
+			Snippet: snippetNodes(d.Content, q),
+		})
 	}
 
-	return Ul(Class("list"), Group(lis)).Render(c.Response().Writer)
+	return views.SearchResults(items).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func snippetNodes(content, keyword string) []Node {
+func snippetNodes(content, keyword string) views.SearchResultSnippet {
 	lowerContent := strings.ToLower(content)
 	lowerKeyword := strings.ToLower(keyword)
 	byteIndex := strings.Index(lowerContent, lowerKeyword)
@@ -66,9 +59,9 @@ func snippetNodes(content, keyword string) []Node {
 
 	if byteIndex == -1 {
 		if contentRuneLen > 20 {
-			return []Node{Text(string(contentRunes[:20]) + "...")}
+			return views.SearchResultSnippet{Prefix: string(contentRunes[:20]) + "..."}
 		}
-		return []Node{Text(content)}
+		return views.SearchResultSnippet{Prefix: content}
 	}
 
 	runeIndex := utf8.RuneCountInString(lowerContent[:byteIndex])
@@ -94,5 +87,10 @@ func snippetNodes(content, keyword string) []Node {
 		suffix += "..."
 	}
 
-	return []Node{Text(prefix), B(Text(match)), Text(suffix)}
+	return views.SearchResultSnippet{
+		Prefix:   prefix,
+		Match:    match,
+		Suffix:   suffix,
+		HasMatch: true,
+	}
 }

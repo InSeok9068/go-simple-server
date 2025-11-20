@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -11,13 +10,10 @@ import (
 
 	"simple-server/internal/validate"
 	"simple-server/pkg/util/authutil"
-	"simple-server/pkg/util/dateutil"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views"
 
 	"github.com/labstack/echo/v4"
-	. "maragu.dev/gomponents"
-	. "maragu.dev/gomponents/html"
 )
 
 // IndexPage는 메인 페이지를 렌더링한다.
@@ -108,18 +104,12 @@ func ListDiaries(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "목록을 가져오지 못했습니다.")
 	}
 
-	var lis []Node
+	items := make([]views.DiaryListItem, 0, len(diarys))
 	for _, diary := range diarys {
-		lis = append(lis,
-			Li(
-				A(Href(fmt.Sprintf("/?date=%s", diary.Date)),
-					Text(dateutil.MustFormatDateKorWithWeekDay(diary.Date)),
-				),
-			),
-		)
+		items = append(items, views.DiaryListItem{Date: diary.Date})
 	}
 
-	return Group(lis).Render(c.Response().Writer)
+	return views.DiaryListItems(items).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // MonthlyDiaryDates는 특정 월에 작성한 일기 날짜 목록을 반환한다.

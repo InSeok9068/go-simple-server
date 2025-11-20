@@ -1,0 +1,68 @@
+package views
+
+import (
+	"fmt"
+
+	"simple-server/pkg/util/dateutil"
+)
+
+type DiaryListItem struct {
+	Date string
+}
+
+type SearchResultSnippet struct {
+	Prefix   string
+	Match    string
+	Suffix   string
+	HasMatch bool
+}
+
+type SearchResultItem struct {
+	Date    string
+	Snippet SearchResultSnippet
+}
+
+templ DiaryListItems(items []DiaryListItem) {
+	for _, item := range items {
+		<li>
+			<a href={ fmt.Sprintf("/?date=%s", item.Date) }>
+				{ dateutil.MustFormatDateKorWithWeekDay(item.Date) }
+			</a>
+		</li>
+	}
+}
+
+templ SearchResults(items []SearchResultItem) {
+	<ul class="list">
+		for _, item := range items {
+			<li>
+				<a href={ fmt.Sprintf("/?date=%s", item.Date) }>
+					<div>{ dateutil.MustFormatDateKorSimpleWithWeekDay(item.Date) }</div>
+					<div>
+						if item.Snippet.HasMatch {
+							{ item.Snippet.Prefix }
+							<b>{ item.Snippet.Match }</b>
+							{ item.Snippet.Suffix }
+						} else {
+							{ item.Snippet.Prefix }
+						}
+					</div>
+				</a>
+			</li>
+		}
+	</ul>
+}
+
+templ AiFeedbackResult(content string) {
+	<div>
+		<input type="hidden" name="ai-feedback" value={ content }/>
+		<div id="ai-feedback-markdown">{ content }</div>
+	</div>
+}
+
+templ AiImageResult(image string) {
+	<div>
+		<input type="hidden" name="ai-image" value={ image }/>
+		<img style="width:320px" src={ fmt.Sprintf("data:image/png;base64,%s", image) }/>
+	</div>
+}
