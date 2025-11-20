@@ -1,60 +1,60 @@
 package components
 
 import (
-        "fmt"
+	"fmt"
 
-        "simple-server/pkg/util/dateutil"
+	"simple-server/pkg/util/dateutil"
 )
 
 type DiaryListItem struct {
-        Date string
+	Date string
 }
 
 type SearchResultSnippet struct {
-        Prefix   string
-        Match    string
-        Suffix   string
-        HasMatch bool
+	Prefix   string
+	Match    string
+	Suffix   string
+	HasMatch bool
 }
 
 type SearchResultItem struct {
-        Date    string
-        Snippet SearchResultSnippet
+	Date    string
+	Snippet SearchResultSnippet
 }
 
 templ DiaryListItems(items []DiaryListItem) {
-        for _, item := range items {
-                <li>
-                        <a href={ fmt.Sprintf("/?date=%s", item.Date) }>
-                                { dateutil.MustFormatDateKorWithWeekDay(item.Date) }
-                        </a>
-                </li>
-        }
+	for _, item := range items {
+		<li>
+			<a href={ fmt.Sprintf("/?date=%s", item.Date) }>
+				{ dateutil.MustFormatDateKorWithWeekDay(item.Date) }
+			</a>
+		</li>
+	}
 }
 
 templ SearchResults(items []SearchResultItem) {
-        <ul class="list">
-                for _, item := range items {
-                        <li>
-                                <a href={ fmt.Sprintf("/?date=%s", item.Date) }>
-                                        <div>{ dateutil.MustFormatDateKorSimpleWithWeekDay(item.Date) }</div>
-                                        if item.Snippet.HasMatch {
-                                                <p>{ item.Snippet.Prefix }<span class="primary">{ item.Snippet.Match }</span>{ item.Snippet.Suffix }</p>
-                                        } else {
-                                                <p>{ item.Snippet.Prefix }</p>
-                                        }
-                                </a>
-                        </li>
-                }
-        </ul>
+	<ul class="list">
+		for _, item := range items {
+			<li>
+				<a href={ fmt.Sprintf("/?date=%s", item.Date) }>
+					<div>{ dateutil.MustFormatDateKorSimpleWithWeekDay(item.Date) }</div>
+					if item.Snippet.HasMatch {
+						<p>{ item.Snippet.Prefix }<span class="primary">{ item.Snippet.Match }</span>{ item.Snippet.Suffix }</p>
+					} else {
+						<p>{ item.Snippet.Prefix }</p>
+					}
+				</a>
+			</li>
+		}
+	</ul>
 }
 
 templ AiFeedbackResult(content string) {
-        <div id="ai-feedback-content">{ content }</div>
+	<div id="ai-feedback-content">{ content }</div>
 }
 
 templ AiImageResult(image string) {
-        <div id="ai-image-result" class="right-align">
-                <img src={ image } />
-        </div>
+	<div id="ai-image-result" class="right-align">
+		<img src={ image }/>
+	</div>
 }
