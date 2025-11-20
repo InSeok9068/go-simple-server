@@ -100,32 +100,38 @@ templ FeedbackActions(date string) {
 			<button data-ui="#ai-feedback">
 				<span>일기요정</span>
 			</button>
-			<menu class="top transparent no-wrap left right-align" id="ai-feedback" data-ui="#ai-feedback">
-				@AiFeedbackButton("1", "칭찬받기")
-				@AiFeedbackButton("2", "위로받기")
-				@AiFeedbackButton("3", "충고받기")
-				@AiFeedbackButton("4", "그림일기")
-				<li hx-get={ "/ai-feedback?date=" + date } hx-target="#ai-feedback-content" hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()">
-					<button class="fill">
-						<span>다시보기</span>
-					</button>
-				</li>
-			</menu>
+                        <menu class="top transparent no-wrap left right-align" id="ai-feedback" data-ui="#ai-feedback">
+                                @AiFeedbackButton("1", "칭찬받기")
+                                @AiFeedbackButton("2", "위로받기")
+                                @AiFeedbackButton("3", "충고받기")
+                                @AiFeedbackButton("4", "그림일기")
+                                <li
+                                        hx-get={ "/ai-feedback?date=" + date }
+                                        hx-target="#ai-feedback-content"
+                                        hx-swap="outerHTML"
+                                        hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()"
+                                >
+                                        <button class="fill">
+                                                <span>다시보기</span>
+                                        </button>
+                                </li>
+                        </menu>
 		</nav>
 	</nav>
 }
 
 templ AiFeedbackButton(strType string, title string) {
-	<li
-		hx-post={ fmt.Sprintf("/ai-feedback?type=%s", strType) }
-		hx-include="[name='content']"
-		hx-target="#ai-feedback-content"
-		hx-indicator="#feedback-loading"
-		hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()"
-	>
-		<button class="fill">
-			<span>{ title }</span>
-		</button>
+        <li
+                hx-post={ fmt.Sprintf("/ai-feedback?type=%s", strType) }
+                hx-include="[name='content']"
+                hx-target="#ai-feedback-content"
+                hx-indicator="#feedback-loading"
+                hx-swap="outerHTML"
+                hx-on:htmx:after-on-load="if (event.detail.successful) showAiFeedback()"
+        >
+                <button class="fill">
+                        <span>{ title }</span>
+                </button>
 	</li>
 }
 
