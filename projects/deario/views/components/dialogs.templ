@@ -53,27 +53,27 @@ templ CbtDialog() {
 }
 
 templ AiFeedbackDialog(date string) {
-        <dialog id="ai-feedback-dialog" class="max">
-                <h5>일기 요정</h5>
-                <form
-                        hx-post="/ai-feedback/save?"
-                        hx-swap="none"
-                        hx-on:htmx:after-on-load="if (event.detail.successful) closeModal('#ai-feedback-dialog'); showInfo('저장 되었습니다.')"
-                >
-                        <input type="hidden" name="date" value={ date }/>
-                        <div id="ai-feedback-content">
-                                <div id="ai-feedback-markdown"></div>
-                                <textarea name="ai-feedback" hidden></textarea>
-                        </div>
-                        <nav class="right-align">
-                                <button class="border" type="submit">
-                                        <i>save</i>
-                                        <span>저장</span>
-                                </button>
-                                <button type="button" onclick="closeModal('#ai-feedback-dialog')">닫기</button>
-                        </nav>
-                </form>
-        </dialog>
+	<dialog id="ai-feedback-dialog" class="max">
+		<h5>일기 요정</h5>
+		<form
+			hx-post="/ai-feedback/save?"
+			hx-swap="none"
+			hx-on:htmx:after-on-load="if (event.detail.successful) closeModal('#ai-feedback-dialog'); showInfo('저장 되었습니다.')"
+		>
+			<input type="hidden" name="date" value={ date }/>
+			<div id="ai-feedback-content">
+				<div id="ai-feedback-markdown"></div>
+				<textarea name="ai-feedback" hidden></textarea>
+			</div>
+			<nav class="right-align">
+				<button class="border" type="submit">
+					<i>save</i>
+					<span>저장</span>
+				</button>
+				<button type="button" onclick="closeModal('#ai-feedback-dialog')">닫기</button>
+			</nav>
+		</form>
+	</dialog>
 }
 
 templ CalendarDialog(date string) {

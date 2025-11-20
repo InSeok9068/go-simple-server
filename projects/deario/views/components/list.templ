@@ -50,17 +50,17 @@ templ SearchResults(items []SearchResultItem) {
 }
 
 templ AiFeedbackResult(content string) {
-        <div id="ai-feedback-content">
-                <div id="ai-feedback-markdown">{ content }</div>
-                <textarea name="ai-feedback" hidden>{ content }</textarea>
-        </div>
+	<div id="ai-feedback-content">
+		<div id="ai-feedback-markdown">{ content }</div>
+		<textarea name="ai-feedback" hidden>{ content }</textarea>
+	</div>
 }
 
 templ AiImageResult(image string) {
-        <div id="ai-feedback-content">
-                <div id="ai-image-result" class="right-align">
-                        <img src={ image }/>
-                </div>
-                <input type="hidden" name="ai-image" value={ image }/>
-        </div>
+	<div id="ai-feedback-content">
+		<div id="ai-image-result" class="right-align">
+			<img src={ image }/>
+		</div>
+		<input type="hidden" name="ai-image" value={ image }/>
+	</div>
 }
