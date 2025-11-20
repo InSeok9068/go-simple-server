@@ -1,181 +1,261 @@
-## 공통
+# AGENTS.md
 
-1.  한글로 대답해줘.
-2.  불필요한 복잡성보다는 직관적이고 명확한 코드를 선호해.
-3.  충분히 공통 요소가 많이 보이고, 공통화가 명확히 유리한 시점에 리팩토링을 진행해.
-4.  모바일이 최우선이므로 모바일 우선으로 개발해.
+## 1. 공통 규칙
 
-## 프로젝트 구성
+1. 모든 답변은 **한글**로 작성해.
+2. 불필요한 복잡성보다 **직관적이고 명확한 코드**를 우선해.
+3. 공통 요소가 충분히 반복되고 효과가 명확할 때만 **리팩토링**을 진행해.
+4. 모든 화면과 UI는 **모바일 우선**(Mobile-first)으로 개발해.
+
+---
+
+## 2. 프로젝트 구성
 
 - **언어**: Go
 - **서버 프레임워크**: Echo
-- **템플릿 라이브러리**: Templ (Gomponents는 사용하지 않음)
+- **템플릿 엔진**: Templ (**Gomponents는 사용하지 않음**)
 - **데이터베이스**: SQLite
-- **데이터베이스 마이그레이션**: Goose
-- **SQL 코드 제너레이터**: SQLC
+- **DB 마이그레이션**: Goose
+- **SQL 코드 생성기**: SQLC
 - **프론트엔드 라이브러리**: HTMX, Alpine.js
-- **CSS 프레임워크**: BeerCSS (기본), TailwindCSS (homepage 프로젝트)
+- **CSS 프레임워크**: BeerCSS(기본), TailwindCSS(homepage만)
 - **개발 서버**: GoVisual
-- **소스 관리**: Monorepo (여러 프로젝트를 한 저장소에서 관리)
+- **소스 구조**: Monorepo
 
-## 프론트엔드 라이브러리 역할 정의
+---
 
-- **HTMX**
-  - 주요 역할: 서버와의 AJAX 통신을 통해 HTML 응답을 받아 현재 페이지의 특정 부분을 동적으로 업데이트.
-  - 사용 목적: 페이지 전체를 새로고침하지 않고, 사용자 인터랙션에 따라 서버로부터 새로운 HTML 조각(partial)을 가져와 UI를 갱신하여 SPA(Single Page Application)와 유사한 사용자 경험을 제공.
-- **Alpine.js**
-  - 주요 역할: 클라이언트 사이드의 가볍고 반응적인 인터랙션을 처리.
-  - 사용 목적: HTML 마크업 내에서 직접 UI 요소의 상태(state)를 관리하고, 해당 상태 변화에 따른 동적인 동작 (예: 드롭다운 메뉴, 탭 전환, 모달 창 표시/숨김 등)을 구현.
-- **HTMX/Alpine 적용 패턴**
-  - 여러 프로젝트가 같은 UI 조각을 재사용한다면 `shared/views` 혹은 `shared/static/js`로 승격하고, 프로젝트 고유 변수만 래핑해 덮어쓰는 식으로 중복을 막아.
-  - Alpine 상태는 클라이언트에서만 결정 가능한 미세 상호작용(모달 토글 등)에 집중하고, 서버 데이터 의존 상태는 HTMX 응답으로 덮는 것을 기본값으로 삼아.
-- **Templ**
-  - 주요 역할: HTML과 매우 유사한 전용 템플릿 문법으로 UI 구조를 정의하면, 이를 타입이 붙은 Go 코드로 변환해주는 정적 템플릿 엔진.
-  - 사용 목적: .templ 파일 안에서 HTML 마크업을 작성하듯이 컴포넌트를 정의하고, templ generate 명령으로 해당 템플릿을 Go 코드로 미리 컴파일해서(= Go 버전으로 변환해서) 사용함으로써, 런타임 템플릿 파싱 없이 타입 안정성과 성능을 확보.
-  - **공통 컴포넌트**: `simple-server/shared/views` 패키지를 import하여 사용.
+## 3. 프론트엔드 라이브러리 역할 정의
 
-## CSS 라이브러리 사용 정의
+### HTMX
 
-- **BeerCSS**
-  - 기본 CSS 프레임워크로, HTML 마크업 내에서 직접 CSS 클래스를 사용하여 레이아웃과 스타일을 정의.
-  - **UI 제어**: `data-ui="#id"` 속성을 사용하여 모달, 메뉴, 사이드바 등을 제어(Alpine 불필요).
-  - 공식 문서 : https://beercss.com/
-  - 사용 법 : `.doc/css/beercss/SUMMARY.md`를 참고. ※ BeerCSS에서 사용되지 않는 CSS 클래스는 사용 금지
-  - 임의로 커스텀 CSS를 만들지 말것! 직접 커스텀 CSS를 활용하라는 명령이 아니라면 무조건 BeerCSS를 사용해!
-- **TailwindCSS**
-  - `homepage` 프로젝트에서만 사용.
-  - `task.sh install-tailwind`로 설치 가능.
+- **역할**: AJAX 요청으로 서버에서 HTML fragment를 받아 특정 영역만 동적으로 갱신.
+- **목적**: 전체 페이지 리로드 없이 SPA와 유사한 사용자 경험 제공.
 
-## 폴더 구조
+### Alpine.js
 
-- `cmd/{프로젝트명}/main.go`: 해당 프로젝트의 서버 실행 파일 (entrypoint).
-- `projects/{프로젝트명}/`: 해당 프로젝트의 소스 코드.
-  - `handlers`: HTTP 요청을 처리하는 핸들러.
-  - `views`: `Templ`를 사용하여 HTML 뷰를 생성하는 컴포넌트.
-  - `static`: CSS, JavaScript, 이미지 등 정적 파일.
-  - `migrations`: `Goose`를 사용한 데이터베이스 스키마 마이그레이션 파일.
-  - `query.sql`: `SQLC`가 사용할 SQL 쿼리.
-- `internal`: 여러 프로젝트에서 공유하지만 외부로 노출되지 않는 서버 측 공통 패키지 (DB 연결, 미들웨어 등).
-  - `validate`: 요청 데이터 검증 패키지.
-- `shared`: 여러 프로젝트에서 공유하는 프론트엔드 관련 공통 패키지.
-  - `views`: 공통 `Templ` 컴포넌트 (레이아웃, 헤더, 공통 UI 등).
-  - `static`: 공통 정적 파일 (JS 라이브러리, 공통 CSS 등).
-- `pkg`: 외부 의존성이 없는 순수 유틸리티 함수 패키지.
-  - `util/`: 유틸리티 함수 패키지.
+- **역할**: 클라이언트 측에서 경량 상태 관리 및 UI 인터랙션 처리.
+- **목적**: 모달/드롭다운 등 즉각적 UI 동작 구현.
 
-## 코딩 스타일 가이드
+### HTMX × Alpine 적용 패턴
 
-### 1. Handler 패턴
+- 여러 프로젝트에서 재사용되는 HTML 조각은
+  `shared/views` 또는 `shared/static/js`로 **공통화**.
+- Alpine 상태는 반드시 **클라이언트에서만 결정 가능한 미세 상호작용**에 사용.
+- 서버 데이터 기반 UI 상태는 **HTMX 응답**으로 갱신.
+
+### Templ
+
+- **역할**: HTML과 유사한 문법으로 UI를 작성하면, 정적 Go 코드로 컴파일하는 템플릿 엔진.
+- **목적**: `.templ`에서 작성한 마크업을 `templ generate`로 미리 Go 코드로 변환하여
+  런타임 파싱 비용 없이 빠르고 타입 안정적인 렌더링을 제공.
+- **공통 컴포넌트 위치**: `simple-server/shared/views`
+
+---
+
+## 4. CSS 라이브러리 사용 정의
+
+### BeerCSS (기본)
+
+- HTML 안에 CSS 클래스를 직접 적용해 UI 구성.
+- 모달/사이드바 등의 UI 동작은 `data-ui="#id"`만으로 제어 가능 → Alpine.js 불필요.
+- 문서: https://beercss.com/
+- 사용 가이드: `.doc/css/beercss/SUMMARY.md`
+- ❗ **커스텀 CSS 금지**, BeerCSS에서 제공하지 않는 클래스도 사용 금지.
+
+### TailwindCSS (homepage 전용)
+
+- 설치: `task.sh install-tailwind`
+
+---
+
+## 5. 폴더 구조
+
+```
+cmd/{project}/main.go # 서버 엔트리포인트
+projects/{project}/ # 프로젝트 소스
+├─ handlers/ # Echo 핸들러
+├─ views/ # Templ 템플릿
+├─ static/ # 정적 파일
+├─ migrations/ # Goose 마이그레이션
+└─ query.sql # SQLC 쿼리
+internal/ # 외부 노출 안 되는 공용 서버 코드
+└─ validate/ # 검증 패키지
+shared/ # 공통 프론트엔드 자원
+├─ views/ # 공통 Templ
+└─ static/ # 공통 JS, CSS
+pkg/util/ # 순수 유틸 함수
+```
+
+---
+
+## 6. 코딩 스타일 가이드
+
+### 6.1 Handler 패턴
 
 1. **바인딩 & 검증**
 
-   - `c.Bind(&dto)` → `c.Validate(&dto)`
-   - 실패 시 `validate.HTTPError` 또는 `echo.NewHTTPError` 사용
-     (메시지는 **한글**로 명확하게 작성)
+   - `c.Bind(&dto)`
+   - `c.Validate(&dto)`
+   - 실패 시 → `validate.HTTPError` 또는 `echo.NewHTTPError`
 
 2. **DB 접근**
 
    - `queries, err := db.GetQueries()`
-   - `queries.Method(c.Request().Context(), params)`
+   - `queries.Method(ctx, params)`
 
 3. **응답**
-   - 정상 응답:
-     `views.Component(...).Render(c.Request().Context(), c.Response().Writer)`
-   - 오류 응답:
+   - 정상:
+     `views.Component(...).Render(ctx, c.Response().Writer)`
+   - 오류:
      `echo.NewHTTPError(code, message)`
 
-### 2. 에러 핸들링 & 로깅
+---
 
-- 에러는 Go 표준 (`if err != nil`) 으로 명시적으로 처리.
-- 오류 응답 시 `echo.NewHTTPError` 활용.
-- 로그는 `slog` 사용:
-  - `DEBUG`, `INFO`, `WARN`, `ERROR` 레벨을 상황에 맞게 기록.
-  - 로그 메시지는 **한글**로 명확하게 작성.
+### 6.2 에러 핸들링 & 로깅
 
-### 3. Templ 작성 가이드
+- 에러 처리는 Go 표준 방식: `if err != nil { ... }`
+- 에러 응답: `echo.NewHTTPError`
+- 로깅: `slog`
+  - `DEBUG`, `INFO`, `WARN`, `ERROR`
+  - 메시지는 **한글로 명확하게**
 
-- 템플릿은 `.templ` 파일에 HTML과 유사한 문법으로 작성.
-- 서버 주도 렌더링을 기본값으로 사용.
+---
 
-**동적 기능은 다음 규칙을 따른다:**
+### 6.3 Templ 작성 가이드
 
-- **HTMX로 서버 기반 동적 처리**
-  - `hx-get`, `hx-post`, `hx-target`, `hx-swap` 등을 적극 활용.
-- **Alpine.js는 클라이언트 상태가 필요할 때만 사용**
-  - 상태 전환, 모달 토글 등의 가벼운 상호작용에 한정.
-  - JavaScript 로직은 반드시 별도 `.js` 파일로 분리.
+- `.templ`에서 HTML과 동일한 구조로 작성.
+- 서버 주도 렌더링이 기본값.
 
-**중요:**
+**동적 기능 규칙**
 
-- `.templ` 파일 수정 시 **반드시 `templ generate`** 실행해 Go 코드로 재생성해야 함.
+- **HTMX**로 데이터 기반 UI 동작 처리
+  (`hx-get`, `hx-post`, `hx-target`, `hx-swap`)
+- **Alpine.js**는 클라이언트 상태가 필요한 경우에만 사용
+  (모달/탭/드롭다운 등)
+- JS는 항상 **별도 .js 파일에 분리**.
 
-### 4. 네이밍 & 폴더 구조
+**중요**
 
-- 파일명, 함수명, 변수명은 Go 표준 컨벤션 준수.
-- 재사용 가능한 UI 요소는 `shared/views` 또는 `shared/static/js`로 승격하여 중복 제거.
+- `.templ` 파일을 수정했으면 반드시
+  → `templ generate` 실행해 Go 코드 재생성.
 
-## HTTP/HTMX 응답 규칙
+---
 
-- 저장/수정/삭제 성공: 204 No Content. 본문 없이 성공을 명확히 표현하고 HTMX 스왑을 방지.
-- 새 리소스 생성: 201 Created. 필요 시 `Location` 헤더로 리소스 위치 제공.
-- 비동기 처리 접수: 202 Accepted. 예) 작업 큐에 등록만 하는 요청.
-- 부분 갱신(HTML 조각): 200 OK + HTML 본문을 반환해 대상 영역을 갱신.
-- 리다이렉션: `HX-Redirect` 헤더 설정 후 204 또는 200으로 종료.
-- 오류 응답: 상황에 맞는 4xx/5xx와 한글 메시지를 명확히 반환.
+## 7. HTTP / HTMX 응답 규칙
 
-참고: 200 OK + 빈 본문은 HTMX 기본 스왑으로 대상 영역을 비워버릴 수 있음. 바디가 없을 때는 204를 사용해 의도(스왑 없음)를 분명히 한다.
+- **204 No Content**: 저장/수정/삭제 성공 (스왑 방지)
+- **201 Created**: 생성된 리소스
+- **202 Accepted**: 비동기 작업 접수
+- **200 OK + HTML**: 부분 갱신
+- **HX-Redirect** 헤더로 리다이렉션 처리
+- 오류: 적절한 4xx/5xx + 한글 메시지
 
-## 런타임 모드
+⚠ `200 OK` + **빈 본문** → HTMX가 대상 영역을 비워버림
+→ 의도적으로 본문이 없을 때는 **204** 사용
 
-- 개발 모드: GoVisual로 실행(`TransferEchoToGoVisualServerOnlyDev`), 정적 파일은 로컬 디스크 사용.
-- 운영 모드: Echo 단독 실행, 정적 파일은 `embed.FS` 사용, Gzip 활성화.
-- 요청 타임아웃: 1분, 요청당 바디 제한: 5MB, 레이트리미트: 초당 20회.
+---
 
-## 정적/임베드 자원
+## 8. 런타임 모드
+
+### 개발 모드
+
+- GoVisual 사용
+- 정적 파일: 로컬 디스크
+- 기능: `TransferEchoToGoVisualServerOnlyDev`
+
+### 운영 모드
+
+- Echo 단독 실행
+- 정적 파일: embed.FS
+- Gzip 활성화
+- 타임아웃: 1분
+- 요청 바디 제한: 5MB
+- RateLimit: 초당 20회
+
+---
+
+## 9. 정적/임베드 자원
 
 - 공통 정적: `/shared/static` → `shared/static/*`
 - 프로젝트 정적: `/static` → `projects/{name}/static/*`
-- PWA/서비스워커: `/manifest.json`, `/firebase-messaging-sw.js` 매핑.
-- Dev: `os.DirFS`, Prod: `resources.EmbeddedFiles`(embed) 사용.
+- PWA 파일 매핑:
+  - `/manifest.json`
+  - `/firebase-messaging-sw.js`
+- Dev: `os.DirFS`
+- Prod: `resources.EmbeddedFiles` (embed)
 
-## 인증/권한
+---
 
-- 인증: Firebase ID 토큰을 `/create-session`에 전달 → `session_v2` 쿠키 저장(Lax, 운영은 Secure).
-- 사용자 식별: `authutil.SessionUID(c)` 사용(없으면 에러 처리).
-- 권한: Casbin(SQL 어댑터). `obj=c.Path()`, `act=METHOD`. 모델은 `model.conf`(embed), 정책은 DB 저장.
+## 10. 인증 및 권한
 
-## 라우팅/핸들러 가이드
+- Firebase ID 토큰 → `/create-session` → `session_v2` 쿠키 저장
+- 사용자 식별: `authutil.SessionUID(c)`
+- 권한: Casbin(SQL adapter)
+  - obj = `c.Path()`
+  - act = HTTP METHOD
+  - policy = DB 저장
+  - model = `model.conf` (embed)
 
-- 공개 라우트: 인덱스/로그인/프라이버시/리스트 조회 등.
-- 보호 라우트: 저장/수정/삭제/검색/통계 등(세션 + 권한 필요).
-- 바인딩/검증: `c.Bind(...)` + 최소한의 검증, 잘못된 입력은 400/422.
-- 에러: `echo.NewHTTPError`로 4xx/5xx와 한글 메시지 반환.
+---
 
-## 테스트 가이드
+## 11. 라우팅 / 핸들러 가이드
 
-- ❗ **중요**: CI 환경에는 데이터베이스가 없어. 반드시 Mock 기반의 순수 유닛 테스트만 작성해줘.
-- 유닛 테스트는 원본 파일과 같은 경로에 `{파일}_test.go` 형식으로 작성해.
+- **공개 라우트**: 로그인/인덱스/프라이버시/리스트 조회
+- **보호 라우트**: 저장/수정/삭제/검색/통계
+- 바인딩 실패 → 400/422
+- 에러 처리 → `echo.NewHTTPError`
 
-## 코드 생성 및 마이그레이션
+---
 
-- **스키마 수정**: `./projects/{프로젝트명}/migrations/` 폴더에 `*.sql` 마이그레이션 파일을 추가해.
-- **쿼리 수정**: `./projects/{프로젝트명}/query.sql` 파일을 수정해.
-- **SQL 코드 생성**: 프로젝트 루트 디렉토리에서 `./task.sh sqlc-generate {프로젝트명}` 명령어를 실행해.
-- **Templ 코드 생성**: `.templ` 파일 수정 후 `templ generate` 명령어를 실행해. (터미널에서 직접 실행)
+## 12. 테스트 가이드
 
-## 프로젝트 설명
+- CI 환경에는 DB가 없음 → **Mock 기반 유닛 테스트만**
+- 테스트 파일명: `{파일}_test.go`
+- 테스트 파일은 원본 파일과 같은 디렉토리 위치
 
-- **homepage**: 여러 서비스들을 소개하고 진입점을 제공하는 포털 페이지.
-  - **특이사항**: 이 프로젝트는 `BeerCSS` 대신 `TailwindCSS`를 사용해.
-- **ai-study**: 특정 주제를 입력하면 AI가 관련된 세부 학습 주제 10가지를 제안하는 서비스.
-- **deario**: 오늘의 일기를 작성하면 AI가 간단한 피드백으로 하루를 돌아볼 수 있게 도와주는 서비스.
-- **closet**: 나의 옷장 데이터를 활용한 AI 스타일 추천 서비스.
-- **sample**: 새로운 기능이나 라이브러리 동작을 검증하기 위한 샘플 프로젝트.
+---
 
-## ⭐ 최종 확인 단계
+## 13. 코드 생성 및 마이그레이션
 
-- 수정 완료 후, 위에 명시된 모든 가이드를 준수했는지 다시 한번 확인해줘.
-- 마지막으로, 프로젝트 루트 디렉토리에서 `./task.sh check`를 실행해서 **빌드, 테스트, 린트(linter) 검증**을 모두 진행해줘.
-- 한글로 작성한 주석, 에러메시지, UI 텍스트는 한글이 깨지지 않았는지 확인하고, 필요하다면 수정해줘.
-- `check` 과정에서 실패가 발생하면, 원인을 분석하여 수정한 후 **성공할 때까지 재시도**해줘.
-- ❗ **주의**: `./task.sh check` 명령어는 여러 작업을 수행하므로 시간이 다소 걸릴 수 있어. 응답이 없다고 오류로 판단하지 말고, 충분히 기다린 후 결과를 확인해줘.
+- **스키마 수정**:
+  `projects/{project}/migrations/*.sql`
+- **SQL 수정**:
+  `projects/{project}/query.sql`
+- **SQLC 실행**:
+  `./task.sh sqlc-generate {project}`
+- **Templ 코드 생성**:
+  `.templ` 수정 후 반드시 `templ generate`
+
+---
+
+## 14. 프로젝트 설명
+
+- **homepage**
+
+  - 여러 서비스를 소개하는 포털
+  - CSS: TailwindCSS 사용
+
+- **ai-study**
+
+  - 특정 주제를 입력하면 관련 학습 주제 10개 추천
+
+- **deario**
+
+  - 일기를 분석해 AI 피드백 제공
+
+- **closet**
+
+  - 옷장 데이터 기반 AI 스타일 추천
+
+- **sample**
+  - 신기능 및 라이브러리 테스트용
+
+---
+
+## 15. ⭐ 최종 점검 체크리스트
+
+- 위의 모든 규칙을 준수했는가?
+- `./task.sh check` 실행해 빌드/테스트/린트 통과했는가?
+- 한글 메시지/주석이 깨지지 않는가?
+- 실패 시 → 원인을 분석 → 수정 → **다시 check 수행**
+- check는 시간이 걸리므로 기다렸다가 결과를 확인해야 함.
