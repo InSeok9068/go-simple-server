@@ -15,7 +15,7 @@ import (
 	"simple-server/pkg/util/authutil"
 	"simple-server/pkg/util/firebaseutil"
 	"simple-server/projects/deario/db"
-	"simple-server/projects/deario/views"
+	"simple-server/projects/deario/views/components"
 
 	"cloud.google.com/go/storage"
 	"github.com/labstack/echo/v4"
@@ -48,10 +48,10 @@ func DiaryImagesPage(c echo.Context) error {
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return views.DiaryImages(date, "", "", "").Render(c.Request().Context(), c.Response().Writer)
+		return components.DiaryImages(date, "", "", "").Render(c.Request().Context(), c.Response().Writer)
 	}
 
-	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Request().Context(), c.Response().Writer)
+	return components.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // UploadDiaryImage는 새 이미지를 업로드하고 저장한다.
@@ -87,7 +87,7 @@ func UploadDiaryImage(c echo.Context) error {
 		return err
 	}
 
-	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Request().Context(), c.Response().Writer)
+	return components.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // DeleteDiaryImage는 지정된 일기 이미지를 삭제한다.
@@ -133,7 +133,7 @@ func DeleteDiaryImage(c echo.Context) error {
 		return err
 	}
 
-	return views.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Request().Context(), c.Response().Writer)
+	return components.DiaryImages(date, diary.ImageUrl1, diary.ImageUrl2, diary.ImageUrl3).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // firstEmptyImageSlot은 비어 있는 이미지 슬롯을 찾는다.

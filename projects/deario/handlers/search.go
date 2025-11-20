@@ -8,7 +8,7 @@ import (
 
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
-	"simple-server/projects/deario/views"
+	"simple-server/projects/deario/views/components"
 
 	"github.com/labstack/echo/v4"
 )
@@ -38,18 +38,18 @@ func SearchDiaries(c echo.Context) error {
 		return err
 	}
 
-	items := make([]views.SearchResultItem, 0, len(diarys))
+	items := make([]components.SearchResultItem, 0, len(diarys))
 	for _, d := range diarys {
-		items = append(items, views.SearchResultItem{
+		items = append(items, components.SearchResultItem{
 			Date:    d.Date,
 			Snippet: snippetNodes(d.Content, q),
 		})
 	}
 
-	return views.SearchResults(items).Render(c.Request().Context(), c.Response().Writer)
+	return components.SearchResults(items).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func snippetNodes(content, keyword string) views.SearchResultSnippet {
+func snippetNodes(content, keyword string) components.SearchResultSnippet {
 	lowerContent := strings.ToLower(content)
 	lowerKeyword := strings.ToLower(keyword)
 	byteIndex := strings.Index(lowerContent, lowerKeyword)
@@ -59,9 +59,9 @@ func snippetNodes(content, keyword string) views.SearchResultSnippet {
 
 	if byteIndex == -1 {
 		if contentRuneLen > 20 {
-			return views.SearchResultSnippet{Prefix: string(contentRunes[:20]) + "..."}
+			return components.SearchResultSnippet{Prefix: string(contentRunes[:20]) + "..."}
 		}
-		return views.SearchResultSnippet{Prefix: content}
+		return components.SearchResultSnippet{Prefix: content}
 	}
 
 	runeIndex := utf8.RuneCountInString(lowerContent[:byteIndex])
@@ -87,7 +87,7 @@ func snippetNodes(content, keyword string) views.SearchResultSnippet {
 		suffix += "..."
 	}
 
-	return views.SearchResultSnippet{
+	return components.SearchResultSnippet{
 		Prefix:   prefix,
 		Match:    match,
 		Suffix:   suffix,

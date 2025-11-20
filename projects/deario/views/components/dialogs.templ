@@ -1,0 +1,159 @@
+package components
+
+import "fmt"
+
+templ CbtDialog() {
+        <dialog id="cbt-dialog" class="max">
+                <h5>CBT 인지행동치료</h5>
+                <nav>
+                        <a class="link" href="https://gemini.google.com/gem/3ddb44f68f79">Gemini CBT Gem으로 이동하기</a>
+                </nav>
+                <p class="bold">CBT 일기</p>
+                <ul class="list no-space">
+                        <li>
+                                떠오른 생각: 오늘 나를 힘들게 한 자동적 사고를 적기
+                                <br/>
+                                👉 발표 망쳤어 난 바보야
+                        </li>
+                        <li>
+                                생각 검토: 그 생각이 진짜인지, 다른 관점은 없는지 묻기
+                                <br/>
+                                👉 정말 다 망쳤나? 잘한 건 없어?
+                        </li>
+                        <li>
+                                새로운 생각: 더 나은 방식으로 다르게 생각해보기
+                                <br/>
+                                👉 아쉬운 점도 있었지만, 다음엔 더 잘할거야
+                        </li>
+                </ul>
+                <hr/>
+                <nav></nav>
+                <p class="bold">대화 자기 점검</p>
+                <ul class="list no-space">
+                        <li>
+                                감정 인정: 상대 감정을 충분히 받아줬는가
+                                <br/>
+                                👉 많이 힘들었겠네
+                        </li>
+                        <li>
+                                숨은 의도: 말 뒤의 감정/의도를 추측했는가
+                                <br/>
+                                👉 혹시 피곤해서 예민한 건가?
+                        </li>
+                        <li>
+                                판단/변명: 내 스스로 판단하거나 변명하지 않았는가
+                                <br/>
+                                👉 네가 서운했겠네. 미안해 (변명 X)
+                        </li>
+                </ul>
+                <nav class="right-align">
+                        <button data-ui="#cbt-dialog">닫기</button>
+                </nav>
+        </dialog>
+}
+
+templ AiFeedbackDialog(date string) {
+        <dialog id="ai-feedback-dialog" class="max">
+                <h5>일기 요정</h5>
+                <form>
+                        <input type="hidden" name="date" value={ date }/>
+                        <div id="ai-feedback-content">안녕</div>
+                        <nav class="right-align">
+                                <button
+                                        class="border"
+                                        hx-post="/ai-feedback/save?"
+                                        hx-swap="none"
+                                        hx-on:htmx:after-on-load="if (event.detail.successful) closeModal('#ai-feedback-dialog'); showInfo('저장 되었습니다.')"
+                                >
+                                        <i>save</i>
+                                        <span>저장</span>
+                                </button>
+                                <button type="button" onclick="closeModal('#ai-feedback-dialog')">닫기</button>
+                        </nav>
+                </form>
+        </dialog>
+}
+
+templ CalendarDialog(date string) {
+        <dialog id="calendar-dialog" class="bottom">
+                <h5>달력</h5>
+                <div class="space"></div>
+                <div id="calendar-picker"></div>
+                <nav class="right-align">
+                        <button data-ui="#calendar-dialog">닫기</button>
+                </nav>
+        </dialog>
+}
+
+templ DiaryImageDialog(date string) {
+        <dialog id="diary-image-dialog" class="bottom">
+                <h5>이미지</h5>
+                <div hx-get={ fmt.Sprintf("/diary/images?date=%s", date) } hx-trigger="load"></div>
+                <div class="space"></div>
+                <button>
+                        <i>attach_file</i>
+                        File
+                        <input type="file" accept="image/*" id="diary-image-file" onchange="previewDiaryImage(this)"/>
+                </button>
+                <nav class="right-align">
+                        <img id="diary-image-loading" src="/shared/static/spinner.svg" style="display:none" alt="로딩"/>
+                        <button type="button" onclick={ templ.JSFuncCall("uploadDiaryImage", date) }>업로드</button>
+                </nav>
+                <nav class="right-align">
+                        <button data-ui="#diary-image-dialog">닫기</button>
+                </nav>
+        </dialog>
+}
+
+templ DiaryListDialog() {
+        <dialog id="diary-list-dialog" class="max">
+                <h5>작성 일지</h5>
+                <ul id="diary-list-content" class="list border"></ul>
+                <div x-data="{ page : 1 }">
+                        <nav class="center-align">
+                                <button
+                                        hx-get="/diary/list"
+                                        hx-target="#diary-list-content"
+                                        hx-trigger="load delay:0.5s, click"
+                                        hx-swap="beforeend"
+                                        @click="page++"
+                                        :hx-vals="JSON.stringify({ page: page })"
+                                >
+                                        <i>arrow_drop_down</i>
+                                </button>
+                        </nav>
+                        <nav class="right-align">
+                                <button data-ui="#diary-list-dialog">닫기</button>
+                        </nav>
+                </div>
+        </dialog>
+}
+
+templ MenuDialog() {
+        <dialog id="menu-dialog" class="right">
+                <h5>메뉴</h5>
+                <ul class="list">
+                        <li class="wave round">
+                                <a href="/statistic">
+                                        <i>monitoring</i>
+                                        통계
+                                </a>
+                        </li>
+                        <li class="wave round">
+                                <a href="/setting">
+                                        <i>settings</i>
+                                        설정
+                                </a>
+                        </li>
+                        <li class="wave round">
+                                <a href="/privacy">
+                                        <i>admin_panel_settings</i>
+                                        개인정보 처리방침
+                                </a>
+                        </li>
+                </ul>
+                <nav class="right-align">
+                        <button data-ui="#menu-dialog">닫기</button>
+                </nav>
+        </dialog>
+}

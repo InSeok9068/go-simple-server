@@ -6,7 +6,7 @@ import (
 	"simple-server/pkg/util/authutil"
 	"simple-server/pkg/util/maputil"
 	"simple-server/projects/deario/db"
-	"simple-server/projects/deario/views"
+	"simple-server/projects/deario/views/pages"
 
 	"github.com/labstack/echo/v4"
 )
@@ -28,7 +28,7 @@ func SettingsPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정을 가져오지 못했습니다.")
 	}
 
-	return views.Setting(userSetting).Render(c.Request().Context(), c.Response().Writer)
+	return pages.Setting(userSetting).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // UpdateSettings는 사용자 설정을 저장한다.

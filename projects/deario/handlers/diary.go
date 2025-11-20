@@ -11,7 +11,8 @@ import (
 	"simple-server/internal/validate"
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
-	"simple-server/projects/deario/views"
+	"simple-server/projects/deario/views/components"
+	"simple-server/projects/deario/views/pages"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,7 +28,7 @@ func IndexPage(c echo.Context) error {
 	uid, _ := authutil.SessionUID(c)
 
 	if uid == "" {
-		return views.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Request().Context(), c.Response().Writer)
+		return pages.Index(os.Getenv("APP_TITLE"), date, "0").Render(c.Request().Context(), c.Response().Writer)
 	}
 
 	queries, err := db.GetQueries()
@@ -46,7 +47,7 @@ func IndexPage(c echo.Context) error {
 
 	mood := diaryMood(diary, errDiary)
 
-	return views.Index(os.Getenv("APP_TITLE"), date, mood).Render(c.Request().Context(), c.Response().Writer)
+	return pages.Index(os.Getenv("APP_TITLE"), date, mood).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // GetDiary는 특정 날짜의 일기를 조회한다.
@@ -74,9 +75,9 @@ func GetDiary(c echo.Context) error {
 	})
 
 	if err != nil {
-		return views.DiaryContentForm(date, "").Render(c.Request().Context(), c.Response().Writer)
+		return components.DiaryContentForm(date, "").Render(c.Request().Context(), c.Response().Writer)
 	}
-	return views.DiaryContentForm(diary.Date, diary.Content).Render(c.Request().Context(), c.Response().Writer)
+	return components.DiaryContentForm(diary.Date, diary.Content).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // ListDiaries는 일기 날짜 목록을 반환한다.
@@ -104,12 +105,12 @@ func ListDiaries(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "목록을 가져오지 못했습니다.")
 	}
 
-	items := make([]views.DiaryListItem, 0, len(diarys))
+	items := make([]components.DiaryListItem, 0, len(diarys))
 	for _, diary := range diarys {
-		items = append(items, views.DiaryListItem{Date: diary.Date})
+		items = append(items, components.DiaryListItem{Date: diary.Date})
 	}
 
-	return views.DiaryListItems(items).Render(c.Request().Context(), c.Response().Writer)
+	return components.DiaryListItems(items).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // MonthlyDiaryDates는 특정 월에 작성한 일기 날짜 목록을 반환한다.

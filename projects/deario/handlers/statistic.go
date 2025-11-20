@@ -7,7 +7,7 @@ import (
 
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
-	"simple-server/projects/deario/views"
+	"simple-server/projects/deario/views/pages"
 
 	"github.com/labstack/echo/v4"
 )
@@ -28,7 +28,7 @@ func StatsPage(c echo.Context) error {
 		return err
 	}
 
-	return views.Statistic().Render(c.Request().Context(), c.Response().Writer)
+	return pages.Statistic().Render(c.Request().Context(), c.Response().Writer)
 }
 
 // buildMoodMap은 월별 기분 데이터를 맵으로 변환한다.

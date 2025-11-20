@@ -9,7 +9,7 @@ import (
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/tasks"
-	"simple-server/projects/deario/views"
+	"simple-server/projects/deario/views/components"
 
 	"github.com/labstack/echo/v4"
 	"maragu.dev/goqite/jobs"
@@ -66,7 +66,7 @@ func GenerateAIFeedback(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return views.AiImageResult(result).Render(c.Request().Context(), c.Response().Writer)
+		return components.AiImageResult(result).Render(c.Request().Context(), c.Response().Writer)
 	}
 
 	prompt := fmt.Sprintf(`아래의 내용은 나의 오늘 하루의 일기야
@@ -83,7 +83,7 @@ func GenerateAIFeedback(c echo.Context) error {
 		return err
 	}
 
-	return views.AiFeedbackResult(result).Render(c.Request().Context(), c.Response().Writer)
+	return components.AiFeedbackResult(result).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // SaveAIFeedback는 생성된 AI 피드백과 이미지를 저장한다.
@@ -146,14 +146,14 @@ func GetAIFeedback(c echo.Context) error {
 	}
 
 	if diary.AiImage != "" {
-		return views.AiImageResult(diary.AiImage).Render(c.Request().Context(), c.Response().Writer)
+		return components.AiImageResult(diary.AiImage).Render(c.Request().Context(), c.Response().Writer)
 	}
 
 	if diary.AiFeedback == "" {
 		return echo.NewHTTPError(http.StatusInternalServerError, "저장된 일기요정이 없습니다.")
 	}
 
-	return views.AiFeedbackResult(diary.AiFeedback).Render(c.Request().Context(), c.Response().Writer)
+	return components.AiFeedbackResult(diary.AiFeedback).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // GenerateAIReport AI 상담 리포트를 생성한다.

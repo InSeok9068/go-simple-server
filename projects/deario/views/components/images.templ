@@ -1,0 +1,29 @@
+package components
+
+import "fmt"
+
+templ DiaryImages(date string, img1 string, img2 string, img3 string) {
+        <nav class="row scroll" id="diary-image-content">
+                for i, u := range []string{img1, img2, img3} {
+                        if u != "" {
+                                <div>
+                                        <img src={ u } class="small-width small-height"/>
+                                        <button
+                                                class="transparent"
+                                                type="button"
+                                                style="position:absolute; right:1px;"
+                                                hx-delete="/diary/image"
+                                                hx-target="#diary-image-content"
+                                                hx-swap="outerHTML"
+                                                hx-vals={ fmt.Sprintf("{\"date\":\"%s\",\"slot\":%d}", date, i+1) }
+                                        >
+                                                <i>close</i>
+                                        </button>
+                                </div>
+                        }
+                }
+                if img1 == "" && img2 == "" && img3 == "" {
+                        <p>이미지가 없습니다.</p>
+                }
+        </nav>
+}
