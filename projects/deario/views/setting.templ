@@ -1,85 +1,85 @@
 package views
 
 import (
-        "fmt"
+	"fmt"
 
-        "simple-server/projects/deario/db"
-        "simple-server/projects/deario/views/layout"
-        shared "simple-server/shared/views"
+	"simple-server/projects/deario/db"
+	"simple-server/projects/deario/views/layout"
+	shared "simple-server/shared/views"
 )
 
 templ Setting(userSetting db.UserSetting) {
-        <!DOCTYPE html>
-        <html lang="ko">
-                <head>
-                        @shared.HeadsWithBeerTempl("설정")
-                        @shared.HeadsWithFirebaseAuthTempl()
-                        @shared.HeadsWithGoogleFontsTempl("Gamja Flower")
-                        <link rel="manifest" href="/manifest.json"/>
-                        <script src="/static/deario.js"></script>
-                </head>
-                <body>
-                        @shared.SnackbarTempl()
-                        @layout.AppHeader()
-                        <main class="responsive">
-                                <form hx-post="/setting" hx-swap="none" hx-on:htmx:after-on-load="showInfo('저장 되었습니다.')">
-                                        <fieldset>
-                                                <legend>설정</legend>
-                                                <nav>알림</nav>
-                                                <label class="switch">
-                                                        if userSetting.IsPush == 1 {
-                                                                <input type="checkbox" name="is_push" value="1" checked/>
-                                                        } else {
-                                                                <input type="checkbox" name="is_push" value="1"/>
-                                                        }
-                                                        <span></span>
-                                                </label>
-                                                <div class="field border label">
-                                                        <input type="time" name="push_time" value={ userSetting.PushTime }/>
-                                                        <label>알림시간</label>
-                                                </div>
-                                                <div class="field border label">
-                                                        <input type="number" name="random_range" value={ fmt.Sprintf("%d", userSetting.RandomRange) }/>
-                                                        <label>랜덤일자</label>
-                                                </div>
-                                                <nav>테마</nav>
-                                                <label class="switch icon">
-                                                        <input type="checkbox" x-data="" x-bind:checked="$store.theme.value === 'dark'" x-on:change="$store.theme.toggle()"/>
-                                                        <span>
-                                                                <i>dark_mode</i>
-                                                        </span>
-                                                </label>
-                                                <nav>테마색</nav>
-                                                <div class="field border label">
-                                                        <button>
-                                                                <i>palette</i>
-                                                                <span>Color</span>
-                                                                <input
-                                                                        type="color"
-                                                                        x-data=""
-                                                                        x-model="$store.theme.color"
-                                                                        x-on:change="$store.theme.setColor($event.target.value)"
-                                                                />
-                                                        </button>
-                                                </div>
-                                                <nav>폰트</nav>
-                                                <div class="field border label">
-                                                        <select x-data="" x-model="$store.font.value" x-on:change="$store.font.set($event.target.value)">
-                                                                <option value="gamja">감자꽃 (기본)</option>
-                                                                <option value="humanist">따뜻한 휴머니스트</option>
-                                                                <option value="neo_grotesque">깔끔한 모던 산세리프</option>
-                                                                <option value="monospace_code">코드 느낌 모노스페이스</option>
-                                                                <option value="industrial">빈티지 인더스트리얼</option>
-                                                                <option value="rounded_sans">동글동글 라운드 산세리프</option>
-                                                        </select>
-                                                        <label>폰트</label>
-                                                </div>
-                                                <nav class="right-align">
-                                                        <button>저장</button>
-                                                </nav>
-                                        </fieldset>
-                                </form>
-                        </main>
-                </body>
-        </html>
+	<!DOCTYPE html>
+	<html lang="ko">
+		<head>
+			@shared.HeadsWithBeerTempl("설정")
+			@shared.HeadsWithFirebaseAuthTempl()
+			@shared.HeadsWithGoogleFontsTempl("Gamja Flower")
+			<link rel="manifest" href="/manifest.json"/>
+			<script src="/static/deario.js"></script>
+		</head>
+		<body>
+			@shared.SnackbarTempl()
+			@layout.AppHeader()
+			<main class="responsive">
+				<form hx-post="/setting" hx-swap="none" hx-on:htmx:after-on-load="showInfo('저장 되었습니다.')">
+					<fieldset>
+						<legend>설정</legend>
+						<nav>알림</nav>
+						<label class="switch">
+							if userSetting.IsPush == 1 {
+								<input type="checkbox" name="is_push" value="1" checked/>
+							} else {
+								<input type="checkbox" name="is_push" value="1"/>
+							}
+							<span></span>
+						</label>
+						<div class="field border label">
+							<input type="time" name="push_time" value={ userSetting.PushTime }/>
+							<label>알림시간</label>
+						</div>
+						<div class="field border label">
+							<input type="number" name="random_range" value={ fmt.Sprintf("%d", userSetting.RandomRange) }/>
+							<label>랜덤일자</label>
+						</div>
+						<nav>테마</nav>
+						<label class="switch icon">
+							<input type="checkbox" x-data="" x-bind:checked="$store.theme.value === 'dark'" x-on:change="$store.theme.toggle()"/>
+							<span>
+								<i>dark_mode</i>
+							</span>
+						</label>
+						<nav>테마색</nav>
+						<div class="field border label">
+							<button>
+								<i>palette</i>
+								<span>Color</span>
+								<input
+									type="color"
+									x-data=""
+									x-model="$store.theme.color"
+									x-on:change="$store.theme.setColor($event.target.value)"
+								/>
+							</button>
+						</div>
+						<nav>폰트</nav>
+						<div class="field border label">
+							<select x-data="" x-model="$store.font.value" x-on:change="$store.font.set($event.target.value)">
+								<option value="gamja">감자꽃 (기본)</option>
+								<option value="humanist">따뜻한 휴머니스트</option>
+								<option value="neo_grotesque">깔끔한 모던 산세리프</option>
+								<option value="monospace_code">코드 느낌 모노스페이스</option>
+								<option value="industrial">빈티지 인더스트리얼</option>
+								<option value="rounded_sans">동글동글 라운드 산세리프</option>
+							</select>
+							<label>폰트</label>
+						</div>
+						<nav class="right-align">
+							<button>저장</button>
+						</nav>
+					</fieldset>
+				</form>
+			</main>
+		</body>
+	</html>
 }
