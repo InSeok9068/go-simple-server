@@ -33,7 +33,7 @@ require (
 	github.com/labstack/echo-contrib v0.17.4
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/lmittmann/tint v1.1.2
-	github.com/newrelic/go-agent/v3 v3.41.0
+	github.com/newrelic/go-agent/v3 v3.42.0
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrslog v1.5.2
 	github.com/pressly/goose/v3 v3.26.0
 	github.com/qustavo/sqlhooks/v2 v2.1.0
