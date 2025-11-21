@@ -27,12 +27,14 @@ show_help() {
   echo -e "  ${GREEN}release${NC} [project]"
   echo -e "  ${GREEN}install-tailwind${NC} [win|linux]"   # ← win으로 고정
   echo -e "  ${GREEN}sqlc-generate${NC} [project]"
+  echo -e "  ${GREEN}templ-generate${NC}"
   echo -e ""
   echo -e "${YELLOW}서비스 관리:${NC}"
   echo -e "  ${GREEN}service create${NC} [name] [port]"
   echo -e "  ${GREEN}service deploy${NC} [name]"
   echo -e "  ${GREEN}service remove${NC} [name]"
   echo -e "  ${GREEN}service undeploy${NC} [name]"
+
 
 }
 
@@ -49,6 +51,7 @@ case "${COMMAND}" in
   release)          bash "${SCRIPT_DIR}/release-all.sh" "$@" ;;
   install-tailwind) bash "${SCRIPT_DIR}/tailwindcss-install.sh" "$@" ;;
   sqlc-generate)    bash "${SCRIPT_DIR}/sqlc-generate.sh" "$@" ;;
+  templ-generate)   bash "${SCRIPT_DIR}/templ-generate.sh" "$@" ;;
   fmt)              bash "${SCRIPT_DIR}/format.sh" "$@" ;;
   service)          bash "${SCRIPT_DIR}/service-manager.sh" "$@" ;;
   *)
