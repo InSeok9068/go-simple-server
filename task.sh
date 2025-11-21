@@ -22,6 +22,7 @@ show_help() {
   echo -e "  ${GREEN}switch${NC} [project]"
   echo -e "  ${GREEN}check${NC} [build|test|lint]"
   echo -e "  ${GREEN}deps${NC}"
+  echo -e "  ${GREEN}fmt${NC}"
   echo -e "  ${GREEN}build-linux${NC}"
   echo -e "  ${GREEN}release${NC} [project]"
   echo -e "  ${GREEN}install-tailwind${NC} [win|linux]"   # ← win으로 고정
@@ -32,6 +33,7 @@ show_help() {
   echo -e "  ${GREEN}service deploy${NC} [name]"
   echo -e "  ${GREEN}service remove${NC} [name]"
   echo -e "  ${GREEN}service undeploy${NC} [name]"
+
 }
 
 if [[ -z "${COMMAND}" ]]; then
@@ -47,6 +49,7 @@ case "${COMMAND}" in
   release)          bash "${SCRIPT_DIR}/release-all.sh" "$@" ;;
   install-tailwind) bash "${SCRIPT_DIR}/tailwindcss-install.sh" "$@" ;;
   sqlc-generate)    bash "${SCRIPT_DIR}/sqlc-generate.sh" "$@" ;;
+  fmt)              bash "${SCRIPT_DIR}/format.sh" "$@" ;;
   service)          bash "${SCRIPT_DIR}/service-manager.sh" "$@" ;;
   *)
     echo -e "❌ 알 수 없는 명령어: ${YELLOW}${COMMAND}${NC}"
