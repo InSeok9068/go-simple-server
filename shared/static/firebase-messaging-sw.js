@@ -1,8 +1,8 @@
 importScripts(
-  "https://www.gstatic.com/firebasejs/11.0.2/firebase-app-compat.js"
+  "https://www.gstatic.com/firebasejs/11.0.2/firebase-app-compat.js",
 );
 importScripts(
-  "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging-compat.js"
+  "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging-compat.js",
 );
 
 // Firebase 초기화
@@ -25,7 +25,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(function (payload) {
   console.log(
     "[firebase-messaging-sw.js] Received background message:",
-    payload
+    payload,
   );
   const notificationTitle = payload.data.title || "Default Title";
   const notificationOptions = {
@@ -62,6 +62,6 @@ self.addEventListener("notificationclick", function (event) {
         if (clients.openWindow) {
           return clients.openWindow(urlToOpen);
         }
-      })
+      }),
   );
 });

@@ -22,22 +22,22 @@
     "body": [
       ". \"maragu.dev/gomponents\"",
       ". \"maragu.dev/gomponents/components\"",
-      ". \"maragu.dev/gomponents/html\""
-    ]
+      ". \"maragu.dev/gomponents/html\"",
+    ],
   },
   "Gomponents HTMX": {
     "scope": "go",
     "prefix": "gom",
-    "body": ["h \"maragu.dev/gomponents-htmx\""]
+    "body": ["h \"maragu.dev/gomponents-htmx\""],
   },
   "Gomponents Alpine": {
     "scope": "go",
     "prefix": "gom",
-    "body": ["x \"github.com/glsubri/gomponents-alpine\""]
+    "body": ["x \"github.com/glsubri/gomponents-alpine\""],
   },
   "Gomponents Lucide": {
     "scope": "go",
     "prefix": "gom",
-    "body": ["lucide \"github.com/eduardolat/gomponents-lucide\""]
-  }
+    "body": ["lucide \"github.com/eduardolat/gomponents-lucide\""],
+  },
 }

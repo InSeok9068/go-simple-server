@@ -156,5 +156,5 @@ export const resizeOnUpload = onObjectFinalized(
     } catch (e: any) {
       logger.error(`Resize failed for ${name}`, e?.message || e);
     }
-  }
+  },
 );

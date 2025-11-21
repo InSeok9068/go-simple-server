@@ -53,7 +53,7 @@ async function toggleRecord(btn) {
         if (res.ok) {
           const text = await res.text();
           const textarea = document.querySelector(
-            "#diary textarea[name='content']"
+            "#diary textarea[name='content']",
           );
           if (textarea) {
             textarea.value += (textarea.value ? "\n" : "") + text;

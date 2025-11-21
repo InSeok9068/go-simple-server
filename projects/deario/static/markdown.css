@@ -96,8 +96,8 @@
 #ai-feedback-markdown code,
 #ai-feedback-markdown pre,
 #ai-feedback-markdown kbd {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
-    monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 #ai-feedback-markdown code {

@@ -115,7 +115,7 @@ async function requestPermissionAndGetToken() {
     }
 
     const registration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js"
+      "/firebase-messaging-sw.js",
     );
     console.log("Service Worker registered:", registration);
 
@@ -144,7 +144,7 @@ async function requestPermissionAndGetToken() {
   } catch (error) {
     console.error(
       "An error occurred while getting permission or token:",
-      error
+      error,
     );
   }
 }

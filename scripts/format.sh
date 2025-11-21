@@ -9,4 +9,7 @@ go fmt ./...
 echo -e "${BLUE}Running templ fmt...${NC}"
 templ fmt .
 
+echo -e "${BLUE}Running prettier...${NC}"
+npx -y prettier --write .
+
 echo -e "${GREEN}Format complete!${NC}"

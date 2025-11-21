@@ -82,7 +82,7 @@ document.addEventListener("alpine:init", () => {
       };
       document.documentElement.style.setProperty(
         "--font-family",
-        fonts[this.value] || "Gamja Flower"
+        fonts[this.value] || "Gamja Flower",
       );
     },
   });

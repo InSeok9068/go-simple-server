@@ -1905,9 +1905,7 @@
           "valueType": "ms"
         }
       ],
-      "sortedBy": [
-        "rtt"
-      ],
+      "sortedBy": ["rtt"],
       "items": [
         {
           "origin": "https://www.googleapis.com",
@@ -1981,9 +1979,7 @@
         },
         "type": "debugdata"
       },
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "headings": [],
       "overallSavingsMs": 0
     },
@@ -4282,9 +4278,7 @@
     "scoreDisplayMode": "metricSavings",
     "displayValue": "절감 가능치: 26KiB",
     "details": {
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "headings": [
         {
           "valueType": "url",
@@ -4354,9 +4348,7 @@
     "details": {
       "type": "opportunity",
       "headings": [],
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "debugData": {
         "type": "debugdata",
         "metricSavings": {
@@ -4583,12 +4575,8 @@
           "totalBytes": 14093
         }
       ],
-      "skipSumming": [
-        "cacheLifetimeMs"
-      ],
-      "sortedBy": [
-        "totalBytes"
-      ]
+      "skipSumming": ["cacheLifetimeMs"],
+      "sortedBy": ["totalBytes"]
     },
     "category": "performance"
   },
@@ -4738,9 +4726,7 @@
         },
         "type": "debugdata"
       },
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "overallSavingsBytes": 0,
       "headings": [],
       "overallSavingsMs": 0,
@@ -4844,9 +4830,7 @@
         },
         "type": "debugdata"
       },
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "overallSavingsMs": 150,
       "overallSavingsBytes": 17353,
       "type": "opportunity",
@@ -4978,16 +4962,12 @@
           "granularity": 1
         }
       ],
-      "skipSumming": [
-        "cacheLifetimeMs"
-      ],
+      "skipSumming": ["cacheLifetimeMs"],
       "debugData": {
         "wastedBytes": 96793.6625,
         "type": "debugdata"
       },
-      "sortedBy": [
-        "wastedBytes"
-      ]
+      "sortedBy": ["wastedBytes"]
     },
     "category": "performance"
   },
@@ -5045,11 +5025,7 @@
       "type": "table",
       "debugData": {
         "impact": "serious",
-        "tags": [
-          "cat.sensory-and-visual-cues",
-          "wcag22aa",
-          "wcag258"
-        ],
+        "tags": ["cat.sensory-and-visual-cues", "wcag22aa", "wcag258"],
         "type": "debugdata"
       },
       "headings": [
@@ -5626,9 +5602,7 @@
           "LCP": 0
         }
       },
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "overallSavingsBytes": 0,
       "overallSavingsMs": 0
     },
@@ -6111,9 +6085,7 @@
           "label": "전송 크기"
         }
       ],
-      "sortedBy": [
-        "totalBytes"
-      ]
+      "sortedBy": ["totalBytes"]
     },
     "category": "performance"
   },
@@ -6259,9 +6231,7 @@
     "scoreDisplayMode": "informative",
     "displayValue": "40 밀리초",
     "details": {
-      "sortedBy": [
-        "serverResponseTime"
-      ],
+      "sortedBy": ["serverResponseTime"],
       "items": [
         {
           "serverResponseTime": 40,
@@ -6334,12 +6304,8 @@
           "url": "https://deario.toy-project.n-e.kr/"
         }
       ],
-      "skipSumming": [
-        "startTime"
-      ],
-      "sortedBy": [
-        "duration"
-      ],
+      "skipSumming": ["startTime"],
+      "sortedBy": ["duration"],
       "headings": [
         {
           "valueType": "url",
@@ -6438,9 +6404,7 @@
       },
       "items": [],
       "type": "opportunity",
-      "sortedBy": [
-        "wastedBytes"
-      ]
+      "sortedBy": ["wastedBytes"]
     },
     "category": "performance"
   },
@@ -7010,9 +6974,7 @@
     "details": {
       "type": "opportunity",
       "headings": [],
-      "sortedBy": [
-        "wastedMs"
-      ],
+      "sortedBy": ["wastedMs"],
       "overallSavingsMs": 0,
       "items": []
     },
@@ -7117,9 +7079,7 @@
       },
       "type": "opportunity",
       "headings": [],
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "overallSavingsMs": 0,
       "items": [],
       "overallSavingsBytes": 0
@@ -7165,9 +7125,7 @@
         },
         "type": "debugdata"
       },
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "items": [
         {
           "wastedPercent": 61.30073369931819,
@@ -7301,9 +7259,7 @@
           "FCP": 0
         }
       },
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "headings": []
     },
     "category": "performance"
@@ -7502,9 +7458,7 @@
           "LCP": 0
         }
       },
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "type": "opportunity",
       "headings": [
         {
@@ -8318,9 +8272,7 @@
         }
       ],
       "type": "table",
-      "sortedBy": [
-        "duration"
-      ],
+      "sortedBy": ["duration"],
       "items": [
         {
           "group": "other",
@@ -8404,9 +8356,7 @@
         },
         "type": "debugdata"
       },
-      "sortedBy": [
-        "wastedBytes"
-      ],
+      "sortedBy": ["wastedBytes"],
       "items": []
     },
     "category": "performance"
@@ -8802,9 +8752,7 @@
         "wastedMs": 289.4087999999998
       },
       "type": "table",
-      "sortedBy": [
-        "total"
-      ],
+      "sortedBy": ["total"],
       "items": [
         {
           "scriptParseCompile": 0.22920000000000001,
