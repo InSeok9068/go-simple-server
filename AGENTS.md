@@ -103,9 +103,10 @@
 ## 5. 폴더 구조 규칙
 
 ```text
-cmd/{project}/main.go        # 서버 엔트리포인트
+cmd/{project}/main.go        # 루트 CLI 프로젝트 실행파일
 projects/{project}/          # 프로젝트 소스
-├─ handlers/                 # Echo 핸들러
+├─ cmd/                      # 프로젝트 실행 파일
+├─ internal/                 # 프로젝트 내부 로직
 ├─ views/                    # Templ 템플릿
 ├─ static/                   # 정적 파일 (JS, 이미지 등)
 ├─ migrations/               # Goose 마이그레이션
@@ -163,6 +164,7 @@ Handler의 기본 흐름은 **항상 같은 패턴**을 따른다.
    ```
 
 3. **응답**
+
    - 정상 응답 (Templ 렌더링):
 
      ```go
@@ -270,10 +272,12 @@ HTMX와 함께 사용할 때의 응답 규칙을 명확히 한다.
   - URL: `/shared/static`
   - 실제 경로: `shared/static/*`
 - 프로젝트별 정적 자원
+
   - URL: `/static`
   - 실제 경로: `projects/{name}/static/*`
 
 - PWA 관련 파일 매핑
+
   - `/manifest.json`
   - `/firebase-messaging-sw.js`
 
@@ -311,6 +315,7 @@ HTMX와 함께 사용할 때의 응답 규칙을 명확히 한다.
 - **공개 라우트**
   - 로그인, 인덱스, 프라이버시, 리스트 조회 등
 - **보호 라우트**
+
   - 저장, 수정, 삭제, 검색, 통계 등
 
 - 바인딩 실패
@@ -342,6 +347,7 @@ HTMX와 함께 사용할 때의 응답 규칙을 명확히 한다.
   ./task.sh sqlc-generate {project}
   ```
 - **Templ 코드 생성**
+
   - `.templ` 수정 후 반드시 아래 명령 실행:
 
     ```bash
@@ -353,16 +359,20 @@ HTMX와 함께 사용할 때의 응답 규칙을 명확히 한다.
 ## 14. 프로젝트 설명
 
 - **homepage**
+
   - 여러 서비스를 소개하는 포털 역할
   - CSS: **TailwindCSS** 사용
 
 - **ai-study**
+
   - 특정 주제를 입력하면 관련 학습 주제 10개 추천
 
 - **deario**
+
   - 일기를 분석해 AI 피드백 제공
 
 - **closet**
+
   - 옷장 데이터 기반 AI 스타일 추천
 
 - **sample**
