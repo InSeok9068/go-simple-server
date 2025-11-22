@@ -6,15 +6,9 @@ import (
 	"log/slog"
 	"os"
 	resources "simple-server"
-	"simple-server/projects/deario/ai"
-	"simple-server/projects/deario/auth"
-	"simple-server/projects/deario/db"
-	"simple-server/projects/deario/diary"
-	"simple-server/projects/deario/notification"
-	"simple-server/projects/deario/privacy"
-	"simple-server/projects/deario/settings"
-
-	"github.com/robfig/cron/v3"
+	"simple-server/projects/closet/db"
+	"simple-server/projects/closet/internal/auth"
+	"simple-server/projects/closet/internal/wardrobe"
 
 	"simple-server/internal/config"
 	"simple-server/internal/debug"
@@ -27,8 +21,8 @@ import (
 func main() {
 	/* 환경 설정 */
 	config.LoadEnv()
-	os.Setenv("SERVICE_NAME", "deario")
-	os.Setenv("APP_TITLE", "Deario")
+	os.Setenv("SERVICE_NAME", "closet")
+	os.Setenv("APP_TITLE", "Closet")
 	os.Setenv("APP_DATABASE_URL", config.AppDatabaseURL(os.Getenv("SERVICE_NAME")))
 	/* 환경 설정 */
 
@@ -48,7 +42,7 @@ func main() {
 	/* DB 초기화 */
 
 	/* DB 마이그레이션 */
-	migrations, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/migrations")
+	migrations, _ := fs.Sub(resources.EmbeddedFiles, "projects/closet/migrations")
 	if err := migration.Up(database, migrations); err != nil {
 		slog.Error("마이그레이션 실패", "error", err)
 		return
@@ -63,14 +57,14 @@ func main() {
 
 	/* 개발은 GoVisual, 운영은 Echo */
 	if config.IsDevEnv() {
-		server := config.TransferEchoToGoVisualServerOnlyDev(e, "8002")
-		slog.Info("[✅ GoVisual] http server started on [::]:8002")
+		server := config.TransferEchoToGoVisualServerOnlyDev(e, "8003")
+		slog.Info("[✅ GoVisual] http server started on [::]:8003")
 		slog.Info("Browser Open : http://localhost:8080")
 		if err := server.ListenAndServe(); err != nil {
 			e.Logger.Fatal("GoVisual 서버 시작 실패", "error", err)
 		}
 	} else {
-		e.Logger.Fatal(e.Start(":8002"))
+		e.Logger.Fatal(e.Start(":8003"))
 	}
 }
 
@@ -78,7 +72,7 @@ func setUpServer() *echo.Echo {
 	e := echo.New()
 
 	// PWA 파일
-	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/deario/static/manifest.json")
+	manifest, _ := fs.Sub(resources.EmbeddedFiles, "projects/closet/static/manifest.json")
 	e.StaticFS("/manifest.json", manifest)
 
 	// Web Push 서비스워커 파일
@@ -94,12 +88,11 @@ func setUpServer() *echo.Echo {
 		slog.Error("Firebase 인증 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	e.GET("/", diary.IndexPage)
+	e.GET("/", wardrobe.IndexPage)
 	e.GET("/login", auth.LoginPage)
-	e.GET("/privacy", privacy.PrivacyPage)
 	e.POST("/logout", auth.Logout)
-	e.GET("/diary", diary.GetDiary)
-	e.GET("/diary/list", diary.ListDiaries)
+	e.GET("/items", wardrobe.ListItems)
+	e.GET("/items/:id/image", wardrobe.ItemImage)
 	/* 공개 라우터 */
 
 	/* 권한 라우터 */
@@ -108,36 +101,12 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	authGroup.GET("/diary/month", diary.MonthlyDiaryDates)
-	authGroup.GET("/diary/random", diary.RedirectToRandomDiary)
-	authGroup.POST("/diary/save", diary.SaveDiary)
-	authGroup.GET("/diary/search", diary.SearchDiaries)
-	authGroup.GET("/ai-feedback", ai.GetAIFeedback)
-	authGroup.POST("/ai-feedback", ai.GenerateAIFeedback)
-	authGroup.POST("/ai-feedback/save", ai.SaveAIFeedback)
-	authGroup.POST("/ai-report", ai.GenerateAIReport)
-	authGroup.POST("/save-pushToken", notification.RegisterPushToken)
-	authGroup.GET("/setting", settings.SettingsPage)
-	authGroup.POST("/setting", settings.UpdateSettings)
-	authGroup.POST("/diary/mood", diary.UpdateDiaryMood)
-	authGroup.GET("/statistic", diary.StatsPage)
-	authGroup.GET("/statistic/data", diary.GetStatsData)
-	authGroup.GET("/diary/images", diary.DiaryImagesPage)
-	authGroup.POST("/diary/image", diary.UploadDiaryImage)
-	authGroup.DELETE("/diary/image", diary.DeleteDiaryImage)
-	authGroup.POST("/diary/transcribe", diary.TranscribeDiaryVoice)
+	authGroup.GET("/items/:id/detail", wardrobe.GetItemDetail)
+	authGroup.POST("/items", wardrobe.UploadItem)
+	authGroup.PUT("/items/:id", wardrobe.UpdateItem)
+	authGroup.DELETE("/items/:id", wardrobe.DeleteItem)
+	authGroup.POST("/recommend", wardrobe.RecommendOutfitHandler)
 	/* 권한 라우터 */
-
-	/* 큐 리시버 */
-	go notification.PushSendJob()         // 알기 작성 알림 푸시 리시버
-	go notification.GenerateAIReportJob() // AI 리포트 생성 리시버
-	/* 큐 리시버 */
-
-	/* 스케줄 */
-	c := cron.New()
-	notification.PushSendCron(c) // 일기 작성 알림 푸시
-	c.Start()
-	/* 스케줄 */
 
 	return e
 }

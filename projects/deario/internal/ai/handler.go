@@ -8,7 +8,7 @@ import (
 	aiclient "simple-server/internal/ai"
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
-	"simple-server/projects/deario/notification"
+	"simple-server/projects/deario/internal/notification"
 	"simple-server/projects/deario/views/components"
 
 	"github.com/labstack/echo/v4"

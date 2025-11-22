@@ -69,7 +69,7 @@ jobs:
           GOOS: linux
           GOARCH: amd64
         run: |
-          go build -ldflags "-s -w" -o ./${SERVICE_NAME} ./cmd/${SERVICE_NAME}
+          go build -ldflags "-s -w" -o ./${SERVICE_NAME} ./projects/${SERVICE_NAME}/cmd
 
       # 9. 바이너리 압축
       - name: Compress Binary

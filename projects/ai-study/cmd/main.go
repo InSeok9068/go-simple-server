@@ -7,7 +7,7 @@ import (
 
 	"simple-server/internal/config"
 	"simple-server/internal/middleware"
-	"simple-server/projects/ai-study/study"
+	"simple-server/projects/ai-study/internal/study"
 
 	"github.com/labstack/echo/v4"
 )
