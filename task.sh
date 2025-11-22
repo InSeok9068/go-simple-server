@@ -29,13 +29,6 @@ show_help() {
   echo -e "  ${GREEN}sqlc-generate${NC} [project]"
   echo -e "  ${GREEN}templ-generate${NC}"
   echo -e ""
-  echo -e "${YELLOW}서비스 관리:${NC}"
-  echo -e "  ${GREEN}service create${NC} [name] [port]"
-  echo -e "  ${GREEN}service deploy${NC} [name]"
-  echo -e "  ${GREEN}service remove${NC} [name]"
-  echo -e "  ${GREEN}service undeploy${NC} [name]"
-
-
 }
 
 if [[ -z "${COMMAND}" ]]; then
@@ -53,7 +46,6 @@ case "${COMMAND}" in
   sqlc-generate)    bash "${SCRIPT_DIR}/sqlc-generate.sh" "$@" ;;
   templ-generate)   bash "${SCRIPT_DIR}/templ-generate.sh" "$@" ;;
   fmt)              bash "${SCRIPT_DIR}/format.sh" "$@" ;;
-  service)          bash "${SCRIPT_DIR}/service-manager.sh" "$@" ;;
   *)
     echo -e "❌ 알 수 없는 명령어: ${YELLOW}${COMMAND}${NC}"
     echo -e "도움말: ./task.sh help"

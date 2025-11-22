@@ -59,20 +59,6 @@ _task_completion() {
     install-tailwind)
       COMPREPLY=( $(compgen -W "win linux" -- "${cur}") )   # ← win 으로 수정
       ;;
-
-    service)
-      # ./task.sh service [create|deploy|remove|undeploy] [name]
-      case "${prev}" in
-        create|deploy|remove|undeploy)
-          # 서비스명 자동완성: projects/* 디렉터리
-          COMPREPLY=( $(compgen -W "${projects}" -- "${cur}") )
-          ;;
-        *)
-          COMPREPLY=( $(compgen -W "create deploy remove undeploy" -- "${cur}") )
-          ;;
-      esac
-      ;;
-
     *)
       COMPREPLY=()
       ;;

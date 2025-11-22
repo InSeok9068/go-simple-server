@@ -109,9 +109,10 @@
 ## 5. 폴더 구조 규칙
 
 ```text
-cmd/{project}/main.go        # 서버 엔트리포인트
+cmd/{project}/main.go        # 루트 CLI 프로젝트 실행파일
 projects/{project}/          # 프로젝트 소스
-├─ handlers/                 # Echo 핸들러
+├─ cmd/                      # 프로젝트 실행 파일
+├─ internal/                 # 프로젝트 내부 로직
 ├─ views/                    # Templ 템플릿
 ├─ static/                   # 정적 파일 (JS, 이미지 등)
 ├─ migrations/               # Goose 마이그레이션

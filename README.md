@@ -23,9 +23,10 @@
 
 ## 폴더 구조
 
-- `cmd/{프로젝트명}/main.go`: 각 프로젝트의 서버 실행 파일
+- `cmd/{프로젝트명}/main.go`: 루트 단위의 실행 파일
 - `projects/{프로젝트명}/`: 프로젝트별 소스 코드
-  - `handlers`: HTTP 요청을 처리하는 핸들러
+  - `cmd`: 프로젝트 실행 파일
+  - `internal`: 프로젝트 내부 로직
   - `views`: Gomponents로 작성된 HTML 뷰 컴포넌트
   - `static`: CSS, JavaScript 등 정적 파일
   - `migrations`: Goose 기반 데이터베이스 마이그레이션
