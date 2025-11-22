@@ -31,23 +31,6 @@ func StatsPage(c echo.Context) error {
 	return pages.Statistic().Render(c.Request().Context(), c.Response().Writer)
 }
 
-// buildMoodMap은 월별 기분 데이터를 맵으로 변환한다.
-func buildMoodMap(rows []db.MonthlyMoodCountRow) map[string]db.MonthlyMoodCountRow {
-	m := make(map[string]db.MonthlyMoodCountRow)
-	for _, r := range rows {
-		m[r.Month] = r
-	}
-	return m
-}
-
-// nullFloat64ToInt64는 sql.NullFloat64를 int64로 변환한다.
-func nullFloat64ToInt64(v sql.NullFloat64) int64 {
-	if v.Valid {
-		return int64(v.Float64)
-	}
-	return 0
-}
-
 // GetStatsData는 통계 데이터를 JSON으로 반환한다.
 func GetStatsData(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)

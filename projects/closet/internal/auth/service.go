@@ -3,10 +3,12 @@ package auth
 import (
 	"context"
 	"fmt"
+
 	"simple-server/internal/middleware"
 	"simple-server/projects/deario/db"
 )
 
+// EnsureUser는 Firebase 인증 사용자 정보를 DB와 권한 시스템에 반영한다.
 func EnsureUser(ctx context.Context, uid string) error {
 	queries, err := db.GetQueries()
 	if err != nil {

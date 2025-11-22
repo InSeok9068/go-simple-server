@@ -45,11 +45,3 @@ func UpdateDiaryMood(c echo.Context) error {
 
 	return c.NoContent(http.StatusNoContent)
 }
-
-// diaryMood는 일기에서 기분 값을 추출한다.
-func diaryMood(d db.Diary, err error) string {
-	if err == nil && d.ID != "" {
-		return d.Mood
-	}
-	return "0"
-}
