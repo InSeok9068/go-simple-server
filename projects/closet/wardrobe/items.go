@@ -646,11 +646,11 @@ func updateItemMetadataAndTags(ctx context.Context, itemID int64, uid string, me
 	return tx.Commit()
 }
 
-// RecommendOutfit은 날씨와 스타일 조건에 맞는 아이템을 추천한다.
-func RecommendOutfit(c echo.Context) error {
-	uid, err := authutil.SessionUID(c)
-	if err != nil {
-		return err
+// RecommendOutfitHandler는 날씨와 스타일 조건에 맞는 추천 다이얼로그를 렌더링한다.
+func RecommendOutfitHandler(c echo.Context) error {
+        uid, err := authutil.SessionUID(c)
+        if err != nil {
+                return err
 	}
 
 	if err := c.Request().ParseForm(); err != nil {
@@ -661,10 +661,10 @@ func RecommendOutfit(c echo.Context) error {
 	skipIDs := strings.TrimSpace(c.FormValue("skip_ids"))
 	locks := parseLockSelections(c)
 
-	results, cacheToken, hasMore, err := RecommendOutfit(c.Request().Context(), uid, weather, style, skipIDs, locks)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
+        results, cacheToken, hasMore, err := RecommendOutfit(c.Request().Context(), uid, weather, style, skipIDs, locks)
+        if err != nil {
+                return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+        }
 
 	viewResults := make([]views.RecommendationItem, 0, len(results))
 	for _, result := range results {

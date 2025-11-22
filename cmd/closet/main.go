@@ -105,7 +105,7 @@ func setUpServer() *echo.Echo {
 	authGroup.POST("/items", wardrobe.UploadItem)
 	authGroup.PUT("/items/:id", wardrobe.UpdateItem)
 	authGroup.DELETE("/items/:id", wardrobe.DeleteItem)
-	authGroup.POST("/recommend", wardrobe.RecommendOutfit)
+    authGroup.POST("/recommend", wardrobe.RecommendOutfitHandler)
 	/* 권한 라우터 */
 
 	return e
