@@ -6,10 +6,13 @@ import (
 	"log/slog"
 	"os"
 	resources "simple-server"
+	"simple-server/projects/deario/ai"
+	"simple-server/projects/deario/auth"
 	"simple-server/projects/deario/db"
-	"simple-server/projects/deario/handlers"
-	"simple-server/projects/deario/services"
-	"simple-server/projects/deario/tasks"
+	"simple-server/projects/deario/diary"
+	"simple-server/projects/deario/notification"
+	"simple-server/projects/deario/privacy"
+	"simple-server/projects/deario/settings"
 
 	"github.com/robfig/cron/v3"
 
@@ -87,16 +90,16 @@ func setUpServer() *echo.Echo {
 		slog.Error("공통 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	if err := middleware.RegisterFirebaseAuthMiddleware(e, services.EnsureUser); err != nil {
+	if err := middleware.RegisterFirebaseAuthMiddleware(e, auth.EnsureUser); err != nil {
 		slog.Error("Firebase 인증 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	e.GET("/", handlers.IndexPage)
-	e.GET("/login", handlers.LoginPage)
-	e.GET("/privacy", handlers.PrivacyPage)
-	e.POST("/logout", handlers.Logout)
-	e.GET("/diary", handlers.GetDiary)
-	e.GET("/diary/list", handlers.ListDiaries)
+	e.GET("/", diary.IndexPage)
+	e.GET("/login", auth.LoginPage)
+	e.GET("/privacy", privacy.PrivacyPage)
+	e.POST("/logout", auth.Logout)
+	e.GET("/diary", diary.GetDiary)
+	e.GET("/diary/list", diary.ListDiaries)
 	/* 공개 라우터 */
 
 	/* 권한 라우터 */
@@ -105,34 +108,34 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	authGroup.GET("/diary/month", handlers.MonthlyDiaryDates)
-	authGroup.GET("/diary/random", handlers.RedirectToRandomDiary)
-	authGroup.POST("/diary/save", handlers.SaveDiary)
-	authGroup.GET("/diary/search", handlers.SearchDiaries)
-	authGroup.GET("/ai-feedback", handlers.GetAIFeedback)
-	authGroup.POST("/ai-feedback", handlers.GenerateAIFeedback)
-	authGroup.POST("/ai-feedback/save", handlers.SaveAIFeedback)
-	authGroup.POST("/ai-report", handlers.GenerateAIReport)
-	authGroup.POST("/save-pushToken", handlers.RegisterPushToken)
-	authGroup.GET("/setting", handlers.SettingsPage)
-	authGroup.POST("/setting", handlers.UpdateSettings)
-	authGroup.POST("/diary/mood", handlers.UpdateDiaryMood)
-	authGroup.GET("/statistic", handlers.StatsPage)
-	authGroup.GET("/statistic/data", handlers.GetStatsData)
-	authGroup.GET("/diary/images", handlers.DiaryImagesPage)
-	authGroup.POST("/diary/image", handlers.UploadDiaryImage)
-	authGroup.DELETE("/diary/image", handlers.DeleteDiaryImage)
-	authGroup.POST("/diary/transcribe", handlers.TranscribeDiaryVoice)
+	authGroup.GET("/diary/month", diary.MonthlyDiaryDates)
+	authGroup.GET("/diary/random", diary.RedirectToRandomDiary)
+	authGroup.POST("/diary/save", diary.SaveDiary)
+	authGroup.GET("/diary/search", diary.SearchDiaries)
+	authGroup.GET("/ai-feedback", ai.GetAIFeedback)
+	authGroup.POST("/ai-feedback", ai.GenerateAIFeedback)
+	authGroup.POST("/ai-feedback/save", ai.SaveAIFeedback)
+	authGroup.POST("/ai-report", ai.GenerateAIReport)
+	authGroup.POST("/save-pushToken", notification.RegisterPushToken)
+	authGroup.GET("/setting", settings.SettingsPage)
+	authGroup.POST("/setting", settings.UpdateSettings)
+	authGroup.POST("/diary/mood", diary.UpdateDiaryMood)
+	authGroup.GET("/statistic", diary.StatsPage)
+	authGroup.GET("/statistic/data", diary.GetStatsData)
+	authGroup.GET("/diary/images", diary.DiaryImagesPage)
+	authGroup.POST("/diary/image", diary.UploadDiaryImage)
+	authGroup.DELETE("/diary/image", diary.DeleteDiaryImage)
+	authGroup.POST("/diary/transcribe", diary.TranscribeDiaryVoice)
 	/* 권한 라우터 */
 
 	/* 큐 리시버 */
-	go tasks.PushSendJob()         // 알기 작성 알림 푸시 리시버
-	go tasks.GenerateAIReportJob() // AI 리포트 생성 리시버
+	go notification.PushSendJob()         // 알기 작성 알림 푸시 리시버
+	go notification.GenerateAIReportJob() // AI 리포트 생성 리시버
 	/* 큐 리시버 */
 
 	/* 스케줄 */
 	c := cron.New()
-	tasks.PushSendCron(c) // 일기 작성 알림 푸시
+	notification.PushSendCron(c) // 일기 작성 알림 푸시
 	c.Start()
 	/* 스케줄 */
 

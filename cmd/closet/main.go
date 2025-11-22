@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"os"
 	resources "simple-server"
+	"simple-server/projects/closet/auth"
 	"simple-server/projects/closet/db"
-	"simple-server/projects/closet/handlers"
-	"simple-server/projects/closet/services"
+	"simple-server/projects/closet/wardrobe"
 
 	"simple-server/internal/config"
 	"simple-server/internal/debug"
@@ -84,15 +84,15 @@ func setUpServer() *echo.Echo {
 		slog.Error("공통 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	if err := middleware.RegisterFirebaseAuthMiddleware(e, services.EnsureUser); err != nil {
+	if err := middleware.RegisterFirebaseAuthMiddleware(e, auth.EnsureUser); err != nil {
 		slog.Error("Firebase 인증 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	e.GET("/", handlers.IndexPage)
-	e.GET("/login", handlers.LoginPage)
-	e.POST("/logout", handlers.Logout)
-	e.GET("/items", handlers.ListItems)
-	e.GET("/items/:id/image", handlers.ItemImage)
+	e.GET("/", wardrobe.IndexPage)
+	e.GET("/login", auth.LoginPage)
+	e.POST("/logout", auth.Logout)
+	e.GET("/items", wardrobe.ListItems)
+	e.GET("/items/:id/image", wardrobe.ItemImage)
 	/* 공개 라우터 */
 
 	/* 권한 라우터 */
@@ -101,11 +101,11 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	authGroup.GET("/items/:id/detail", handlers.GetItemDetail)
-	authGroup.POST("/items", handlers.UploadItem)
-	authGroup.PUT("/items/:id", handlers.UpdateItem)
-	authGroup.DELETE("/items/:id", handlers.DeleteItem)
-	authGroup.POST("/recommend", handlers.RecommendOutfit)
+	authGroup.GET("/items/:id/detail", wardrobe.GetItemDetail)
+	authGroup.POST("/items", wardrobe.UploadItem)
+	authGroup.PUT("/items/:id", wardrobe.UpdateItem)
+	authGroup.DELETE("/items/:id", wardrobe.DeleteItem)
+	authGroup.POST("/recommend", wardrobe.RecommendOutfit)
 	/* 권한 라우터 */
 
 	return e
