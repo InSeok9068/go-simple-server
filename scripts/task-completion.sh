@@ -38,7 +38,7 @@ _task_completion() {
 
   # 1단계: 메인 명령어
   if [[ ${COMP_CWORD} -eq 1 ]]; then
-    local opts="help switch check deps build-linux release install-tailwind sqlc-generate templ-generate service fmt"
+    local opts="help switch check deps build-linux release install-tailwind sqlc-generate templ-generate fmt"
     COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
     return 0
   fi
