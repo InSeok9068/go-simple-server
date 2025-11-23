@@ -27,7 +27,7 @@ var shutdown func(context.Context) error
 // OTEL 설정 상수 (매직넘버 제거)
 const (
 	otlpInitTimeout        = 5 * time.Second
-	otlpPingTimeout        = 1 * time.Second
+	otlpPingTimeout        = 3 * time.Second
 	metricReadInterval     = 300 * time.Second
 	defaultNewRelicOTLPEnd = "https://otlp.nr-data.net:4318"
 )
