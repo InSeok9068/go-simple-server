@@ -32,27 +32,7 @@ templ HeadsCustomTempl() {
 	<script src="/shared/static/app.js"></script>
 }
 
-templ HeadsWithBulmaTempl(title string) {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" onerror="this.onerror=null;this.href='shared/static/lib/bulma.min.css';"/>
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
-}
-
-templ HeadsWithTailwindTempl(title string) {
-	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
-}
-
-templ HeadsWithPicoAndTailwindTempl(title string) {
-	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.classless.min.css';"/>
-	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
-	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
-}
-
+// Beer
 templ HeadsWithBeerTempl(title string) {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beercss@3.12.13/dist/cdn/beer.min.css" onerror="this.onerror=null;this.href='shared/static/lib/beer.min.css';"/>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.12.13/dist/cdn/beer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/beer.min.js';"></script>
@@ -61,9 +41,35 @@ templ HeadsWithBeerTempl(title string) {
 	@HeadsCustomTempl()
 }
 
-templ HeadsWithShoelaceTempl(title string) {
+// Bulma
+templ HeadsWithBulmaTempl(title string) {
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" onerror="this.onerror=null;this.href='shared/static/lib/bulma.min.css';"/>
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
+}
+
+// Tailwind
+templ HeadsWithTailwindTempl(title string) {
+	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
+}
+
+// Shoelace + Tailwind
+templ HeadsWithShoelaceAndTailwindTempl(title string) {
+	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css"/>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
+	@HeadsDefaultTempl(title)
+	@HeadsCustomTempl()
+}
+
+// Pico + Tailwind
+templ HeadsWithPicoAndTailwindTempl(title string) {
+	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.classless.min.css';"/>
+	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
+	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
 	@HeadsDefaultTempl(title)
 	@HeadsCustomTempl()
 }
