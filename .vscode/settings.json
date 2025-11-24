@@ -1,9 +1,14 @@
 {
   "go.lintTool": "golangci-lint",
   "go.lintFlags": ["--fast"],
-  // "go.formatTool": "goimports",
+  "html.customData": [
+    // Shoelace [ON]
+    "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
+  ],
   "css.styleSheets": [
+    // Bulma [ON]
     // "shared/static/lib/bulma.min.css",
+    // Beer [ON]
     "shared/static/lib/beer.min.css",
     "**/style.css"
   ],
