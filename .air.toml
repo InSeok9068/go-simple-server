@@ -1,3 +1,4 @@
+#:schema https://json.schemastore.org/any.json
 root = "."
 tmp_dir = "tmp"
 
@@ -6,7 +7,16 @@ bin = "./main"
 cmd = "templ generate ; go build -o ./main.exe ./projects/deario/cmd/"
 #cmd = "tailwind/tailwindcss.exe -i tailwind/tailwindcss.css -o shared/static/tailwindcss.css  --minify && go build -o ./main.exe ./cmd/homepage"
 delay = 1000
-exclude_dir = ["static", "tmp", "vendor", "pb_data", "functions", "shared\\log"]
+exclude_dir = [
+  "tmp",
+  "static",
+  "vendor",
+  "node_modules",
+  "pb_data",
+  "functions",
+  "zliveserver",
+  "shared\\log",
+]
 exclude_file = []
 exclude_regex = [".*_templ.go"]
 exclude_unchanged = false

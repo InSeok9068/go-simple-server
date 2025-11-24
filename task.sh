@@ -28,6 +28,7 @@ show_help() {
   echo -e "  ${GREEN}install-tailwind${NC} [win|linux]"   # ← win으로 고정
   echo -e "  ${GREEN}sqlc-generate${NC} [project]"
   echo -e "  ${GREEN}templ-generate${NC}"
+  echo -e "  ${GREEN}kill${NC} [port]"
   echo -e ""
 }
 
@@ -46,6 +47,7 @@ case "${COMMAND}" in
   sqlc-generate)    bash "${SCRIPT_DIR}/sqlc-generate.sh" "$@" ;;
   templ-generate)   bash "${SCRIPT_DIR}/templ-generate.sh" "$@" ;;
   fmt)              bash "${SCRIPT_DIR}/format.sh" "$@" ;;
+  kill)             bash "${SCRIPT_DIR}/kill-port.sh" "$@" ;;
   *)
     echo -e "❌ 알 수 없는 명령어: ${YELLOW}${COMMAND}${NC}"
     echo -e "도움말: ./task.sh help"
