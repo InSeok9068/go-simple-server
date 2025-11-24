@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
 bin = "./main"
 cmd = "templ generate ; go build -o ./main.exe ./projects/deario/cmd/"
-#cmd = "tailwind/tailwindcss.exe -i tailwind/tailwindcss.css -o shared/static/tailwindcss.css  --minify && go build -o ./main.exe ./cmd/homepage"
+# cmd = "tailwind/tailwindcss.exe -i tailwind/tailwindcss.css -o shared/static/tailwindcss.css --minify ; templ generate ; go build -o ./main.exe ./projects/deario/cmd/"
 delay = 1000
 exclude_dir = [
   "tmp",
