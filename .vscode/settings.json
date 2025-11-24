@@ -2,13 +2,13 @@
   "go.lintTool": "golangci-lint",
   "go.lintFlags": ["--fast"],
   "html.customData": [
-    // Shoelace [ON]
-    "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
+    /* Shoelace [ON] */
+    // "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
   ],
   "css.styleSheets": [
-    // Bulma [ON]
+    /* Bulma [ON] */
     // "shared/static/lib/bulma.min.css",
-    // Beer [ON]
+    /* Beer [ON] */
     "shared/static/lib/beer.min.css",
     "**/style.css"
   ],
@@ -26,7 +26,10 @@
     "package.json": true
   },
   "tailwindCSS.includeLanguages": {
-    "go": "html"
+    /* [Gomponents] Tailwind [ON] */
+    // "go": "html",
+    /* [Templ] Tailwind [ON] */
+    // "templ": "html"
   },
   "tailwindCSS.experimental.classRegex": [
     ["Class(?:es)?[({]([^)}]*)[)}]", "[\"`]([^\"`]*)[\"`]"]
