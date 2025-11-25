@@ -55,7 +55,7 @@ ai-study.exe
 # Tailwindcss
 tailwindcss
 node_modules
-package.json
+# package.json
 shared/static/tailwindcss.css
 
 # Local Histroy
