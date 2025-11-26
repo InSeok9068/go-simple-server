@@ -28,8 +28,8 @@ if [ ! -f "tailwindcss$EXE" ]; then
   curl -sLO "https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-$FILE"
   mv "tailwindcss-$FILE" "tailwind/tailwindcss$EXE"
   chmod a+x "tailwind/tailwindcss$EXE"
-  mkdir -p node_modules/tailwindcss/lib
-  echo '{"devDependencies": {"tailwindcss": "latest"}}' >package.json
+  # mkdir -p node_modules/tailwindcss/lib
+  # echo '{"devDependencies": {"tailwindcss": "latest"}}' >package.json
   echo "Setup Finish tailwindcss"
 else
   echo "tailwindcss$EXE already exists. Skipping download."
