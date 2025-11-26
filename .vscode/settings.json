@@ -3,13 +3,13 @@
   "go.lintFlags": ["--fast"],
   "html.customData": [
     /* Shoelace [ON] */
-    // "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
+    "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
   ],
   "css.styleSheets": [
     /* Bulma [ON] */
     // "shared/static/lib/bulma.min.css",
     /* Beer [ON] */
-    "shared/static/lib/beer.min.css",
+    // "shared/static/lib/beer.min.css",
     "**/style.css"
   ],
   "cssvar.files": ["shared/static/lib/open-props.min.css"],
@@ -22,14 +22,14 @@
     "tmp": true,
     "main.*": true,
     ".idea": true,
-    "node_modules": true,
-    "package.json": true
+    "node_modules": true
+    // "package.json": true
   },
   "tailwindCSS.includeLanguages": {
     /* [Gomponents] Tailwind [ON] */
     // "go": "html",
     /* [Templ] Tailwind [ON] */
-    // "templ": "html"
+    "templ": "html"
   },
   "tailwindCSS.experimental.classRegex": [
     ["Class(?:es)?[({]([^)}]*)[)}]", "[\"`]([^\"`]*)[\"`]"]
