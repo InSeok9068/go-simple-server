@@ -67,7 +67,7 @@ templ uploadDialog() {
 					hx-on:htmx:response-error="showError(event.detail.xhr.responseText || '업로드에 실패했어요. 다시 시도해주세요.');"
 					enctype="multipart/form-data"
 				>
-					<div class="field label border">
+					<div class="border field label">
 						<select name="kind" required>
 							<option value="" selected>종류 선택</option>
 							<option value="top">상의</option>
@@ -78,7 +78,7 @@ templ uploadDialog() {
 						<label>종류</label>
 					</div>
 					<div>
-						<div class="field label border">
+						<div class="border field label">
 							<input type="text" name="tags"/>
 							<label>태그</label>
 							<span class="helper">콤마(,)로 여러 태그를 입력해 주세요.</span>
@@ -182,7 +182,7 @@ templ searchDialog() {
 				hx-trigger="change delay:300ms, keyup changed delay:500ms, submit"
 				hx-on:htmx:response-error="showError(event.detail.xhr.responseText || '검색에 실패했어요.');"
 			>
-				<div class="field label border">
+				<div class="border field label">
 					<select name="kind">
 						<option value="" selected>전체</option>
 						<option value="top">상의</option>
@@ -192,7 +192,7 @@ templ searchDialog() {
 					</select>
 					<label>종류</label>
 				</div>
-				<div class="field label border">
+				<div class="border field label">
 					<input type="text" name="tags"/>
 					<label>태그</label>
 				</div>
@@ -217,11 +217,11 @@ templ recommendCard() {
 					hx-on:htmx:after-request="if (event.detail.successful) { document.getElementById('recommend-dialog-trigger')?.click(); }"
 					hx-on:htmx:response-error="showError(event.detail.xhr.responseText || '추천에 실패했어요.');"
 				>
-					<div class="field label border">
+					<div class="border field label">
 						<input type="text" name="weather"/>
 						<label>날씨</label>
 					</div>
-					<div class="field label border">
+					<div class="border field label">
 						<input type="text" name="style"/>
 						<label>스타일</label>
 					</div>

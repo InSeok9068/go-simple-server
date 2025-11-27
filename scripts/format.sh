@@ -9,6 +9,9 @@ go fmt ./...
 echo -e "${BLUE}Running prettier...${NC}"
 npx -y prettier --write .
 
+echo -e "${BLUE}Running tailwind sorter...${NC}"
+go-tailwind-sorter . --fix
+
 echo -e "${BLUE}Running templ fmt...${NC}"
 templ fmt .
 

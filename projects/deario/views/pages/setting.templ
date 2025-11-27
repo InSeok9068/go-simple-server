@@ -34,11 +34,11 @@ templ Setting(userSetting db.UserSetting) {
 							}
 							<span></span>
 						</label>
-						<div class="field border label">
+						<div class="border field label">
 							<input type="time" name="push_time" value={ userSetting.PushTime }/>
 							<label>알림시간</label>
 						</div>
-						<div class="field border label">
+						<div class="border field label">
 							<input type="number" name="random_range" value={ fmt.Sprintf("%d", userSetting.RandomRange) }/>
 							<label>랜덤일자</label>
 						</div>
@@ -50,7 +50,7 @@ templ Setting(userSetting db.UserSetting) {
 							</span>
 						</label>
 						<nav>테마색</nav>
-						<div class="field border label">
+						<div class="border field label">
 							<button>
 								<i>palette</i>
 								<span>Color</span>
@@ -63,7 +63,7 @@ templ Setting(userSetting db.UserSetting) {
 							</button>
 						</div>
 						<nav>폰트</nav>
-						<div class="field border label">
+						<div class="border field label">
 							<select x-data="" x-model="$store.font.value" x-on:change="$store.font.set($event.target.value)">
 								<option value="gamja">감자꽃 (기본)</option>
 								<option value="humanist">따뜻한 휴머니스트</option>

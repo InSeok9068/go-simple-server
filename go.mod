@@ -10,6 +10,8 @@ tool github.com/sqlc-dev/sqlc/cmd/sqlc
 
 tool github.com/golangci/golangci-lint/cmd/golangci-lint
 
+tool github.com/dexter2389/go-tailwind-sorter
+
 tool golang.org/x/vuln/cmd/govulncheck
 
 require (

@@ -31,7 +31,7 @@ templ DiaryNavigation(date string) {
 templ DiaryContentForm(date string, content string) {
 	<form id="diary">
 		<input type="hidden" name="date" value={ date }/>
-		<div class="field textarea border u-fit-h‑18rem">
+		<div class="border field textarea u-fit-h‑18rem">
 			<textarea
 				name="content"
 				autofocus
@@ -100,7 +100,7 @@ templ FeedbackActions(date string) {
 			<button data-ui="#ai-feedback">
 				<span>일기요정</span>
 			</button>
-			<menu class="top transparent no-wrap left right-align" id="ai-feedback" data-ui="#ai-feedback">
+			<menu class="right-align top transparent no-wrap left" id="ai-feedback" data-ui="#ai-feedback">
 				@AiFeedbackButton("1", "칭찬받기")
 				@AiFeedbackButton("2", "위로받기")
 				@AiFeedbackButton("3", "충고받기")
