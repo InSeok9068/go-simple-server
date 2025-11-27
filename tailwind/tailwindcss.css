@@ -1,2 +1,4 @@
-@import "tailwindcss" source("../projects");
-@source "../shared";
+@import "tailwindcss" source(none);
+
+@source "../projects/**/views/*.{templ,go}";
+@source "../shared/views/*.{templ,go}";
