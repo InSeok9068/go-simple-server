@@ -59,6 +59,10 @@ _task_completion() {
     install-tailwind)
       COMPREPLY=( $(compgen -W "win linux" -- "${cur}") )   # ← win 으로 수정
       ;;
+
+    fmt)
+      COMPREPLY=( $(compgen -W "go templ tailwind prettier" -- "${cur}") )
+      ;;
     *)
       COMPREPLY=()
       ;;
