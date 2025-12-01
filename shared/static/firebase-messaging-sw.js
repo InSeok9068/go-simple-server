@@ -1,9 +1,9 @@
 importScripts(
   "https://www.gstatic.com/firebasejs/11.0.2/firebase-app-compat.js",
-);
+)
 importScripts(
   "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging-compat.js",
-);
+)
 
 // Firebase 초기화
 const firebaseConfig = {
@@ -13,36 +13,36 @@ const firebaseConfig = {
   storageBucket: "warm-braid-383411.firebasestorage.app",
   messagingSenderId: "1001293129594",
   appId: "1:1001293129594:web:a579e07714a18ec3b598c3",
-};
+}
 
 // 초기화
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig)
 
 // FCM Messaging 초기화
-const messaging = firebase.messaging();
+const messaging = firebase.messaging()
 
 // 백그라운드 메시지 수신
 messaging.onBackgroundMessage(function (payload) {
   console.log(
     "[firebase-messaging-sw.js] Received background message:",
     payload,
-  );
-  const notificationTitle = payload.data.title || "Default Title";
+  )
+  const notificationTitle = payload.data.title || "Default Title"
   const notificationOptions = {
     body: payload.data.body || "Default body content",
     data: payload.data,
     // icon: '/your-icon.png'  // 알림 아이콘 (선택사항)
-  };
+  }
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+  self.registration.showNotification(notificationTitle, notificationOptions)
+})
 
 // 알림 클릭 시 PWA 앱으로 진입
 self.addEventListener("notificationclick", function (event) {
-  event.notification.close();
+  event.notification.close()
 
   // 알림 데이터에서 URL 가져오기 (URL이 없으면 기본값 사용)
-  const urlToOpen = event.notification.data?.url || self.registration.scope;
+  const urlToOpen = event.notification.data?.url || self.registration.scope
 
   event.waitUntil(
     clients
@@ -54,14 +54,14 @@ self.addEventListener("notificationclick", function (event) {
             client.url.includes(self.registration.scope) &&
             "focus" in client
           ) {
-            return client.focus();
+            return client.focus()
           }
         }
 
         // PWA가 열려있지 않은 경우 새 창으로 열기
         if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
+          return clients.openWindow(urlToOpen)
         }
       }),
-  );
-});
+  )
+})

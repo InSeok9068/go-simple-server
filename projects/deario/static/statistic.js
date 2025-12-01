@@ -1,18 +1,18 @@
-console.log("statistic page loaded");
+console.log("statistic page loaded")
 
-const moodIcons = ["", "😁", "🙂", "😐", "😣", "😭"];
+const moodIcons = ["", "😁", "🙂", "😐", "😣", "😭"]
 
 document.addEventListener("DOMContentLoaded", () => {
   fetch("/statistic/data")
     .then((res) => res.json())
     .then((data) => {
       const formattedMonths = data.months.map((monthStr) => {
-        const year = monthStr.substring(2, 4);
-        const month = parseInt(monthStr.substring(4, 6), 10);
-        return `${year}년 ${month}월`;
-      });
+        const year = monthStr.substring(2, 4)
+        const month = parseInt(monthStr.substring(4, 6), 10)
+        return `${year}년 ${month}월`
+      })
 
-      const countCtx = document.getElementById("countChart").getContext("2d");
+      const countCtx = document.getElementById("countChart").getContext("2d")
       new Chart(countCtx, {
         type: "bar",
         data: {
@@ -25,11 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
             },
           ],
         },
-      });
+      })
 
       const stackCtx = document
         .getElementById("moodStackChart")
-        .getContext("2d");
+        .getContext("2d")
       new Chart(stackCtx, {
         type: "bar",
         data: {
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
             y: { stacked: true, beginAtZero: true },
           },
         },
-      });
+      })
     })
-    .catch((err) => console.error(err));
-});
+    .catch((err) => console.error(err))
+})

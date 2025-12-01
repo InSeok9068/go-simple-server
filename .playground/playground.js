@@ -5,4 +5,4 @@ console.log(
     month: "2-digit",
     day: "2-digit",
   }).format(new Date("2025-08-15")),
-);
+)

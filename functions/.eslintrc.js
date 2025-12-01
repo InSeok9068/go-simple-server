@@ -36,4 +36,4 @@ module.exports = {
     "max-len": ["off"],
     "indent": ["off"],
   },
-};
+}

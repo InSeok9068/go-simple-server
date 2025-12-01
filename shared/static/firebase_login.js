@@ -5,9 +5,9 @@ const firebaseConfig = {
   storageBucket: "warm-braid-383411.firebasestorage.app",
   messagingSenderId: "1001293129594",
   appId: "1:1001293129594:web:a579e07714a18ec3b598c3",
-};
+}
 
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig)
 
 const uiConfig = {
   // 로그인 성공 시 이동할 URL, 혹은 자동 리다이렉트를 막을 수도 있음
@@ -39,11 +39,11 @@ const uiConfig = {
   callbacks: {
     signInSuccessWithAuthResult: function (authResult, redirectUrl) {
       if (authResult.additionalUserInfo.isNewUser) {
-        alert("환영합니다! 회원가입이 완료되었습니다.");
+        alert("환영합니다! 회원가입이 완료되었습니다.")
       }
 
-      loader.classList.remove("hidden");
-      loader.querySelector("span").textContent = "로그인 중...";
+      loader.classList.remove("hidden")
+      loader.querySelector("span").textContent = "로그인 중..."
 
       authResult.user
         .getIdToken(true)
@@ -55,21 +55,21 @@ const uiConfig = {
               "X-CSRF-Token": getCookie("_csrf"),
             },
             body: JSON.stringify({ token: idToken }),
-          });
+          })
         })
         .then((response) => {
           if (response.ok) {
-            window.location.href = "/";
+            window.location.href = "/"
           } else {
-            showError("세션 생성 실패");
+            showError("세션 생성 실패")
           }
         })
         .catch((err) => {
-          console.error("세션 생성 중 에러:", err);
-        });
+          console.error("세션 생성 중 에러:", err)
+        })
 
       // return false로 하면 signInSuccessUrl로 리다이렉트 안 함
-      return false;
+      return false
     },
     signInFailure: function (error) {
       // Some unrecoverable error occurred during sign-in.
@@ -77,17 +77,17 @@ const uiConfig = {
       // will reset, clearing any UI. This commonly occurs for error code
       // 'firebaseui/anonymous-upgrade-merge-conflict' when merge conflict
       // occurs. Check below for more details on this.
-      return handleUIError(error);
+      return handleUIError(error)
     },
     uiShown: function () {
       // The widget is rendered.
       // Hide the loader.
-      loader.classList.add("hidden");
+      loader.classList.add("hidden")
     },
   },
-};
+}
 
 // (7) FirebaseUI 인스턴스 생성 및 초기화
-const loader = document.getElementById("loader");
-const ui = new firebaseui.auth.AuthUI(firebase.auth());
-ui.start("#firebaseui-auth-container", uiConfig);
+const loader = document.getElementById("loader")
+const ui = new firebaseui.auth.AuthUI(firebase.auth())
+ui.start("#firebaseui-auth-container", uiConfig)
