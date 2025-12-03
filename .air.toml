@@ -5,17 +5,18 @@ tmp_dir = "tmp"
 [build]
 bin = "./main"
 # cmd = "templ generate ; go build -o ./main.exe ./projects/homepage/cmd/"
-cmd = "tailwind/tailwindcss.exe -i tailwind/tailwindcss.css -o shared/static/tailwindcss.css --minify ; templ generate ; go build -o ./main.exe ./projects/homepage/cmd/"
+cmd = "tailwind/tailwindcss.exe -i tailwind/tailwindcss.css -o shared/static/tailwindcss.css --minify ; templ generate ; go build -o ./main.exe ./projects/deario/cmd/"
 delay = 1000
 exclude_dir = [
   "tmp",
+  "data",
   "static",
   "vendor",
-  "node_modules",
   "pb_data",
   "functions",
-  "zliveserver",
+  "_liveserver",
   "shared\\log",
+  "node_modules",
 ]
 exclude_file = []
 exclude_regex = [".*_templ.go"]
@@ -48,4 +49,4 @@ clear_on_rebuild = false
 [proxy]
 enabled = true
 proxy_port = 8080
-app_port = 8000
+app_port = 8002
