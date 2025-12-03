@@ -12,7 +12,6 @@ exclude_dir = [
   "data",
   "static",
   "vendor",
-  "pb_data",
   "functions",
   "_liveserver",
   "shared\\log",
