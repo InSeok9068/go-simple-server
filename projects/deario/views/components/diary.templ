@@ -14,9 +14,9 @@ templ DiaryNavigation(date string) {
 			<i class="large">keyboard_arrow_left</i>
 		</a>
 		<a id="today-day" href={ fmt.Sprintf("/?date=%s", time.Now().Format("20060102")) }>
-			<button class="small-round small border">
-				<i class="small">today</i>
-				<span class="bold black-text">Today</span>
+			<button class="chip">
+				<i>today</i>
+				<span class="bold">Today</span>
 			</button>
 		</a>
 		<a id="next-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1)) }>
