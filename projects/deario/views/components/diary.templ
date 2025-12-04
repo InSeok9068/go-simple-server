@@ -9,7 +9,7 @@ import (
 )
 
 templ DiaryNavigation(date string) {
-	<nav>
+	<nav class="gap-08">
 		<a id="prev-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1)) }>
 			<i class="large">keyboard_arrow_left</i>
 		</a>
@@ -102,7 +102,7 @@ templ FeedbackActions(date string) {
 		<div class="max"></div>
 		<img id="feedback-loading" class="htmx-indicator" src="/shared/static/spinner.svg" alt="로딩"/>
 		<nav class="min active">
-			<button class="surface-dim" data-ui="#ai-feedback">
+			<button data-ui="#ai-feedback">
 				<span>일기요정</span>
 			</button>
 			<menu class="right-align top transparent no-wrap left" id="ai-feedback" data-ui="#ai-feedback">

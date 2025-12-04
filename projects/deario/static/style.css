@@ -24,3 +24,7 @@ body {
   top: 16rem;
   z-index: 1;
 }
+
+.gap-08 {
+  gap: 0.8rem;
+}
