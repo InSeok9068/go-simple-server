@@ -9,10 +9,10 @@ templ AppHeader() {
 			<button class="transparent circle" data-ui="#search-dialog">
 				<i>search</i>
 			</button>
-			<a class="a-login" id="login" href="/login" x-data="" x-show="!$store.auth.isAuthed">
+			<a id="login" href="/login" x-data="" x-show="!$store.auth.isAuthed">
 				로그인
 			</a>
-			<a class="a-login" id="logout" href="#" x-data="" x-show="$store.auth.isAuthed" onclick="logoutUser()">
+			<a id="logout" href="#" x-data="" x-show="$store.auth.isAuthed" onclick="logoutUser()">
 				로그아웃
 			</a>
 		</nav>
