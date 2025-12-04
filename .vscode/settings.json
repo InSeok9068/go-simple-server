@@ -14,18 +14,18 @@
     "node_modules": true,
     "package.json": true
   },
-  "tailwindCSS.includeLanguages": {
-    "templ": "html"
-  },
 
   /* Shoelace [ON] */
-  "html.customData": [
-    "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
-  ],
-  "css.styleSheets": ["**/style.css"]
+  // "html.customData": [
+  //   "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
+  // ],
+  // "css.styleSheets": ["**/style.css"],
+  // "tailwindCSS.includeLanguages": {
+  //   "templ": "html"
+  // }
 
   /* Beer [ON] */
-  // "css.styleSheets": ["shared/static/lib/beer.min.css", "**/style.css"]
+  "css.styleSheets": ["shared/static/lib/beer.min.css", "**/style.css"]
 
   /* Bulma [ON] */
   // "css.styleSheets": ["shared/static/lib/bulma.min.css", "**/style.css"]
