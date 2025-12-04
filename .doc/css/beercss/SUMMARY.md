@@ -24,7 +24,7 @@ chip small, medium, large, border, no-border, circle, square, round, no-round, l
 
 <em>
 
-field small, medium, large, extra, label, border, round, fill, prefix, suffix, textarea
+field small, medium, large, extra, label, border, round, fill, prefix, suffix
 
 <fieldset>
 
@@ -66,7 +66,7 @@ page left, right, top, bottom, active
 
 <pre> border, no-border, scroll
 
-<progress> small, medium, large, circle, wavy, max, vertical
+<progress> small, medium, large, circle, wavy, max
 
 row left-align, right-align, center-align, top-align, bottom-align, middle-align, space, no-space, small-space, medium-space, large-space, horizontal, vertical
 
