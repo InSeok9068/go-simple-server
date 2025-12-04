@@ -3,6 +3,9 @@
 BeerCSS는 **Material Design 3**를 기반으로 하는 가벼운 CSS 프레임워크입니다.
 HTML의 시맨틱 요소와 간단한 클래스(helpers)를 조합해 다양한 UI 컴포넌트를 제공합니다.
 
+공식 홈페이지 : https://beercss.com/
+문서 경로 : https://github.com/beercss/beercss/tree/main/docs/...
+
 아래 안내는 BeerCSS 공식 문서를 참고하여 **각 요소·컴포넌트를 언제 사용하면 좋은지** 정리한 것입니다.
 코딩 시 참고용으로 활용하세요.
 
@@ -12,36 +15,43 @@ HTML의 시맨틱 요소와 간단한 클래스(helpers)를 조합해 다양한 
 
 ### 컴포넌트 요약 표
 
-| 컴포넌트                      | 핵심 목적                                                                           | 적합한 상황(키워드)                                                        |
-| ----------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| **Button (버튼)**             | 사용자에게 **행동을 촉구**하며 한 번의 탭으로 선택/동작을 수행                      | 기본 액션, 폼 제출, 아이콘과 함께 쓰는 동작, 주요 화면의 주요 행동(FAB 등) |
-| **Badge (배지)**              | 요소의 일부분을 강조하거나 숫자/알림을 표시                                         | 메시지 수, 알림 카운트, 아이콘에 작은 숫자 표시                            |
-| **Card (카드)**               | 하나의 주제에 대한 콘텐츠와 행동을 담는 표면. 계층을 명확히 하고 스캔하기 쉬워야 함 | 뉴스 카드, 제품 목록, 블로그 요약, 버튼 포함 독립 블록                     |
-| **Checkbox (체크박스)**       | 여러 항목 중 복수 선택 또는 옵션을 켜고 끌 때 사용                                  | 목록 선택, 설정 토글, 동의 여부                                            |
-| **Chip (칩)**                 | 입력, 속성 또는 행동을 나타내는 콤팩트 요소                                         | 태그/카테고리, 필터 토글, 작은 행동 버튼                                   |
-| **Dialog (다이얼로그)**       | 작업에 대한 정보 전달, 결정 요구 또는 작은 폼을 포함한 **대화형 모달**              | 경고 메시지, 확인/취소, 간단한 폼 입력                                     |
-| **Divider (구분선)**          | 리스트나 컨테이너 안의 내용 그룹을 시각적으로 구분                                  | 목록 항목 분리, 섹션 구분                                                  |
-| **Expansion (확장)**          | 펼침/접기 인터페이스 제공                                                           | FAQ, 아코디언 메뉴, 다단계 목록                                            |
-| **Grid (그리드)**             | 행과 열 기반으로 콘텐츠를 정렬하는 레이아웃 시스템                                  | 카드/이미지 갤러리, 반응형 레이아웃                                        |
-| **Icon (아이콘)**             | 보편적인 개념을 단순한 시각 언어로 표현                                             | 버튼 보조, 네비게이션 아이템, 상태 표시                                    |
-| **Input (입력 필드)**         | 사용자가 텍스트를 입력/수정                                                         | 검색창, 폼 필드, 레이블이 있는 텍스트 입력                                 |
-| **List (리스트)**             | 연속적인 세로 인덱스를 제공. 각 항목은 최대 3줄까지                                 | 메뉴, 메시지 목록, 설정 목록                                               |
-| **Menu (메뉴)**               | 일시적인 표면에 선택 목록을 표시                                                    | 드롭다운 옵션, 컨텍스트 메뉴, 퀵 액션                                      |
-| **Navigation (네비게이션)**   | 수평 또는 수직으로 행동을 나열하는 컨테이너                                         | 상단/하단 바, 네비게이션 레일, 툴바                                        |
-| **Overlay (오버레이)**        | 화면을 막아 대기 상태를 표현하는 레이어                                             | 로딩 스피너, 비동기 처리 표시                                              |
-| **Page (페이지)**             | 하나의 뷰나 패널을 나타내며 여러 페이지 간 전환에 사용                              | 탭 콘텐츠, 단계별 화면                                                     |
-| **Progress (프로그레스)**     | 프로세스의 진행 정도나 불특정 대기 시간을 나타냄                                    | 로딩 바, 업로드/다운로드 진행도                                            |
-| **Radio (라디오 버튼)**       | 한 세트에서 **하나의 옵션만** 선택                                                  | 설문 단일 응답, 필터 단일 선택                                             |
-| **Select (셀렉트)**           | 일시적 표면에서 선택 목록을 표시하는 폼 요소                                        | 긴 옵션 목록, 폼 드롭다운                                                  |
-| **Shape (쉐이프)**            | M3 특유의 모양·모서리를 배경/장식에 활용                                            | 로딩 애니메이션, 그래픽 배경                                               |
-| **Slider (슬라이더)**         | 값 범위에서 선택                                                                    | 볼륨/밝기 조절, 범위 값 선택                                               |
-| **Snackbar (스낵바)**         | 앱 프로세스에 대한 짧은 메시지를 상단/하단에 표시, 자동 사라짐                      | 저장 완료 알림, 네트워크 상태 변화                                         |
-| **Switch (스위치)**           | 단일 항목을 켜거나 끄는 토글                                                        | 다크모드, 알림 on/off 등 설정                                              |
-| **Table (테이블)**            | 행·열 구조로 데이터 집합을 표시                                                     | 데이터 목록, 관리 화면, 보고서                                             |
-| **Tabs (탭)**                 | 서로 다른 화면이나 데이터셋을 조직화                                                | 섹션 분리, 카테고리 전환                                                   |
-| **Textarea (텍스트 영역)**    | 긴 텍스트 입력·편집 필드                                                            | 댓글 입력, 메모 작성                                                       |
-| **Tooltip (툴팁)**            | 요소를 호버/포커스/터치할 때 보조 설명                                              | 아이콘 설명, 버튼 보조 안내                                                |
-| **Typography (타이포그래피)** | 콘텐츠를 명확·효율적으로 전달하는 텍스트 시스템                                     | 제목, 본문, 강조 텍스트, 링크                                              |
+# BeerCSS 컴포넌트 매핑 표
+
+| 컴포넌트 | 핵심 목적 | 적합한 상황(키워드) | 문서 링크 |
+| ----------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Button (버튼)** | 사용자에게 **행동을 촉구**하며 한 번의 탭으로 선택/동작을 수행 | 기본 액션, 폼 제출, 아이콘과 함께 쓰는 동작, 주요 화면의 주요 행동(FAB 등) | [BUTTON.md](https://github.com/beercss/beercss/blob/main/docs/BUTTON.md) |
+| **Badge (배지)** | 요소의 일부분을 강조하거나 숫자/알림을 표시 | 메시지 수, 알림 카운트, 아이콘에 작은 숫자 표시 | [BADGE.md](https://github.com/beercss/beercss/blob/main/docs/BADGE.md) |
+| **Card (카드)** | 하나의 주제에 대한 콘텐츠와 행동을 담는 표면. 계층을 명확히 하고 스캔하기 쉬워야 함 | 뉴스 카드, 제품 목록, 블로그 요약, 버튼 포함 독립 블록 | [CARD.md](https://github.com/beercss/beercss/blob/main/docs/CARD.md) |
+| **Checkbox (체크박스)** | 여러 항목 중 복수 선택 또는 옵션을 켜고 끌 때 사용 | 목록 선택, 설정 토글, 동의 여부 | [CHECKBOX.md](https://github.com/beercss/beercss/blob/main/docs/CHECKBOX.md) |
+| **Chip (칩)** | 입력, 속성 또는 행동을 나타내는 콤팩트 요소 | 태그/카테고리, 필터 토글, 작은 행동 버튼 | [CHIP.md](https://github.com/beercss/beercss/blob/main/docs/CHIP.md) |
+| **Dialog (다이얼로그)** | 작업에 대한 정보 전달, 결정 요구 또는 작은 폼을 포함한 **대화형 모달** | 경고 메시지, 확인/취소, 간단한 폼 입력 | [DIALOG.md](https://github.com/beercss/beercss/blob/main/docs/DIALOG.md) |
+| **Divider (구분선)** | 리스트나 컨테이너 안의 내용 그룹을 시각적으로 구분 | 목록 항목 분리, 섹션 구분 | [DIVIDER.md](https://github.com/beercss/beercss/blob/main/docs/DIVIDER.md) |
+| **Expansion (확장)** | 펼침/접기 인터페이스 제공 | FAQ, 아코디언 메뉴, 다단계 목록 | [EXPANSION.md](https://github.com/beercss/beercss/blob/main/docs/EXPANSION.md) |
+| **Grid (그리드)** | 행과 열 기반으로 콘텐츠를 정렬하는 레이아웃 시스템 | 카드/이미지 갤러리, 반응형 레이아웃 | [GRID.md](https://github.com/beercss/beercss/blob/main/docs/GRID.md) |
+| **Icon (아이콘)** | 보편적인 개념을 단순한 시각 언어로 표현 | 버튼 보조, 네비게이션 아이템, 상태 표시 | [ICON.md](https://github.com/beercss/beercss/blob/main/docs/ICON.md) |
+| **Input (입력 필드)** | 사용자가 텍스트를 입력/수정 | 검색창, 폼 필드, 레이블이 있는 텍스트 입력 | [INPUT.md](https://github.com/beercss/beercss/blob/main/docs/INPUT.md) |
+| **List (리스트)** | 연속적인 세로 인덱스를 제공. 각 항목은 최대 3줄까지 | 메뉴, 메시지 목록, 설정 목록 | [LIST.md](https://github.com/beercss/beercss/blob/main/docs/LIST.md) |
+| **Menu (메뉴)** | 일시적인 표면에 선택 목록을 표시 | 드롭다운 옵션, 컨텍스트 메뉴, 퀵 액션 | [MENU.md](https://github.com/beercss/beercss/blob/main/docs/MENU.md) |
+| **Navigation (네비게이션)** | 수평 또는 수직으로 행동을 나열하는 컨테이너 | 상단/하단 바, 네비게이션 레일, 툴바 | [NAVIGATION.md](https://github.com/beercss/beercss/blob/main/docs/NAVIGATION.md) |
+| **Overlay (오버레이)** | 화면을 막아 대기 상태를 표현하는 레이어 | 로딩 스피너, 비동기 처리 표시 | [OVERLAY.md](https://github.com/beercss/beercss/blob/main/docs/OVERLAY.md) |
+| **Page (페이지)** | 하나의 뷰나 패널을 나타내며 여러 페이지 간 전환에 사용 | 탭 콘텐츠, 단계별 화면 | [PAGE.md](https://github.com/beercss/beercss/blob/main/docs/PAGE.md) |
+| **Progress (프로그레스)** | 프로세스의 진행 정도나 불특정 대기 시간을 나타냄 | 로딩 바, 업로드/다운로드 진행도 | [PROGRESS.md](https://github.com/beercss/beercss/blob/main/docs/PROGRESS.md) |
+| **Radio (라디오 버튼)** | 한 세트에서 **하나의 옵션만** 선택 | 설문 단일 응답, 필터 단일 선택 | [RADIO.md](https://github.com/beercss/beercss/blob/main/docs/RADIO.md) |
+| **Select (셀렉트)** | 일시적 표면에서 선택 목록을 표시하는 폼 요소 | 긴 옵션 목록, 폼 드롭다운 | [SELECT.md](https://github.com/beercss/beercss/blob/main/docs/SELECT.md) |
+| **Shape (쉐이프)** | M3 특유의 모양·모서리를 배경/장식에 활용 | 로딩 애니메이션, 그래픽 배경 | [SHAPE.md](https://github.com/beercss/beercss/blob/main/docs/SHAPE.md) |
+| **Slider (슬라이더)** | 값 범위에서 선택 | 볼륨/밝기 조절, 범위 값 선택 | [SLIDER.md](https://github.com/beercss/beercss/blob/main/docs/SLIDER.md) |
+| **Snackbar (스낵바)** | 앱 프로세스에 대한 짧은 메시지를 상단/하단에 표시, 자동 사라짐 | 저장 완료 알림, 네트워크 상태 변화 | [SNACKBAR.md](https://github.com/beercss/beercss/blob/main/docs/SNACKBAR.md) |
+| **Switch (스위치)** | 단일 항목을 켜거나 끄는 토글 | 다크모드, 알림 on/off 등 설정 | [SWITCH.md](https://github.com/beercss/beercss/blob/main/docs/SWITCH.md) |
+| **Table (테이블)** | 행·열 구조로 데이터 집합을 표시 | 데이터 목록, 관리 화면, 보고서 | [TABLE.md](https://github.com/beercss/beercss/blob/main/docs/TABLE.md) |
+| **Tabs (탭)** | 서로 다른 화면이나 데이터셋을 조직화 | 섹션 분리, 카테고리 전환 | [TABS.md](https://github.com/beercss/beercss/blob/main/docs/TABS.md) |
+| **Textarea (텍스트 영역)** | 긴 텍스트 입력·편집 필드 | 댓글 입력, 메모 작성 | [TEXTAREA.md](https://github.com/beercss/beercss/blob/main/docs/TEXTAREA.md) |
+| **Tooltip (툴팁)** | 요소를 호버/포커스/터치할 때 보조 설명 | 아이콘 설명, 버튼 보조 안내 | [TOOLTIP.md](https://github.com/beercss/beercss/blob/main/docs/TOOLTIP.md) |
+| **Typography (타이포그래피)** | 콘텐츠를 명확·효율적으로 전달하는 텍스트 시스템 | 제목, 본문, 강조 텍스트, 링크 | [TYPOGRAPHY.md](https://github.com/beercss/beercss/blob/main/docs/TYPOGRAPHY.md) |
+| **Container (컨테이너)** | 페이지의 **메인 콘텐츠**를 담는 영역 | 메인 페이지 콘텐츠, 반응형 레이아웃의 기본 영역 | [CONTAINER.md](https://github.com/beercss/beercss/blob/main/docs/CONTAINER.md) |
+| **Layout (레이아웃)** | 요소를 임의 위치에 둘 수 있는 컨테이너로 **절대/고정 포지션** 제공 | 헤더·푸터 고정, 앱 바 구성, 절대 위치 요소 배치 | [LAYOUT.md](https://github.com/beercss/beercss/blob/main/docs/LAYOUT.md) |
+| **Main layout (메인 레이아웃)** | 페이지를 설정하기 위한 **공통 HTML 구조** 제공 | 네비게이션·헤더·본문·푸터를 포함한 기본 페이지 구조 | [MAIN_LAYOUT.md](https://github.com/beercss/beercss/blob/main/docs/MAIN_LAYOUT.md) |
+| **Media (미디어)** | 이미지/비디오를 표시하는 요소 | 이미지 표시, 비디오 재생, 반응형 미디어 | [MEDIA.md](https://github.com/beercss/beercss/blob/main/docs/MEDIA.md) |
+
 
 > 💡 표는 **핵심 키워드 요약**이고, 아래 섹션에서 컴포넌트별로 좀 더 자세히 설명합니다.
 
