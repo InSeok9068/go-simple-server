@@ -254,10 +254,10 @@ templ ItemDetailContent(item ClosetItemDetail) {
 				hx-on::after-request="if(event.detail.successful){ closeModal('#item-detail-dialog'); showInfo('아이템 정보를 업데이트했어요. 임베딩을 다시 준비합니다.'); }"
 				hx-on:htmx:response-error="showError(event.detail.xhr.responseText || '업데이트에 실패했어요. 다시 시도해 주세요.');"
 			>
-				<div class="border field textarea label">
+				<div class="border field label">
 					<textarea name="meta_summary" rows="1">{ item.MetaSummary }</textarea>
 					<label>요약</label>
-					<span class="helper">간단한 설명을 작성해 주세요.</span>
+					<output>간단한 설명을 작성해 주세요.</output>
 				</div>
 				<div class="border field label">
 					<input type="text" name="meta_season" value={ item.MetaSeason }/>
@@ -270,12 +270,12 @@ templ ItemDetailContent(item ClosetItemDetail) {
 				<div class="border field label">
 					<input type="text" name="meta_colors" value={ item.MetaColorsValue }/>
 					<label>색상</label>
-					<span class="helper">콤마(,)로 여러 색상을 입력할 수 있어요.</span>
+					<output>콤마(,)로 여러 색상을 입력할 수 있어요.</output>
 				</div>
-				<div class="border field textarea label">
+				<div class="border field label">
 					<textarea name="tags" rows="3">{ item.TagsValue }</textarea>
 					<label>태그</label>
-					<span class="helper">콤마(,)나 줄바꿈으로 여러 태그를 입력할 수 있어요.</span>
+					<output>콤마(,)나 줄바꿈으로 여러 태그를 입력할 수 있어요.</output>
 				</div>
 				<div class="row">
 					<button class="button" type="submit">저장</button>

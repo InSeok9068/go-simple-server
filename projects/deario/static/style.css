@@ -93,11 +93,6 @@ body {
   text-align: center;
 }
 
-.u-fit-h‑18rem {
-  block-size: 18rem !important;
-  max-block-size: 18rem !important;
-}
-
 .u-text-ellipsis‑65px {
   max-width: 65px;
   white-space: nowrap !important;
@@ -119,6 +114,6 @@ body {
 .microphone {
   position: absolute;
   right: 3px;
-  top: 15rem;
+  top: 16rem;
   z-index: 1;
 }

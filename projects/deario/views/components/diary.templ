@@ -31,7 +31,7 @@ templ DiaryNavigation(date string) {
 templ DiaryContentForm(date string, content string) {
 	<form id="diary">
 		<input type="hidden" name="date" value={ date }/>
-		<div class="border field textarea u-fit-h‑18rem">
+		<div class="border field u-fit-h‑18rem">
 			<textarea
 				name="content"
 				autofocus
@@ -43,6 +43,7 @@ templ DiaryContentForm(date string, content string) {
 				@htmx:after-request="$store.save.ok()"
 				aria-label="일기 내용"
 				placeholder="오늘의 일기를 입력하세요"
+				rows="12"
 			>{ content }</textarea>
 		</div>
 		<button type="button" class="chip circle microphone" onclick="toggleRecord(this)">
