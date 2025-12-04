@@ -91,7 +91,8 @@
   - 모달·사이드바 등의 UI 동작은 `data-ui="#id"`만으로 제어 가능 → 이 경우 Alpine.js 불필요.
 - **참고**
   - 공식 문서: <https://beercss.com/>
-  - 내부 가이드: `.doc/css/beercss/SUMMARY.md`
+  - 사용 가능 태그 및 클래스 목록: `.doc/css/beercss/SUMMARY.md`
+  - 올바른 BeerCSS 사용 가이드: `.doc/css/beercss/GUIDE.md.md`
 - ❗ **규칙**
   - **커스텀 CSS 금지**
   - BeerCSS에서 제공하지 않는 클래스 사용 금지
