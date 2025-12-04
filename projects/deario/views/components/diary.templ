@@ -11,13 +11,15 @@ import (
 templ DiaryNavigation(date string) {
 	<nav>
 		<a id="prev-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1)) }>
-			<i>arrow_back_ios</i>
+			<i class="extra">keyboard_arrow_left</i>
 		</a>
 		<a id="today-day" href={ fmt.Sprintf("/?date=%s", time.Now().Format("20060102")) }>
-			<button class="small-round small">Today</button>
+			<button class="small-round small border">
+				<span class="bold">Today</span>
+			</button>
 		</a>
 		<a id="next-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1)) }>
-			<i>arrow_forward_ios</i>
+			<i class="extra">keyboard_arrow_right</i>
 		</a>
 		<button class="chip" data-ui="#calendar-dialog">
 			<i>calendar_month</i>
@@ -100,7 +102,7 @@ templ FeedbackActions(date string) {
 		<div class="max"></div>
 		<img id="feedback-loading" class="htmx-indicator" src="/shared/static/spinner.svg" alt="로딩"/>
 		<nav class="min active">
-			<button data-ui="#ai-feedback">
+			<button class="primary-container" data-ui="#ai-feedback">
 				<span>일기요정</span>
 			</button>
 			<menu class="right-align top transparent no-wrap left" id="ai-feedback" data-ui="#ai-feedback">
