@@ -118,7 +118,7 @@ frontend_libs=(
     "@alpinejs/persist|3.x.x|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
     "@alpinejs/morph|3.x.x|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
     "alpinejs|3.x.x|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
-    "beercss|3.12.13|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
+    "beercss|3.13.0|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
     "open-props|1.7.16|https://cdn.jsdelivr.net/npm/open-props@%s/open-props.min.css"
     "bulma|1.0.4|https://cdn.jsdelivr.net/npm/bulma@%s/css/bulma.min.css"
     "@picocss/pico|2|https://cdn.jsdelivr.net/npm/@picocss/pico@%s/css/pico.classless.min.css"
