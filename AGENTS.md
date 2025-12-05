@@ -92,7 +92,7 @@
 - **참고**
   - 공식 문서: <https://beercss.com/>
   - 사용 가능 태그 및 클래스 목록: `.doc/css/beercss/SUMMARY.md`
-  - 올바른 BeerCSS 사용 가이드: `.doc/css/beercss/GUIDE.md.md`
+  - 올바른 BeerCSS 사용 가이드: `.doc/css/beercss/GUIDE.md`
 - ❗ **규칙**
   - **커스텀 CSS 금지**
   - BeerCSS에서 제공하지 않는 클래스 사용 금지
