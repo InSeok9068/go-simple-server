@@ -87,15 +87,18 @@
 
 - **역할**
   - HTML 안에 BeerCSS 클래스만을 사용해 UI를 구성한다.
+  - **Material Design 3**를 계승한 프레임워크이다.
 - **동작**
   - 모달·사이드바 등의 UI 동작은 `data-ui="#id"`만으로 제어 가능 → 이 경우 Alpine.js 불필요.
 - **참고**
   - 공식 문서: <https://beercss.com/>
+  - Material Design 3 가이드라인: <https://m3.material.io/>
   - 사용 가능 태그 및 클래스 목록: `.doc/css/beercss/SUMMARY.md`
   - 올바른 BeerCSS 사용 가이드: `.doc/css/beercss/GUIDE.md`
 - ❗ **규칙**
   - **커스텀 CSS 금지**
   - BeerCSS에서 제공하지 않는 클래스 사용 금지
+  - **Material Design 3 가이드라인**을 준수하여 작업한다.
 
 ### 4.2 TailwindCSS (homepage 전용)
 
