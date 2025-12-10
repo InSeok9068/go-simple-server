@@ -132,8 +132,8 @@ templ uploadDialog() {
 						<small class="caption">URL도 20MB 이하만 허용돼요.</small>
 					</div>
 					<div class="row">
-						<button class="button">업로드</button>
-						<button class="button" type="button" data-ui="#upload-dialog">닫기</button>
+						<button>업로드</button>
+						<button class="surface-variant" type="button" data-ui="#upload-dialog">닫기</button>
 					</div>
 					<div class="upload-overlay htmx-indicator" data-indicator-mode="overlay">
 						<div class="upload-overlay__content">
@@ -197,8 +197,8 @@ templ searchDialog() {
 					<label>태그</label>
 				</div>
 				<div class="row">
-					<button class="button" type="submit">검색</button>
-					<button class="button" type="button" data-ui="#search-dialog">닫기</button>
+					<button type="submit">검색</button>
+					<button class="surface-variant" type="button" data-ui="#search-dialog">닫기</button>
 				</div>
 				<img class="htmx-indicator" src="/shared/static/spinner.svg" alt="로딩 중"/>
 			</form>

@@ -24,11 +24,13 @@ templ AppHeader() {
 				<i class="front">search</i>
 				<input type="search" name="q" placeholder="검색어 입력"/>
 			</div>
-			<button type="submit">검색</button>
+			<nav class="right-align">
+				<button type="submit">검색</button>
+			</nav>
 		</form>
 		<ul id="search-result" class="border list"></ul>
 		<nav class="right-align">
-			<button data-ui="#search-dialog">닫기</button>
+			<button class="surface-variant" data-ui="#search-dialog">닫기</button>
 		</nav>
 	</dialog>
 }
