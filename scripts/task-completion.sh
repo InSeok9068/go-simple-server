@@ -56,6 +56,10 @@ _task_completion() {
       COMPREPLY=( $(compgen -W "build test lint" -- "${cur}") )
       ;;
 
+    deps)
+      COMPREPLY=( $(compgen -W "backend tool frontend" -- "${cur}") )
+      ;;
+
     install-tailwind)
       COMPREPLY=( $(compgen -W "win linux" -- "${cur}") )   # ← win 으로 수정
       ;;
