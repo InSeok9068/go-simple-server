@@ -21,7 +21,51 @@
     ></script>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script> -->
     <title>Beer Playground</title>
+    <style>
+      /* List.js Pagination BeerCSS 스타일 적용 */
+      ul.pagination {
+        list-style: none;
+        padding-left: 0;
+        margin: 1.5rem 0 0;
+
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+      }
+
+      ul.pagination li > a.page {
+        position: static;
+        display: inline-flex;
+        opacity: 1;
+        transform: none;
+
+        min-width: 2rem;
+        height: 2rem;
+        padding: 0 0.5rem;
+        border-radius: 999px;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        line-height: 1;
+
+        background: transparent;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        color: inherit;
+      }
+
+      ul.pagination li.active > a.page {
+        background: var(--primary, #6200ee);
+        color: var(--on-primary, #ffffff);
+        border-color: transparent;
+      }
+
+      ul.pagination li:hover:not(.active) > .page {
+        background: rgba(0, 0, 0, 0.04);
+      }
+    </style>
   </head>
   <!--
 DOCS : https://www.beercss.com
@@ -56,8 +100,33 @@ DOCS : https://www.beercss.com
               <td class="name">Gustaf Lindqvist</td>
               <td class="born">1983</td>
             </tr>
+            <tr>
+              <td class="name">Gustaf Lindqvist</td>
+              <td class="born">1983</td>
+            </tr>
+            <tr>
+              <td class="name">Gustaf Lindqvist</td>
+              <td class="born">1983</td>
+            </tr>
+            <tr>
+              <td class="name">Gustaf Lindqvist</td>
+              <td class="born">1983</td>
+            </tr>
+            <tr>
+              <td class="name">Gustaf Lindqvist</td>
+              <td class="born">1983</td>
+            </tr>
+            <tr>
+              <td class="name">Gustaf Lindqvist</td>
+              <td class="born">1983</td>
+            </tr>
+            <tr>
+              <td class="name">Gustaf Lindqvist</td>
+              <td class="born">1983</td>
+            </tr>
           </tbody>
         </table>
+        <ul class="pagination"></ul>
       </div>
     </main>
   </body>
@@ -66,6 +135,8 @@ DOCS : https://www.beercss.com
       valueNames: ["name", "born"],
       listClass: "table",
       searchClass: "search",
+      page: 2,
+      pagination: true,
     }
 
     var userList = new List("users", options)
