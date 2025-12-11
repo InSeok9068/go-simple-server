@@ -20,102 +20,54 @@
       defer
     ></script>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
     <title>Beer Playground</title>
-    <style>
-      :root {
-        --size: 0.8rem;
-      }
-    </style>
   </head>
   <!--
 DOCS : https://www.beercss.com
 -->
   <body>
     <main class="responsive">
-      <article>
-        <h6>자산 현황</h6>
+      <div id="users">
+        <input class="search" placeholder="Search" />
+        <button class="sort" data-sort="name">Sort by name</button>
         <table>
+          <!-- IMPORTANT, class="list" have to be at tbody -->
           <thead>
             <tr>
-              <th>종목</th>
-              <th>금액</th>
-              <th>평가액</th>
-              <th>평가손익</th>
+              <th class="name">Name</th>
+              <th class="born">Born</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="table">
             <tr>
-              <td>
-                <details>
-                  <summary>Header Item</summary>
-                  <ul class="list border">
-                    <li>Item</li>
-                    <li>Item</li>
-                  </ul>
-                </details>
-              </td>
-              <td>100만</td>
-              <td>100만</td>
-              <td>0</td>
+              <td class="name">Jonny Stromberg</td>
+              <td class="born">1986</td>
+            </tr>
+            <tr>
+              <td class="name">Jonas Arnklint</td>
+              <td class="born">1985</td>
+            </tr>
+            <tr>
+              <td class="name">Martina Elm</td>
+              <td class="born">1986</td>
+            </tr>
+            <tr>
+              <td class="name">Gustaf Lindqvist</td>
+              <td class="born">1983</td>
             </tr>
           </tbody>
         </table>
-      </article>
-      <article>
-        <h6>주식 종목</h6>
-        <div class="row scroll">
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-          <article class="small-width border">
-            <h5>Title</h5>
-            <p>Some text here</p>
-            <div class="space"></div>
-          </article>
-        </div>
-      </article>
+      </div>
     </main>
   </body>
+  <script>
+    var options = {
+      valueNames: ["name", "born"],
+      listClass: "table",
+      searchClass: "search",
+    }
+
+    var userList = new List("users", options)
+  </script>
 </html>

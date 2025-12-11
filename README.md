@@ -64,6 +64,27 @@
 | **Unpoly**         | Htmx Like 프레임워크         |                      |
 | ~~**surreal.js**~~ |                              |                      |
 
+### 사용중인 CSS/JS 라이브러리
+
+| 종류 | 라이브러리                  | 역할                                                        |
+| :--- | :-------------------------- | :---------------------------------------------------------- |
+| 코어 | **htmx.org**                | 서버 주도 UI 업데이트 (AJAX, Websockets, SSE)               |
+| 코어 | **alpinejs**                | 클라이언트 측 경량 상태 관리 및 UI 상호작용                 |
+| 코어 | **@alpinejs/persist**       | Alpine 상태를 로컬 스토리지에 자동 저장                     |
+| 코어 | **@alpinejs/morph**         | DOM 변경 시 부드러운 전환(Morphing) 효과                    |
+| 코어 | **htmx-ext-alpine-morph**   | HTMX와 Alpine.js Morphing 기능 연동                         |
+| UI   | **beercss**                 | 메인 프레임워크. Material Design 3 기반 UI                  |
+| UI   | **@picocss/pico**           | Classless CSS (최소한의 기본 스타일링)                      |
+| UI   | **bulma**                   | 유틸리티 및 컴포넌트 기반 CSS 프레임워크                    |
+| UI   | **open-props**              | CSS 변수 모음 (색상, 그림자, 애니메이션 등)                 |
+| UI   | **material-dynamic-colors** | Material Design 3 동적 색상 테마 생성                       |
+| 유틸 | **flatpickr**               | 경량 날짜 및 시간 선택기                                    |
+| 유틸 | **chart.js**                | HTML5 Canvas 기반 데이터 시각화 차트                        |
+| 유틸 | **marked**                  | 마크다운 텍스트를 HTML로 변환                               |
+| 유틸 | **hammerjs**                | 멀티 터치 제스처 (스와이프, 핀치 등) 이벤트 처리            |
+| 유틸 | **list.js**                 | 테이블, 리스트 기반 정렬, 검색                              |
+| 기타 | **TailwindCSS**             | `homepage` 프로젝트 전용 스타일링 (별도 빌드 프로세스 사용) |
+
 ---
 
 ## 실행
