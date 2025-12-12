@@ -2,7 +2,7 @@
 
 # 사용법 안내
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 {homepage|ai-study|sample}"
+  echo "사용법: $0 {homepage|ai-study|deario|closet|sample}"
   exit 1
 fi
 

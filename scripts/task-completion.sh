@@ -61,7 +61,7 @@ _task_completion() {
       ;;
 
     install-tailwind)
-      COMPREPLY=( $(compgen -W "win linux" -- "${cur}") )   # ← win 으로 수정
+      COMPREPLY=( $(compgen -W "window linux" -- "${cur}") )
       ;;
 
     fmt)

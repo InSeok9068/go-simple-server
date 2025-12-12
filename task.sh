@@ -25,7 +25,7 @@ show_help() {
   echo -e "  ${GREEN}fmt${NC}"
   echo -e "  ${GREEN}build-linux${NC}"
   echo -e "  ${GREEN}release${NC} [project]"
-  echo -e "  ${GREEN}install-tailwind${NC} [win|linux]"   # ← win으로 고정
+  echo -e "  ${GREEN}install-tailwind${NC} [window|linux]"
   echo -e "  ${GREEN}sqlc-generate${NC} [project]"
   echo -e "  ${GREEN}templ-generate${NC}"
   echo -e "  ${GREEN}kill${NC} [port]"
