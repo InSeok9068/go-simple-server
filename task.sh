@@ -18,17 +18,17 @@ show_help() {
   echo -e "사용법: ./task.sh [명령어] [인자...]"
   echo -e ""
   echo -e "${YELLOW}주요 명령어:${NC}"
-  echo -e "  ${GREEN}help${NC}"
-  echo -e "  ${GREEN}switch${NC} [project]"
+  echo -e "  ${GREEN}help${NC} [명령어]"
+  echo -e "  ${GREEN}switch${NC} <project>"
   echo -e "  ${GREEN}check${NC} [build|test|lint]"
-  echo -e "  ${GREEN}deps${NC}"
-  echo -e "  ${GREEN}fmt${NC}"
+  echo -e "  ${GREEN}deps${NC} [backend|tool|frontend]"
+  echo -e "  ${GREEN}fmt${NC} [go|templ|tailwind|prettier]"
   echo -e "  ${GREEN}build-linux${NC}"
   echo -e "  ${GREEN}release${NC} [project]"
-  echo -e "  ${GREEN}install-tailwind${NC} [window|linux]"
+  echo -e "  ${GREEN}install-tailwind${NC} <window|linux> [-u]"
   echo -e "  ${GREEN}sqlc-generate${NC} [project]"
   echo -e "  ${GREEN}templ-generate${NC}"
-  echo -e "  ${GREEN}kill${NC} [port]"
+  echo -e "  ${GREEN}kill${NC} <port>"
   echo -e ""
 }
 
@@ -37,7 +37,7 @@ if [[ -z "${COMMAND}" ]]; then
 fi
 
 case "${COMMAND}" in
-  help)             bash "${SCRIPT_DIR}/show-help.sh" "$@" 2>/dev/null || show_help ;;
+  help)             show_help ;;
   switch)           bash "${SCRIPT_DIR}/change.sh" "$@" ;;
   check)            bash "${SCRIPT_DIR}/error-check.sh" "$@" ;;
   deps)             bash "${SCRIPT_DIR}/update-deps.sh" "$@" ;;
