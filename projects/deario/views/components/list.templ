@@ -39,9 +39,9 @@ templ SearchResults(items []SearchResultItem) {
 				<a href={ fmt.Sprintf("/?date=%s", item.Date) }>
 					<div>{ dateutil.MustFormatDateKorSimpleWithWeekDay(item.Date) }</div>
 					if item.Snippet.HasMatch {
-						<p>{ item.Snippet.Prefix }<span class="primary">{ item.Snippet.Match }</span>{ item.Snippet.Suffix }</p>
+						<div>{ item.Snippet.Prefix }<span class="primary">{ item.Snippet.Match }</span>{ item.Snippet.Suffix }</div>
 					} else {
-						<p>{ item.Snippet.Prefix }</p>
+						<div>{ item.Snippet.Prefix }</div>
 					}
 				</a>
 			</li>
