@@ -26,7 +26,7 @@ templ Index(title string, date string, mood string) {
 		<body>
 			@shared.SnackbarTempl()
 			@layout.AppHeader()
-			<main id="diary-main">
+			<main id="diary-main" class="responsive">
 				@components.DiaryNavigation(date)
 				<hr class="medium"/>
 				<form hx-get="/diary" hx-target="#diary" hx-trigger="load" hx-swap="outerHTML">

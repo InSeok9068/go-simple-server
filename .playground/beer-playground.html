@@ -22,19 +22,26 @@
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <title>Beer Playground</title>
   </head>
-  <!-- 
+  <!--
 DOCS : https://www.beercss.com
 -->
   <body>
-    <div x-data="{ open : false }">
-      <dialog
-        id="dialog-right"
-        class="right"
-        :class="{ 'active' : open }"
-      ></dialog>
-      <main class="responsive">
-        <button @click="open = !open" data-ui="#dialog-right">클릭</button>
-      </main>
-    </div>
+    <nav class="bottom">
+      <a>
+        <i>home</i>
+        <div>Home</div>
+      </a>
+      <a>
+        <i>search</i>
+        <div>Search</div>
+      </a>
+      <a>
+        <i>share</i>
+        <div>share</div>
+      </a>
+    </nav>
+    <main class="responsive">
+      <h3>Compact</h3>
+    </main>
   </body>
 </html>
