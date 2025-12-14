@@ -47,7 +47,7 @@ templ CbtDialog() {
 			</li>
 		</ul>
 		<nav class="right-align">
-			<button class="surface-variant" data-ui="#cbt-dialog">닫기</button>
+			<button class="surface-variant" type="button" data-ui="#cbt-dialog">닫기</button>
 		</nav>
 	</dialog>
 }
@@ -82,7 +82,7 @@ templ CalendarDialog(date string) {
 		<div class="space"></div>
 		<div id="calendar-picker"></div>
 		<nav class="right-align">
-			<button class="surface-variant" data-ui="#calendar-dialog">닫기</button>
+			<button class="surface-variant" type="button" data-ui="#calendar-dialog">닫기</button>
 		</nav>
 	</dialog>
 }
@@ -102,7 +102,7 @@ templ DiaryImageDialog(date string) {
 			<button type="button" onclick={ templ.JSFuncCall("uploadDiaryImage", date) }>업로드</button>
 		</nav>
 		<nav class="right-align">
-			<button class="surface-variant" data-ui="#diary-image-dialog">닫기</button>
+			<button class="surface-variant" type="button" data-ui="#diary-image-dialog">닫기</button>
 		</nav>
 	</dialog>
 }
@@ -125,7 +125,7 @@ templ DiaryListDialog() {
 				</button>
 			</nav>
 			<nav class="right-align">
-				<button class="surface-variant" data-ui="#diary-list-dialog">닫기</button>
+				<button class="surface-variant" type="button" data-ui="#diary-list-dialog">닫기</button>
 			</nav>
 		</div>
 	</dialog>
@@ -155,7 +155,7 @@ templ MenuDialog() {
 			</li>
 		</ul>
 		<nav class="right-align">
-			<button class="surface-variant" data-ui="#menu-dialog">닫기</button>
+			<button class="surface-variant" type="button" data-ui="#menu-dialog">닫기</button>
 		</nav>
 	</dialog>
 }
