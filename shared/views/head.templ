@@ -10,14 +10,14 @@ templ HeadsDefaultTempl(title string) {
 	<link rel="icon" href="/shared/static/favicon.ico"/>
 	<link
 		rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/open-props@1.7.16/open-props.min.css"
+		href="https://cdn.jsdelivr.net/npm/open-props@1.7.17/open-props.min.css"
 		onerror="this.onerror=null;this.href='shared/static/lib/open-props.min.css';"
 	/>
 	<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" onerror="this.onerror=null;this.src='shared/static/lib/htmx.min.js';"></script>
 	<script src="https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@2.0.2/alpine-morph.js" onerror="this.onerror=null;this.src='shared/static/lib/alpine-morph.js';"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/persist.cdn.min.js';"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/morph.cdn.min.js';"></script>
-	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/cdn.min.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.15.2/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/persist.cdn.min.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.15.2/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/morph.cdn.min.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.2/dist/cdn.min.js" defer onerror="this.onerror=null;this.src='shared/static/lib/cdn.min.js';"></script>
 	<title>{ title }</title>
 	if config.IsDevEnv() {
 		<script defer>
@@ -34,8 +34,8 @@ templ HeadsCustomTempl() {
 
 // Beer
 templ HeadsWithBeerTempl(title string) {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beercss@3.13.0/dist/cdn/beer.min.css" onerror="this.onerror=null;this.href='shared/static/lib/beer.min.css';"/>
-	<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.13.0/dist/cdn/beer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/beer.min.js';"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beercss@3.13.1/dist/cdn/beer.min.css" onerror="this.onerror=null;this.href='shared/static/lib/beer.min.css';"/>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.13.1/dist/cdn/beer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/beer.min.js';"></script>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js" onerror="this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';"></script>
 	@HeadsDefaultTempl(title)
 	@HeadsCustomTempl()
@@ -67,7 +67,7 @@ templ HeadsWithShoelaceAndTailwindTempl(title string) {
 // Pico + Tailwind
 templ HeadsWithPicoAndTailwindTempl(title string) {
 	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.classless.min.css';"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.classless.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.classless.min.css';"/>
 	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
 	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
 	@HeadsDefaultTempl(title)
@@ -102,7 +102,11 @@ templ HeadsWithFlatpickrTempl() {
 }
 
 templ HeadsWithMarkedTempl() {
-	<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js" onerror="this.onerror=null;this.src='shared/static/lib/marked.umd.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.umd.js" onerror="this.onerror=null;this.src='shared/static/lib/marked.umd.js';"></script>
+}
+
+templ HeadsWithChartJSTempl() {
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" onerror="this.onerror=null;this.src='shared/static/lib/chart.js';"></script>
 }
 
 templ HeadsWithHammerTempl() {

@@ -4,6 +4,7 @@
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 TARGET="${1-all}"
@@ -119,17 +120,17 @@ check_frontend() {
     frontend_libs=(
         "htmx.org|2.0.8|https://cdn.jsdelivr.net/npm/htmx.org@%s/dist/htmx.min.js"
         "htmx-ext-alpine-morph|2.0.2|https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@%s/alpine-morph.js"
-        "@alpinejs/persist|3.x.x|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
-        "@alpinejs/morph|3.x.x|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
-        "alpinejs|3.x.x|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
-        "beercss|3.13.0|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
-        "open-props|1.7.16|https://cdn.jsdelivr.net/npm/open-props@%s/open-props.min.css"
+        "@alpinejs/persist|3.15.2|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
+        "@alpinejs/morph|3.15.2|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
+        "alpinejs|3.15.2|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
+        "beercss|3.13.1|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
+        "open-props|1.7.17|https://cdn.jsdelivr.net/npm/open-props@%s/open-props.min.css"
         "bulma|1.0.4|https://cdn.jsdelivr.net/npm/bulma@%s/css/bulma.min.css"
-        "@picocss/pico|2|https://cdn.jsdelivr.net/npm/@picocss/pico@%s/css/pico.classless.min.css"
+        "@picocss/pico|2.1.1|https://cdn.jsdelivr.net/npm/@picocss/pico@%s/css/pico.classless.min.css"
         "material-dynamic-colors|1.1.2|https://cdn.jsdelivr.net/npm/material-dynamic-colors@%s/dist/cdn/material-dynamic-colors.min.js"
         "flatpickr|4.6.13|https://cdn.jsdelivr.net/npm/flatpickr@%s/dist/flatpickr.min.css"
         "chart.js|4.5.1|https://cdn.jsdelivr.net/npm/chart.js@%s"
-        "marked|16.4.1|https://cdn.jsdelivr.net/npm/marked@%s/lib/marked.umd.js"
+        "marked|17.0.1|https://cdn.jsdelivr.net/npm/marked@%s/lib/marked.umd.js"
         "hammerjs|2.0.8|https://cdn.jsdelivr.net/npm/hammerjs@%s/hammer.min.js"
     )
 
@@ -139,10 +140,15 @@ check_frontend() {
         if [ -z "$latest" ]; then
             latest="알 수 없음"
             latest_url="알 수 없음"
+            echo -e "- $pkg: 현재 $current, ${YELLOW}최신 $latest${NC}"
         else
             latest_url=$(printf "$url" "$latest")
+            if [ "$current" != "$latest" ]; then
+                echo -e "- $pkg: 현재 $current, ${RED}최신 $latest${NC}"
+            else
+                echo -e "- $pkg: 현재 $current, ${GREEN}최신 $latest${NC}"
+            fi
         fi
-        echo "- $pkg: 현재 $current, 최신 $latest"
         echo "  최신 URL: $latest_url"
     done
 
