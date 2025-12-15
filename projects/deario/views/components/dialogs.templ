@@ -100,8 +100,6 @@ templ DiaryImageDialog(date string) {
 		<nav class="right-align">
 			<img id="diary-image-loading" src="/shared/static/spinner.svg" style="display:none" alt="로딩"/>
 			<button type="button" onclick={ templ.JSFuncCall("uploadDiaryImage", date) }>업로드</button>
-		</nav>
-		<nav class="right-align">
 			<button class="surface-variant" type="button" data-ui="#diary-image-dialog">닫기</button>
 		</nav>
 	</dialog>
