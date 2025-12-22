@@ -19,6 +19,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	_ "modernc.org/sqlite"
 )
@@ -30,7 +31,12 @@ var Enforcer *casbin.Enforcer
 func InitFirebase() error {
 	firebaseConfig := config.EnvMap["FIREBASE_CONFIG"]
 
-	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON([]byte(firebaseConfig)))
+	creds, err := google.CredentialsFromJSON(context.Background(), []byte(firebaseConfig))
+	if err != nil {
+		return fmt.Errorf("파이어베이스 인증 정보 로드 실패: %w", err)
+	}
+
+	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentials(creds))
 	if err != nil {
 		return fmt.Errorf("파이어베이스 초기화 실패: %w", err)
 	}
