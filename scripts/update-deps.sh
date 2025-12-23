@@ -56,6 +56,7 @@ update_backend() {
         "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@latest"
         "go.opentelemetry.io/contrib/instrumentation/runtime@latest"
         "go.opentelemetry.io/otel@latest"
+        "golang.org/x/oauth2@latest"
         "golang.org/x/time@latest"
         "google.golang.org/api@latest"
         "google.golang.org/genai@latest"
