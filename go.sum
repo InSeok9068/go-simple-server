@@ -187,8 +187,8 @@ github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDk
 github.com/cncf/xds/go v0.0.0-20251022180443-0feb69152e9f h1:Y8xYupdHxryycyPlc9Y+bSQAYZnetRJ70VMVKm5CKI0=
 github.com/cncf/xds/go v0.0.0-20251022180443-0feb69152e9f/go.mod h1:HlzOvOjVBOfTGSRXRyY0OiCS/3J1akRGQQpRO/7zyF4=
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
-github.com/crazy-max/echo-ipfilter v1.12.0 h1:N/8DTNUZS6xMWXduaJ9UY7bwF6ouPZC5M1s7mo3Hdd8=
-github.com/crazy-max/echo-ipfilter v1.12.0/go.mod h1:IU1E8ytsdhgrhLbB1r0t4/U/yA4A7YM7GRlD02HujME=
+github.com/crazy-max/echo-ipfilter v1.13.0 h1:lS5uCBX5YAAvqXHQlMQfl1KxVBtfead38hFB9cTFfi0=
+github.com/crazy-max/echo-ipfilter v1.13.0/go.mod h1:ZE8mzyCQucNFjj5YJwANwsipBb+RgSPbal0facFrDVY=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/creack/pty v1.1.17/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
 github.com/creack/pty v1.1.23 h1:4M6+isWdcStXEf15G/RbrMPOQj1dZ7HPZCGwE4kOeP0=

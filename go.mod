@@ -22,7 +22,7 @@ require (
 	github.com/XSAM/otelsql v0.41.0
 	github.com/a-h/templ v0.3.960
 	github.com/casbin/casbin/v2 v2.135.0
-	github.com/crazy-max/echo-ipfilter v1.12.0
+	github.com/crazy-max/echo-ipfilter v1.13.0
 	github.com/doganarif/govisual v0.2.0
 	github.com/eduardolat/gomponents-lucide v1.4.0
 	github.com/glsubri/gomponents-alpine v0.2.2
