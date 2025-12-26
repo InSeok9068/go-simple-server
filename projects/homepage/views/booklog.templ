@@ -1,0 +1,388 @@
+package views
+
+import shared "simple-server/shared/views"
+
+templ BooklogPage(title string) {
+	<!DOCTYPE html>
+	<html lang="ko" class="scroll-smooth">
+		<head>
+			@shared.HeadsWithShoelaceAndTailwindTempl(title)
+			@shared.HeadsWithGoogleFontsTempl("Space+Grotesk:wght@500;600;700", "Noto+Sans+KR:wght@400;500;700")
+			<style>
+				body {
+					font-family: 'Noto Sans KR', 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+					background-color: #020617;
+					color: #e2e8f0;
+				}
+			</style>
+		</head>
+		<body class="min-h-screen bg-slate-950 text-slate-50">
+			<div class="absolute inset-0 -z-10 overflow-hidden">
+				<div class="absolute left-[-10%] top-[-20%] h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl"></div>
+				<div class="absolute right-[-10%] top-10 h-80 w-80 rounded-full bg-purple-500/20 blur-3xl"></div>
+				<div class="absolute left-1/2 bottom-[-15%] h-96 w-96 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl"></div>
+			</div>
+			<header class="px-4 pb-8 pt-10 md:px-8">
+				<div class="mx-auto max-w-6xl">
+					<div class="flex items-center justify-between gap-4">
+						<div class="flex items-center gap-3">
+							<div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 shadow-lg shadow-indigo-900/50">
+								<sl-icon name="book-half" class="text-xl text-white"></sl-icon>
+							</div>
+							<div>
+								<p class="text-xs uppercase tracking-[0.2em] text-indigo-200">Booklog</p>
+								<h1 class="text-2xl font-semibold text-white">{ title }</h1>
+							</div>
+						</div>
+						<div class="hidden items-center gap-3 sm:flex">
+							<sl-button pill variant="default" size="large">
+								<sl-icon slot="prefix" name="search"></sl-icon>
+								책 검색
+							</sl-button>
+							<sl-button pill variant="primary" size="large">
+								<sl-icon slot="prefix" name="plus-lg"></sl-icon>
+								책 추가
+							</sl-button>
+						</div>
+					</div>
+					<div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[2fr,1fr]">
+						<div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/70 to-slate-900/40 p-6 shadow-2xl shadow-indigo-900/40">
+							<div class="absolute right-10 top-10 hidden h-24 w-24 rounded-full bg-indigo-500/10 blur-3xl lg:block"></div>
+							<div class="space-y-5">
+								<div class="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-sm text-indigo-100 ring-1 ring-white/10">
+									<sl-icon name="sparkles" class="text-indigo-300"></sl-icon>
+									오늘의 기억이 쌓이는 작은 도서관
+								</div>
+								<h2 class="text-3xl font-bold leading-tight text-white md:text-4xl">
+									읽은 책, 감정, 문장을 한곳에 담는<br/>
+									<span class="text-transparent bg-gradient-to-r from-indigo-300 via-cyan-200 to-purple-300 bg-clip-text">Booklog</span>
+								</h2>
+								<p class="max-w-2xl text-base text-slate-200/80 leading-relaxed">
+									도서 정보와 독후감, 기억하고 싶은 문장을 태그와 함께 정리하세요. Shoelace 컴포넌트와 TailwindCSS로 가볍지만 감성적인 독서 공간을 제공합니다.
+								</p>
+								<div class="flex flex-wrap items-center gap-3">
+									<sl-button variant="primary" size="large" pill>
+										<sl-icon slot="prefix" name="bookmark-heart"></sl-icon>
+										기억 기록하기
+									</sl-button>
+									<sl-button variant="default" size="large" pill>
+										<sl-icon slot="prefix" name="bar-chart"></sl-icon>
+										독서 흐름 보기
+									</sl-button>
+									<sl-tag size="large" variant="primary" pill class="bg-indigo-500/20 text-indigo-100 ring-1 ring-indigo-300/30">
+										이번 달 8권 완료
+									</sl-tag>
+								</div>
+							</div>
+						</div>
+						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1">
+							<sl-card class="border-white/10 bg-white/5 backdrop-blur">
+								<div slot="header" class="flex items-center justify-between">
+									<p class="text-sm font-semibold text-white">이번 주 일정</p>
+									<sl-tag pill variant="success">집중 모드</sl-tag>
+								</div>
+								<div class="space-y-3">
+									<div class="flex items-center justify-between text-sm">
+										<div class="flex items-center gap-2 text-slate-200">
+											<sl-icon name="bookmark-check"></sl-icon>
+											<small>월/수/금 아침 독서</small>
+										</div>
+										<span class="text-xs text-slate-300">07:30</span>
+									</div>
+									<div class="flex items-center justify-between text-sm">
+										<div class="flex items-center gap-2 text-slate-200">
+											<sl-icon name="pencil-square"></sl-icon>
+											<small>주간 독후감 2건 작성</small>
+										</div>
+										<span class="text-xs text-slate-300">D-2</span>
+									</div>
+									<sl-progress-bar value="68" class="mt-2" pill></sl-progress-bar>
+									<p class="text-xs text-slate-300">목표 달성률 68%</p>
+								</div>
+							</sl-card>
+							<sl-card class="border-white/10 bg-white/5 backdrop-blur">
+								<div slot="header" class="flex items-center justify-between">
+									<p class="text-sm font-semibold text-white">최근 푸시 알림</p>
+									<sl-icon name="bell" class="text-indigo-200"></sl-icon>
+								</div>
+								<ul class="space-y-3 text-sm text-slate-200">
+									<li class="flex items-start gap-2">
+										<sl-badge variant="primary" pill>아침</sl-badge>
+										<div>
+											<p class="font-semibold">"어른을 위한 공부법" 24p 복습</p>
+											<p class="text-xs text-slate-400">오늘 아침 7시</p>
+										</div>
+									</li>
+									<li class="flex items-start gap-2">
+										<sl-badge variant="success" pill>저녁</sl-badge>
+										<div>
+											<p class="font-semibold">기억노트에 문장 2개 추가</p>
+											<p class="text-xs text-slate-400">어제 21시</p>
+										</div>
+									</li>
+								</ul>
+							</sl-card>
+						</div>
+					</div>
+				</div>
+			</header>
+			<main class="px-4 pb-12 md:px-8">
+				<div class="mx-auto flex max-w-6xl flex-col gap-8">
+					<section class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+						<sl-card class="border-white/10 bg-white/5 backdrop-blur lg:col-span-2">
+							<div slot="header" class="flex items-center justify-between">
+								<div>
+									<p class="text-xs uppercase tracking-[0.2em] text-indigo-200">책장</p>
+									<h3 class="text-lg font-semibold text-white">이번 달 내가 읽은 책</h3>
+								</div>
+								<sl-button size="small" pill variant="default">
+									<sl-icon slot="prefix" name="filter"></sl-icon>
+									정렬
+								</sl-button>
+							</div>
+							<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+								<div class="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 p-4 transition duration-300 hover:-translate-y-1 hover:border-indigo-400/40">
+									<div class="flex items-start gap-4">
+										<div class="h-20 w-16 rounded-lg bg-gradient-to-b from-indigo-400/50 to-indigo-700/50 ring-1 ring-white/10"></div>
+										<div class="space-y-1">
+											<p class="text-xs text-slate-300">인문 / 습관</p>
+											<h4 class="text-lg font-semibold text-white">어른을 위한 공부법</h4>
+											<p class="text-sm text-slate-300">김정수 · 2023</p>
+											<div class="flex flex-wrap gap-2 pt-1">
+												<sl-tag size="small" pill variant="primary">집중력</sl-tag>
+												<sl-tag size="small" pill variant="success">습관</sl-tag>
+											</div>
+										</div>
+									</div>
+									<div class="mt-4 flex items-center justify-between text-sm text-slate-200">
+										<div class="flex items-center gap-2">
+											<sl-icon name="bookmarks"></sl-icon>
+											<span>78 / 240p</span>
+										</div>
+										<sl-progress-bar value="32" style="width: 120px;" pill></sl-progress-bar>
+									</div>
+								</div>
+								<div class="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 p-4 transition duration-300 hover:-translate-y-1 hover:border-indigo-400/40">
+									<div class="flex items-start gap-4">
+										<div class="h-20 w-16 rounded-lg bg-gradient-to-b from-purple-400/40 to-indigo-700/50 ring-1 ring-white/10"></div>
+										<div class="space-y-1">
+											<p class="text-xs text-slate-300">소설 / 성장</p>
+											<h4 class="text-lg font-semibold text-white">달에게 들은 이야기</h4>
+											<p class="text-sm text-slate-300">이은주 · 2024</p>
+											<div class="flex flex-wrap gap-2 pt-1">
+												<sl-tag size="small" pill variant="warning">감성</sl-tag>
+												<sl-tag size="small" pill variant="success">성장</sl-tag>
+											</div>
+										</div>
+									</div>
+									<div class="mt-4 flex items-center justify-between text-sm text-slate-200">
+										<div class="flex items-center gap-2">
+											<sl-icon name="stars"></sl-icon>
+											<span>4.5 / 5</span>
+										</div>
+										<sl-progress-bar value="84" style="width: 120px;" pill></sl-progress-bar>
+									</div>
+								</div>
+							</div>
+						</sl-card>
+						<sl-card class="border-white/10 bg-white/5 backdrop-blur">
+							<div slot="header" class="flex items-center justify-between">
+								<div>
+									<p class="text-xs uppercase tracking-[0.2em] text-indigo-200">태그</p>
+									<h3 class="text-lg font-semibold text-white">자동 생성된 키워드</h3>
+								</div>
+								<sl-icon name="magic" class="text-indigo-200"></sl-icon>
+							</div>
+							<div class="flex flex-wrap gap-2">
+								<sl-tag pill variant="primary">집중 루틴</sl-tag>
+								<sl-tag pill variant="success">몰입</sl-tag>
+								<sl-tag pill variant="neutral">미니멀 노트</sl-tag>
+								<sl-tag pill variant="warning">인용문</sl-tag>
+								<sl-tag pill variant="danger">어려웠던 부분</sl-tag>
+								<sl-tag pill variant="success">회고</sl-tag>
+								<sl-tag pill variant="primary">퇴근 후 30분</sl-tag>
+							</div>
+						</sl-card>
+					</section>
+					<section class="grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr,0.8fr]">
+						<sl-card class="border-white/10 bg-white/5 backdrop-blur">
+							<div slot="header" class="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+								<div>
+									<p class="text-xs uppercase tracking-[0.2em] text-indigo-200">기억노트</p>
+									<h3 class="text-lg font-semibold text-white">기억하고 싶은 문장</h3>
+								</div>
+								<sl-button size="small" pill variant="default">
+									<sl-icon slot="prefix" name="plus"></sl-icon>
+									새 문장 추가
+								</sl-button>
+							</div>
+							<div class="space-y-4">
+								<div class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+									<div class="flex items-start justify-between gap-3">
+										<div>
+											<p class="text-sm text-slate-300">어른을 위한 공부법 · 56p</p>
+											<p class="mt-2 text-base leading-relaxed text-slate-100">
+												"작은 단위의 반복이 쌓여 변화가 된다. 기록은 그 변화를 눈으로 보여주는 거울이다."
+											</p>
+											<div class="mt-3 flex flex-wrap gap-2 text-xs text-indigo-100">
+												<sl-tag pill size="small" variant="primary">기억 상기</sl-tag>
+												<sl-tag pill size="small" variant="success">습관</sl-tag>
+											</div>
+										</div>
+										<sl-icon name="heart" class="text-rose-300"></sl-icon>
+									</div>
+								</div>
+								<div class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+									<div class="flex items-start justify-between gap-3">
+										<div>
+											<p class="text-sm text-slate-300">달에게 들은 이야기 · 142p</p>
+											<p class="mt-2 text-base leading-relaxed text-slate-100">
+												"삶은 누군가의 문장을 통해 다시 발견된다. 읽고, 적고, 나눌 때 감정은 오래 남는다."
+											</p>
+											<div class="mt-3 flex flex-wrap gap-2 text-xs text-indigo-100">
+												<sl-tag pill size="small" variant="warning">감성</sl-tag>
+												<sl-tag pill size="small" variant="neutral">노트</sl-tag>
+											</div>
+										</div>
+										<sl-icon name="chat-left-heart" class="text-indigo-200"></sl-icon>
+									</div>
+								</div>
+							</div>
+						</sl-card>
+						<sl-card class="border-white/10 bg-white/5 backdrop-blur">
+							<div slot="header" class="flex items-center justify-between">
+								<div>
+									<p class="text-xs uppercase tracking-[0.2em] text-indigo-200">독후감</p>
+									<h3 class="text-lg font-semibold text-white">느낀 점 요약</h3>
+								</div>
+								<sl-badge variant="primary" pill>최근 3개</sl-badge>
+							</div>
+							<div class="space-y-4">
+								<div class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+									<div class="flex items-center justify-between text-sm text-slate-200">
+										<span class="font-semibold">성취의 리듬을 만들다</span>
+										<sl-tag pill size="small" variant="success">별점 4.5</sl-tag>
+									</div>
+									<p class="mt-2 text-sm text-slate-300 leading-relaxed">
+										습관을 만들기 위해 필요한 것은 의지보다 구조라는 점이 인상적이었다. 푸시 알림으로 작은 반복을 도와주면 좋겠다.
+									</p>
+								</div>
+								<div class="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+									<div class="flex items-center justify-between text-sm text-slate-200">
+										<span class="font-semibold">밤을 건너는 이야기</span>
+										<sl-tag pill size="small" variant="warning">별점 4.0</sl-tag>
+									</div>
+									<p class="mt-2 text-sm text-slate-300 leading-relaxed">
+										잔잔한 문장들이 하루를 마무리하는 데 큰 힘이 되었다. 감정 태그를 자동으로 추천해주는 흐름이 있으면 좋을 듯.
+									</p>
+								</div>
+								<sl-button variant="default" pill size="small" class="w-full">
+									<sl-icon slot="prefix" name="journal-richtext"></sl-icon>
+									독후감 더 보기
+								</sl-button>
+							</div>
+						</sl-card>
+					</section>
+					<section class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+						<sl-card class="border-white/10 bg-white/5 backdrop-blur">
+							<div slot="header" class="flex items-center justify-between">
+								<div>
+									<p class="text-xs uppercase tracking-[0.2em] text-indigo-200">리마인드</p>
+									<h3 class="text-lg font-semibold text-white">푸시 알림 흐름</h3>
+								</div>
+								<sl-switch checked>푸시 사용</sl-switch>
+							</div>
+							<div class="space-y-3 text-sm text-slate-200">
+								<div class="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2">
+									<div>
+										<p class="font-semibold text-white">아침 리마인드</p>
+										<p class="text-xs text-slate-400">기억노트 1개 + 목표 페이지</p>
+									</div>
+									<sl-tag pill size="small" variant="primary">07:00</sl-tag>
+								</div>
+								<div class="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2">
+									<div>
+										<p class="font-semibold text-white">저녁 회고</p>
+										<p class="text-xs text-slate-400">오늘 감정 태그 확인</p>
+									</div>
+									<sl-tag pill size="small" variant="success">21:00</sl-tag>
+								</div>
+								<div class="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2">
+									<div>
+										<p class="font-semibold text-white">주간 통계</p>
+										<p class="text-xs text-slate-400">읽은 책/노트/별점 요약</p>
+									</div>
+									<sl-tag pill size="small" variant="neutral">일요일</sl-tag>
+								</div>
+							</div>
+						</sl-card>
+						<sl-card class="border-white/10 bg-white/5 backdrop-blur">
+							<div slot="header" class="flex items-center justify-between">
+								<div>
+									<p class="text-xs uppercase tracking-[0.2em] text-indigo-200">진행도</p>
+									<h3 class="text-lg font-semibold text-white">이번 주 목표</h3>
+								</div>
+								<sl-icon name="activity" class="text-indigo-200"></sl-icon>
+							</div>
+							<div class="space-y-4 text-sm text-slate-200">
+								<div>
+									<div class="flex items-center justify-between">
+										<span>독서 시간</span>
+										<span class="text-xs text-slate-400">3.5 / 5시간</span>
+									</div>
+									<sl-progress-bar value="70" pill></sl-progress-bar>
+								</div>
+								<div>
+									<div class="flex items-center justify-between">
+										<span>기억노트</span>
+										<span class="text-xs text-slate-400">4 / 6개</span>
+									</div>
+									<sl-progress-bar value="66" pill></sl-progress-bar>
+								</div>
+								<div>
+									<div class="flex items-center justify-between">
+										<span>독후감</span>
+										<span class="text-xs text-slate-400">1 / 2개</span>
+									</div>
+									<sl-progress-bar value="50" pill></sl-progress-bar>
+								</div>
+							</div>
+						</sl-card>
+						<sl-card class="border-white/10 bg-white/5 backdrop-blur">
+							<div slot="header" class="flex items-center justify-between">
+								<div>
+									<p class="text-xs uppercase tracking-[0.2em] text-indigo-200">월간 리포트</p>
+									<h3 class="text-lg font-semibold text-white">읽은 책 흐름</h3>
+								</div>
+								<sl-badge variant="neutral" pill>자동 생성</sl-badge>
+							</div>
+							<div class="space-y-3">
+								<div class="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2">
+									<div>
+										<p class="font-semibold text-white">총 8권</p>
+										<p class="text-xs text-slate-400">완독 5 / 진행중 3</p>
+									</div>
+									<sl-tag pill size="small" variant="primary">+2권</sl-tag>
+								</div>
+								<div class="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2">
+									<div>
+										<p class="font-semibold text-white">기억노트 18개</p>
+										<p class="text-xs text-slate-400">자동 태그 34개 생성</p>
+									</div>
+									<sl-tag pill size="small" variant="success">완료</sl-tag>
+								</div>
+								<div class="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2">
+									<div>
+										<p class="font-semibold text-white">독후감 6개</p>
+										<p class="text-xs text-slate-400">별점 평균 4.3</p>
+									</div>
+									<sl-tag pill size="small" variant="warning">업데이트</sl-tag>
+								</div>
+							</div>
+						</sl-card>
+					</section>
+				</div>
+			</main>
+		</body>
+	</html>
+}

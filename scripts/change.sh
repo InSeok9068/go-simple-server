@@ -24,6 +24,9 @@ case "$SERVICE" in
   closet)
     PORT=8003
     ;;
+  booklog)
+    PORT=8004
+    ;;
   sample)
     PORT=8999
     ;;
