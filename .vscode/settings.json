@@ -16,16 +16,16 @@
   },
 
   /* Shoelace [ON] */
-  // "html.customData": [
-  //   "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
-  // ],
-  // "css.styleSheets": ["**/style.css"],
-  // "tailwindCSS.includeLanguages": {
-  //   "templ": "html"
-  // }
+  "html.customData": [
+    "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
+  ],
+  "css.styleSheets": ["**/style.css"],
+  "tailwindCSS.includeLanguages": {
+    "templ": "html"
+  }
 
   /* Beer [ON] */
-  "css.styleSheets": ["shared/static/lib/beer.min.css", "**/style.css"]
+  // "css.styleSheets": ["shared/static/lib/beer.min.css", "**/style.css"]
 
   /* Bulma [ON] */
   // "css.styleSheets": ["shared/static/lib/bulma.min.css", "**/style.css"]
