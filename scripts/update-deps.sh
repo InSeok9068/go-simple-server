@@ -172,7 +172,7 @@ case "${TARGET}" in
         ;;
     all)
         update_backend
-        update_tools
+        # update_tools
         check_frontend
         ;;
     *)

@@ -22,7 +22,7 @@
   "css.styleSheets": ["**/style.css"],
   "tailwindCSS.includeLanguages": {
     "templ": "html"
-  }
+  },
 
   /* Beer [ON] */
   // "css.styleSheets": ["shared/static/lib/beer.min.css", "**/style.css"]
@@ -38,4 +38,15 @@
   // "tailwindCSS.experimental.classRegex": [
   //   ["Class(?:es)?[({]([^)}]*)[)}]", "[\"`]([^\"`]*)[\"`]"]
   // ]
+
+  "runConfigurations.configurations": [
+    {
+      "id": "config-1767080584219-7a4k76bv8",
+      "name": "air",
+      "command": "air",
+      "args": "",
+      "env": {},
+      "cwd": "${workspaceFolder}"
+    }
+  ]
 }
