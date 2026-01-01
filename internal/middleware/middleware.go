@@ -93,11 +93,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 	e.Use(debug.MetricsMiddleware)
 
 	// 9) 타임아웃: 항상 가장 안쪽 (Writer 바꿔치기 → 200 이슈 방지)
-	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Timeout:      1 * time.Minute,
-		ErrorMessage: "요청 처리 시간이 지연되었습니다. 다시 시도해주세요.",
-		Skipper:      func(c echo.Context) bool { return isSkippedPath(c.Path()) },
-	}))
+	e.Use(middleware.ContextTimeout(1 * time.Minute))
 
 	// Debug
 	// https://{서버주소}/debug/vars/ui?auth={인증값}
