@@ -18,13 +18,13 @@ require (
 	cloud.google.com/go/storage v1.58.0
 	firebase.google.com/go/v4 v4.18.0
 	github.com/AlecAivazis/survey/v2 v2.3.7
-	github.com/Blank-Xu/sql-adapter v1.1.2
+	github.com/Blank-Xu/sql-adapter v1.2.0
 	github.com/XSAM/otelsql v0.41.0
 	github.com/a-h/templ v0.3.977
 	github.com/casbin/casbin/v2 v2.135.0
 	github.com/crazy-max/echo-ipfilter v1.13.0
 	github.com/doganarif/govisual v0.2.0
-	github.com/eduardolat/gomponents-lucide v1.4.0
+	github.com/eduardolat/gomponents-lucide v1.5.0
 	github.com/glsubri/gomponents-alpine v0.2.2
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
@@ -109,13 +109,14 @@ require (
 	github.com/bep/golibsass v1.2.0 // indirect
 	github.com/bkielbasa/cyclop v1.2.3 // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
-	github.com/bmatcuk/doublestar/v4 v4.8.1 // indirect
+	github.com/bmatcuk/doublestar/v4 v4.9.1 // indirect
 	github.com/bombsimon/wsl/v4 v4.5.0 // indirect
 	github.com/breml/bidichk v0.3.2 // indirect
 	github.com/breml/errchkjson v0.4.0 // indirect
 	github.com/butuzov/ireturn v0.3.1 // indirect
 	github.com/butuzov/mirror v1.3.0 // indirect
-	github.com/casbin/govaluate v1.3.0 // indirect
+	github.com/casbin/casbin/v3 v3.6.0 // indirect
+	github.com/casbin/govaluate v1.10.0 // indirect
 	github.com/catenacyber/perfsprint v0.8.2 // indirect
 	github.com/ccojocar/zxcvbn-go v1.0.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
