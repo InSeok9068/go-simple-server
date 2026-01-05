@@ -30,7 +30,7 @@ update_backend() {
         "github.com/Blank-Xu/sql-adapter@latest"
         "github.com/XSAM/otelsql@latest"
         "github.com/a-h/templ@latest"
-        "github.com/casbin/casbin/v2@latest"
+        "github.com/casbin/casbin/v3@latest"
         "github.com/crazy-max/echo-ipfilter@latest"
         "github.com/doganarif/govisual@latest"
         "github.com/eduardolat/gomponents-lucide@latest"

@@ -132,7 +132,7 @@ go get cloud.google.com/go/storage
 go get firebase.google.com/go/v4
 go get github.com/AlecAivazis/survey/v2
 go get github.com/Blank-Xu/sql-adapter
-go get github.com/casbin/casbin/v2
+go get github.com/casbin/casbin/v3
 go get github.com/crazy-max/echo-ipfilter
 go get github.com/doganarif/govisual
 go get github.com/eduardolat/gomponents-lucide

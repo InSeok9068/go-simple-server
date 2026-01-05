@@ -21,7 +21,7 @@ require (
 	github.com/Blank-Xu/sql-adapter v1.2.0
 	github.com/XSAM/otelsql v0.41.0
 	github.com/a-h/templ v0.3.977
-	github.com/casbin/casbin/v2 v2.135.0
+	github.com/casbin/casbin/v3 v3.7.0
 	github.com/crazy-max/echo-ipfilter v1.13.0
 	github.com/doganarif/govisual v0.2.0
 	github.com/eduardolat/gomponents-lucide v1.5.0
@@ -115,7 +115,6 @@ require (
 	github.com/breml/errchkjson v0.4.0 // indirect
 	github.com/butuzov/ireturn v0.3.1 // indirect
 	github.com/butuzov/mirror v1.3.0 // indirect
-	github.com/casbin/casbin/v3 v3.6.0 // indirect
 	github.com/casbin/govaluate v1.10.0 // indirect
 	github.com/catenacyber/perfsprint v0.8.2 // indirect
 	github.com/ccojocar/zxcvbn-go v1.0.2 // indirect
