@@ -14,8 +14,8 @@ import (
 
 	firebase "firebase.google.com/go/v4"
 	sqladapter "github.com/Blank-Xu/sql-adapter"
-	"github.com/casbin/casbin/v2"
-	"github.com/casbin/casbin/v2/model"
+	"github.com/casbin/casbin/v3"
+	"github.com/casbin/casbin/v3/model"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -148,7 +148,9 @@ func RegisterCasbinMiddleware(e *echo.Group) error {
 			act := c.Request().Method
 
 			if config.IsDevEnv() {
-				Enforcer.EnableLog(true)
+				// TODO.권한 로깅을 찍으려면 로깅 구현체 전달
+				// https://casbin.org/docs/log-error/
+				// Enforcer.SetLogger()
 			}
 
 			ok, err := Enforcer.Enforce(uid, obj, act)
