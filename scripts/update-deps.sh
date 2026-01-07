@@ -121,9 +121,9 @@ check_frontend() {
     frontend_libs=(
         "htmx.org|2.0.8|https://cdn.jsdelivr.net/npm/htmx.org@%s/dist/htmx.min.js"
         "htmx-ext-alpine-morph|2.0.2|https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@%s/alpine-morph.js"
-        "@alpinejs/persist|3.15.2|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
-        "@alpinejs/morph|3.15.2|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
-        "alpinejs|3.15.2|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
+        "@alpinejs/persist|3.15.3|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
+        "@alpinejs/morph|3.15.3|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
+        "alpinejs|3.15.3|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
         "beercss|3.13.1|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
         "open-props|1.7.17|https://cdn.jsdelivr.net/npm/open-props@%s/open-props.min.css"
         "bulma|1.0.4|https://cdn.jsdelivr.net/npm/bulma@%s/css/bulma.min.css"
