@@ -15,7 +15,7 @@ tool github.com/dexter2389/go-tailwind-sorter
 tool golang.org/x/vuln/cmd/govulncheck
 
 require (
-	cloud.google.com/go/storage v1.59.0
+	cloud.google.com/go/storage v1.59.1
 	firebase.google.com/go/v4 v4.18.0
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/Blank-Xu/sql-adapter v1.2.0
@@ -55,8 +55,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.39.0
 	golang.org/x/oauth2 v0.34.0
 	golang.org/x/time v0.14.0
-	google.golang.org/api v0.259.0
-	google.golang.org/genai v1.41.0
+	google.golang.org/api v0.260.0
+	google.golang.org/genai v1.41.1
 	maragu.dev/gomponents v1.2.0
 	maragu.dev/gomponents-htmx v0.6.1
 	maragu.dev/goqite v0.3.1
@@ -183,7 +183,7 @@ require (
 	github.com/google/pprof v0.0.0-20250317173921-a4b03ec1a45e // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.3.7 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.9 // indirect
 	github.com/googleapis/gax-go/v2 v2.16.0 // indirect
 	github.com/gordonklaus/ineffassign v0.1.0 // indirect
 	github.com/gorilla/context v1.1.2 // indirect
