@@ -5,10 +5,12 @@ import (
 	"io/fs"
 	"log/slog"
 	"os"
+
 	resources "simple-server"
 
 	"simple-server/internal/config"
 	"simple-server/internal/middleware"
+
 	"simple-server/projects/homepage/views"
 
 	"github.com/labstack/echo-contrib/echoprometheus"
