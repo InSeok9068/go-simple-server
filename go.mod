@@ -1,6 +1,6 @@
 module simple-server
 
-go 1.25.0
+go 1.25
 
 tool github.com/air-verse/air
 
