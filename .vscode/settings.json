@@ -38,7 +38,6 @@
   // "tailwindCSS.experimental.classRegex": [
   //   ["Class(?:es)?[({]([^)}]*)[)}]", "[\"`]([^\"`]*)[\"`]"]
   // ]
-
   "runConfigurations.configurations": [
     {
       "id": "config-1767080584219-7a4k76bv8",
@@ -47,6 +46,21 @@
       "args": "",
       "env": {},
       "cwd": "${workspaceFolder}"
+    }
+  ],
+  "dbcode.connections": [
+    {
+      "connectionId": "wmSzgsidUkFjwL7FAEAaK",
+      "name": "deario",
+      "driver": "sqlite",
+      "connectionType": "socket",
+      "socket": "go-simple-server/projects/deario/data/data.db",
+      "readOnly": false,
+      "postConnectionSqlType": "inline",
+      "driverOptions": {
+        "extensions": []
+      },
+      "idleTimeout": 0
     }
   ]
 }
