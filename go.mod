@@ -21,7 +21,7 @@ require (
 	github.com/Blank-Xu/sql-adapter v1.2.0
 	github.com/XSAM/otelsql v0.41.0
 	github.com/a-h/templ v0.3.977
-	github.com/casbin/casbin/v3 v3.9.0
+	github.com/casbin/casbin/v3 v3.10.0
 	github.com/crazy-max/echo-ipfilter v1.13.0
 	github.com/doganarif/govisual v0.2.0
 	github.com/eduardolat/gomponents-lucide v1.5.0

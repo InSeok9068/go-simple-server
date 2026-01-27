@@ -88,7 +88,7 @@ func HeadsWithBeer(title string) []Node {
 			Attr("onerror", "this.onerror=null;this.href='shared/static/lib/beer.min.css';")),
 		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/beercss@3.12.13/dist/cdn/beer.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/beer.min.js';")),
-		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"),
+		Script(Type("module"), Src("https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.4/dist/cdn/material-dynamic-colors.min.js"),
 			Attr("onerror", "this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';")),
 	}
 
