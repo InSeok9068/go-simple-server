@@ -202,11 +202,12 @@ HTTP/HTMX 응답 규칙:
 ### 10.1 후보 1: BeerCSS (기본 선택)
 
 1. 적용 대상: 대다수 서비스
-2. 목적: 빠른 개발, 일관된 UI, Material Design 3 기반 화면 구성
+2. 목적: 빠른 개발, 일관된 UI, Material Design 3 기반 화면 구성, Material Design 가이드 준수 지향
 3. 규칙:
    - BeerCSS 제공 클래스/컴포넌트를 우선 사용합니다.
    - 커스텀 CSS는 최소화하고 필요한 경우에만 제한적으로 사용합니다.
-   - 모달/사이드바는 `data-ui` 기반 동작을 우선 검토합니다.
+   - UI 요소에 `data-ui` 제어 옵션이 있으면 `data-ui` 기반 동작을 우선 사용합니다.
+   - `data-ui`로 제어 가능한 항목은 별도 JS/Alpine 제어를 추가하지 않습니다.
 
 ### 10.2 후보 2: Shoelace + TailwindCSS 조합
 
