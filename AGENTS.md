@@ -205,6 +205,7 @@ HTTP/HTMX 응답 규칙:
 2. 목적: 빠른 개발, 일관된 UI, Material Design 3 기반 화면 구성, Material Design 가이드 준수 지향
 3. 규칙:
    - BeerCSS 제공 클래스/컴포넌트를 우선 사용합니다.
+   - BeerCSS 화면 구성 전에는 반드시 `.doc/css/beercss/lms.md`를 한 번 읽고 진행합니다.
    - 커스텀 CSS는 최소화하고 필요한 경우에만 제한적으로 사용합니다.
    - UI 요소에 `data-ui` 제어 옵션이 있으면 `data-ui` 기반 동작을 우선 사용합니다.
    - `data-ui`로 제어 가능한 항목은 별도 JS/Alpine 제어를 추가하지 않습니다.
@@ -242,12 +243,6 @@ HTTP/HTMX 응답 규칙:
    - 선택한 CSS 프레임워크 후보(1/2/3)
    - 선택 이유(요구사항 기준)
    - 예외 규칙(혼용 여부, 제한 조건)
-
-### 10.6 BeerCSS 태그/클래스 참조 규칙
-
-1. BeerCSS에서 사용 가능한 태그/클래스 기준 문서는 `.doc/css/beercss/SUMMARY.md`입니다.
-2. 화면 구현 전에는 `SUMMARY.md`의 `Elements`, `Helpers`, `Settings`를 먼저 확인합니다.
-3. 각 요소의 상세 문서는 `https://github.com/beercss/beercss/tree/main/docs`에서 확인합니다.
 
 ---
 
