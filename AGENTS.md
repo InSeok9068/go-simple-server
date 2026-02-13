@@ -242,6 +242,11 @@ HTTP/HTMX 응답 규칙:
    - 선택 이유(요구사항 기준)
    - 예외 규칙(혼용 여부, 제한 조건)
 
+### 10.6 BeerCSS 태그/클래스 참조 규칙
+
+1. BeerCSS에서 사용 가능한 태그/클래스 기준 문서는 `.doc/css/beercss/SUMMARY.md`입니다.
+2. 화면 구현 전에는 `SUMMARY.md`의 `Elements`, `Helpers`, `Settings`를 먼저 확인합니다.
+
 ---
 
 ## 11) 작업 절차 체크리스트
