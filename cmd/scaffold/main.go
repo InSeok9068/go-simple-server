@@ -4,9 +4,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path"
@@ -74,6 +76,7 @@ func run() error {
 }
 
 func runDeployProject() error {
+	logTitle("프로젝트 첫 배포 시작")
 	projectName, err := askProjectName("첫 배포할 프로젝트를 선택하세요.")
 	if err != nil {
 		return err
@@ -111,6 +114,7 @@ func runDeployProject() error {
 		return nil
 	}
 
+	logStep("필수 명령어 확인")
 	if err := ensureCommands("ssh", "scp"); err != nil {
 		return err
 	}
@@ -118,6 +122,7 @@ func runDeployProject() error {
 }
 
 func runUndeployProject() error {
+	logTitle("프로젝트 회수 시작")
 	projectName, err := askProjectName("회수할 프로젝트를 선택하세요.")
 	if err != nil {
 		return err
@@ -166,6 +171,7 @@ func runUndeployProject() error {
 		return nil
 	}
 
+	logStep("필수 명령어 확인")
 	if err := ensureCommands("ssh", "scp"); err != nil {
 		return err
 	}
@@ -173,11 +179,13 @@ func runUndeployProject() error {
 }
 
 func deployProject(projectName, localBinaryPath string, cfg DeployConfig) error {
+	logStep("로컬 서비스 디렉터리 준비")
 	if err := os.MkdirAll(serviceDirPath, 0755); err != nil {
 		return err
 	}
 
 	servicePath := filepath.Join(serviceDirPath, projectName+".service")
+	logStep("systemd 서비스 파일 생성")
 	if err := writeServiceFile(servicePath, projectName, cfg.RemoteAppDir); err != nil {
 		return err
 	}
@@ -185,21 +193,26 @@ func deployProject(projectName, localBinaryPath string, cfg DeployConfig) error 
 	remoteBinaryTmp := fmt.Sprintf("/tmp/%s", projectName)
 	remoteServiceTmp := fmt.Sprintf("/tmp/%s.service", projectName)
 	remoteCaddyTmp := fmt.Sprintf("/tmp/Caddyfile.%s", projectName)
+	logStep("바이너리 업로드")
 	if err := scpFile(cfg, localBinaryPath, remoteBinaryTmp); err != nil {
 		return err
 	}
+	logStep("서비스 파일 업로드")
 	if err := scpFile(cfg, servicePath, remoteServiceTmp); err != nil {
 		return err
 	}
+	logStep("Caddyfile 업로드")
 	if err := scpFile(cfg, caddyFilePath, remoteCaddyTmp); err != nil {
 		return err
 	}
 
 	script := renderDeployScript(projectName, cfg, remoteBinaryTmp, remoteServiceTmp, remoteCaddyTmp)
+	logStep("원격 배포 스크립트 실행")
 	if err := runRemoteScript(cfg, projectName+"-deploy", script); err != nil {
 		return err
 	}
 
+	logSuccess("첫 배포 자동화가 완료되었습니다.")
 	fmt.Println("첫 배포 자동화가 완료되었습니다.")
 	return nil
 }
@@ -207,21 +220,25 @@ func deployProject(projectName, localBinaryPath string, cfg DeployConfig) error 
 func undeployProject(projectName string, cfg DeployConfig, removeSrvData, removeLocalService bool) error {
 	servicePath := filepath.Join(serviceDirPath, projectName+".service")
 	if removeLocalService {
+		logStep("로컬 서비스 파일 정리")
 		if err := os.Remove(servicePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 			return err
 		}
 	}
 
 	remoteCaddyTmp := fmt.Sprintf("/tmp/Caddyfile.%s", projectName)
+	logStep("Caddyfile 업로드")
 	if err := scpFile(cfg, caddyFilePath, remoteCaddyTmp); err != nil {
 		return err
 	}
 
 	script := renderUndeployScript(projectName, cfg, remoteCaddyTmp, removeSrvData)
+	logStep("원격 회수 스크립트 실행")
 	if err := runRemoteScript(cfg, projectName+"-undeploy", script); err != nil {
 		return err
 	}
 
+	logSuccess("프로젝트 회수 자동화가 완료되었습니다.")
 	fmt.Println("프로젝트 회수 자동화가 완료되었습니다.")
 	return nil
 }
@@ -545,12 +562,41 @@ func resolveLocalBinaryPath(projectName string) (string, error) {
 	if info.IsDir() {
 		return "", fmt.Errorf("바이너리 경로가 디렉터리입니다: %s", localPath)
 	}
+	if err := validateLinuxELF(localPath, projectName); err != nil {
+		return "", err
+	}
 
 	absPath, err := filepath.Abs(localPath)
 	if err != nil {
 		return "", err
 	}
 	return absPath, nil
+}
+
+func validateLinuxELF(filePath, projectName string) error {
+	// #nosec G304 -- 검증된 서비스명으로 만든 루트 경로(./{service})만 열어 확인한다.
+	f, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	header := make([]byte, 4)
+	if _, err := io.ReadFull(f, header); err != nil {
+		return fmt.Errorf("바이너리 헤더를 읽지 못했습니다: %w", err)
+	}
+
+	if bytes.Equal(header, []byte{0x7f, 'E', 'L', 'F'}) {
+		return nil
+	}
+	if bytes.Equal(header[:2], []byte{'M', 'Z'}) {
+		return fmt.Errorf(
+			"%s는 Windows 실행파일(PE)입니다. Linux 바이너리로 다시 빌드하세요. 예: GOOS=linux GOARCH=amd64 go build -o ./%s ./projects/%s/cmd",
+			filePath, projectName, projectName,
+		)
+	}
+
+	return fmt.Errorf("%s는 Linux ELF 실행파일이 아닙니다", filePath)
 }
 
 func writeServiceFile(servicePath, projectName, remoteAppDir string) error {
@@ -576,6 +622,7 @@ func renderDeployScript(projectName string, cfg DeployConfig, remoteBinaryTmp, r
 	remoteBinary := path.Join(cfg.RemoteAppDir, projectName)
 	remoteService := path.Join(cfg.RemoteSystemdDir, projectName+".service")
 	remoteSrvProject := path.Join(cfg.RemoteSrvRoot, projectName)
+	remoteSrvData := path.Join(remoteSrvProject, "data")
 
 	lines := []string{
 		"set -euo pipefail",
@@ -587,11 +634,12 @@ func renderDeployScript(projectName string, cfg DeployConfig, remoteBinaryTmp, r
 		fmt.Sprintf("sudo install -m 644 %s %s", shellEscape(remoteCaddyTmp), shellEscape(cfg.RemoteCaddyfile)),
 		fmt.Sprintf("sudo rm -f %s", shellEscape(remoteCaddyTmp)),
 		"sudo systemctl daemon-reload",
-		fmt.Sprintf("sudo systemctl enable %s", shellEscape(projectName+".service")),
-		fmt.Sprintf("sudo systemctl restart %s", shellEscape(projectName+".service")),
 		fmt.Sprintf("sudo mkdir -p %s", shellEscape(remoteSrvProject)),
+		fmt.Sprintf("sudo mkdir -p %s", shellEscape(remoteSrvData)),
 		fmt.Sprintf("sudo chown -R www-data:www-data %s", shellEscape(remoteSrvProject)),
 		fmt.Sprintf("sudo chmod -R 755 %s", shellEscape(remoteSrvProject)),
+		fmt.Sprintf("sudo systemctl enable %s", shellEscape(projectName+".service")),
+		fmt.Sprintf("sudo systemctl restart %s", shellEscape(projectName+".service")),
 		"sudo systemctl reload caddy",
 		fmt.Sprintf("sudo systemctl --no-pager --full status %s || true", shellEscape(projectName+".service")),
 	}
@@ -629,25 +677,29 @@ func renderUndeployScript(projectName string, cfg DeployConfig, remoteCaddyTmp s
 func runRemoteScript(cfg DeployConfig, scriptName, scriptBody string) error {
 	localScriptPath := filepath.Join(os.TempDir(), fmt.Sprintf("scaffold-%s-%d.sh", scriptName, time.Now().UnixNano()))
 	fullScript := "#!/usr/bin/env bash\n" + scriptBody
+	logInfo("원격 스크립트 파일 생성: %s", localScriptPath)
 	if err := os.WriteFile(localScriptPath, []byte(fullScript), 0600); err != nil {
 		return err
 	}
 	defer os.Remove(localScriptPath)
 
 	remoteScriptPath := fmt.Sprintf("/tmp/scaffold-%s-%d.sh", scriptName, time.Now().UnixNano())
+	logInfo("원격 스크립트 업로드 경로: %s", remoteScriptPath)
 	if err := scpFile(cfg, localScriptPath, remoteScriptPath); err != nil {
 		return err
 	}
 	defer func() {
+		logInfo("원격 스크립트 정리: %s", remoteScriptPath)
 		_ = runSSHCommand(cfg, fmt.Sprintf("rm -f %s", shellEscape(remoteScriptPath)))
 	}()
 
+	logInfo("원격 스크립트 실행 시작: %s", remoteScriptPath)
 	return runSSHCommand(cfg, fmt.Sprintf("bash %s", shellEscape(remoteScriptPath)))
 }
 
 func scpFile(cfg DeployConfig, localPath, remotePath string) error {
 	sshTarget := fmt.Sprintf("%s@%s:%s", cfg.SSHUser, cfg.SSHHost, remotePath)
-	args := buildSSHCommonArgs(cfg)
+	args := buildSCPCommonArgs(cfg)
 	args = append(args, localPath, sshTarget)
 
 	fmt.Printf("파일 전송: %s -> %s\n", localPath, sshTarget)
@@ -677,13 +729,30 @@ func buildSSHCommonArgs(cfg DeployConfig) []string {
 	return args
 }
 
+func buildSCPCommonArgs(cfg DeployConfig) []string {
+	args := []string{
+		"-P",
+		strconv.Itoa(cfg.SSHPort),
+	}
+
+	if cfg.DisableHostKeyTest {
+		args = append(args, "-o", "StrictHostKeyChecking=no")
+	}
+	if !cfg.SkipSSHKey {
+		args = append(args, "-i", cfg.SSHKeyPath)
+	}
+	return args
+}
+
 func runCommand(name string, args ...string) error {
+	logInfo("명령 실행: %s", formatCommandForLog(name, args))
 	cmd := exec.Command(name, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("%s 명령 실행 실패: %w", name, err)
 	}
+	logInfo("명령 완료: %s", name)
 	return nil
 }
 
@@ -717,4 +786,42 @@ func portValidator(answer interface{}) error {
 
 func shellEscape(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", `'"'"'`) + "'"
+}
+
+func logTitle(message string) {
+	fmt.Printf("\n[작업] %s\n", message)
+}
+
+func logStep(message string) {
+	fmt.Printf("[단계] %s\n", message)
+}
+
+func logSuccess(message string) {
+	fmt.Printf("[완료] %s\n", message)
+}
+
+func logInfo(format string, args ...interface{}) {
+	fmt.Printf("[정보 %s] %s\n", time.Now().Format("15:04:05"), fmt.Sprintf(format, args...))
+}
+
+func formatCommandForLog(name string, args []string) string {
+	items := make([]string, 0, len(args)+1)
+	items = append(items, name)
+
+	maskNext := false
+	for _, arg := range args {
+		if maskNext {
+			items = append(items, "***")
+			maskNext = false
+			continue
+		}
+		if arg == "-i" {
+			items = append(items, arg)
+			maskNext = true
+			continue
+		}
+		items = append(items, arg)
+	}
+
+	return strings.Join(items, " ")
 }

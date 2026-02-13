@@ -1,0 +1,12 @@
+{
+  "ssh_host": "146.56.174.134",
+  "ssh_user": "ubuntu",
+  "ssh_port": 22,
+  "ssh_key_path": "C:\\Users\\kpcard\\.ssh\\ssh-key-2025-01-04-GO.key",
+  "remote_app_dir": "/home/ubuntu/app",
+  "remote_systemd_dir": "/etc/systemd/system",
+  "remote_caddyfile": "/etc/caddy/Caddyfile",
+  "remote_srv_root": "/srv",
+  "skip_ssh_key": false,
+  "disable_host_key_test": true
+}
