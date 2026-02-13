@@ -9,7 +9,7 @@ export GOARCH=amd64
 # export CGO_ENABLED=1
 
 # 빌드 실행
-go build -o ./main ./projects/cmd/homepage
+go build -ldflags "-s -w" -o ./homepage ./projects/homepage/cmd
 
 # 결과 출력
 echo "Linux용 바이너리가 빌드되었습니다"
