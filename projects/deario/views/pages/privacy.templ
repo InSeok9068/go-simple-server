@@ -9,14 +9,14 @@ templ Privacy() {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
-			@shared.HeadsWithBeerTempl("개인정보 처리방침")
-			@shared.HeadsWithFirebaseAuthTempl()
-			@shared.HeadsWithGoogleFontsTempl("Gamja Flower")
+			@shared.HeadsWithBeer("개인정보 처리방침")
+			@shared.HeadsWithFirebaseAuth()
+			@shared.HeadsWithGoogleFonts("Gamja Flower")
 			<link rel="manifest" href="/manifest.json"/>
 			<script src="/static/deario.js"></script>
 		</head>
 		<body>
-			@shared.SnackbarTempl()
+			@shared.Snackbar()
 			@layout.AppHeader()
 			<main class="responsive">
 				<h5>개인정보 처리방침</h5>

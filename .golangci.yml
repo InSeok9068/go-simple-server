@@ -17,7 +17,6 @@ linters:
     - exhaustive
     - exptostd
     - fatcontext
-    # gomponents로 인해 함수가 길어지는 경향이 존재
     # - funlen
     - gochecknoinits
     - gochecksumtype
@@ -51,12 +50,6 @@ linters:
     - usetesting
     - wastedassign
     - whitespace
-  settings:
-    staticcheck:
-      dot-import-whitelist:
-        - maragu.dev/gomponents
-        - maragu.dev/gomponents/html
-        - maragu.dev/gomponents/components
   exclusions:
     presets:
       - legacy

@@ -13,7 +13,8 @@ import (
 const createDiary = `-- name: CreateDiary :one
 INSERT INTO
     diary (uid, content, date)
-VALUES (?, ?, ?) RETURNING id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
+VALUES
+    (?, ?, ?) RETURNING id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
 `
 
 type CreateDiaryParams struct {
@@ -43,7 +44,10 @@ func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary
 }
 
 const createUser = `-- name: CreateUser :exec
-INSERT INTO user (uid, name, email) VALUES (?, ?, ?)
+INSERT INTO
+    user (uid, name, email)
+VALUES
+    (?, ?, ?)
 `
 
 type CreateUserParams struct {
@@ -58,7 +62,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 }
 
 const deleteDiary = `-- name: DeleteDiary :exec
-DELETE FROM diary WHERE id = ?
+DELETE FROM diary
+WHERE
+    id = ?
 `
 
 func (q *Queries) DeleteDiary(ctx context.Context, id string) error {
@@ -67,8 +73,15 @@ func (q *Queries) DeleteDiary(ctx context.Context, id string) error {
 }
 
 const getDiary = `-- name: GetDiary :one
-
-SELECT id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3 FROM diary WHERE date = ? AND uid = ? LIMIT 1
+SELECT
+    id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
+FROM
+    diary
+WHERE
+    date = ?
+    AND uid = ?
+LIMIT
+    1
 `
 
 type GetDiaryParams struct {
@@ -98,14 +111,18 @@ func (q *Queries) GetDiary(ctx context.Context, arg GetDiaryParams) (Diary, erro
 }
 
 const getDiaryRandom = `-- name: GetDiaryRandom :one
-SELECT id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
-FROM diary
+SELECT
+    id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
+FROM
+    diary
 WHERE
     date IS NOT NULL
     AND uid = ?
     AND date >= ?
-ORDER BY RANDOM()
-LIMIT 1
+ORDER BY
+    RANDOM ()
+LIMIT
+    1
 `
 
 type GetDiaryRandomParams struct {
@@ -134,7 +151,14 @@ func (q *Queries) GetDiaryRandom(ctx context.Context, arg GetDiaryRandomParams) 
 }
 
 const getUser = `-- name: GetUser :one
-SELECT uid, name, email, created, updated FROM user WHERE uid = ? LIMIT 1
+SELECT
+    uid, name, email, created, updated
+FROM
+    user
+WHERE
+    uid = ?
+LIMIT
+    1
 `
 
 func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
@@ -151,7 +175,14 @@ func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
 }
 
 const getUserSetting = `-- name: GetUserSetting :one
-SELECT uid, is_push, push_token, push_time, random_range, created, updated FROM user_setting WHERE uid = ? LIMIT 1
+SELECT
+    uid, is_push, push_token, push_time, random_range, created, updated
+FROM
+    user_setting
+WHERE
+    uid = ?
+LIMIT
+    1
 `
 
 func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, error) {
@@ -170,12 +201,15 @@ func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, 
 }
 
 const listDiaryDatesByMonth = `-- name: ListDiaryDatesByMonth :many
-SELECT date
-FROM diary
+SELECT
+    date
+FROM
+    diary
 WHERE
     uid = ?
-    AND substr(date, 1, 6) = ?
-ORDER BY date
+    AND substr (date, 1, 6) = ?
+ORDER BY
+    date
 `
 
 type ListDiaryDatesByMonthParams struct {
@@ -207,13 +241,18 @@ func (q *Queries) ListDiaryDatesByMonth(ctx context.Context, arg ListDiaryDatesB
 }
 
 const listDiarys = `-- name: ListDiarys :many
-SELECT id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
-FROM diary
+SELECT
+    id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
+FROM
+    diary
 WHERE
     uid = ?
-ORDER BY created desc
-LIMIT 7
-OFFSET ((? - 1) * 7)
+ORDER BY
+    created desc
+LIMIT
+    7
+OFFSET
+    ((? - 1) * 7)
 `
 
 type ListDiarysParams struct {
@@ -263,7 +302,8 @@ SELECT
     push_token,
     push_time,
     random_range
-FROM user_setting
+FROM
+    user_setting
 WHERE
     is_push = 1
     AND push_token != ''
@@ -308,18 +348,26 @@ func (q *Queries) ListPushTargets(ctx context.Context) ([]ListPushTargetsRow, er
 const monthlyDiaryCount = `-- name: MonthlyDiaryCount :many
 WITH
     monthly AS (
-        SELECT substr(date, 1, 6) AS month, COUNT(*) AS count
-        FROM diary
+        SELECT
+            substr (date, 1, 6) AS month,
+            COUNT(*) AS count
+        FROM
+            diary
         WHERE
             uid = ?
         GROUP BY
-            substr(date, 1, 6)
-        ORDER BY month DESC
-        LIMIT 6
+            substr (date, 1, 6)
+        ORDER BY
+            month DESC
+        LIMIT
+            6
     )
-SELECT month, count
-FROM monthly
-ORDER BY month
+SELECT
+    month, count
+FROM
+    monthly
+ORDER BY
+    month
 `
 
 type MonthlyDiaryCountRow struct {
@@ -354,7 +402,7 @@ const monthlyMoodCount = `-- name: MonthlyMoodCount :many
 WITH
     monthly AS (
         SELECT
-            substr(date, 1, 6) AS month,
+            substr (date, 1, 6) AS month,
             sum(
                 CASE
                     WHEN mood = '1' THEN 1
@@ -385,17 +433,23 @@ WITH
                     ELSE 0
                 END
             ) AS mood5
-        FROM diary
+        FROM
+            diary
         WHERE
             uid = ?
         GROUP BY
-            substr(date, 1, 6)
-        ORDER BY month DESC
-        LIMIT 6
+            substr (date, 1, 6)
+        ORDER BY
+            month DESC
+        LIMIT
+            6
     )
-SELECT month, mood1, mood2, mood3, mood4, mood5
-FROM monthly
-ORDER BY month
+SELECT
+    month, mood1, mood2, mood3, mood4, mood5
+FROM
+    monthly
+ORDER BY
+    month
 `
 
 type MonthlyMoodCountRow struct {
@@ -441,12 +495,15 @@ const searchDiarys = `-- name: SearchDiarys :many
 SELECT
     date,
     content
-FROM diary
+FROM
+    diary
 WHERE
     uid = ?
     AND content LIKE '%' || ? || '%'
-ORDER BY date DESC
-LIMIT 20
+ORDER BY
+    date DESC
+LIMIT
+    20
 `
 
 type SearchDiarysParams struct {
@@ -486,7 +543,7 @@ const updateDiary = `-- name: UpdateDiary :one
 UPDATE diary
 SET
     content = ?,
-    updated = datetime('now')
+    updated = datetime ('now')
 WHERE
     id = ? RETURNING id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
 `
@@ -522,7 +579,7 @@ SET
     image_url1 = ?,
     image_url2 = ?,
     image_url3 = ?,
-    updated = datetime('now')
+    updated = datetime ('now')
 WHERE
     id = ?
 `
@@ -549,7 +606,7 @@ UPDATE diary
 SET
     ai_feedback = ?,
     ai_image = ?,
-    updated = datetime('now')
+    updated = datetime ('now')
 WHERE
     id = ?
 `
@@ -569,7 +626,7 @@ const updateDiaryOfMood = `-- name: UpdateDiaryOfMood :exec
 UPDATE diary
 SET
     mood = ?,
-    updated = datetime('now')
+    updated = datetime ('now')
 WHERE
     id = ?
 `
@@ -587,12 +644,12 @@ func (q *Queries) UpdateDiaryOfMood(ctx context.Context, arg UpdateDiaryOfMoodPa
 const upsertPushKey = `-- name: UpsertPushKey :exec
 INSERT INTO
     user_setting (uid, push_token)
-VALUES (?, ?)
-ON CONFLICT (uid) DO
+VALUES
+    (?, ?) ON CONFLICT (uid) DO
 UPDATE
 SET
     push_token = excluded.push_token,
-    updated = datetime('now')
+    updated = datetime ('now')
 `
 
 type UpsertPushKeyParams struct {
@@ -607,20 +664,15 @@ func (q *Queries) UpsertPushKey(ctx context.Context, arg UpsertPushKeyParams) er
 
 const upsertUserSetting = `-- name: UpsertUserSetting :exec
 INSERT INTO
-    user_setting (
-        uid,
-        is_push,
-        push_time,
-        random_range
-    )
-VALUES (?, ?, ?, ?)
-ON CONFLICT (uid) DO
+    user_setting (uid, is_push, push_time, random_range)
+VALUES
+    (?, ?, ?, ?) ON CONFLICT (uid) DO
 UPDATE
 SET
     is_push = excluded.is_push,
     push_time = excluded.push_time,
     random_range = excluded.random_range,
-    updated = datetime('now')
+    updated = datetime ('now')
 `
 
 type UpsertUserSettingParams struct {

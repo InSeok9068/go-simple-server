@@ -52,7 +52,7 @@ func PushSendCron(c *cron.Cron) {
 			}
 			b, _ := json.Marshal(payload)
 
-			if err := jobs.Create(ctx, pushQ, "send", b); err != nil {
+			if _, err := jobs.Create(ctx, pushQ, "send", goqite.Message{Body: b}); err != nil {
 				slog.Error("푸시 발송 실패", "error", err)
 			}
 		}

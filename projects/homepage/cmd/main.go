@@ -62,9 +62,6 @@ func setUpServer() *echo.Echo {
 		os.Exit(1)
 	}
 	e.GET("/", func(c echo.Context) error {
-		return views.BooklogPage(os.Getenv("APP_TITLE")).Render(c.Request().Context(), c.Response().Writer)
-	})
-	e.GET("/landing", func(c echo.Context) error {
 		return views.Index(os.Getenv("APP_TITLE")).Render(c.Request().Context(), c.Response().Writer)
 	})
 	/* 라우터  */

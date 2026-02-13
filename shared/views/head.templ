@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-templ HeadsDefaultTempl(title string) {
+templ HeadsDefault(title string) {
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<link rel="icon" href="/shared/static/favicon.ico"/>
 	<link
@@ -26,55 +26,55 @@ templ HeadsDefaultTempl(title string) {
 	}
 }
 
-templ HeadsCustomTempl() {
+templ HeadsCustom() {
 	<link rel="stylesheet" href="/shared/static/style.css"/>
 	<link rel="stylesheet" href="/static/style.css"/>
 	<script src="/shared/static/app.js"></script>
 }
 
 // Beer
-templ HeadsWithBeerTempl(title string) {
+templ HeadsWithBeer(title string) {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beercss@3.13.3/dist/cdn/beer.min.css" onerror="this.onerror=null;this.href='shared/static/lib/beer.min.css';"/>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.13.3/dist/cdn/beer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/beer.min.js';"></script>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js" onerror="this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';"></script>
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
+	@HeadsDefault(title)
+	@HeadsCustom()
 }
 
 // Bulma
-templ HeadsWithBulmaTempl(title string) {
+templ HeadsWithBulma(title string) {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" onerror="this.onerror=null;this.href='shared/static/lib/bulma.min.css';"/>
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
+	@HeadsDefault(title)
+	@HeadsCustom()
 }
 
 // Tailwind
-templ HeadsWithTailwindTempl(title string) {
+templ HeadsWithTailwind(title string) {
 	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
+	@HeadsDefault(title)
+	@HeadsCustom()
 }
 
 // Shoelace + Tailwind
-templ HeadsWithShoelaceAndTailwindTempl(title string) {
+templ HeadsWithShoelaceAndTailwind(title string) {
 	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css"/>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
+	@HeadsDefault(title)
+	@HeadsCustom()
 }
 
 // Pico + Tailwind
-templ HeadsWithPicoAndTailwindTempl(title string) {
+templ HeadsWithPicoAndTailwind(title string) {
 	<link rel="stylesheet" href="/shared/static/tailwindcss.css"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.classless.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.classless.min.css';"/>
 	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
 	// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" onerror="this.onerror=null;this.href='shared/static/lib/pico.min.css';"/>
-	@HeadsDefaultTempl(title)
-	@HeadsCustomTempl()
+	@HeadsDefault(title)
+	@HeadsCustom()
 }
 
-templ HeadsWithFirebaseLoginTempl() {
+templ HeadsWithFirebaseLogin() {
 	<link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css"/>
 	<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
@@ -82,11 +82,11 @@ templ HeadsWithFirebaseLoginTempl() {
 	<script src="/shared/static/firebase_login.js" defer></script>
 }
 
-templ HeadsWithFirebaseAuthTempl() {
+templ HeadsWithFirebaseAuth() {
 	<script type="module" src="/shared/static/firebase_auth.js" defer></script>
 }
 
-templ HeadsWithGoogleFontsTempl(font ...string) {
+templ HeadsWithGoogleFonts(font ...string) {
 	<link
 		rel="stylesheet"
 		href={ "https://fonts.googleapis.com/css2?family=" +
@@ -95,20 +95,20 @@ templ HeadsWithGoogleFontsTempl(font ...string) {
 	/>
 }
 
-templ HeadsWithFlatpickrTempl() {
+templ HeadsWithFlatpickr() {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css" onerror="this.onerror=null;this.href='shared/static/lib/flatpickr.min.css';"/>
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js" onerror="this.onerror=null;this.src='shared/static/lib/flatpickr.min.js';"></script>
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js" onerror="this.onerror=null;this.src='shared/static/lib/ko.js';"></script>
 }
 
-templ HeadsWithMarkedTempl() {
+templ HeadsWithMarked() {
 	<script src="https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.umd.js" onerror="this.onerror=null;this.src='shared/static/lib/marked.umd.js';"></script>
 }
 
-templ HeadsWithChartJSTempl() {
+templ HeadsWithChartJS() {
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" onerror="this.onerror=null;this.src='shared/static/lib/chart.js';"></script>
 }
 
-templ HeadsWithHammerTempl() {
+templ HeadsWithHammer() {
 	<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/hammer.min.js';"></script>
 }

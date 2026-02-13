@@ -49,15 +49,15 @@ func setUpServer() *echo.Echo {
 	}
 	e.GET("/", func(c echo.Context) error {
 		// 코드 리뷰 한번 해주세요
-		return views.Index("Sample").Render(c.Response().Writer)
+		return views.Index("Sample").Render(c.Request().Context(), c.Response().Writer)
 	})
 
 	e.GET("/radio", func(c echo.Context) error {
-		return views.Radio().Render(c.Response().Writer)
+		return views.Radio().Render(c.Request().Context(), c.Response().Writer)
 	})
 
 	e.GET("/radio2", func(c echo.Context) error {
-		return views.Radio2().Render(c.Response().Writer)
+		return views.Radio2().Render(c.Request().Context(), c.Response().Writer)
 	})
 	/* 라우터  */
 

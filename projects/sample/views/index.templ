@@ -1,0 +1,45 @@
+package views
+
+import shared "simple-server/shared/views"
+
+templ Radio() {
+	<div x-data="{ selected: 1 }">
+		<input type="radio" x-model="selected" value="1"/>
+		<input type="radio" x-model="selected" value="2"/>
+		<button x-on:click="selected = 3">3</button>
+		<p x-text="selected"></p>
+	</div>
+}
+
+templ Radio2() {
+	<input type="radio" x-model="selected" value="1"/>
+	<input type="radio" x-model="selected" value="2"/>
+	<button x-on:click="selected = 3">3</button>
+	<p x-text="selected"></p>
+}
+
+templ Index(title string) {
+	<!DOCTYPE html>
+	<html lang="ko">
+		<head>
+			@shared.HeadsWithPicoAndTailwind(title)
+			<script src="/static/index.js"></script>
+		</head>
+		<body>
+			<main>
+				<div class="flex flex-col gap-2">
+					<div class="flex gap-2">
+						<button hx-get="/radio" hx-target="#box1">
+							Click Me 1
+						</button>
+						<button hx-get="/radio2" hx-target="#box2">
+							Click Me 2
+						</button>
+					</div>
+					<article id="box1" class="flex"></article>
+					<article id="box2" class="flex" x-data="{ selected: 1 }"></article>
+				</div>
+			</main>
+		</body>
+	</html>
+}

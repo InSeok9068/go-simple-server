@@ -30,14 +30,6 @@
   /* Bulma [ON] */
   // "css.styleSheets": ["shared/static/lib/bulma.min.css", "**/style.css"]
 
-  /* Gomponents [ON] */
-  // "tailwindCSS.includeLanguages": {
-  //   "templ": "html",
-  //   "go": "html"
-  // },
-  // "tailwindCSS.experimental.classRegex": [
-  //   ["Class(?:es)?[({]([^)}]*)[)}]", "[\"`]([^\"`]*)[\"`]"]
-  // ]
   "runConfigurations.configurations": [
     {
       "id": "config-1767080584219-7a4k76bv8",
