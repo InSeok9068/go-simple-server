@@ -1,405 +1,274 @@
-# AGENTS.md
+# AGENTS_V2.md
 
-> 이 문서는 **Go + Echo + Templ 기반 Monorepo**에서
-> 사람과 LLM(코드 어시스턴트) 모두가 일관된 코드를 작성하기 위한 **단일 규칙집**이다.
-
----
-
-> [!IMPORTANT] > **CRITICAL RULE**: 모든 작업을 마치기 전, 반드시 `./task.sh check` 명령어를 실행하고 **모든 검사를 통과(Pass)** 해야 한다.
-> LLM(Codex)은 이 명령어가 실패하면 절대 작업을 완료했다고 판단해서는 안 되며, 반드시 원인을 수정하고 재시도해야 한다.
-> 이 규칙은 절대 무시할 수 없다.
+> 이 문서는 **현재 go-simple-server 코드베이스의 실제 패턴**을 기준으로 정리한 작업 규칙집입니다.
+> 목적은 "짧게 읽고, 실수 없이 일하기"입니다.
 
 ---
 
-## 1. 공통 규칙
+## 0) 문서 우선순위
 
-1. 모든 답변·로그·주석·UI 텍스트는 **한글**로 작성한다.
-2. **불필요한 추상화나 복잡성보다 직관적이고 명확한 코드**를 우선한다.
-3. 공통 요소가 충분히 반복되고, 효과가 검증되었을 때만 **리팩토링**한다.
-4. 모든 화면과 UI는 **모바일 우선(Mobile-first)**으로 설계하고, 이후 데스크톱을 보완한다.
-
-> LLM이 코드를 생성할 때도 위 네 가지 원칙을 항상 우선 적용한다.
+- 이 문서는 `AGENTS_BACKUP.md`의 절대 규칙을 보완하는 실행 가이드입니다.
+- 충돌 시 `AGENTS_BACKUP.md`의 강제 규칙을 우선합니다.
 
 ---
 
-## 2. 프로젝트 구성 개요
+## 1) 절대 규칙
 
-- **언어**: Go
-- **서버 프레임워크**: Echo
-- **템플릿 엔진**: Templ
-- **데이터베이스**: SQLite
-- **DB 마이그레이션**: Goose
-- **SQL 코드 생성기**: SQLC
-- **프론트엔드 라이브러리**: HTMX, Alpine.js
-- **CSS 프레임워크**
-  - 기본: BeerCSS
-  - 예외: `homepage` 프로젝트만 TailwindCSS 사용
-- **개발 서버**: GoVisual
-- **소스 구조**: Monorepo
+1. 모든 응답, 로그, 에러 메시지, 주석은 한국어로 작성합니다.
+2. 작업 완료 전에 반드시 `./task.sh check`를 실행하고 통과해야 합니다.
+3. `./task.sh check` 실패 시 원인 수정 후 재실행합니다.
+4. 생성 파일은 직접 수정하지 않습니다.
+5. `./task.sh`로 실행 가능한 검증/생성/포맷 작업은 반드시 Git Bash를 통해 실행합니다.
+
+생성 파일 예시:
+
+- `*_templ.go`
+- `projects/*/db/*.go` (sqlc 생성물)
 
 ---
 
-## 3. 프론트엔드 라이브러리 역할 정의
+## 2) 프로젝트 빠른 지도
 
-### 3.1 HTMX
+- 런타임: Go + Echo
+- 템플릿: Templ
+- 데이터: SQLite + Goose + SQLC
+- 프론트: HTMX + Alpine.js
+- 스타일: 서비스별 선택(세부 규칙은 `10) CSS 프레임워크 선택 규칙` 참조)
+- 메시지 큐: goqite (경량 메시지 큐, 필요 시 선택 사용)
 
-- **역할**
-  - AJAX 요청으로 서버에서 **HTML fragment**를 받아 특정 영역만 동적으로 갱신.
-- **목적**
-  - 전체 페이지 리로드 없이도 **SPA와 유사한 사용자 경험** 제공.
+서비스별 성격:
 
-### 3.2 Alpine.js
-
-- **역할**
-  - 클라이언트 측에서 경량 상태 관리 및 UI 인터랙션 처리.
-- **목적**
-  - 모달, 드롭다운, 탭 등 **즉각적인 UI 동작** 구현.
-
-### 3.3 HTMX × Alpine.js 적용 패턴
-
-- 여러 프로젝트에서 재사용되는 HTML 조각은
-  `shared/views` 또는 `shared/static/js`로 **공통화**한다.
-- **Alpine.js 사용 범위**
-  - 반드시 **클라이언트에서만 결정 가능한 미세 상호작용**에 사용한다.
-  - 예: 토글, 모달 열기/닫기, 단순 상태 토글 등.
-- **서버 데이터 기반 UI 상태**
-  - 항상 **HTMX 응답(서버 렌더링 HTML)** 으로 갱신한다.
-  - 클라이언트에서 임의로 서버 데이터 상태를 가정하지 않는다.
-
-### 3.4 Templ
-
-- **역할**
-  - HTML과 유사한 문법으로 UI를 작성하면, 정적 Go 코드로 컴파일하는 템플릿 엔진.
-- **목적**
-  - `.templ`에서 작성한 마크업을 `templ generate`로 미리 Go 코드로 변환하여
-    런타임 파싱 비용 없이 **빠르고 타입 안정적인 렌더링**을 제공한다.
-- **공통 컴포넌트 위치**
-  - `simple-server/shared/views`
-
-> LLM은 HTML 템플릿이 필요할 때 **반드시 Templ 문법**을 사용하고,
-> 기존 규칙에 따라 공통 컴포넌트는 `shared/views`에 배치한다.
+- `homepage`: 소개 포털
+- `deario`: 일기 + AI 피드백
+- `closet`: 옷장 + 추천
+- `ai-study`: 학습 주제 추천 서비스
+- `sample`: 실험용, 레거시 코드 포함
 
 ---
 
-## 4. CSS 라이브러리 사용 정의
+## 3) 명령 실행 규칙 (Git Bash)
 
-### 4.1 BeerCSS (기본)
+1. `./task.sh` 명령은 항상 Git Bash로 실행합니다.
+2. PowerShell에서 실행할 때는 아래 형태를 사용합니다.
 
-- **역할**
-  - HTML 안에 BeerCSS 클래스만을 사용해 UI를 구성한다.
-  - **Material Design 3**를 계승한 프레임워크이다.
-- **동작**
-  - 모달·사이드바 등의 UI 동작은 `data-ui="#id"`만으로 제어 가능 → 이 경우 Alpine.js 불필요.
-- **참고**
-  - 공식 문서: <https://beercss.com/>
-  - Material Design 3 가이드라인: <https://m3.material.io/>
-  - 사용 가능 태그 및 클래스 목록: `.doc/css/beercss/SUMMARY.md`
-  - 올바른 BeerCSS 사용 가이드: `.doc/css/beercss/GUIDE.md`
-- ❗ **규칙**
-  - **커스텀 CSS 금지**
-  - BeerCSS에서 제공하지 않는 클래스 사용 금지
-  - **Material Design 3 가이드라인**을 준수하여 작업한다.
-
-### 4.2 TailwindCSS (homepage 전용)
-
-- 사용 대상: **`homepage` 프로젝트에만** TailwindCSS 사용 가능.
-- 설치/세팅:
-  ```bash
-  ./task.sh install-tailwind
-  ```
-
----
-
-## 5. 폴더 구조 규칙
-
-```text
-cmd/{project}/main.go        # 루트 CLI 프로젝트 실행파일
-projects/{project}/          # 프로젝트 소스
-├─ cmd/                      # 프로젝트 실행 파일
-├─ internal/                 # 프로젝트 내부 로직
-├─ views/                    # Templ 템플릿
-├─ static/                   # 정적 파일 (JS, 이미지 등)
-├─ migrations/               # Goose 마이그레이션
-└─ query.sql                 # SQLC 쿼리 정의
-internal/                    # 외부 노출되지 않는 공용 서버 코드
-└─ validate/                 # 검증 패키지
-shared/                      # 공통 프론트엔드 자원
-├─ views/                    # 공통 Templ 컴포넌트
-└─ static/                   # 공통 JS, CSS
-pkg/util/                    # 순수 유틸 함수 (비즈니스 로직 없음)
+```bash
+"C:/Program Files/Git/bin/bash.exe" -lc "./task.sh <command>"
 ```
 
-> 새로운 프로젝트를 추가할 때는 반드시 위 구조를 그대로 따른다.
+3. 대표 명령:
+
+- 전체 검증: `./task.sh check`
+- Templ 생성: `./task.sh templ-generate`
+- SQLC 생성: `./task.sh sqlc-generate {project}`
+- 포맷: `./task.sh fmt`
 
 ---
 
-## 6. 코딩 스타일 가이드
+## 4) UI/뷰 작성 규칙
 
-### 6.1 Handler 패턴 (Echo)
-
-Handler의 기본 흐름은 **항상 같은 패턴**을 따른다.
-
-1. **바인딩 & 검증**
-
-   ```go
-   var dto SomeDTO
-   if err := c.Bind(&dto); err != nil {
-       return echo.NewHTTPError(http.StatusBadRequest, "요청 형식이 올바르지 않습니다.")
-   }
-
-   if err := c.Validate(&dto); err != nil {
-       // validate.HTTPError 또는 echo.NewHTTPError 사용
-       return validate.HTTPError(err)
-   }
-   ```
-
-   - 바인딩 실패 → 400 또는 422
-   - 검증 실패 → `validate.HTTPError` 또는 `echo.NewHTTPError` 사용
-   - 에러 메시지는 항상 **한글로 명확하게** 작성
-
-2. **DB 접근**
-
-   ```go
-   queries, err := db.GetQueries()
-   if err != nil {
-       return echo.NewHTTPError(http.StatusInternalServerError, "데이터베이스 연결에 실패했습니다.")
-   }
-
-   ctx := c.Request().Context()
-   result, err := queries.Method(ctx, params)
-   if err != nil {
-       // 상황에 맞게 4xx 또는 5xx 반환
-       // 예: 데이터 없음 → 404, 권한 문제 → 403, 서버 문제 → 500
-   }
-   ```
-
-3. **응답**
-   - 정상 응답 (Templ 렌더링):
-
-     ```go
-     return views.Component(...).Render(ctx, c.Response().Writer)
-     ```
-
-   - 오류 응답:
-
-     ```go
-     return echo.NewHTTPError(code, "에러 메시지")
-     ```
-
-### 6.2 에러 핸들링 & 로깅
-
-- 에러 처리는 Go 표준 방식 사용:
-
-  ```go
-  if err != nil {
-      // 로깅 후 적절한 HTTPError 반환
-  }
-  ```
-
-- 에러 응답: 항상 `echo.NewHTTPError` 사용
-- 로깅: `slog` 사용
-  - 레벨: `DEBUG`, `INFO`, `WARN`, `ERROR`
-  - 로그 메시지와 필드는 **한글로 명확하게** 작성
-
-### 6.3 Templ 작성 가이드
-
-- `.templ` 파일은 **HTML과 거의 동일한 구조**로 작성한다.
-- 기본 전략은 **서버 주도 렌더링(SSR)** 이다.
-
-**동적 기능 규칙**
-
-- 데이터 기반 UI 동작 → **HTMX** 사용
-  (주요 속성: `hx-get`, `hx-post`, `hx-target`, `hx-swap` 등)
-- 클라이언트 로컬 상태 위주의 UI 동작 → **Alpine.js** 사용
-  (모달, 탭, 드롭다운, 단순 토글 등)
-- JS 코드는 항상 **별도 `.js` 파일**로 분리한다.
-  (Templ 안에 인라인 `<script>`를 두지 않는다.)
-
-**중요**
-
-- `.templ` 파일을 수정하면 **반드시** 다음을 실행한다.
-
-  ```bash
-  templ generate
-  ```
-
-  → Go 코드 재생성 후 커밋한다.
+1. 신규 화면은 기본적으로 `.templ`로 작성합니다.
+2. 기존 화면도 `.templ` 기준으로 유지/수정합니다.
+3. `.templ` 수정 후 반드시 Git Bash에서 `./task.sh templ-generate`를 실행합니다.
+4. 인라인 `<script>`는 신규 코드에서 금지하고, JS는 `shared/static` 또는 `projects/{project}/static`로 분리합니다.
+5. HTMX는 서버 상태 반영용, Alpine.js는 클라이언트 로컬 상태용으로만 사용합니다.
 
 ---
 
-## 7. HTTP / HTMX 응답 규칙
+## 5) 백엔드 핸들러/응답/오류 규칙
 
-HTMX와 함께 사용할 때의 응답 규칙을 명확히 한다.
+핸들러 기본 흐름:
 
-### 7.1 상태 코드 사용 원칙
+1. 입력 파싱(`Bind`, `FormValue`, `QueryParam`)
+2. 검증(`c.Validate`, 필요 시 `validate.HTTPError`)
+3. 인증 필요 시 `authutil.SessionUID(c)`
+4. DB 접근(`db.GetQueries()`)
+5. 응답(`Render`, `c.HTML`, `c.JSON`, `c.NoContent`, `echo.NewHTTPError`)
 
-- `204 No Content`
-  - 저장/수정/삭제 성공 등, **본문 없이** UI를 유지하고 싶은 경우
-  - HTMX 타겟 영역이 비워지지 않아야 할 때 사용
-- `201 Created`
-  - 새 리소스가 생성된 경우
-- `202 Accepted`
-  - 비동기 작업이 접수되었으나 아직 완료되지 않은 경우
-- `200 OK + HTML`
-  - HTMX로 **부분 갱신**이 필요한 경우
-- 오류 응답
-  - 적절한 4xx/5xx 코드 + 한글 오류 메시지
+권장 패턴:
 
-> ⚠ 주의: `200 OK` + **빈 본문**을 보내면 HTMX가 대상 영역을 비워버린다.
-> 의도적으로 본문이 없을 때는 **반드시 `204`를 사용**한다.
+```go
+var dto SomeDTO
+if err := c.Bind(&dto); err != nil {
+    return echo.NewHTTPError(http.StatusBadRequest, "요청 본문이 올바르지 않습니다.")
+}
+if err := c.Validate(&dto); err != nil {
+    return validate.HTTPError(err, &dto)
+}
 
-### 7.2 리다이렉션 (HTMX)
+uid, err := authutil.SessionUID(c)
+if err != nil {
+    return err
+}
 
-- HTMX 요청 후 전체 페이지 이동이 필요할 때는
-  `HX-Redirect` 헤더를 사용한다.
+queries, err := db.GetQueries()
+if err != nil {
+    return err
+}
 
----
+return c.NoContent(http.StatusNoContent)
+```
 
-## 8. 런타임 모드
+HTTP/HTMX 응답 규칙:
 
-### 8.1 개발 모드
+1. HTMX 부분 갱신: `200 + HTML`
+2. 본문 없이 성공: `204 No Content`
+3. 생성 성공: `201 Created`
+4. 비동기 작업 접수: `202 Accepted`
+5. HTMX 전체 이동: `HX-Redirect` 헤더 + `204`
 
-- 개발 서버: **GoVisual** 사용
-- 정적 파일: 로컬 디스크에서 직접 제공
-- 대표 기능:
-  - `TransferEchoToGoVisualServerOnlyDev`
+주의:
 
-### 8.2 운영 모드
+- `200`에 빈 본문을 보내면 HTMX 타겟이 비워질 수 있으므로 피합니다.
 
-- Echo 단독 실행
-- 정적 파일: `embed.FS` 사용
-- Gzip 압축 활성화
-- 요청 타임아웃: **1분**
-- 요청 바디 최대 크기: **5MB**
-- Rate Limit: **초당 20회**
+오류/로깅 규칙:
 
----
-
-## 9. 정적 / 임베드 자원 규칙
-
-- 공통 정적 자원
-  - URL: `/shared/static`
-  - 실제 경로: `shared/static/*`
-- 프로젝트별 정적 자원
-  - URL: `/static`
-  - 실제 경로: `projects/{name}/static/*`
-
-- PWA 관련 파일 매핑
-  - `/manifest.json`
-  - `/firebase-messaging-sw.js`
-
-- 개발 환경
-  - `os.DirFS`로 파일 시스템에서 직접 읽기
-- 운영 환경
-  - `resources.EmbeddedFiles` (embed) 사용
+1. 비즈니스 오류는 `echo.NewHTTPError(코드, "한글 메시지")`를 기본으로 사용합니다.
+2. 공통 처리 가능한 오류는 `return err`로 상위 미들웨어/에러핸들러에 위임합니다.
+3. 로깅은 `slog`를 사용하고, 메시지/필드도 한국어 중심으로 작성합니다.
 
 ---
 
-## 10. 인증 및 권한
+## 6) DB/SQLC 규칙
 
-### 10.1 인증
+1. 쿼리는 `projects/{project}/query.sql`에 작성합니다.
+2. 스키마는 `projects/{project}/migrations/*.sql`에서 관리합니다.
+3. 변경 후 반드시 Git Bash에서 SQLC 생성을 실행합니다.
 
-- Firebase ID 토큰을 받아 `/create-session`에서 세션 생성
-- 세션은 `session_v2` 쿠키에 저장
-- 요청에서 사용자 식별 시:
+```bash
+./task.sh sqlc-generate {project}
+```
 
-  ```go
-  uid, err := authutil.SessionUID(c)
-  ```
-
-### 10.2 권한 (Authorization)
-
-- 권한 관리는 Casbin(SQL adapter) 사용
-  - `obj` = `c.Path()` (요청 경로)
-  - `act` = HTTP Method (`GET`, `POST` 등)
-  - policy = DB에 저장
-  - model = `model.conf` (embed)
+4. 핸들러에서 DB 직접 SQL 작성 대신 sqlc 쿼리 메서드를 사용합니다.
+5. 트랜잭션이 필요한 경우 `db.GetDB()` + `BeginTx` 패턴을 사용합니다.
 
 ---
 
-## 11. 라우팅 / 핸들러 가이드
+## 7) 인증/권한 규칙
 
-- **공개 라우트**
-  - 로그인, 인덱스, 프라이버시, 리스트 조회 등
-- **보호 라우트**
-  - 저장, 수정, 삭제, 검색, 통계 등
-
-- 바인딩 실패
-  - 400 또는 422 반환
-- 모든 에러 처리
-  - `echo.NewHTTPError`로 통일
+1. 로그인 세션은 `session_v2` 쿠키를 사용합니다.
+2. 사용자 식별은 `authutil.SessionUID(c)`를 사용합니다.
+3. 권한 라우트는 Casbin 미들웨어 그룹에서 관리합니다.
+4. 인증/권한 오류는 `echo.NewHTTPError`로 명확히 반환합니다.
 
 ---
 
-## 12. 테스트 가이드
+## 8) 런타임 규칙
 
-- CI 환경에는 **실제 DB가 없음**
-  - → **Mock 기반 유닛 테스트만** 작성한다.
-- 테스트 파일 네이밍
-  - `{파일명}_test.go`
-- 테스트 파일 위치
-  - 원본 파일과 **같은 디렉토리**에 둔다.
+1. 각 서비스 `cmd/main.go`에서 공통 미들웨어를 먼저 등록합니다.
+2. 개발 환경은 GoVisual 래핑(`TransferEchoToGoVisualServerOnlyDev`)을 사용합니다.
+3. 운영 환경은 Embed FS + gzip + rate limit + timeout(공통 미들웨어) 구성으로 실행합니다.
 
 ---
 
-## 13. 코드 생성 및 마이그레이션
+## 9) 정적 자원 규칙
 
-- **스키마 수정**
-  - 경로: `projects/{project}/migrations/*.sql`
-- **SQL 수정**
-  - 경로: `projects/{project}/query.sql`
-- **SQLC 코드 생성**
-  ```bash
-  ./task.sh sqlc-generate {project}
-  ```
-- **Templ 코드 생성**
-  - `.templ` 수정 후 반드시 아래 명령 실행:
-
-    ```bash
-    templ generate
-    ```
+1. 공통 정적 경로는 `/shared/static` -> `shared/static`입니다.
+2. 프로젝트 정적 경로는 `/static` -> `projects/{service}/static`입니다.
 
 ---
 
-## 14. 프로젝트 설명
+## 10) CSS 프레임워크 선택 규칙
 
-- **homepage**
-  - 여러 서비스를 소개하는 포털 역할
-  - CSS: **TailwindCSS** 사용
+서비스별 UI 요구사항에 따라 아래 3가지 후보 중 하나를 선택해 사용합니다.
+특별한 사유가 없으면 한 서비스 안에서 다중 스타일 시스템을 혼용하지 않습니다.
 
-- **ai-study**
-  - 특정 주제를 입력하면 관련 학습 주제 10개 추천
+### 10.1 후보 1: BeerCSS (기본 선택)
 
-- **deario**
-  - 일기를 분석해 AI 피드백 제공
+1. 적용 대상: 대다수 서비스
+2. 목적: 빠른 개발, 일관된 UI, Material Design 3 기반 화면 구성
+3. 규칙:
+   - BeerCSS 제공 클래스/컴포넌트를 우선 사용합니다.
+   - 커스텀 CSS는 최소화하고 필요한 경우에만 제한적으로 사용합니다.
+   - 모달/사이드바는 `data-ui` 기반 동작을 우선 검토합니다.
 
-- **closet**
-  - 옷장 데이터 기반 AI 스타일 추천
+### 10.2 후보 2: Shoelace + TailwindCSS 조합
 
-- **sample**
-  - 신기능 및 라이브러리 테스트용
+1. 적용 대상: Web Components 중심 설계가 필요한 서비스
+2. 구성:
+   - Shoelace: UI 컴포넌트(Web Components)
+   - TailwindCSS: 레이아웃/간격/반응형 유틸리티
+3. 규칙:
+   - 컴포넌트 자체 표현은 Shoelace를 우선 사용합니다.
+   - TailwindCSS는 레이아웃 보조 용도로 사용합니다.
+   - 컴포넌트 역할과 레이아웃 역할을 분리해 유지보수성을 확보합니다.
+
+### 10.3 후보 3: TailwindCSS 단독
+
+1. 적용 대상: 고자유도 커스텀 디자인이 필요한 서비스
+2. 목적: 브랜드/화면 스타일을 세밀하게 제어
+3. 규칙:
+   - 색상/간격/타이포 토큰을 일관되게 관리합니다.
+   - 유틸리티 클래스 반복 패턴은 재사용 가능한 템플릿 단위로 정리합니다.
+   - 모바일 우선 반응형 설계를 기본으로 작성합니다.
+
+### 10.4 선택 방식
+
+1. 서비스별 CSS 프레임워크 선택은 사용자(요청자) 지정에 따릅니다.
+2. 에이전트는 지정된 후보를 임의 변경하지 않습니다.
+3. 지정이 없을 때만 BeerCSS를 기본값으로 제안할 수 있습니다.
+
+### 10.5 기록 위치(필수)
+
+1. 서비스별 선택 결과와 선택 이유를 `projects/{project}/README.md`에 기록합니다.
+2. 최소 기록 항목:
+   - 선택한 CSS 프레임워크 후보(1/2/3)
+   - 선택 이유(요구사항 기준)
+   - 예외 규칙(혼용 여부, 제한 조건)
 
 ---
 
-## 15. ⭐ 최종 점검 체크리스트
+## 11) 작업 절차 체크리스트
 
-아래 항목을 모두 만족해야 머지/배포할 수 있다.
+1. 수정 범위를 먼저 고정합니다(요청 범위 외 리팩토링 금지).
+2. 코드 수정 후 생성 작업을 수행합니다.
 
-1. 이 문서의 모든 규칙을 준수했는가?
-2. `./task.sh check` 다음 명령이 **성공적으로 통과**했는가?
-   - 빌드
-   - 테스트
-   - 린트
-3. 한글 메시지/주석/로그가 깨지지 않는가?
-4. `./task.sh check` 실패 시
-   - 원인을 분석한다.
-   - 수정한다.
-   - 다시 `./task.sh check`를 수행한다.
+- `.templ` 변경 시: `./task.sh templ-generate`
+- `query.sql`/`migrations` 변경 시: `./task.sh sqlc-generate {project}`
 
-> ⚠ 주의: `./task.sh check`는 시간이 걸리므로 기다렸다가 결과를 확인한다.
-> **다시 한 번 강조한다. `./task.sh check`를 통과하지 못하면 작업을 완료할 수 없다.**
+3. 마지막에 반드시 Git Bash에서 아래를 실행합니다.
+
+```bash
+./task.sh check
+```
+
+4. 실패하면 수정 후 3번을 반복합니다.
+5. 결과 보고 시 아래를 함께 남깁니다.
+
+- 변경 파일
+- 생성 명령 실행 여부
+- `./task.sh check` 통과 여부
+
+참고:
+
+- 명령 예시는 `13) 빠른 명령 모음`을 사용합니다.
 
 ---
 
-> 이 문서가 변경될 경우, 관련 레포의 코드/설정도 함께 검토하고,
-> 변경 이유를 커밋 메시지에 **명확한 한글로 기록**한다.
+## 12) Agent 금지 사항
+
+1. 생성 파일 직접 수정 금지
+2. 요청 없는 대규모 구조 개편 금지
+3. HTMX 대상에 의도치 않은 빈 응답(`200 + empty body`) 금지
+4. 검증 명령 생략 후 완료 선언 금지
+
+---
+
+## 13) 빠른 명령 모음
+
+```bash
+# 공통 실행 방식 (Git Bash 필수)
+"C:/Program Files/Git/bin/bash.exe" -lc "./task.sh <command>"
+
+# 전체 검증 (필수)
+./task.sh check
+
+# Templ 생성
+./task.sh templ-generate
+
+# SQLC 생성
+./task.sh sqlc-generate deario
+./task.sh sqlc-generate closet
+
+# 포맷
+./task.sh fmt
+```
