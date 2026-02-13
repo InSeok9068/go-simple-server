@@ -25,6 +25,24 @@ func (q *Queries) AttachTag(ctx context.Context, arg AttachTagParams) error {
 	return err
 }
 
+const createUser = `-- name: CreateUser :exec
+INSERT INTO
+    user (uid, name, email)
+VALUES
+    (?, ?, ?)
+`
+
+type CreateUserParams struct {
+	Uid   string
+	Name  string
+	Email string
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.db.ExecContext(ctx, createUser, arg.Uid, arg.Name, arg.Email)
+	return err
+}
+
 const deleteItem = `-- name: DeleteItem :exec
 DELETE FROM items
 WHERE

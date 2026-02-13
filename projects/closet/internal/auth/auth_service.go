@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"simple-server/internal/middleware"
-	"simple-server/projects/deario/db"
+	"simple-server/projects/closet/db"
 )
 
 // EnsureUser는 Firebase 인증 사용자 정보를 DB와 권한 시스템에 반영한다.

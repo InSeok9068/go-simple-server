@@ -84,6 +84,13 @@
 4. DB 접근(`db.GetQueries()`)
 5. 응답(`Render`, `c.HTML`, `c.JSON`, `c.NoContent`, `echo.NewHTTPError`)
 
+검증 태그 규칙:
+
+1. DTO 검증은 반드시 `go-playground/validator` 태그(`validate:"..."`)를 사용합니다.
+2. 사용자에게 노출되는 검증 문구는 DTO 필드에 `message:"..."` 태그로 정의합니다.
+3. 검증 실패 응답은 `validate.HTTPError(err, &dto)`를 우선 사용해 `message` 태그 문구가 반영되도록 합니다.
+4. `message`는 해당 검증 조건과 일치하는 한글 문장으로 작성합니다.
+
 권장 패턴:
 
 ```go
