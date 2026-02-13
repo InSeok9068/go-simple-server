@@ -3,6 +3,7 @@ Description=Deario Service
 After=network.target
 
 [Service]
+Environment=ENV=prod
 ExecStart=/home/ubuntu/app/deario
 WorkingDirectory=/home/ubuntu/app
 Restart=always

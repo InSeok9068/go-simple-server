@@ -23,7 +23,7 @@ show_help() {
   echo -e "  ${GREEN}check${NC} [build|test|lint]"
   echo -e "  ${GREEN}deps${NC} [backend|tool|frontend]"
   echo -e "  ${GREEN}fmt${NC} [go|templ|tailwind|prettier]"
-  echo -e "  ${GREEN}build-linux${NC}"
+  echo -e "  ${GREEN}build-linux${NC} [project]"
   echo -e "  ${GREEN}release${NC} [project]"
   echo -e "  ${GREEN}install-tailwind${NC} <window|linux> [-u]"
   echo -e "  ${GREEN}sqlc-generate${NC} [project]"

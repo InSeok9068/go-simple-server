@@ -605,6 +605,7 @@ Description=%s Service
 After=network.target
 
 [Service]
+Environment=ENV=prod
 ExecStart=%s
 WorkingDirectory=%s
 Restart=always

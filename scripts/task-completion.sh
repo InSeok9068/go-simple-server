@@ -48,7 +48,7 @@ _task_completion() {
 
   # 2단계: 하위 문맥
   case "${cmd}" in
-    switch|release|sqlc-generate)
+    switch|release|sqlc-generate|build-linux)
       COMPREPLY=( $(compgen -W "${projects}" -- "${cur}") )
       ;;
 
@@ -76,3 +76,4 @@ _task_completion() {
 # 등록
 complete -F _task_completion task.sh
 complete -F _task_completion ./task.sh
+complete -F _task_completion task
