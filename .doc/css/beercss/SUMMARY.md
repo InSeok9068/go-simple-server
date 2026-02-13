@@ -2,6 +2,7 @@
 
 BeerCSS에서 사용할 수 있는 태그/클래스 빠른 참조 문서입니다.
 기준 페이지: [beercss.com Summary](https://www.beercss.com)
+상세 문서: [BeerCSS docs (GitHub)](https://github.com/beercss/beercss/tree/main/docs)에서 각 요소 문서를 확인할 수 있습니다.
 
 Use this page to learn. This page has the most used combinations of elements and helpers. This project has about 100 css classes.
 

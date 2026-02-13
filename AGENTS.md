@@ -246,6 +246,7 @@ HTTP/HTMX 응답 규칙:
 
 1. BeerCSS에서 사용 가능한 태그/클래스 기준 문서는 `.doc/css/beercss/SUMMARY.md`입니다.
 2. 화면 구현 전에는 `SUMMARY.md`의 `Elements`, `Helpers`, `Settings`를 먼저 확인합니다.
+3. 각 요소의 상세 문서는 `https://github.com/beercss/beercss/tree/main/docs`에서 확인합니다.
 
 ---
 
