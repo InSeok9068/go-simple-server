@@ -13,11 +13,12 @@ func TranscribeAudio(ctx context.Context, data []byte, mimeType string) (string,
 	if len(data) == 0 {
 		return "", fmt.Errorf("오디오 데이터가 비어 있습니다")
 	}
-	if config.EnvMap["GEMINI_AI_KEY"] == "" {
+	apiKey := config.GetEnv("GEMINI_AI_KEY")
+	if apiKey == "" {
 		return "", fmt.Errorf("AI 키 설정을 찾을 수 없습니다")
 	}
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
+		APIKey:  apiKey,
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {

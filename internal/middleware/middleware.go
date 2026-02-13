@@ -53,10 +53,8 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 		return isSkippedPath(c.Path())
 	})))
 
-	// 2) 패닉 방지: 안쪽에서 회복해 트레이스에도 잡히게
-	if config.IsDevEnv() {
-		e.Use(middleware.Recover())
-	}
+	// 2) 패닉 방지: 환경과 무관하게 회복해 장애 전파를 차단
+	e.Use(middleware.Recover())
 
 	// 3) 요청 식별은 초기에 부여 (로그/트레이스 속성에 활용)
 	e.Use(middleware.RequestID())
