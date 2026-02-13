@@ -9,7 +9,7 @@
 | **언어**              | Go                                                                           |
 | **백엔드 프레임워크** | Echo                                                                         |
 | **프론트엔드 구성**   | HTMX + Alpine.js                                                             |
-| **템플릿 엔진**       | Templ                                                                         |
+| **템플릿 엔진**       | Templ                                                                        |
 | **CSS 프레임워크**    | 1순위 : Beer CSS <br> 2순위 : Pico CSS + Tailwind CSS <br> 3순위 : Bulma CSS |
 | **데이터베이스**      | SQLite → PostgreSQL                                                          |
 | **DB 관리 도구**      | Adminer                                                                      |

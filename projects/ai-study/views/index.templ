@@ -11,7 +11,7 @@ templ Index(title string) {
 		</head>
 		<body>
 			@shared.Snackbar()
-			<div class="container is-max-tablet p-2">
+			<div class="p-2 container is-max-tablet">
 				<div class="columns">
 					<div class="column">
 						<div class="box">
@@ -54,7 +54,7 @@ templ Index(title string) {
 								<div class="columns">
 									<div class="column is-half is-offset-one-quarter">
 										<button
-											class="button is-focused is-fullwidth mt-3"
+											class="mt-3 button is-focused is-fullwidth"
 											type="button"
 											hx-post="/ai-study-random"
 											hx-target="#result"

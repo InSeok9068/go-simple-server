@@ -18,6 +18,7 @@
 2. 작업 완료 전에 반드시 `./task.sh check`를 실행하고 통과해야 합니다.
 3. `./task.sh check` 실패 시 원인 수정 후 재실행합니다.
 4. 생성 파일은 직접 수정하지 않습니다.
+
 - `*_templ.go`
 - `projects/*/db/*.go` (sqlc 생성물)
 
@@ -34,6 +35,7 @@
 - 예외: `homepage`는 Tailwind + Shoelace
 
 서비스별 성격:
+
 - `homepage`: 소개 포털, Tailwind 중심
 - `deario`: 일기 + AI 피드백 (BeerCSS + HTMX)
 - `closet`: 옷장 + 추천 (BeerCSS + HTMX)
@@ -55,6 +57,7 @@
 ## 4) 핸들러 표준 패턴 (Echo)
 
 핵심 흐름:
+
 1. 입력 파싱(`Bind`, `FormValue`, `QueryParam`)
 2. 검증(`c.Validate`, 필요 시 `validate.HTTPError`)
 3. 인증 필요 시 `authutil.SessionUID(c)`
@@ -62,6 +65,7 @@
 5. 응답(`Render`, `c.HTML`, `c.JSON`, `c.NoContent`, `echo.NewHTTPError`)
 
 권장 패턴:
+
 ```go
 var dto SomeDTO
 if err := c.Bind(&dto); err != nil {
@@ -95,6 +99,7 @@ return c.NoContent(http.StatusNoContent)
 5. HTMX 전체 이동: `HX-Redirect` 헤더 + `204`
 
 주의:
+
 - `200`에 빈 본문을 보내면 HTMX 타겟이 비워질 수 있으므로 피합니다.
 
 ---
@@ -104,9 +109,11 @@ return c.NoContent(http.StatusNoContent)
 1. 쿼리는 `projects/{project}/query.sql`에 작성합니다.
 2. 스키마는 `projects/{project}/migrations/*.sql`에서 관리합니다.
 3. 변경 후 반드시 SQLC 생성:
+
 ```bash
 ./task.sh sqlc-generate {project}
 ```
+
 4. 핸들러에서 DB 직접 SQL 작성 대신 sqlc 쿼리 메서드를 사용합니다.
 5. 트랜잭션이 필요한 경우 `db.GetDB()` + `BeginTx` 패턴을 사용합니다.
 
@@ -125,8 +132,10 @@ return c.NoContent(http.StatusNoContent)
 
 1. 각 서비스 `cmd/main.go`에서 공통 미들웨어를 먼저 등록합니다.
 2. 정적 자원 경로:
+
 - 공통: `/shared/static` -> `shared/static`
 - 프로젝트: `/static` -> `projects/{service}/static`
+
 3. 개발: GoVisual 래핑(`TransferEchoToGoVisualServerOnlyDev`)
 4. 운영: Embed FS + gzip + rate limit + timeout(공통 미들웨어)
 
@@ -154,6 +163,7 @@ return c.NoContent(http.StatusNoContent)
 1. 테스트 파일은 `{name}_test.go` 형식, 원본 파일과 같은 디렉터리에 둡니다.
 2. 외부 인프라 의존 테스트보다 유닛 테스트를 우선합니다.
 3. 최소한 아래는 검증합니다.
+
 - 입력 검증/에러 분기
 - 핵심 유틸 함수
 - 미들웨어/핸들러의 실패 경로
@@ -164,14 +174,19 @@ return c.NoContent(http.StatusNoContent)
 
 1. 수정 범위를 먼저 고정합니다(요청 범위 외 리팩토링 금지).
 2. 코드 수정 후 생성 작업을 수행합니다.
+
 - `.templ` 변경 시: `templ generate`
 - `query.sql`/`migrations` 변경 시: `./task.sh sqlc-generate {project}`
+
 3. 마지막에 반드시 실행합니다.
+
 ```bash
 ./task.sh check
 ```
+
 4. 실패하면 수정 후 3번을 반복합니다.
 5. 결과 보고 시 아래를 함께 남깁니다.
+
 - 변경 파일
 - 생성 명령 실행 여부
 - `./task.sh check` 통과 여부
