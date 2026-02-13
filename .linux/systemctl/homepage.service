@@ -3,6 +3,7 @@ Description=Homepage Service
 After=network.target
 
 [Service]
+Environment=ENV=prod
 ExecStart=/home/ubuntu/app/homepage
 WorkingDirectory=/home/ubuntu/app
 Restart=always

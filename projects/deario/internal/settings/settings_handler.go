@@ -3,13 +3,19 @@ package settings
 import (
 	"net/http"
 
+	"simple-server/internal/validate"
 	"simple-server/pkg/util/authutil"
-	"simple-server/pkg/util/maputil"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/views/pages"
 
 	"github.com/labstack/echo/v4"
 )
+
+type updateSettingsDTO struct {
+	IsPush      int64  `form:"is_push" json:"is_push" validate:"oneof=0 1" message:"알림 설정 값이 올바르지 않습니다."`
+	PushTime    string `form:"push_time" json:"push_time" validate:"omitempty,datetime=15:04" message:"알림 시간이 올바르지 않습니다."`
+	RandomRange *int64 `form:"random_range" json:"random_range" validate:"omitempty,min=0,max=3650" message:"랜덤일자 범위가 올바르지 않습니다."`
+}
 
 // SettingsPage는 사용자 설정 페이지를 렌더링한다.
 func SettingsPage(c echo.Context) error {
@@ -38,9 +44,12 @@ func UpdateSettings(c echo.Context) error {
 		return err
 	}
 
-	var data map[string]interface{}
-	if err := c.Bind(&data); err != nil {
-		return err
+	var dto updateSettingsDTO
+	if err := c.Bind(&dto); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "요청 본문이 올바르지 않습니다.")
+	}
+	if err := c.Validate(&dto); err != nil {
+		return validate.HTTPError(err, &dto)
 	}
 
 	queries, err := db.GetQueries()
@@ -48,11 +57,16 @@ func UpdateSettings(c echo.Context) error {
 		return err
 	}
 
+	randomRange := int64(365)
+	if dto.RandomRange != nil {
+		randomRange = *dto.RandomRange
+	}
+
 	if err := queries.UpsertUserSetting(c.Request().Context(), db.UpsertUserSettingParams{
 		Uid:         uid,
-		IsPush:      maputil.GetInt64(data, "is_push", 0),
-		PushTime:    maputil.GetString(data, "push_time", ""),
-		RandomRange: maputil.GetInt64(data, "random_range", 365),
+		IsPush:      dto.IsPush,
+		PushTime:    dto.PushTime,
+		RandomRange: randomRange,
 	}); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정 저장 실패")
 	}

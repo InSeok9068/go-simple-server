@@ -27,7 +27,7 @@ func AnalyzeClosetImage(ctx context.Context, data []byte, mimeType string) (*Ima
 	if len(data) == 0 {
 		return nil, fmt.Errorf("이미지 데이터가 비어 있어요")
 	}
-	apiKey := config.EnvMap["GEMINI_AI_KEY"]
+	apiKey := config.GetEnv("GEMINI_AI_KEY")
 	if apiKey == "" {
 		return nil, fmt.Errorf("gemini api 키가 비어 있습니다")
 	}

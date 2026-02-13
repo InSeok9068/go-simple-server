@@ -16,7 +16,7 @@ func SquashJob(c *cron.Cron) {
 }
 
 func SquashExecute() {
-	on := config.EnvMap["CHROMEDP_HEADLESS"]
+	on := config.GetEnv("CHROMEDP_HEADLESS")
 
 	u := launcher.New().
 		Headless(on == "true").

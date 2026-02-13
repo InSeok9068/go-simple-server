@@ -13,8 +13,12 @@ import (
 func AIStudy(c echo.Context, random bool) error {
 	ctx := c.Request().Context()
 	input := c.Request().FormValue("input")
+	apiKey := config.GetEnv("GEMINI_AI_KEY")
+	if apiKey == "" {
+		return echo.NewHTTPError(http.StatusInternalServerError, "AI 키 설정을 찾을 수 없습니다.")
+	}
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
+		APIKey:  apiKey,
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {

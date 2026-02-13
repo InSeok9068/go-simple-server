@@ -9,13 +9,25 @@ import (
 	"google.golang.org/genai"
 )
 
+func geminiAPIKey() (string, error) {
+	apiKey := config.GetEnv("GEMINI_AI_KEY")
+	if apiKey == "" {
+		return "", fmt.Errorf("AI 키 설정을 찾을 수 없습니다")
+	}
+	return apiKey, nil
+}
+
 func Request(ctx context.Context, prompt string, model ...string) (string, error) {
 	modelStr := "gemini-2.5-flash"
 	if len(model) > 0 {
 		modelStr = model[0]
 	}
+	apiKey, err := geminiAPIKey()
+	if err != nil {
+		return "", err
+	}
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
+		APIKey:  apiKey,
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
@@ -40,8 +52,12 @@ func ImageRequest(ctx context.Context, prompt string, model ...string) (string, 
 	if len(model) > 0 {
 		modelStr = model[0]
 	}
+	apiKey, err := geminiAPIKey()
+	if err != nil {
+		return "", err
+	}
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  config.EnvMap["GEMINI_AI_KEY"],
+		APIKey:  apiKey,
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {

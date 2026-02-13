@@ -13,7 +13,12 @@ func LoadEnv() {
 	// .env 파일 읽기
 	envMap, err := godotenv.Read(".env")
 	if err != nil {
-		slog.Error("환경 변수 파싱 실패", "error", err)
+		if os.IsNotExist(err) {
+			slog.Info(".env 파일이 없어 시스템 환경 변수를 사용합니다.")
+		} else {
+			slog.Error("환경 변수 파싱 실패", "error", err)
+		}
+		EnvMap = map[string]string{}
 		return
 	}
 
@@ -31,10 +36,22 @@ func LoadEnv() {
 	EnvMap = envMap
 }
 
+func GetEnv(key string) string {
+	return os.Getenv(key)
+}
+
+func GetEnvOrDefault(key, defaultValue string) string {
+	value := GetEnv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}
+
 func IsDevEnv() bool {
-	return EnvMap["ENV"] == "dev"
+	return GetEnv("ENV") == "dev"
 }
 
 func IsProdEnv() bool {
-	return EnvMap["ENV"] == "prod"
+	return GetEnv("ENV") == "prod"
 }

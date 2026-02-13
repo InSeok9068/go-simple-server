@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
-	"os"
 	"simple-server/internal/config"
 	"simple-server/internal/connection"
 	"simple-server/pkg/util/authutil"
@@ -29,7 +28,10 @@ var Enforcer *casbin.Enforcer
 
 /* 인증 */
 func InitFirebase() error {
-	firebaseConfig := config.EnvMap["FIREBASE_CONFIG"]
+	firebaseConfig := config.GetEnv("FIREBASE_CONFIG")
+	if firebaseConfig == "" {
+		return fmt.Errorf("FIREBASE_CONFIG 환경 변수가 비어 있습니다")
+	}
 
 	app, err := firebase.NewApp(
 		context.Background(),
@@ -50,7 +52,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 		return err
 	}
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(config.GetEnv("SESSION_SECRET")))))
 
 	e.POST("/create-session", func(c echo.Context) error {
 		ctx := c.Request().Context()

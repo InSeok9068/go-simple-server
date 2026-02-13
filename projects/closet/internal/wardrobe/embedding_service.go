@@ -36,7 +36,7 @@ func EnqueueEmbeddingJob(itemID int64, userUID, contextText string) {
 
 // ImageEmbedding은 업로드된 이미지를 불러와 Gemini 모델로 임베딩을 생성하고 결과를 DB에 저장한다.
 func ImageEmbedding(ctx context.Context, userUID string, itemID int64, contextText string) error {
-	apiKey := config.EnvMap["GEMINI_AI_KEY"]
+	apiKey := config.GetEnv("GEMINI_AI_KEY")
 	if apiKey == "" {
 		return fmt.Errorf("gemini api 키가 비어 있습니다")
 	}

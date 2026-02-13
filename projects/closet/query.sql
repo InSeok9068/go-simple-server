@@ -3,6 +3,12 @@
 -- name: GetUser :one
 SELECT * FROM user WHERE uid = ?;
 
+-- name: CreateUser :exec
+INSERT INTO
+    user (uid, name, email)
+VALUES
+    (?, ?, ?);
+
 -- name: InsertItem :one
 INSERT INTO
     items (

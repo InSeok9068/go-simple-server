@@ -214,7 +214,7 @@ type scoreItem struct {
 }
 
 func textEmbedding(ctx context.Context, text string) ([]float32, error) {
-	apiKey := config.EnvMap["GEMINI_AI_KEY"]
+	apiKey := config.GetEnv("GEMINI_AI_KEY")
 	if apiKey == "" {
 		return nil, fmt.Errorf("gemini api 키가 비어 있습니다")
 	}
