@@ -12,7 +12,7 @@ import (
 
 // LoginPage는 로그인 화면을 렌더링한다.
 func LoginPage(c echo.Context) error {
-	return shared.Login().Render(c.Response().Writer)
+	return shared.Login().Render(c.Request().Context(), c.Response().Writer)
 }
 
 // Logout은 사용자 세션을 종료한다.

@@ -12,14 +12,14 @@ templ Setting(userSetting db.UserSetting) {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
-			@shared.HeadsWithBeerTempl("설정")
-			@shared.HeadsWithFirebaseAuthTempl()
-			@shared.HeadsWithGoogleFontsTempl("Gamja Flower")
+			@shared.HeadsWithBeer("설정")
+			@shared.HeadsWithFirebaseAuth()
+			@shared.HeadsWithGoogleFonts("Gamja Flower")
 			<link rel="manifest" href="/manifest.json"/>
 			<script src="/static/deario.js"></script>
 		</head>
 		<body>
-			@shared.SnackbarTempl()
+			@shared.Snackbar()
 			@layout.AppHeader()
 			<main class="responsive">
 				<form hx-post="/setting" hx-swap="none" hx-on:htmx:after-on-load="showInfo('저장 되었습니다.')">

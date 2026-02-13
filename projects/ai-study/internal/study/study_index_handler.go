@@ -7,5 +7,5 @@ import (
 )
 
 func IndexPageHandler(c echo.Context) error {
-	return views.Index(os.Getenv("APP_TITLE")).Render(c.Response().Writer)
+	return views.Index(os.Getenv("APP_TITLE")).Render(c.Request().Context(), c.Response().Writer)
 }

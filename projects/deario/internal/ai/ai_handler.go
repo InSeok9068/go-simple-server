@@ -12,6 +12,7 @@ import (
 	"simple-server/projects/deario/views/components"
 
 	"github.com/labstack/echo/v4"
+	"maragu.dev/goqite"
 	"maragu.dev/goqite/jobs"
 )
 
@@ -164,7 +165,7 @@ func GenerateAIReport(c echo.Context) error {
 	}
 
 	// 큐에 작업 추가
-	if err := jobs.Create(c.Request().Context(), notification.AiReportQ, "ai-report", []byte(uid)); err != nil {
+	if _, err := jobs.Create(c.Request().Context(), notification.AiReportQ, "ai-report", goqite.Message{Body: []byte(uid)}); err != nil {
 		slog.Error("AI 리포트 발송 실패", "error", err)
 	}
 

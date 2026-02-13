@@ -1,17 +1,13 @@
 
 package shared
 
-import "simple-server/pkg/util/gomutil"
-
-templ LoginTempl() {
+templ Login() {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
-			@templ.Raw(HeadsGomponentsToHtml(gomutil.MergeHeads(
-				HeadsDefault("로그인"),
-				HeadsCustom(),
-				HeadWithFirebaseLogin(),
-			)))
+			@HeadsDefault("로그인")
+			@HeadsCustom()
+			@HeadsWithFirebaseLogin()
 		</head>
 		<body>
 			<main class="login-page">

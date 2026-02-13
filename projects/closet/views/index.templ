@@ -6,14 +6,14 @@ templ Index(title string, groups map[string][]ClosetItem) {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
-			@shared.HeadsWithBeerTempl(title)
-			@shared.HeadsWithFirebaseAuthTempl()
+			@shared.HeadsWithBeer(title)
+			@shared.HeadsWithFirebaseAuth()
 			<meta name="description" content="개인 옷장 관리 서비스"/>
 			<link rel="manifest" href="/manifest.json"/>
 			<script src="/static/closet.js" defer></script>
 		</head>
 		<body>
-			@shared.SnackbarTempl()
+			@shared.Snackbar()
 			<header class="primary">
 				<nav>
 					<a class="max" href="/">

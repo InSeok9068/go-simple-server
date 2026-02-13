@@ -9,7 +9,7 @@
 | **언어**              | Go                                                                           |
 | **백엔드 프레임워크** | Echo                                                                         |
 | **프론트엔드 구성**   | HTMX + Alpine.js                                                             |
-| **템플릿 엔진**       | Templ, ~~Gomponents(Deprecated)~~                                            |
+| **템플릿 엔진**       | Templ                                                                         |
 | **CSS 프레임워크**    | 1순위 : Beer CSS <br> 2순위 : Pico CSS + Tailwind CSS <br> 3순위 : Bulma CSS |
 | **데이터베이스**      | SQLite → PostgreSQL                                                          |
 | **DB 관리 도구**      | Adminer                                                                      |
@@ -29,7 +29,7 @@
 - `projects/{프로젝트명}/`: 프로젝트별 소스 코드
   - `cmd`: 프로젝트 실행 파일
   - `internal`: 프로젝트 내부 로직
-  - `views`: Gomponents로 작성된 HTML 뷰 컴포넌트
+  - `views`: Templ로 작성된 HTML 뷰 컴포넌트
   - `static`: CSS, JavaScript 등 정적 파일
   - `migrations`: Goose 기반 데이터베이스 마이그레이션
   - `query.sql`: SQLC가 사용하는 쿼리 정의
@@ -135,8 +135,6 @@ go get github.com/Blank-Xu/sql-adapter
 go get github.com/casbin/casbin/v3
 go get github.com/crazy-max/echo-ipfilter
 go get github.com/doganarif/govisual
-go get github.com/eduardolat/gomponents-lucide
-go get github.com/glsubri/gomponents-alpine
 go get github.com/go-rod/rod
 go get github.com/gorilla/sessions
 go get github.com/joho/godotenv
@@ -146,16 +144,12 @@ go get github.com/lmittmann/tint
 go get github.com/pressly/goose/v3
 go get github.com/qustavo/sqlhooks/v2
 go get github.com/robfig/cron/v3
-go get github.com/willoma/bulma-gomponents
-go get github.com/willoma/gomplements
 go get go.opentelemetry.io/otel
 go get go.opentelemetry.io/otel/sdk
 go get go.opentelemetry.io/otel/trace
 go get golang.org/x/time
 go get google.golang.org/api
 go get google.golang.org/genai
-go get maragu.dev/gomponents
-go get maragu.dev/gomponents-htmx
 go get maragu.dev/goqite
 go get modernc.org/sqlite
 ```
@@ -234,22 +228,12 @@ govulncheck ./...
 
 https://ntorga.com/full-stack-go-app-with-htmx-and-alpinejs/
 
-## Tailwind CSS 자동완성 (Gomponents)
+## Tailwind CSS 자동완성 (Templ)
 
 ```json
 {
   "includeLanguages": {
-    ...
-    "go": "html"
-  },
-  "experimental": {
-    ...
-    "classRegex": [
-      [
-        "Class(?:es)?[({]([^)}]*)[)}]",
-        "[\"`]([^\"`]*)[\"`]"
-      ]
-    ]
+    "templ": "html"
   }
 }
 ```

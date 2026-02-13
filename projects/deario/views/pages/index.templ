@@ -10,12 +10,12 @@ templ Index(title string, date string, mood string) {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
-			@shared.HeadsWithBeerTempl(title)
-			@shared.HeadsWithFirebaseAuthTempl()
-			@shared.HeadsWithGoogleFontsTempl("Gamja Flower")
-			@shared.HeadsWithFlatpickrTempl()
-			@shared.HeadsWithMarkedTempl()
-			@shared.HeadsWithHammerTempl()
+			@shared.HeadsWithBeer(title)
+			@shared.HeadsWithFirebaseAuth()
+			@shared.HeadsWithGoogleFonts("Gamja Flower")
+			@shared.HeadsWithFlatpickr()
+			@shared.HeadsWithMarked()
+			@shared.HeadsWithHammer()
 			<meta name="description" content="AI 피드백 일기 서비스"/>
 			<link rel="manifest" href="/manifest.json"/>
 			<script src="/static/deario.js"></script>
@@ -24,7 +24,7 @@ templ Index(title string, date string, mood string) {
 			<script type="module" src="/static/storage.js"></script>
 		</head>
 		<body>
-			@shared.SnackbarTempl()
+			@shared.Snackbar()
 			@layout.AppHeader()
 			<main id="diary-main" class="responsive">
 				@components.DiaryNavigation(date)

@@ -1,0 +1,97 @@
+package views
+
+import shared "simple-server/shared/views"
+
+templ Index(title string) {
+	<!DOCTYPE html>
+	<html lang="ko">
+		<head>
+			@shared.HeadsWithBulma(title)
+			<script src="/static/index.js" defer></script>
+		</head>
+		<body>
+			@shared.Snackbar()
+			<div class="container is-max-tablet p-2">
+				<div class="columns">
+					<div class="column">
+						<div class="box">
+							<div class="content">
+								<h3>
+									오늘 무엇을 공부하고싶은지
+									<br/>
+									고민이신가요 ?
+								</h3>
+								<p>AI와 함께 공부할 수 있도록 주제와 사이트 접속 링크를 제공해드려요</p>
+								<form
+									hx-post="/ai-study"
+									hx-target="#result"
+									x-data="{ loading : false }"
+									x-on:htmx:before-request="loading = true"
+									x-on:htmx:after-on-load="loading = false"
+								>
+									<div class="field has-addons">
+										<div class="control is-expanded">
+											<input
+												class="input"
+												name="input"
+												placeholder="내용을 입력해주세요."
+												required
+											/>
+										</div>
+										<div class="control">
+											<button class="button is-info" type="submit">
+												입력
+												<img
+													x-show="loading"
+													class="htmx-indicator"
+													src="/static/spinner.svg"
+													alt="로딩 중"
+												/>
+											</button>
+										</div>
+									</div>
+								</form>
+								<div class="columns">
+									<div class="column is-half is-offset-one-quarter">
+										<button
+											class="button is-focused is-fullwidth mt-3"
+											type="button"
+											hx-post="/ai-study-random"
+											hx-target="#result"
+											x-data="{ loading : false }"
+											x-on:htmx:before-request="loading = true"
+											x-on:htmx:after-on-load="loading = false"
+										>
+											랜덤 주제로 시작하기
+											<img
+												x-show="loading"
+												class="htmx-indicator"
+												src="/static/spinner.svg"
+												alt="로딩 중"
+											/>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<b>결과 확인</b>
+						<div class="box content">
+							<div class="columns is-mobile">
+								<div class="column">
+									<button id="copy">글 복사</button>
+								</div>
+								<div class="column">
+									<a href="https://chatgpt.com/" target="_blank">ChatGPT</a>
+								</div>
+								<div class="column">
+									<a href="https://gemini.google.com/app?hl=ko" target="_blank">Gemini</a>
+								</div>
+							</div>
+							<div id="result"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</body>
+	</html>
+}

@@ -9,15 +9,15 @@ templ Statistic() {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
-			@shared.HeadsWithBeerTempl("통계")
-			@shared.HeadsWithFirebaseAuthTempl()
-			@shared.HeadsWithGoogleFontsTempl("Gamja Flower")
-			@shared.HeadsWithChartJSTempl()
+			@shared.HeadsWithBeer("통계")
+			@shared.HeadsWithFirebaseAuth()
+			@shared.HeadsWithGoogleFonts("Gamja Flower")
+			@shared.HeadsWithChartJS()
 			<link rel="manifest" href="/manifest.json"/>
 			<script src="/static/statistic.js"></script>
 		</head>
 		<body>
-			@shared.SnackbarTempl()
+			@shared.Snackbar()
 			@layout.AppHeader()
 			<main class="responsive">
 				<h5>월별 일기 통계</h5>

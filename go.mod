@@ -24,8 +24,6 @@ require (
 	github.com/casbin/casbin/v3 v3.10.0
 	github.com/crazy-max/echo-ipfilter v1.13.0
 	github.com/doganarif/govisual v0.2.0
-	github.com/eduardolat/gomponents-lucide v1.5.0
-	github.com/glsubri/gomponents-alpine v0.2.2
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.30.1
@@ -40,8 +38,6 @@ require (
 	github.com/pressly/goose/v3 v3.26.0
 	github.com/qustavo/sqlhooks/v2 v2.1.0
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/willoma/bulma-gomponents v0.13.0
-	github.com/willoma/gomplements v0.8.0
 	go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho v0.65.0
 	go.opentelemetry.io/contrib/instrumentation/host v0.65.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.65.0
@@ -57,8 +53,6 @@ require (
 	golang.org/x/time v0.14.0
 	google.golang.org/api v0.265.0
 	google.golang.org/genai v1.45.0
-	maragu.dev/gomponents v1.2.0
-	maragu.dev/gomponents-htmx v0.6.1
 	maragu.dev/goqite v0.4.0
 	modernc.org/sqlite v1.45.0
 )
