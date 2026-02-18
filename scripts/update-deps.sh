@@ -126,7 +126,7 @@ check_frontend() {
         "material-dynamic-colors|1.1.4|https://cdn.jsdelivr.net/npm/material-dynamic-colors@%s/dist/cdn/material-dynamic-colors.min.js"
         "flatpickr|4.6.13|https://cdn.jsdelivr.net/npm/flatpickr@%s/dist/flatpickr.min.css"
         "chart.js|4.5.1|https://cdn.jsdelivr.net/npm/chart.js@%s"
-        "marked|17.0.1|https://cdn.jsdelivr.net/npm/marked@%s/lib/marked.umd.js"
+        "marked|17.0.3|https://cdn.jsdelivr.net/npm/marked@%s/lib/marked.umd.js"
         "hammerjs|2.0.8|https://cdn.jsdelivr.net/npm/hammerjs@%s/hammer.min.js"
     )
 
