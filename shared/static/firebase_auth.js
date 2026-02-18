@@ -73,7 +73,7 @@ htmx.on("htmx:afterRequest", (event) => {
         location.href = "/login"
       }
 
-      showInfo("로그인 중...")
+      showInfo("로그인 중...", 1000)
 
       auth.currentUser
         .getIdToken(true)
@@ -89,10 +89,9 @@ htmx.on("htmx:afterRequest", (event) => {
         })
         .then((response) => {
           if (response.ok) {
-            // showInfo("로그인이 완료되었습니다.");
-            setTimeout(() => {
+            return showInfo("재 로그인 되었습니다.", 1400).then(() => {
               location.reload()
-            }, 500)
+            })
           } else {
             showError("자동 로그인에 실패했습니다.")
           }
