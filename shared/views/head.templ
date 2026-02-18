@@ -34,9 +34,9 @@ templ HeadsCustom() {
 
 // Beer
 templ HeadsWithBeer(title string) {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beercss@3.13.3/dist/cdn/beer.min.css" onerror="this.onerror=null;this.href='shared/static/lib/beer.min.css';"/>
-	<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.13.3/dist/cdn/beer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/beer.min.js';"></script>
-	<script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js" onerror="this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beercss@4.0.7/dist/cdn/beer.min.css" onerror="this.onerror=null;this.href='shared/static/lib/beer.min.css';"/>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/beercss@4.0.7/dist/cdn/beer.min.js" onerror="this.onerror=null;this.src='shared/static/lib/beer.min.js';"></script>
+	<script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.4/dist/cdn/material-dynamic-colors.min.js" onerror="this.onerror=null;this.src='shared/static/lib/material-dynamic-colors.min.js';"></script>
 	@HeadsDefault(title)
 	@HeadsCustom()
 }
@@ -102,7 +102,7 @@ templ HeadsWithFlatpickr() {
 }
 
 templ HeadsWithMarked() {
-	<script src="https://cdn.jsdelivr.net/npm/marked@17.0.1/lib/marked.umd.js" onerror="this.onerror=null;this.src='shared/static/lib/marked.umd.js';"></script>
+	<script src="https://cdn.jsdelivr.net/npm/marked@17.0.3/lib/marked.umd.js" onerror="this.onerror=null;this.src='shared/static/lib/marked.umd.js';"></script>
 }
 
 templ HeadsWithChartJS() {

@@ -20,7 +20,7 @@ body {
 
 .microphone {
   position: absolute;
-  right: 3px;
+  right: 10px;
   top: 16rem;
   z-index: 1;
 }
