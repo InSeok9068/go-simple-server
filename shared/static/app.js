@@ -203,6 +203,14 @@ htmx.on("htmx:afterRequest", (event) => {
 
   const isResponseError = event.detail.xhr.status >= 400
   if (isResponseError) {
+    if (
+      event.detail.xhr.status === 401 &&
+      typeof window.isUnauthorizedHandled === "function" &&
+      window.isUnauthorizedHandled()
+    ) {
+      return
+    }
+
     const parsedResponse = JSON.parse(responseData)
     if (parsedResponse.message === undefined || parsedResponse.message === "") {
       return

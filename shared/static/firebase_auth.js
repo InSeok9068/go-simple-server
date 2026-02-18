@@ -51,7 +51,15 @@ onAuthStateChanged(auth, (user) => {
   }
 })
 
-let reauthInProgress = false
+const authRecoveryState = {
+  unauthorizedHandled: false,
+  reauthInProgress: false,
+}
+
+window.isUnauthorizedHandled = function () {
+  return authRecoveryState.unauthorizedHandled
+}
+
 htmx.on("htmx:afterRequest", (event) => {
   const contentType = (
     event.detail.xhr.getResponseHeader("Content-Type") || ""
@@ -65,17 +73,29 @@ htmx.on("htmx:afterRequest", (event) => {
     return
   }
 
-  const isResponseError = event.detail.xhr.status === 401
-  if (isResponseError && !reauthInProgress) {
-    reauthInProgress = true
-    auth.authStateReady().then(() => {
-      if (auth.currentUser === undefined) {
+  const isUnauthorized = event.detail.xhr.status === 401
+  if (!isUnauthorized) {
+    return
+  }
+
+  if (authRecoveryState.unauthorizedHandled || authRecoveryState.reauthInProgress) {
+    return
+  }
+
+  authRecoveryState.unauthorizedHandled = true
+  authRecoveryState.reauthInProgress = true
+
+  auth
+    .authStateReady()
+    .then(() => {
+      if (!auth.currentUser) {
         location.href = "/login"
+        return
       }
 
       showInfo("로그인 중...", 1000)
 
-      auth.currentUser
+      return auth.currentUser
         .getIdToken(true)
         .then((idToken) => {
           return fetch("/create-session", {
@@ -92,18 +112,16 @@ htmx.on("htmx:afterRequest", (event) => {
             return showInfo("재 로그인 되었습니다.", 1400).then(() => {
               location.reload()
             })
-          } else {
-            showError("자동 로그인에 실패했습니다.")
           }
-        })
-        .catch((err) => {
-          console.error("세션 생성 중 에러:", err)
-        })
-        .finally(() => {
-          reauthInProgress = false
+          showError("자동 로그인에 실패했습니다.")
         })
     })
-  }
+    .catch((err) => {
+      console.error("자동 로그인 처리 중 에러:", err)
+    })
+    .finally(() => {
+      authRecoveryState.reauthInProgress = false
+    })
 })
 
 async function requestPermissionAndGetToken() {
