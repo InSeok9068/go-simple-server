@@ -37,11 +37,11 @@ templ SearchResults(items []SearchResultItem) {
 		for _, item := range items {
 			<li>
 				<a href={ fmt.Sprintf("/?date=%s", item.Date) }>
-					<div>{ dateutil.MustFormatDateKorSimpleWithWeekDay(item.Date) }</div>
+					<span>{ dateutil.MustFormatDateKorSimpleWithWeekDay(item.Date) }</span>
 					if item.Snippet.HasMatch {
-						<div>{ item.Snippet.Prefix }<span class="primary">{ item.Snippet.Match }</span>{ item.Snippet.Suffix }</div>
+						<span>{ item.Snippet.Prefix }<span class="primary">{ item.Snippet.Match }</span>{ item.Snippet.Suffix }</span>
 					} else {
-						<div>{ item.Snippet.Prefix }</div>
+						<span>{ item.Snippet.Prefix }</span>
 					}
 				</a>
 			</li>

@@ -119,7 +119,7 @@ check_frontend() {
         "@alpinejs/persist|3.15.8|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
         "@alpinejs/morph|3.15.8|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
         "alpinejs|3.15.8|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
-        "beercss|3.13.3|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
+        "beercss|4.0.7|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
         "open-props|1.7.23|https://cdn.jsdelivr.net/npm/open-props@%s/open-props.min.css"
         "bulma|1.0.4|https://cdn.jsdelivr.net/npm/bulma@%s/css/bulma.min.css"
         "@picocss/pico|2.1.1|https://cdn.jsdelivr.net/npm/@picocss/pico@%s/css/pico.classless.min.css"

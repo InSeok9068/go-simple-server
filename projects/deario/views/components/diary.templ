@@ -13,11 +13,9 @@ templ DiaryNavigation(date string) {
 		<a id="prev-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, -1)) }>
 			<i class="large">keyboard_arrow_left</i>
 		</a>
-		<a id="today-day" href={ fmt.Sprintf("/?date=%s", time.Now().Format("20060102")) }>
-			<button class="chip">
-				<i>today</i>
-				<span class="bold">Today</span>
-			</button>
+		<a id="today-day" class="chip" href={ fmt.Sprintf("/?date=%s", time.Now().Format("20060102")) }>
+			<i>today</i>
+			<span class="bold">Today</span>
 		</a>
 		<a id="next-day" href={ fmt.Sprintf("/?date=%s", dateutil.MustAddDaysToDate(date, 1)) }>
 			<i class="large">keyboard_arrow_right</i>
@@ -105,7 +103,7 @@ templ FeedbackActions(date string) {
 			<button data-ui="#ai-feedback">
 				<span>일기요정</span>
 			</button>
-			<menu class="right-align top transparent no-wrap left" id="ai-feedback" data-ui="#ai-feedback">
+			<menu class="right-align top transparent no-wrap left" id="ai-feedback">
 				@AiFeedbackButton("1", "칭찬받기")
 				@AiFeedbackButton("2", "위로받기")
 				@AiFeedbackButton("3", "충고받기")
@@ -142,11 +140,11 @@ templ AiFeedbackButton(strType string, title string) {
 
 templ BottomNavigation() {
 	<nav class="bottom">
-		<a href="#" data-ui="#calendar-dialog">
+		<a data-ui="#calendar-dialog">
 			<i>calendar_month</i>
 			달력
 		</a>
-		<a href="#" data-ui="#diary-list-dialog">
+		<a data-ui="#diary-list-dialog">
 			<i>list_alt</i>
 			일지
 		</a>
@@ -154,7 +152,7 @@ templ BottomNavigation() {
 			<i>casino</i>
 			랜덤
 		</a>
-		<a href="#" data-ui="#menu-dialog">
+		<a data-ui="#menu-dialog">
 			<i>menu_open</i>
 			메뉴
 		</a>
