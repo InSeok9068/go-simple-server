@@ -26,11 +26,6 @@ deario.toy-project.n-e.kr {
     reverse_proxy 127.0.0.1:8002
 }
 
-# 옷장 서브도메인
-closet.toy-project.n-e.kr {
-    reverse_proxy 127.0.0.1:8003
-}
-
 # 로그 어드민 서브도메인
 log.toy-project.n-e.kr {
     reverse_proxy 127.0.0.1:9000
