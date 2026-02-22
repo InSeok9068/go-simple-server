@@ -78,7 +78,10 @@ htmx.on("htmx:afterRequest", (event) => {
     return
   }
 
-  if (authRecoveryState.unauthorizedHandled || authRecoveryState.reauthInProgress) {
+  if (
+    authRecoveryState.unauthorizedHandled ||
+    authRecoveryState.reauthInProgress
+  ) {
     return
   }
 

@@ -41,8 +41,7 @@ document.addEventListener("alpine:init", () => {
     isShowing: false,
     hideTimer: null,
     show(msg, type = "primary", ms = 3000) {
-      const duration =
-        typeof ms === "number" && ms >= 0 ? Math.floor(ms) : 3000
+      const duration = typeof ms === "number" && ms >= 0 ? Math.floor(ms) : 3000
 
       return new Promise((resolve) => {
         this.queue.push({
