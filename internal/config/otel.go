@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"simple-server/pkg/util/stringutil"
 	"time"
 
 	hostinstrumentation "go.opentelemetry.io/contrib/instrumentation/host"
@@ -68,7 +69,13 @@ func InitTracer() {
 
 	shutdown = composeShutdown(shutdowns)
 
-	slog.Info("OpenTelemetry 추적/메트릭을 NewRelic으로 전송합니다", "endpoint", endpoint, "service", serviceName, "env", deployEnv)
+	// #nosec G706 -- 환경변수 기반 값을 개행 제거 후 구조화 필드로 기록합니다.
+	slog.Info(
+		"OpenTelemetry 추적/메트릭을 NewRelic으로 전송합니다",
+		"endpoint", stringutil.SanitizeForLog(endpoint),
+		"service", stringutil.SanitizeForLog(serviceName),
+		"env", stringutil.SanitizeForLog(deployEnv),
+	)
 }
 
 func setupRemoteProviders(
