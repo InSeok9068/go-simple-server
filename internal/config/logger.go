@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"os"
 	"simple-server/internal/connection"
+	"simple-server/pkg/util/stringutil"
 	"sync"
 	"time"
 
@@ -259,7 +260,8 @@ func InitLoggerWithDatabase() {
 		log.SetOutput(os.Stderr)
 
 		if enableNrslog {
-			slog.Info("New Relic nrslog 활성화", "app", appName)
+			// #nosec G706 -- 환경변수 값을 개행 제거 후 구조화 필드로 기록합니다.
+			slog.Info("New Relic nrslog 활성화", "app", stringutil.SanitizeForLog(appName))
 		} else {
 			slog.Info("New Relic nrslog 비활성화")
 		}

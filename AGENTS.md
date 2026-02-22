@@ -46,7 +46,6 @@
 
 - `homepage`: 소개 포털
 - `deario`: 일기 + AI 피드백
-- `closet`: 옷장 + 추천
 - `ai-study`: 학습 주제 추천 서비스
 - `sample`: 실험용, 레거시 코드 포함
 
@@ -296,7 +295,6 @@ HTTP/HTMX 응답 규칙:
 
 # SQLC 생성
 ./task.sh sqlc-generate deario
-./task.sh sqlc-generate closet
 
 # 포맷
 ./task.sh fmt

@@ -747,7 +747,17 @@ func buildSCPCommonArgs(cfg DeployConfig) []string {
 
 func runCommand(name string, args ...string) error {
 	logInfo("명령 실행: %s", formatCommandForLog(name, args))
-	cmd := exec.Command(name, args...)
+	var cmd *exec.Cmd
+	switch name {
+	case "ssh":
+		// #nosec G204 -- 배포 도구에서 허용된 명령(ssh/scp)만 실행합니다.
+		cmd = exec.Command("ssh", args...)
+	case "scp":
+		// #nosec G204 -- 배포 도구에서 허용된 명령(ssh/scp)만 실행합니다.
+		cmd = exec.Command("scp", args...)
+	default:
+		return fmt.Errorf("허용되지 않은 명령입니다: %s", name)
+	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

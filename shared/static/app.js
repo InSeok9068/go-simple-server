@@ -37,19 +37,56 @@ document.addEventListener("alpine:init", () => {
     visible: false,
     message: "",
     type: "primary",
+    queue: [],
+    isShowing: false,
+    hideTimer: null,
     show(msg, type = "primary", ms = 3000) {
-      this.message = msg
-      this.type = type
-      this.visible = true
-      setTimeout(() => {
+      const duration =
+        typeof ms === "number" && ms >= 0 ? Math.floor(ms) : 3000
+
+      return new Promise((resolve) => {
+        this.queue.push({
+          message: msg,
+          type,
+          duration,
+          resolve,
+        })
+        this.processQueue()
+      })
+    },
+    async processQueue() {
+      if (this.isShowing) {
+        return
+      }
+      this.isShowing = true
+
+      while (this.queue.length > 0) {
+        const next = this.queue.shift()
+
+        this.message = next.message
+        this.type = next.type
+        this.visible = true
+
+        await new Promise((resolve) => {
+          this.hideTimer = setTimeout(resolve, next.duration)
+        })
+
         this.visible = false
-      }, ms)
+        this.hideTimer = null
+        next.resolve()
+
+        await new Promise((resolve) => {
+          setTimeout(resolve, 120)
+        })
+      }
+
+      this.isShowing = false
     },
     info(msg, ms) {
-      this.show(msg, "primary", ms)
+      return this.show(msg, "primary", ms)
     },
     error(msg, ms) {
-      this.show(msg, "error", ms)
+      return this.show(msg, "error", ms)
     },
   })
 
@@ -166,6 +203,14 @@ htmx.on("htmx:afterRequest", (event) => {
 
   const isResponseError = event.detail.xhr.status >= 400
   if (isResponseError) {
+    if (
+      event.detail.xhr.status === 401 &&
+      typeof window.isUnauthorizedHandled === "function" &&
+      window.isUnauthorizedHandled()
+    ) {
+      return
+    }
+
     const parsedResponse = JSON.parse(responseData)
     if (parsedResponse.message === undefined || parsedResponse.message === "") {
       return
@@ -182,11 +227,11 @@ htmx.on("htmx:configRequest", (event) => {
 })
 
 function showInfo(msg, ms) {
-  Alpine.store("snackbar").info(msg, ms)
+  return Alpine.store("snackbar").info(msg, ms)
 }
 
 function showError(msg, ms) {
-  Alpine.store("snackbar").error(msg, ms)
+  return Alpine.store("snackbar").error(msg, ms)
 }
 
 function showModal(querySelector, isScrollTop = false) {

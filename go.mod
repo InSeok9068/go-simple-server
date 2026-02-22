@@ -51,9 +51,9 @@ require (
 	go.opentelemetry.io/otel/trace v1.40.0
 	golang.org/x/time v0.14.0
 	google.golang.org/api v0.267.0
-	google.golang.org/genai v1.46.0
+	google.golang.org/genai v1.47.0
 	maragu.dev/goqite v0.4.0
-	modernc.org/sqlite v1.46.0
+	modernc.org/sqlite v1.46.1
 )
 
 require (

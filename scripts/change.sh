@@ -2,7 +2,7 @@
 
 # 사용법 안내
 if [[ $# -ne 1 ]]; then
-  echo "사용법: $0 {homepage|ai-study|deario|closet|sample}"
+  echo "사용법: $0 {homepage|ai-study|deario|sample}"
   exit 1
 fi
 
@@ -20,9 +20,6 @@ case "$SERVICE" in
     ;;
   deario)
     PORT=8002
-    ;;
-  closet)
-    PORT=8003
     ;;
   booklog)
     PORT=8004

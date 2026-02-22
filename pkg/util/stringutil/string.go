@@ -14,6 +14,8 @@ import (
 	"unicode/utf8"
 )
 
+var logValueSanitizer = strings.NewReplacer("\r", "\\r", "\n", "\\n")
+
 // IsEmpty 는 문자열이 비어있는지 확인합니다.
 // 공백만 있는 문자열도 비어있다고 간주합니다.
 //
@@ -24,6 +26,11 @@ import (
 //	}
 func IsEmpty(s string) bool {
 	return strings.TrimSpace(s) == ""
+}
+
+// SanitizeForLog 는 로그 주입 위험을 줄이기 위해 개행 문자를 이스케이프합니다.
+func SanitizeForLog(s string) string {
+	return logValueSanitizer.Replace(s)
 }
 
 // IsNotEmpty 는 문자열이 비어있지 않은지 확인합니다.

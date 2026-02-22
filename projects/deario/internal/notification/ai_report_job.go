@@ -21,7 +21,7 @@ func buildReportPrompt(diaries []db.Diary) string {
 	for _, diary := range diaries {
 		// diary.Content가 비어있지 않은 경우에만 추가합니다.
 		if strings.TrimSpace(diary.Content) != "" {
-			diaryEntries.WriteString(fmt.Sprintf("날짜: %s\n내용: %s\n---\n", diary.Date, diary.Content))
+			fmt.Fprintf(&diaryEntries, "날짜: %s\n내용: %s\n---\n", diary.Date, diary.Content)
 		}
 	}
 
