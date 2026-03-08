@@ -94,9 +94,9 @@ update_tools() {
     print_step "Go 도구 설치 중..."
 
     tools=(
-        "github.com/air-verse/air@v1.62.0"
+        # "github.com/air-verse/air@v1.62.0"
+        "github.com/air-verse/air@latest"
         "github.com/a-h/templ/cmd/templ@latest"
-        # "github.com/air-verse/air@latest"
         "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"
         "github.com/sqlc-dev/sqlc/cmd/sqlc@latest"
         "github.com/dexter2389/go-tailwind-sorter@latest"
