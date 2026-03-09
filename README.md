@@ -19,16 +19,21 @@
 | DB <br>마이그레이션 | Goose                                            |
 | DB 복구             | Litestream                                       |
 | 인증                | Firebase Auth + (Cookie)                         |
+| 인가                | Casbin                                           |
 | 객체 저장           | File, GCP Storage                                |
+| 스케줄 작업         | go cron                                          |
 | 메시지 큐           | goqite                                           |
+| 캐시                | Memory / Server                                  |
 | 웹 서버             | Caddy                                            |
-| 엣지 함수           | GCP Cloud Functions                              |
-| 모니터링            | - /debug/vars<br>- NewNewRelic (OTEL)            |
+| 서버리스 함수       | GCP Cloud Functions                              |
+| 모니터링            | - /debug/vars<br>- NewRelic (OTEL)               |
+| 로깅                | PB Logs                                          |
 | 린팅                | golangci-lint                                    |
 | 테스트              | go test                                          |
 | 빌드 과정           | 필수 (Go 컴파일)                                 |
 | 배포 방식           | 바이너리 실행 / Docker                           |
 | 모바일              | PWA => Capacitor                                 |
+| 푸시/알림           | FCM / OneSignal                                  |
 
 ## 폴더 구조
 
