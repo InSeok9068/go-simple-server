@@ -4,24 +4,31 @@
 
 **Host** : https://toy-project.n-e.kr
 
-| 구성                  | 사용 기술/도구                                                               |
-| --------------------- | ---------------------------------------------------------------------------- |
-| **언어**              | Go                                                                           |
-| **백엔드 프레임워크** | Echo                                                                         |
-| **프론트엔드 구성**   | HTMX + Alpine.js                                                             |
-| **템플릿 엔진**       | Templ                                                                        |
-| **CSS 프레임워크**    | 1순위 : Beer CSS <br> 2순위 : Pico CSS + Tailwind CSS <br> 3순위 : Bulma CSS |
-| **데이터베이스**      | SQLite → PostgreSQL                                                          |
-| **DB 관리 도구**      | Adminer                                                                      |
-| **DB 마이그레이션**   | Goose                                                                        |
-| **DB 복제/복구**      | Litestream (SQLite)                                                          |
-| **인증**              | Firebase (With Cookie)                                                       |
-| **객체 저장소**       | GCP Storage                                                                  |
-| **메시지 큐**         | goqite                                                                       |
-| **성능/로깅 도구**    | /debug/vars (Go 표준), trace_id (OTEL 연동)                                  |
-| **로깅 대시보드 UI**  | PocketBase Admin                                                             |
-| **모바일 대응**       | PWA → Capacitor                                                              |
-| **웹 서버**           | Caddy                                                                        |
+| 구분                | Go 백엔드 (SSR)                                  |
+| ------------------- | ------------------------------------------------ |
+| 목적                | 확장성, 자유도                                   |
+| 핵심가치            | 장기적 안정성                                    |
+| 백엔드              | Go, Echo, Sqlc                                   |
+| 프론트엔드          | HTMX, Alpine.js                                  |
+| 템플릿/UI           | Templ                                            |
+| CSS                 | - Shoelace + Tailwind<br>- BeerCSS<br>- Tailwind |
+| 상태관리            | Server Session                                   |
+| 라우팅              | 코드 정의 (Manual)                               |
+| DB                  | SQLite => PostgreSQL                             |
+| DB 관리             | Adminer                                          |
+| DB <br>마이그레이션 | Goose                                            |
+| DB 복구             | Litestream                                       |
+| 인증                | Firebase Auth + (Cookie)                         |
+| 객체 저장           | File, GCP Storage                                |
+| 메시지 큐           | goqite                                           |
+| 웹 서버             | Caddy                                            |
+| 엣지 함수           | GCP Cloud Functions                              |
+| 모니터링            | - /debug/vars<br>- NewNewRelic (OTEL)            |
+| 린팅                | golangci-lint                                    |
+| 테스트              | go test                                          |
+| 빌드 과정           | 필수 (Go 컴파일)                                 |
+| 배포 방식           | 바이너리 실행 / Docker                           |
+| 모바일              | PWA => Capacitor                                 |
 
 ## 폴더 구조
 
