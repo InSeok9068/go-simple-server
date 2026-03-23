@@ -1,6 +1,8 @@
 package settings
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 
 	"simple-server/internal/validate"
@@ -17,6 +19,15 @@ type updateSettingsDTO struct {
 	RandomRange *int64 `form:"random_range" json:"random_range" validate:"omitempty,min=0,max=3650" message:"랜덤일자 범위가 올바르지 않습니다."`
 }
 
+func defaultUserSetting(uid string) db.UserSetting {
+	return db.UserSetting{
+		Uid:         uid,
+		IsPush:      0,
+		PushTime:    "",
+		RandomRange: 365,
+	}
+}
+
 // SettingsPage는 사용자 설정 페이지를 렌더링한다.
 func SettingsPage(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
@@ -31,7 +42,19 @@ func SettingsPage(c echo.Context) error {
 
 	userSetting, err := queries.GetUserSetting(c.Request().Context(), uid)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정을 가져오지 못했습니다.")
+		if !errors.Is(err, sql.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정을 가져오지 못했습니다.")
+		}
+
+		userSetting = defaultUserSetting(uid)
+		if err := queries.UpsertUserSetting(c.Request().Context(), db.UpsertUserSettingParams{
+			Uid:         userSetting.Uid,
+			IsPush:      userSetting.IsPush,
+			PushTime:    userSetting.PushTime,
+			RandomRange: userSetting.RandomRange,
+		}); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "사용자 설정을 초기화하지 못했습니다.")
+		}
 	}
 
 	return pages.Setting(userSetting).Render(c.Request().Context(), c.Response().Writer)

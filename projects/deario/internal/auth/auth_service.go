@@ -2,6 +2,8 @@ package auth
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"simple-server/internal/middleware"
 	"simple-server/projects/deario/db"
@@ -30,6 +32,21 @@ func EnsureUser(ctx context.Context, uid string) error {
 			Email: user.Email,
 		}); err != nil {
 			return fmt.Errorf("사용자 생성 실패: %w", err)
+		}
+	}
+
+	if _, err := queries.GetUserSetting(ctx, uid); err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			return fmt.Errorf("사용자 설정 조회 실패: %w", err)
+		}
+
+		if err := queries.UpsertUserSetting(ctx, db.UpsertUserSettingParams{
+			Uid:         uid,
+			IsPush:      0,
+			PushTime:    "",
+			RandomRange: 365,
+		}); err != nil {
+			return fmt.Errorf("사용자 설정 생성 실패: %w", err)
 		}
 	}
 
