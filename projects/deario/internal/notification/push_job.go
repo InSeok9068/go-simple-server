@@ -3,8 +3,8 @@ package notification
 import (
 	"context"
 	"encoding/json"
-	"log/slog"
 	"fmt"
+	"log/slog"
 	"sync"
 	"time"
 
