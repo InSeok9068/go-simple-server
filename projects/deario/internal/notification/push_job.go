@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"log/slog"
+	"fmt"
+	"sync"
 	"time"
 
 	"simple-server/internal/middleware"
@@ -22,6 +24,25 @@ type Payload struct {
 }
 
 var pushQ *goqite.Queue
+var pushQOnce sync.Once
+var errPushQ error
+
+func InitPushQueue() error {
+	pushQOnce.Do(func() {
+		pushdb, err := db.GetDB(false)
+		if err != nil {
+			errPushQ = fmt.Errorf("푸시 큐 데이터베이스 연결 실패: %w", err)
+			return
+		}
+
+		pushQ = goqite.New(goqite.NewOpts{
+			DB:   pushdb,
+			Name: "push",
+		})
+	})
+
+	return errPushQ
+}
 
 func PushSendCron(c *cron.Cron) {
 	queries, err := db.GetQueries(false)
@@ -45,6 +66,11 @@ func PushSendCron(c *cron.Cron) {
 				continue
 			}
 
+			if err := InitPushQueue(); err != nil {
+				slog.Error("푸시 큐 초기화 실패", "error", err)
+				return
+			}
+
 			payload := Payload{
 				Title: "매일 알림",
 				Body:  "오늘 하루는 어땠나요?",
@@ -62,16 +88,11 @@ func PushSendCron(c *cron.Cron) {
 }
 
 func PushSendJob() {
-	pushdb, err := db.GetDB(false)
-	if err != nil {
-		slog.Error("데이터베이스 연결 실패", "error", err)
+	if err := InitPushQueue(); err != nil {
+		slog.Error("푸시 큐 초기화 실패", "error", err)
 		return
 	}
-	defer db.Close()
-	pushQ = goqite.New(goqite.NewOpts{
-		DB:   pushdb,
-		Name: "push",
-	})
+
 	r := jobs.NewRunner(jobs.NewRunnerOpts{
 		Limit:        1,
 		Log:          slog.Default(),

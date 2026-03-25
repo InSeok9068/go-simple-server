@@ -12,8 +12,6 @@ import (
 	"simple-server/projects/deario/views/components"
 
 	"github.com/labstack/echo/v4"
-	"maragu.dev/goqite"
-	"maragu.dev/goqite/jobs"
 )
 
 // GenerateAIFeedback는 일기 내용을 기반으로 AI 피드백이나 이미지를 생성한다.
@@ -165,7 +163,7 @@ func GenerateAIReport(c echo.Context) error {
 	}
 
 	// 큐에 작업 추가
-	if _, err := jobs.Create(c.Request().Context(), notification.AiReportQ, "ai-report", goqite.Message{Body: []byte(uid)}); err != nil {
+	if err := notification.EnqueueAIReport(c.Request().Context(), uid); err != nil {
 		slog.Error("AI 리포트 발송 실패", "error", err)
 	}
 

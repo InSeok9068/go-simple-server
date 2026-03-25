@@ -16,6 +16,10 @@ func EnsureUser(ctx context.Context, uid string) error {
 	}
 
 	if _, err := queries.GetUser(ctx, uid); err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			return fmt.Errorf("사용자 조회 실패: %w", err)
+		}
+
 		auth, err := middleware.App.Auth(ctx)
 		if err != nil {
 			return fmt.Errorf("인증 클라이언트 생성 실패: %w", err)
