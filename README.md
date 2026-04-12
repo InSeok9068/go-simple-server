@@ -186,22 +186,22 @@ go mod tidy
 
 #### CSS
 
-[bulma.min.css](https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css) </br>
-[beer.min.css](https://cdn.jsdelivr.net/npm/beercss/dist/cdn/beer.min.css) </br>
-[open-props.min.css](https://cdn.jsdelivr.net/npm/open-props/open-props.min.css) </br>
-[pico.classless.min.css](https://cdn.jsdelivr.net/npm/@picocss/pico/css/pico.classless.min.css)
+[bulma.min.css](https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css) </br>
+[beer.min.css](https://cdn.jsdelivr.net/npm/beercss@4.0.20/dist/cdn/beer.min.css) </br>
+[open-props.min.css](https://cdn.jsdelivr.net/npm/open-props@1.7.23/open-props.min.css) </br>
+[pico.classless.min.css](https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.classless.min.css)
 [flatpickr.min.css](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css)
 [dark.css](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css)
 
 #### JS
 
-[cdn.min.js](https://cdn.jsdelivr.net/npm/alpinejs/dist/cdn.min.js) </br>
-[htmx.min.js](https://cdn.jsdelivr.net/npm/htmx.org/dist/htmx.min.js) </br>
-[beer.min.js](https://cdn.jsdelivr.net/npm/beercss/dist/cdn/beer.min.js) </br>
-[material-dynamic-colors.min.js](https://cdn.jsdelivr.net/npm/material-dynamic-colors/dist/cdn/material-dynamic-colors.min.js)
+[cdn.min.js](https://cdn.jsdelivr.net/npm/alpinejs@3.15.11/dist/cdn.min.js) </br>
+[htmx.min.js](https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js) </br>
+[beer.min.js](https://cdn.jsdelivr.net/npm/beercss@4.0.20/dist/cdn/beer.min.js) </br>
+[material-dynamic-colors.min.js](https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.4/dist/cdn/material-dynamic-colors.min.js)
 [flatpickr.min.js](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js)
 [ko.js](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js)
-[marked.umd.js](https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js)
+[marked.umd.js](https://cdn.jsdelivr.net/npm/marked@18.0.0/lib/marked.umd.js)
 
 ---
 

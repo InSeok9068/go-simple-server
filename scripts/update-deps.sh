@@ -122,17 +122,17 @@ check_frontend() {
     frontend_libs=(
         "htmx.org|2.0.8|https://cdn.jsdelivr.net/npm/htmx.org@%s/dist/htmx.min.js"
         "htmx-ext-alpine-morph|2.0.2|https://cdn.jsdelivr.net/npm/htmx-ext-alpine-morph@%s/alpine-morph.js"
-        "@alpinejs/persist|3.15.8|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
-        "@alpinejs/morph|3.15.8|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
-        "alpinejs|3.15.8|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
-        "beercss|4.0.19|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
+        "@alpinejs/persist|3.15.11|https://cdn.jsdelivr.net/npm/@alpinejs/persist@%s/dist/cdn.min.js"
+        "@alpinejs/morph|3.15.11|https://cdn.jsdelivr.net/npm/@alpinejs/morph@%s/dist/cdn.min.js"
+        "alpinejs|3.15.11|https://cdn.jsdelivr.net/npm/alpinejs@%s/dist/cdn.min.js"
+        "beercss|4.0.20|https://cdn.jsdelivr.net/npm/beercss@%s/dist/cdn/beer.min.js"
         "open-props|1.7.23|https://cdn.jsdelivr.net/npm/open-props@%s/open-props.min.css"
         "bulma|1.0.4|https://cdn.jsdelivr.net/npm/bulma@%s/css/bulma.min.css"
         "@picocss/pico|2.1.1|https://cdn.jsdelivr.net/npm/@picocss/pico@%s/css/pico.classless.min.css"
         "material-dynamic-colors|1.1.4|https://cdn.jsdelivr.net/npm/material-dynamic-colors@%s/dist/cdn/material-dynamic-colors.min.js"
         "flatpickr|4.6.13|https://cdn.jsdelivr.net/npm/flatpickr@%s/dist/flatpickr.min.css"
         "chart.js|4.5.1|https://cdn.jsdelivr.net/npm/chart.js@%s"
-        "marked|17.0.5|https://cdn.jsdelivr.net/npm/marked@%s/lib/marked.umd.js"
+        "marked|18.0.0|https://cdn.jsdelivr.net/npm/marked@%s/lib/marked.umd.js"
         "hammerjs|2.0.8|https://cdn.jsdelivr.net/npm/hammerjs@%s/hammer.min.js"
     )
 
