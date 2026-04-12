@@ -7,6 +7,7 @@ import (
 	aiclient "simple-server/internal/ai"
 	"simple-server/projects/deario/db"
 	"strings"
+	"sync"
 	"time"
 
 	"maragu.dev/goqite"
@@ -14,6 +15,34 @@ import (
 )
 
 var AiReportQ *goqite.Queue
+var aiReportQOnce sync.Once
+var errAIReportQ error
+
+func InitAIReportQueue() error {
+	aiReportQOnce.Do(func() {
+		apiReportDB, err := db.GetDB(false)
+		if err != nil {
+			errAIReportQ = fmt.Errorf("AI 리포트 큐 데이터베이스 연결 실패: %w", err)
+			return
+		}
+
+		AiReportQ = goqite.New(goqite.NewOpts{
+			DB:   apiReportDB,
+			Name: "ai-report",
+		})
+	})
+
+	return errAIReportQ
+}
+
+func EnqueueAIReport(ctx context.Context, uid string) error {
+	if err := InitAIReportQueue(); err != nil {
+		return err
+	}
+
+	_, err := jobs.Create(ctx, AiReportQ, "ai-report", goqite.Message{Body: []byte(uid)})
+	return err
+}
 
 // buildReportPrompt는 AI 상담 리포트 생성을 위한 프롬프트를 생성합니다.
 func buildReportPrompt(diaries []db.Diary) string {
@@ -63,16 +92,11 @@ OO님, 지난 한 달 동안의 소중한 마음 기록들을 제가 조심스�
 }
 
 func GenerateAIReportJob() {
-	apiReportDb, err := db.GetDB(false)
-	if err != nil {
-		slog.Error("데이터베이스 연결 실패", "error", err)
+	if err := InitAIReportQueue(); err != nil {
+		slog.Error("AI 리포트 큐 초기화 실패", "error", err)
 		return
 	}
-	defer db.Close()
-	AiReportQ = goqite.New(goqite.NewOpts{
-		DB:   apiReportDb,
-		Name: "ai-report",
-	})
+
 	r := jobs.NewRunner(jobs.NewRunnerOpts{
 		Limit:        1,
 		Log:          slog.Default(),

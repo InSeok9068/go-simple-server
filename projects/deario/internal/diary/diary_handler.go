@@ -193,7 +193,7 @@ func SaveDiary(c echo.Context) error {
 	}
 
 	date := dto.Date
-	content := dto.Content
+	content := strings.TrimSpace(dto.Content)
 
 	queries, err := db.GetQueries()
 	if err != nil {
@@ -206,6 +206,10 @@ func SaveDiary(c echo.Context) error {
 	})
 
 	if err != nil {
+		if content == "" {
+			return c.NoContent(http.StatusNoContent)
+		}
+
 		if _, err := queries.CreateDiary(c.Request().Context(), db.CreateDiaryParams{
 			Uid:     uid,
 			Content: content,

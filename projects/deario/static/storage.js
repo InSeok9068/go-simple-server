@@ -62,19 +62,30 @@ function getExt(file) {
   return (m?.[1] || "jpg").toLowerCase()
 }
 
+function clearPreviewDiaryImage(preview) {
+  preview?.querySelector('[data-role="pending-preview"]')?.remove()
+}
+
 window.previewDiaryImage = function (input) {
   const preview = document.getElementById("diary-image-content")
   if (!preview) return
   if (!input || !input.files || input.files.length === 0) return
+
+  clearPreviewDiaryImage(preview)
+
   const file = input.files[0]
   if (file.type.startsWith("image/")) {
     const img = document.createElement("img")
     img.className = "small-width small-height"
+    img.dataset.role = "pending-preview"
     img.src = URL.createObjectURL(file)
     img.onload = () => URL.revokeObjectURL(img.src)
     preview.insertBefore(img, preview.firstChild)
   } else {
-    preview.textContent = `${input.files.length}개 선택됨`
+    const text = document.createElement("p")
+    text.dataset.role = "pending-preview"
+    text.textContent = `${input.files.length}개 선택됨`
+    preview.insertBefore(text, preview.firstChild)
   }
 }
 
@@ -111,6 +122,7 @@ window.uploadDiaryImage = async function (date) {
       customMetadata: { uploadYMD, diaryYMD, uid },
     })
     const url = await getDownloadURL(snapshot.ref)
+    clearPreviewDiaryImage(document.getElementById("diary-image-content"))
     htmx.ajax("POST", "/diary/image", {
       target: "#diary-image-content",
       swap: "outerHTML",

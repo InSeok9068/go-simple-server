@@ -4,24 +4,36 @@
 
 **Host** : https://toy-project.n-e.kr
 
-| 구성                  | 사용 기술/도구                                                               |
-| --------------------- | ---------------------------------------------------------------------------- |
-| **언어**              | Go                                                                           |
-| **백엔드 프레임워크** | Echo                                                                         |
-| **프론트엔드 구성**   | HTMX + Alpine.js                                                             |
-| **템플릿 엔진**       | Templ                                                                        |
-| **CSS 프레임워크**    | 1순위 : Beer CSS <br> 2순위 : Pico CSS + Tailwind CSS <br> 3순위 : Bulma CSS |
-| **데이터베이스**      | SQLite → PostgreSQL                                                          |
-| **DB 관리 도구**      | Adminer                                                                      |
-| **DB 마이그레이션**   | Goose                                                                        |
-| **DB 복제/복구**      | Litestream (SQLite)                                                          |
-| **인증**              | Firebase (With Cookie)                                                       |
-| **객체 저장소**       | GCP Storage                                                                  |
-| **메시지 큐**         | goqite                                                                       |
-| **성능/로깅 도구**    | /debug/vars (Go 표준), trace_id (OTEL 연동)                                  |
-| **로깅 대시보드 UI**  | PocketBase Admin                                                             |
-| **모바일 대응**       | PWA → Capacitor                                                              |
-| **웹 서버**           | Caddy                                                                        |
+| 구분                | Go 백엔드 (SSR)                                  |
+| ------------------- | ------------------------------------------------ |
+| 목적                | 확장성, 자유도                                   |
+| 핵심가치            | 장기적 안정성                                    |
+| 백엔드              | Go, Echo, Sqlc                                   |
+| 프론트엔드          | HTMX, Alpine.js                                  |
+| 템플릿/UI           | Templ                                            |
+| CSS                 | - Shoelace + Tailwind<br>- BeerCSS<br>- Tailwind |
+| 상태관리            | Server Session                                   |
+| 라우팅              | 코드 정의 (Manual)                               |
+| DB                  | SQLite => PostgreSQL                             |
+| DB 관리             | Adminer                                          |
+| DB <br>마이그레이션 | Goose                                            |
+| DB 복구             | Litestream                                       |
+| 인증                | Firebase Auth + (Cookie)                         |
+| 인가                | Casbin                                           |
+| 객체 저장           | File, GCP Storage                                |
+| 스케줄 작업         | go cron                                          |
+| 메시지 큐           | goqite                                           |
+| 캐시                | Memory / Server                                  |
+| 웹 서버             | Caddy                                            |
+| 서버리스 함수       | GCP Cloud Functions                              |
+| 모니터링            | - /debug/vars<br>- NewRelic (OTEL)               |
+| 로깅                | PB Logs                                          |
+| 린팅                | golangci-lint                                    |
+| 테스트              | go test                                          |
+| 빌드 과정           | 필수 (Go 컴파일)                                 |
+| 배포 방식           | 바이너리 실행 / Docker                           |
+| 모바일              | PWA => Capacitor                                 |
+| 푸시/알림           | FCM / OneSignal                                  |
 
 ## 폴더 구조
 
@@ -174,22 +186,22 @@ go mod tidy
 
 #### CSS
 
-[bulma.min.css](https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css) </br>
-[beer.min.css](https://cdn.jsdelivr.net/npm/beercss/dist/cdn/beer.min.css) </br>
-[open-props.min.css](https://cdn.jsdelivr.net/npm/open-props/open-props.min.css) </br>
-[pico.classless.min.css](https://cdn.jsdelivr.net/npm/@picocss/pico/css/pico.classless.min.css)
+[bulma.min.css](https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css) </br>
+[beer.min.css](https://cdn.jsdelivr.net/npm/beercss@4.0.20/dist/cdn/beer.min.css) </br>
+[open-props.min.css](https://cdn.jsdelivr.net/npm/open-props@1.7.23/open-props.min.css) </br>
+[pico.classless.min.css](https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.classless.min.css)
 [flatpickr.min.css](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css)
 [dark.css](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css)
 
 #### JS
 
-[cdn.min.js](https://cdn.jsdelivr.net/npm/alpinejs/dist/cdn.min.js) </br>
-[htmx.min.js](https://cdn.jsdelivr.net/npm/htmx.org/dist/htmx.min.js) </br>
-[beer.min.js](https://cdn.jsdelivr.net/npm/beercss/dist/cdn/beer.min.js) </br>
-[material-dynamic-colors.min.js](https://cdn.jsdelivr.net/npm/material-dynamic-colors/dist/cdn/material-dynamic-colors.min.js)
+[cdn.min.js](https://cdn.jsdelivr.net/npm/alpinejs@3.15.11/dist/cdn.min.js) </br>
+[htmx.min.js](https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js) </br>
+[beer.min.js](https://cdn.jsdelivr.net/npm/beercss@4.0.20/dist/cdn/beer.min.js) </br>
+[material-dynamic-colors.min.js](https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.4/dist/cdn/material-dynamic-colors.min.js)
 [flatpickr.min.js](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js)
 [ko.js](https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ko.js)
-[marked.umd.js](https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js)
+[marked.umd.js](https://cdn.jsdelivr.net/npm/marked@18.0.0/lib/marked.umd.js)
 
 ---
 

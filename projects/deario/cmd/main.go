@@ -128,6 +128,15 @@ func setUpServer() *echo.Echo {
 	authGroup.POST("/diary/transcribe", diary.TranscribeDiaryVoice)
 	/* 권한 라우터 */
 
+	if err := notification.InitPushQueue(); err != nil {
+		slog.Error("푸시 큐 초기화 실패", "error", err)
+		os.Exit(1)
+	}
+	if err := notification.InitAIReportQueue(); err != nil {
+		slog.Error("AI 리포트 큐 초기화 실패", "error", err)
+		os.Exit(1)
+	}
+
 	/* 큐 리시버 */
 	go notification.PushSendJob()         // 알기 작성 알림 푸시 리시버
 	go notification.GenerateAIReportJob() // AI 리포트 생성 리시버

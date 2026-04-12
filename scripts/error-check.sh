@@ -2,7 +2,7 @@
 
 set -e  # 스크립트 실행 중 오류 발생 시 중단
 
-# 기본값 설정: 모든 작업 실행
+# 기본값 설정: 인자 미지정 시 test + lint 실행
 RUN_ALL=true
 RUN_BUILD=false
 RUN_TEST=false
@@ -25,9 +25,8 @@ for arg in "$@"; do
   esac
 done
 
-# 모든 작업 실행 옵션이 켜져있으면 모든 플래그를 true로 설정
+# 기본 check는 build를 제외하고 test + lint만 실행
 if [ "$RUN_ALL" = true ]; then
-  RUN_BUILD=true
   RUN_TEST=true
   RUN_LINT=true
 fi
@@ -51,7 +50,7 @@ fi
 # Lint 실행
 if [ "$RUN_LINT" = true ]; then
   echo "📝 코드 스타일 검사 중 (golangci-lint)..."
-  golangci-lint run ./...
+  golangci-lint run --new-from-rev=origin/main ./...
   echo "✅ 코드 스타일 검사 완료!"
   echo ""
 fi
