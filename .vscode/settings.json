@@ -5,6 +5,7 @@
   "explorer.fileNesting.patterns": {
     "go.mod": "go.sum",
     "pocketbase": "pocketbase*",
+    "*.go": "${capture}_test.go",
     ".env": ".gitignore, .golangci.yml, .prettierignore, .prettierrc.js, model.conf, tailwind.config.js, tailwind-sorter.toml, firebase.json, .firebaserc, .editorconfig"
   },
   "files.exclude": {
@@ -16,30 +17,20 @@
   },
 
   /* Shoelace [ON] */
-  "html.customData": [
-    "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
-  ],
-  "css.styleSheets": ["**/style.css"],
-  "tailwindCSS.includeLanguages": {
-    "templ": "html"
-  },
+  // "html.customData": [
+  //   "./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"
+  // ],
+  // "css.styleSheets": ["**/style.css"],
+  // "tailwindCSS.includeLanguages": {
+  //   "templ": "html"
+  // },
 
   /* Beer [ON] */
-  // "css.styleSheets": ["shared/static/lib/beer.min.css", "**/style.css"]
+  "css.styleSheets": ["shared/static/lib/beer.min.css", "**/style.css"],
 
   /* Bulma [ON] */
   // "css.styleSheets": ["shared/static/lib/bulma.min.css", "**/style.css"]
 
-  "runConfigurations.configurations": [
-    {
-      "id": "config-1767080584219-7a4k76bv8",
-      "name": "air",
-      "command": "air",
-      "args": "",
-      "env": {},
-      "cwd": "${workspaceFolder}"
-    }
-  ],
   "dbcode.connections": [
     {
       "connectionId": "wmSzgsidUkFjwL7FAEAaK",
