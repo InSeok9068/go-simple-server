@@ -19,7 +19,8 @@ jobs:
 
       # 2. 서비스명 환경변수 저장
       - name: Extract Release Name
-        run: echo "SERVICE_NAME=$(echo ${GITHUB_REF#refs/heads/release/})" >> $GITHUB_ENV
+        run: echo "SERVICE_NAME=$(echo ${GITHUB_REF#refs/heads/release/})" >>
+          $GITHUB_ENV
 
       # 3. .env 환경변수 파일 생성
       - name: Generate .env File
@@ -38,7 +39,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.25
+          go-version: 1.26
 
       # 5. Tailwindcss CLI 설치
       - name: Install Tailwindcss CLI Dependencies
@@ -129,7 +130,9 @@ jobs:
       # 12. 커밋 메시지 준비 (텔레그램 메시지 길이 제한 해결)
       - name: Prepare Commit Message
         id: prep_commit
-        run: echo "commit_message=$(echo "${{ github.event.head_commit.message }}" | head -n 1 | cut -c -200)" >> $GITHUB_OUTPUT
+        run:
+          echo "commit_message=$(echo "${{ github.event.head_commit.message }}" |
+          head -n 1 | cut -c -200)" >> $GITHUB_OUTPUT
 
       # 13-1. 빌드 성공 메세지 발송
       - name: Send Build Success
