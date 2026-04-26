@@ -80,7 +80,7 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 
 		sess.Options = &sessions.Options{
 			Path:     "/",
-			MaxAge:   86400 * 7,
+			MaxAge:   86400 * 30,
 			HttpOnly: true,
 			Secure:   config.IsProdEnv(),
 			SameSite: http.SameSiteLaxMode,
