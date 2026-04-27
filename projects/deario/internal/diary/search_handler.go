@@ -13,6 +13,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+const (
+	searchSnippetPrefixLen   = 3
+	searchSnippetSuffixLen   = 4
+	searchSnippetFallbackLen = 15
+)
+
 // SearchDiaries는 내용에서 키워드를 검색해 일기 목록을 반환한다.
 func SearchDiaries(c echo.Context) error {
 	uid, err := authutil.SessionUID(c)
@@ -58,8 +64,8 @@ func snippetNodes(content, keyword string) components.SearchResultSnippet {
 	contentRuneLen := len(contentRunes)
 
 	if byteIndex == -1 {
-		if contentRuneLen > 20 {
-			return components.SearchResultSnippet{Prefix: string(contentRunes[:20]) + "..."}
+		if contentRuneLen > searchSnippetFallbackLen {
+			return components.SearchResultSnippet{Prefix: string(contentRunes[:searchSnippetFallbackLen]) + "..."}
 		}
 		return components.SearchResultSnippet{Prefix: content}
 	}
@@ -67,11 +73,11 @@ func snippetNodes(content, keyword string) components.SearchResultSnippet {
 	runeIndex := utf8.RuneCountInString(lowerContent[:byteIndex])
 	keywordRuneLen := len([]rune(keyword))
 
-	startRune := runeIndex - 5
+	startRune := runeIndex - searchSnippetPrefixLen
 	if startRune < 0 {
 		startRune = 0
 	}
-	endRune := runeIndex + keywordRuneLen + 5
+	endRune := runeIndex + keywordRuneLen + searchSnippetSuffixLen
 	if endRune > contentRuneLen {
 		endRune = contentRuneLen
 	}
