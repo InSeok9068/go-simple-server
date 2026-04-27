@@ -52,13 +52,13 @@ templ CbtDialog() {
 	</dialog>
 }
 
-templ AiFeedbackDialog(date string) {
+templ AiFeedbackDialog(date string, hasAIData bool) {
 	<dialog id="ai-feedback-dialog" class="max">
 		<h5>일기 요정</h5>
 		<form
 			hx-post="/ai-feedback/save?"
 			hx-swap="none"
-			hx-on:htmx:after-on-load="if (event.detail.successful) closeModal('#ai-feedback-dialog'); showInfo('저장 되었습니다.')"
+			data-deario-after="ai-feedback:saved"
 		>
 			<input type="hidden" name="date" value={ date }/>
 			<div id="ai-feedback-content">
@@ -66,14 +66,32 @@ templ AiFeedbackDialog(date string) {
 				<textarea name="ai-feedback" hidden></textarea>
 			</div>
 			<nav class="right-align">
+				@AiFeedbackDeleteButton(date, !hasAIData)
 				<button type="submit">
 					<i>save</i>
 					<span>저장</span>
 				</button>
-				<button type="button" class="surface-variant" onclick="closeModal('#ai-feedback-dialog')">닫기</button>
+				<button type="button" class="surface-variant" data-ui="#ai-feedback-dialog">닫기</button>
 			</nav>
 		</form>
 	</dialog>
+}
+
+templ AiFeedbackDeleteButton(date string, hidden bool) {
+	<button
+		id="ai-feedback-delete-action"
+		class="error"
+		type="button"
+		hidden?={ hidden }
+		hx-delete="/ai-feedback"
+		hx-swap="none"
+		hx-confirm="저장된 일기요정을 삭제할까요?"
+		hx-vals={ fmt.Sprintf("{\"date\":\"%s\"}", date) }
+		data-deario-after="ai-feedback:deleted"
+	>
+		<i>delete</i>
+		<span>삭제</span>
+	</button>
 }
 
 templ CalendarDialog(date string) {
@@ -95,11 +113,11 @@ templ DiaryImageDialog(date string) {
 		<button>
 			<i>attach_file</i>
 			File
-			<input type="file" accept="image/*" id="diary-image-file" onchange="previewDiaryImage(this)"/>
+			<input type="file" accept="image/*" id="diary-image-file" data-deario-image-preview/>
 		</button>
 		<nav class="right-align">
 			<img id="diary-image-loading" src="/shared/static/spinner.svg" style="display:none" alt="로딩"/>
-			<button type="button" onclick={ templ.JSFuncCall("uploadDiaryImage", date) }>업로드</button>
+			<button type="button" data-deario-image-upload data-date={ date }>업로드</button>
 			<button class="surface-variant" type="button" data-ui="#diary-image-dialog">닫기</button>
 		</nav>
 	</dialog>

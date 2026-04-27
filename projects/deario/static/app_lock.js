@@ -7,6 +7,16 @@
   let suppressLockUntil = 0
   let lockInFlight = false
 
+  document.addEventListener("htmx:afterOnLoad", handleAppLockAfterOnLoad)
+
+  function handleAppLockAfterOnLoad(event) {
+    const source =
+      event.detail.elt || event.detail.requestConfig?.elt || event.target
+    if (source instanceof Element && source.dataset.appLockAfter === "logout") {
+      location.href = "/login"
+    }
+  }
+
   function now() {
     return Date.now()
   }

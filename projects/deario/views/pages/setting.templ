@@ -23,7 +23,7 @@ templ Setting(userSetting db.UserSetting) {
 			@shared.Snackbar()
 			@layout.AppHeader()
 			<main class="responsive">
-				<form hx-post="/setting" hx-swap="none" hx-on:htmx:after-on-load="showInfo('저장 되었습니다.')">
+				<form hx-post="/setting" hx-swap="none" data-deario-after="toast" data-deario-message="저장 되었습니다.">
 					<fieldset>
 						<legend>설정</legend>
 						<nav>알림</nav>

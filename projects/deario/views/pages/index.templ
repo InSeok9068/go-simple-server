@@ -6,7 +6,7 @@ import (
 	shared "simple-server/shared/views"
 )
 
-templ Index(title string, date string, mood string) {
+templ Index(title string, date string, mood string, hasAIData bool, hasImageData bool) {
 	<!DOCTYPE html>
 	<html lang="ko">
 		<head>
@@ -35,11 +35,11 @@ templ Index(title string, date string, mood string) {
 				</form>
 				@components.DiaryContentForm(date, "")
 				@components.MoodSection(date, mood)
-				@components.FeedbackActions(date)
+				@components.FeedbackActions(date, hasAIData, hasImageData)
 			</main>
 			@components.BottomNavigation()
 			@components.CbtDialog()
-			@components.AiFeedbackDialog(date)
+			@components.AiFeedbackDialog(date, hasAIData)
 			@components.CalendarDialog(date)
 			@components.DiaryImageDialog(date)
 			@components.DiaryListDialog()

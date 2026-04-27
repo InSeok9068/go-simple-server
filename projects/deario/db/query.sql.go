@@ -10,39 +10,6 @@ import (
 	"database/sql"
 )
 
-const createDiary = `-- name: CreateDiary :one
-INSERT INTO
-    diary (uid, content, date)
-VALUES
-    (?, ?, ?) RETURNING id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
-`
-
-type CreateDiaryParams struct {
-	Uid     string
-	Content string
-	Date    string
-}
-
-func (q *Queries) CreateDiary(ctx context.Context, arg CreateDiaryParams) (Diary, error) {
-	row := q.db.QueryRowContext(ctx, createDiary, arg.Uid, arg.Content, arg.Date)
-	var i Diary
-	err := row.Scan(
-		&i.ID,
-		&i.Uid,
-		&i.Date,
-		&i.Content,
-		&i.AiFeedback,
-		&i.AiImage,
-		&i.Created,
-		&i.Updated,
-		&i.Mood,
-		&i.ImageUrl1,
-		&i.ImageUrl2,
-		&i.ImageUrl3,
-	)
-	return i, err
-}
-
 const createUser = `-- name: CreateUser :exec
 INSERT INTO
     user (uid, name, email)
@@ -662,6 +629,43 @@ type UpdateDiaryOfMoodParams struct {
 func (q *Queries) UpdateDiaryOfMood(ctx context.Context, arg UpdateDiaryOfMoodParams) error {
 	_, err := q.db.ExecContext(ctx, updateDiaryOfMood, arg.Mood, arg.ID)
 	return err
+}
+
+const upsertDiaryContent = `-- name: UpsertDiaryContent :one
+INSERT INTO
+    diary (uid, content, date)
+VALUES
+    (?, ?, ?) ON CONFLICT (uid, date) DO
+UPDATE
+SET
+    content = excluded.content,
+    updated = datetime ('now') RETURNING id, uid, date, content, ai_feedback, ai_image, created, updated, mood, image_url1, image_url2, image_url3
+`
+
+type UpsertDiaryContentParams struct {
+	Uid     string
+	Content string
+	Date    string
+}
+
+func (q *Queries) UpsertDiaryContent(ctx context.Context, arg UpsertDiaryContentParams) (Diary, error) {
+	row := q.db.QueryRowContext(ctx, upsertDiaryContent, arg.Uid, arg.Content, arg.Date)
+	var i Diary
+	err := row.Scan(
+		&i.ID,
+		&i.Uid,
+		&i.Date,
+		&i.Content,
+		&i.AiFeedback,
+		&i.AiImage,
+		&i.Created,
+		&i.Updated,
+		&i.Mood,
+		&i.ImageUrl1,
+		&i.ImageUrl2,
+		&i.ImageUrl3,
+	)
+	return i, err
 }
 
 const upsertPushKey = `-- name: UpsertPushKey :exec

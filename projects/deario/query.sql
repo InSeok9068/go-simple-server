@@ -63,11 +63,15 @@ ORDER BY
 LIMIT
     20;
 
--- name: CreateDiary :one
+-- name: UpsertDiaryContent :one
 INSERT INTO
     diary (uid, content, date)
 VALUES
-    (?, ?, ?) RETURNING *;
+    (?, ?, ?) ON CONFLICT (uid, date) DO
+UPDATE
+SET
+    content = excluded.content,
+    updated = datetime ('now') RETURNING *;
 
 -- name: UpdateDiary :one
 UPDATE diary

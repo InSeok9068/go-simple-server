@@ -42,7 +42,7 @@ templ AppLock() {
 							</button>
 						</nav>
 					</form>
-					<form hx-post="/logout" hx-swap="none" hx-on:htmx:after-on-load="location.href='/login'">
+					<form hx-post="/logout" hx-swap="none" data-app-lock-after="logout">
 						<nav class="right-align">
 							<button type="submit" class="surface-variant">
 								<i>logout</i>

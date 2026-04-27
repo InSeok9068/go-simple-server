@@ -1,74 +1,77 @@
-console.log("statistic page loaded")
+;(function () {
+  const moodSets = [
+    { label: "😁", key: "mood1", color: "#ffeb3b" },
+    { label: "🙂", key: "mood2", color: "#8bc34a" },
+    { label: "😐", key: "mood3", color: "#03a9f4" },
+    { label: "😣", key: "mood4", color: "#ff9800" },
+    { label: "😭", key: "mood5", color: "#f44336" },
+  ]
 
-const moodIcons = ["", "😁", "🙂", "😐", "😣", "😭"]
+  document.addEventListener("DOMContentLoaded", initStatisticPage)
 
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("/statistic/data")
-    .then((res) => res.json())
-    .then((data) => {
-      const formattedMonths = data.months.map((monthStr) => {
-        const year = monthStr.substring(2, 4)
-        const month = parseInt(monthStr.substring(4, 6), 10)
-        return `${year}년 ${month}월`
-      })
+  async function initStatisticPage() {
+    const countChart = document.getElementById("countChart")
+    const moodChart = document.getElementById("moodStackChart")
+    if (!countChart || !moodChart) return
 
-      const countCtx = document.getElementById("countChart").getContext("2d")
-      new Chart(countCtx, {
-        type: "bar",
-        data: {
-          labels: formattedMonths,
-          datasets: [
-            {
-              label: "작성 수",
-              data: data.diaryCount,
-              backgroundColor: "rgba(33,150,243,0.5)",
-            },
-          ],
-        },
-      })
+    try {
+      const data = await fetchStatisticData()
+      const labels = data.months.map(formatMonth)
 
-      const stackCtx = document
-        .getElementById("moodStackChart")
-        .getContext("2d")
-      new Chart(stackCtx, {
-        type: "bar",
-        data: {
-          labels: formattedMonths,
-          datasets: [
-            {
-              label: `${moodIcons[1]}`,
-              data: data.mood1,
-              backgroundColor: "#ffeb3b",
-            },
-            {
-              label: `${moodIcons[2]}`,
-              data: data.mood2,
-              backgroundColor: "#8bc34a",
-            },
-            {
-              label: `${moodIcons[3]}`,
-              data: data.mood3,
-              backgroundColor: "#03a9f4",
-            },
-            {
-              label: `${moodIcons[4]}`,
-              data: data.mood4,
-              backgroundColor: "#ff9800",
-            },
-            {
-              label: `${moodIcons[5]}`,
-              data: data.mood5,
-              backgroundColor: "#f44336",
-            },
-          ],
-        },
-        options: {
-          scales: {
-            x: { stacked: true },
-            y: { stacked: true, beginAtZero: true },
+      renderDiaryCountChart(countChart, labels, data)
+      renderMoodStackChart(moodChart, labels, data)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function fetchStatisticData() {
+    const response = await fetch("/statistic/data")
+    if (!response.ok) {
+      throw new Error("통계 데이터를 불러오지 못했습니다.")
+    }
+    return response.json()
+  }
+
+  function renderDiaryCountChart(canvas, labels, data) {
+    new Chart(canvas.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "작성 수",
+            data: data.diaryCount,
+            backgroundColor: "rgba(33,150,243,0.5)",
           },
-        },
-      })
+        ],
+      },
     })
-    .catch((err) => console.error(err))
-})
+  }
+
+  function renderMoodStackChart(canvas, labels, data) {
+    new Chart(canvas.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: moodSets.map((mood) => ({
+          label: mood.label,
+          data: data[mood.key],
+          backgroundColor: mood.color,
+        })),
+      },
+      options: {
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, beginAtZero: true },
+        },
+      },
+    })
+  }
+
+  function formatMonth(monthStr) {
+    const year = monthStr.substring(2, 4)
+    const month = parseInt(monthStr.substring(4, 6), 10)
+    return `${year}년 ${month}월`
+  }
+})()

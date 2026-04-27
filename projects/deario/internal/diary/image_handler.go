@@ -118,6 +118,12 @@ func DeleteDiaryImage(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	if diary.Content == "" && !hasDiaryLinkedData(diary) {
+		if err := queries.DeleteDiary(c.Request().Context(), diary.ID); err != nil {
+			return err
+		}
+		return components.DiaryImages(date, "", "", "").Render(c.Request().Context(), c.Response().Writer)
+	}
 
 	if err := queries.UpdateDiaryImages(c.Request().Context(), db.UpdateDiaryImagesParams{
 		ImageUrl1: diary.ImageUrl1,

@@ -25,6 +25,21 @@ func diaryMood(d db.Diary, err error) string {
 	return "0"
 }
 
+// hasDiaryAIData는 저장된 일기요정 데이터가 있는지 확인한다.
+func hasDiaryAIData(d db.Diary) bool {
+	return d.AiFeedback != "" || d.AiImage != ""
+}
+
+// hasDiaryImageData는 저장된 이미지 연결이 있는지 확인한다.
+func hasDiaryImageData(d db.Diary) bool {
+	return d.ImageUrl1 != "" || d.ImageUrl2 != "" || d.ImageUrl3 != ""
+}
+
+// hasDiaryLinkedData는 본문 외에 보존할 연결 데이터가 있는지 확인한다.
+func hasDiaryLinkedData(d db.Diary) bool {
+	return hasDiaryAIData(d) || hasDiaryImageData(d)
+}
+
 // firstEmptyImageSlot은 비어 있는 이미지 슬롯을 찾는다.
 func firstEmptyImageSlot(d db.Diary) (int, bool) {
 	slots := []string{d.ImageUrl1, d.ImageUrl2, d.ImageUrl3}
