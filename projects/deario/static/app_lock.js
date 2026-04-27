@@ -5,7 +5,6 @@
   const TEMPORARY_SUPPRESS_MS = 60000
 
   let suppressLockUntil = 0
-  let lockTimer = null
   let lockInFlight = false
 
   function now() {
@@ -69,7 +68,6 @@
         method: "POST",
         headers: { "X-CSRF-Token": csrfToken() },
         credentials: "same-origin",
-        keepalive: true,
       })
       const redirectTo = response.headers.get("Hx-Redirect")
 
@@ -104,18 +102,9 @@
 
     sessionStorage.setItem(HIDDEN_AT_KEY, String(now()))
     applyPrivacyMask()
-    clearTimeout(lockTimer)
-
-    lockTimer = setTimeout(() => {
-      if (document.visibilityState === "hidden" && !shouldSkipLock()) {
-        requestLock(false)
-      }
-    }, LOCK_AFTER_MS)
   }
 
   function lockIfNeededOnReturn() {
-    clearTimeout(lockTimer)
-
     const hiddenAt = Number(sessionStorage.getItem(HIDDEN_AT_KEY) || "0")
     const alreadyRequested = sessionStorage.getItem(LOCK_REQUESTED_KEY) === "1"
 
