@@ -18,6 +18,20 @@ body {
   border-radius: 50%;
 }
 
+.diary-data-dot::before {
+  content: "";
+  position: absolute;
+  top: -0.12rem;
+  right: -0.12rem;
+  z-index: 2;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--error);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.12rem var(--surface);
+  pointer-events: none;
+}
+
 .microphone {
   position: absolute;
   right: 10px;

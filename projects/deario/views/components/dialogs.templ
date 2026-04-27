@@ -52,13 +52,13 @@ templ CbtDialog() {
 	</dialog>
 }
 
-templ AiFeedbackDialog(date string) {
+templ AiFeedbackDialog(date string, hasAIData bool) {
 	<dialog id="ai-feedback-dialog" class="max">
 		<h5>일기 요정</h5>
 		<form
 			hx-post="/ai-feedback/save?"
 			hx-swap="none"
-			hx-on:htmx:after-on-load="if (event.detail.successful) closeModal('#ai-feedback-dialog'); showInfo('저장 되었습니다.')"
+			hx-on:htmx:after-on-load="if (event.detail.successful) onAiFeedbackSaved()"
 		>
 			<input type="hidden" name="date" value={ date }/>
 			<div id="ai-feedback-content">
@@ -66,6 +66,7 @@ templ AiFeedbackDialog(date string) {
 				<textarea name="ai-feedback" hidden></textarea>
 			</div>
 			<nav class="right-align">
+				@AiFeedbackDeleteButton(date, !hasAIData)
 				<button type="submit">
 					<i>save</i>
 					<span>저장</span>
@@ -74,6 +75,23 @@ templ AiFeedbackDialog(date string) {
 			</nav>
 		</form>
 	</dialog>
+}
+
+templ AiFeedbackDeleteButton(date string, hidden bool) {
+	<button
+		id="ai-feedback-delete-action"
+		class="error"
+		type="button"
+		hidden?={ hidden }
+		hx-delete="/ai-feedback"
+		hx-swap="none"
+		hx-confirm="저장된 일기요정을 삭제할까요?"
+		hx-vals={ fmt.Sprintf("{\"date\":\"%s\"}", date) }
+		hx-on:htmx:after-on-load="if (event.detail.successful) onAiFeedbackDeleted()"
+	>
+		<i>delete</i>
+		<span>삭제</span>
+	</button>
 }
 
 templ CalendarDialog(date string) {

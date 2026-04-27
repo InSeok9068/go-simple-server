@@ -86,20 +86,28 @@ templ MoodSection(date string, mood string) {
 	</nav>
 }
 
-templ FeedbackActions(date string) {
+templ FeedbackActions(date string, hasAIData bool, hasImageData bool) {
 	<nav>
 		<button class="chip" data-ui="#cbt-dialog">
 			<i>psychology_alt</i>
 			CBT
 		</button>
-		<button class="chip" data-ui="#diary-image-dialog">
+		<button
+			id="diary-image-action"
+			class={ "chip", templ.KV("diary-data-dot", hasImageData) }
+			data-ui="#diary-image-dialog"
+		>
 			<i>image</i>
 			이미지
 		</button>
 		<div class="max"></div>
 		<img id="feedback-loading" class="htmx-indicator" src="/shared/static/spinner.svg" alt="로딩"/>
 		<nav class="min active">
-			<button data-ui="#ai-feedback">
+			<button
+				id="ai-feedback-action"
+				class={ templ.KV("diary-data-dot", hasAIData) }
+				data-ui="#ai-feedback"
+			>
 				<span>일기요정</span>
 			</button>
 			<menu class="right-align top group no-wrap left large-space" id="ai-feedback">

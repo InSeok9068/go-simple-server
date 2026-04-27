@@ -25,6 +25,60 @@ function showAiFeedback() {
   showModal("#ai-feedback-dialog")
 }
 
+function setDiaryDataDot(selector, hasData) {
+  const action = document.querySelector(selector)
+  if (!action) return
+
+  action.classList.toggle("diary-data-dot", hasData)
+}
+
+function setAiFeedbackDataState(hasData) {
+  setDiaryDataDot("#ai-feedback-action", hasData)
+
+  const deleteAction = document.getElementById("ai-feedback-delete-action")
+  if (deleteAction) {
+    deleteAction.hidden = !hasData
+  }
+}
+
+function onAiFeedbackSaved() {
+  setAiFeedbackDataState(true)
+  closeModal("#ai-feedback-dialog")
+  showInfo("저장 되었습니다.")
+}
+
+function onAiFeedbackDeleted() {
+  setAiFeedbackDataState(false)
+  resetAiFeedbackContent()
+  closeModal("#ai-feedback-dialog")
+  showInfo("삭제되었습니다.")
+}
+
+function resetAiFeedbackContent() {
+  const content = document.getElementById("ai-feedback-content")
+  if (!content) return
+
+  content.innerHTML =
+    '<div id="ai-feedback-markdown"></div><textarea name="ai-feedback" hidden></textarea>'
+}
+
+function syncDiaryImageState() {
+  const content = document.getElementById("diary-image-content")
+  if (!content) return
+
+  setDiaryDataDot("#diary-image-action", Boolean(content.querySelector("img")))
+}
+
+document.addEventListener("htmx:afterSwap", (event) => {
+  const target = event.detail.target
+  if (
+    target?.id === "diary-image-content" ||
+    target?.querySelector?.("#diary-image-content")
+  ) {
+    syncDiaryImageState()
+  }
+})
+
 /**
  * 이전/다음 페이지 스와이프 핸들러를 등록합니다.
  */
