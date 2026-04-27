@@ -12,7 +12,7 @@ templ AppHeader() {
 			<a id="login" href="/login" x-data="" x-show="!$store.auth.isAuthed">
 				로그인
 			</a>
-			<a id="logout" href="#" x-data="" x-show="$store.auth.isAuthed" onclick="logoutUser()">
+			<a id="logout" href="#" x-data="" x-show="$store.auth.isAuthed" data-deario-logout>
 				로그아웃
 			</a>
 		</nav>
