@@ -26,12 +26,23 @@
   }
 
   function shouldSkipLock() {
-    const path = location.pathname
     return (
-      path === "/login" ||
-      path === "/app-lock" ||
+      isAppLockPage() ||
+      location.pathname === "/login" ||
       now() < suppressLockUntil
     )
+  }
+
+  function isAppLockPage() {
+    return (
+      location.pathname === "/app-lock" ||
+      document.body?.dataset.appLockPage === "true"
+    )
+  }
+
+  function clearLockMarkers() {
+    sessionStorage.removeItem(HIDDEN_AT_KEY)
+    sessionStorage.removeItem(LOCK_REQUESTED_KEY)
   }
 
   function applyPrivacyMask() {
@@ -68,12 +79,13 @@
       }
 
       if (redirectOnLock && redirectTo) {
+        clearLockMarkers()
         location.href = redirectTo
         return
       }
 
       if (redirectOnLock) {
-        sessionStorage.removeItem(LOCK_REQUESTED_KEY)
+        clearLockMarkers()
         clearPrivacyMask()
       }
     } catch {
@@ -105,8 +117,7 @@
     clearTimeout(lockTimer)
 
     const hiddenAt = Number(sessionStorage.getItem(HIDDEN_AT_KEY) || "0")
-    const alreadyRequested =
-      sessionStorage.getItem(LOCK_REQUESTED_KEY) === "1"
+    const alreadyRequested = sessionStorage.getItem(LOCK_REQUESTED_KEY) === "1"
 
     sessionStorage.removeItem(HIDDEN_AT_KEY)
 
@@ -115,13 +126,22 @@
       return
     }
 
-    if (alreadyRequested || (hiddenAt > 0 && now() - hiddenAt >= LOCK_AFTER_MS)) {
+    if (
+      alreadyRequested ||
+      (hiddenAt > 0 && now() - hiddenAt >= LOCK_AFTER_MS)
+    ) {
       applyPrivacyMask()
       requestLock(true)
       return
     }
 
     clearPrivacyMask()
+  }
+
+  if (isAppLockPage()) {
+    clearLockMarkers()
+    clearPrivacyMask()
+    return
   }
 
   document.addEventListener(
@@ -136,7 +156,6 @@
         suppressLockTemporarily()
         return
       }
-
     },
     true,
   )

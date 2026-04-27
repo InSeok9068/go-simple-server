@@ -10,7 +10,7 @@ templ AppLock() {
 			@shared.HeadsWithGoogleFonts("Gamja Flower")
 			<link rel="manifest" href="/manifest.json"/>
 		</head>
-		<body>
+		<body data-app-lock-page="true">
 			@shared.Snackbar()
 			<main class="responsive app-lock-page">
 				<section class="app-lock-panel">
@@ -47,6 +47,7 @@ templ AppLock() {
 					</form>
 				</section>
 			</main>
+			<script src="/static/app_lock.js"></script>
 		</body>
 	</html>
 }
