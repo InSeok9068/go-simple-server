@@ -43,11 +43,13 @@ type User struct {
 }
 
 type UserSetting struct {
-	Uid         string
-	IsPush      int64
-	PushToken   string
-	PushTime    string
-	RandomRange int64
-	Created     sql.NullString
-	Updated     sql.NullString
+	Uid            string
+	IsPush         int64
+	PushToken      string
+	PushTime       string
+	RandomRange    int64
+	Created        sql.NullString
+	Updated        sql.NullString
+	AppLockEnabled int64
+	AppLockPinHash string
 }

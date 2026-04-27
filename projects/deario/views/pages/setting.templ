@@ -42,6 +42,110 @@ templ Setting(userSetting db.UserSetting) {
 							<input type="number" name="random_range" value={ fmt.Sprintf("%d", userSetting.RandomRange) }/>
 							<label>랜덤일자</label>
 						</div>
+						<nav>앱 잠금</nav>
+						if userSetting.AppLockEnabled == 1 {
+							<div class="chip primary">
+								<i>lock</i>
+								<span>PIN 잠금 켜짐</span>
+							</div>
+							<div class="border field label">
+								<input
+									type="password"
+									name="current_pin"
+									inputmode="numeric"
+									pattern="[0-9]*"
+									minlength="4"
+									maxlength="6"
+									autocomplete="current-password"
+									form="app-lock-pin-form"
+								/>
+								<label>현재 PIN</label>
+							</div>
+							<div class="border field label">
+								<input
+									type="password"
+									name="pin"
+									inputmode="numeric"
+									pattern="[0-9]*"
+									minlength="4"
+									maxlength="6"
+									autocomplete="new-password"
+									form="app-lock-pin-form"
+								/>
+								<label>새 PIN</label>
+							</div>
+							<div class="border field label">
+								<input
+									type="password"
+									name="pin_confirm"
+									inputmode="numeric"
+									pattern="[0-9]*"
+									minlength="4"
+									maxlength="6"
+									autocomplete="new-password"
+									form="app-lock-pin-form"
+								/>
+								<label>PIN 확인</label>
+							</div>
+							<nav class="right-align">
+								<button type="submit" form="app-lock-pin-form">
+									<i>vpn_key</i>
+									<span>PIN 변경</span>
+								</button>
+							</nav>
+							<div class="border field label">
+								<input
+									type="password"
+									name="current_pin"
+									inputmode="numeric"
+									pattern="[0-9]*"
+									minlength="4"
+									maxlength="6"
+									autocomplete="current-password"
+									form="app-lock-disable-form"
+								/>
+								<label>현재 PIN</label>
+							</div>
+							<nav class="right-align">
+								<button type="submit" class="surface-variant" form="app-lock-disable-form">
+									<i>lock_open</i>
+									<span>잠금 끄기</span>
+								</button>
+							</nav>
+						} else {
+							<div class="border field label">
+								<input
+									type="password"
+									name="pin"
+									inputmode="numeric"
+									pattern="[0-9]*"
+									minlength="4"
+									maxlength="6"
+									autocomplete="new-password"
+									form="app-lock-pin-form"
+								/>
+								<label>새 PIN</label>
+							</div>
+							<div class="border field label">
+								<input
+									type="password"
+									name="pin_confirm"
+									inputmode="numeric"
+									pattern="[0-9]*"
+									minlength="4"
+									maxlength="6"
+									autocomplete="new-password"
+									form="app-lock-pin-form"
+								/>
+								<label>PIN 확인</label>
+							</div>
+							<nav class="right-align">
+								<button type="submit" form="app-lock-pin-form">
+									<i>lock</i>
+									<span>잠금 켜기</span>
+								</button>
+							</nav>
+						}
 						<nav>테마</nav>
 						<label class="switch icon">
 							<input type="checkbox" x-data="" x-bind:checked="$store.theme.value === 'dark'" x-on:change="$store.theme.toggle()"/>
@@ -79,6 +183,8 @@ templ Setting(userSetting db.UserSetting) {
 						</nav>
 					</fieldset>
 				</form>
+				<form id="app-lock-pin-form" hx-post="/app-lock/pin" hx-swap="none"></form>
+				<form id="app-lock-disable-form" hx-post="/app-lock/disable" hx-swap="none"></form>
 			</main>
 		</body>
 	</html>

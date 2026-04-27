@@ -176,7 +176,7 @@ func (q *Queries) GetUser(ctx context.Context, uid string) (User, error) {
 
 const getUserSetting = `-- name: GetUserSetting :one
 SELECT
-    uid, is_push, push_token, push_time, random_range, created, updated
+    uid, is_push, push_token, push_time, random_range, created, updated, app_lock_enabled, app_lock_pin_hash
 FROM
     user_setting
 WHERE
@@ -196,6 +196,8 @@ func (q *Queries) GetUserSetting(ctx context.Context, uid string) (UserSetting, 
 		&i.RandomRange,
 		&i.Created,
 		&i.Updated,
+		&i.AppLockEnabled,
+		&i.AppLockPinHash,
 	)
 	return i, err
 }
@@ -537,6 +539,27 @@ func (q *Queries) SearchDiarys(ctx context.Context, arg SearchDiarysParams) ([]S
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateAppLock = `-- name: UpdateAppLock :exec
+UPDATE user_setting
+SET
+    app_lock_enabled = ?,
+    app_lock_pin_hash = ?,
+    updated = datetime ('now')
+WHERE
+    uid = ?
+`
+
+type UpdateAppLockParams struct {
+	AppLockEnabled int64
+	AppLockPinHash string
+	Uid            string
+}
+
+func (q *Queries) UpdateAppLock(ctx context.Context, arg UpdateAppLockParams) error {
+	_, err := q.db.ExecContext(ctx, updateAppLock, arg.AppLockEnabled, arg.AppLockPinHash, arg.Uid)
+	return err
 }
 
 const updateDiary = `-- name: UpdateDiary :one

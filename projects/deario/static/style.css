@@ -29,6 +29,16 @@ body {
   gap: 0.8rem;
 }
 
+.app-lock-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+}
+
+.app-lock-panel {
+  width: min(100%, 24rem);
+}
+
 /* List.js Pagination BeerCSS 스타일 적용 */
 ul.pagination {
   list-style: none;
