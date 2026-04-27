@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"strings"
 
 	aiclient "simple-server/internal/ai"
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
+	"simple-server/projects/deario/internal/deariodate"
 	"simple-server/projects/deario/internal/notification"
 	"simple-server/projects/deario/views/components"
 
@@ -33,29 +33,9 @@ func GenerateAIFeedback(c echo.Context) error {
 
 	slog.Debug("AI 피드백", "user", uid, "content", content, "type", typeValue)
 
-	var typeStr string
-	switch typeValue {
-	case "1":
-		typeStr = "칭찬을 해줘"
-	case "2":
-		typeStr = "위로를 해줘"
-	case "3":
-		typeStr = "충고를 해줘"
-	case "4":
-		typeStr = `
-							Create a vertical (1x4) comic strip in a single image
-							The image should contain 4 equal rectangular panels arranged vertically from top to bottom.
-
-							Requirements
-							- Divide a single image into 4 equal vertical rectangular panels, arranged from top to bottom (1x4 layout).
-							- Use only visual storytelling — composition, colors, lighting, and facial expressions should convey the story and emotions.
-							- No text, captions, speech bubbles, signs, or any written language at all.
-							- Maintain visual consistency across all panels.
-							- Each panel should focus on one meaningful moment or emotion.
-							- Image size: height 700px, width 320px.
-							- The four panels together must tell a complete story.
-							- The story should have a clear beginning (introduction), development, conflict or change, and resolution.
-							- The situation or emotion should be simple, relatable, and easy to understand without words.`
+	typeStr, err := aiFeedbackInstruction(typeValue)
+	if err != nil {
+		return err
 	}
 
 	if typeValue == "4" {
@@ -95,7 +75,10 @@ func SaveAIFeedback(c echo.Context) error {
 		return err
 	}
 
-	date := c.FormValue("date")
+	date, err := deariodate.NormalizeRequired(c.FormValue("date"))
+	if err != nil {
+		return err
+	}
 	aiFeedback := c.FormValue("ai-feedback")
 	aiImage := c.FormValue("ai-image")
 
@@ -131,9 +114,9 @@ func DeleteAIFeedback(c echo.Context) error {
 		return err
 	}
 
-	date := strings.ReplaceAll(c.FormValue("date"), "-", "")
-	if date == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "날짜가 필요합니다.")
+	date, err := deariodate.NormalizeRequired(c.FormValue("date"))
+	if err != nil {
+		return err
 	}
 
 	queries, err := db.GetQueries()
@@ -179,7 +162,10 @@ func GetAIFeedback(c echo.Context) error {
 		return err
 	}
 
-	date := c.QueryParam("date")
+	date, err := deariodate.NormalizeRequired(c.QueryParam("date"))
+	if err != nil {
+		return err
+	}
 
 	queries, err := db.GetQueries()
 	if err != nil {
@@ -208,6 +194,34 @@ func GetAIFeedback(c echo.Context) error {
 
 func hasDiaryImageData(d db.Diary) bool {
 	return d.ImageUrl1 != "" || d.ImageUrl2 != "" || d.ImageUrl3 != ""
+}
+
+func aiFeedbackInstruction(typeValue string) (string, error) {
+	switch typeValue {
+	case "1":
+		return "칭찬을 해줘", nil
+	case "2":
+		return "위로를 해줘", nil
+	case "3":
+		return "충고를 해줘", nil
+	case "4":
+		return `
+							Create a vertical (1x4) comic strip in a single image
+							The image should contain 4 equal rectangular panels arranged vertically from top to bottom.
+
+							Requirements
+							- Divide a single image into 4 equal vertical rectangular panels, arranged from top to bottom (1x4 layout).
+							- Use only visual storytelling — composition, colors, lighting, and facial expressions should convey the story and emotions.
+							- No text, captions, speech bubbles, signs, or any written language at all.
+							- Maintain visual consistency across all panels.
+							- Each panel should focus on one meaningful moment or emotion.
+							- Image size: height 700px, width 320px.
+							- The four panels together must tell a complete story.
+							- The story should have a clear beginning (introduction), development, conflict or change, and resolution.
+							- The situation or emotion should be simple, relatable, and easy to understand without words.`, nil
+	default:
+		return "", echo.NewHTTPError(http.StatusBadRequest, "일기요정 요청 유형이 올바르지 않습니다.")
+	}
 }
 
 // GenerateAIReport AI 상담 리포트를 생성한다.

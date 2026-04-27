@@ -6,11 +6,10 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
-	"strings"
-	"time"
 
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
+	"simple-server/projects/deario/internal/deariodate"
 	"simple-server/projects/deario/views/components"
 
 	"github.com/labstack/echo/v4"
@@ -23,11 +22,10 @@ func DiaryImagesPage(c echo.Context) error {
 		return err
 	}
 
-	date := c.QueryParam("date")
-	if date == "" {
-		date = time.Now().Format("20060102")
+	date, err := deariodate.NormalizeWithDefault(c.QueryParam("date"))
+	if err != nil {
+		return err
 	}
-	date = strings.ReplaceAll(date, "-", "")
 
 	queries, err := db.GetQueries()
 	if err != nil {
@@ -56,10 +54,16 @@ func UploadDiaryImage(c echo.Context) error {
 		return err
 	}
 
-	date := normalizeDate(c.FormValue("date"))
+	date, err := deariodate.NormalizeRequired(c.FormValue("date"))
+	if err != nil {
+		return err
+	}
 	url := c.FormValue("url")
 	if url == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "URL이 필요합니다.")
+	}
+	if err := validateDiaryImageURL(c.Request().Context(), url, uid, date); err != nil {
+		return err
 	}
 
 	queries, err := db.GetQueries()
@@ -92,7 +96,10 @@ func DeleteDiaryImage(c echo.Context) error {
 		return err
 	}
 
-	date := normalizeDate(c.FormValue("date"))
+	date, err := deariodate.NormalizeRequired(c.FormValue("date"))
+	if err != nil {
+		return err
+	}
 	slotStr := c.FormValue("slot")
 	slot, err := strconv.Atoi(slotStr)
 	if err != nil {

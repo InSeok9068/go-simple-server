@@ -6,16 +6,22 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
-	"time"
 
+	"simple-server/internal/config"
 	"simple-server/internal/middleware"
 	"simple-server/pkg/util/firebaseutil"
 	"simple-server/projects/deario/db"
+	"simple-server/projects/deario/internal/deariodate"
 
 	"cloud.google.com/go/storage"
 	"github.com/labstack/echo/v4"
 )
+
+const defaultDiaryImageBucket = "warm-braid-383411.firebasestorage.app"
+
+var diaryImageFileNamePattern = regexp.MustCompile(`^\d+\.[A-Za-z0-9]+$`)
 
 // diaryMood는 일기에서 기분 값을 추출한다.
 func diaryMood(d db.Diary, err error) string {
@@ -51,12 +57,72 @@ func firstEmptyImageSlot(d db.Diary) (int, bool) {
 	return -1, false
 }
 
-// normalizeDate는 날짜 문자열을 YYYYMMDD 형식으로 변환한다.
-func normalizeDate(d string) string {
-	if d == "" {
-		return time.Now().Format("20060102")
+// validateDiaryImageURL은 클라이언트가 전달한 이미지 URL이 현재 사용자의 일기 이미지인지 확인한다.
+func validateDiaryImageURL(ctx context.Context, raw, uid, date string) error {
+	bucket, object, err := firebaseutil.ParseFirebaseURL(raw)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지 URL이 올바르지 않습니다.")
 	}
-	return strings.ReplaceAll(d, "-", "")
+
+	expectedBucket := config.GetEnvOrDefault("FIREBASE_STORAGE_BUCKET", defaultDiaryImageBucket)
+	if bucket != expectedBucket {
+		return echo.NewHTTPError(http.StatusBadRequest, "허용되지 않은 이미지 저장소입니다.")
+	}
+
+	if err := validateDiaryImageObjectPath(object, uid, date); err != nil {
+		return err
+	}
+
+	client, err := middleware.App.Storage(ctx)
+	if err != nil {
+		return fmt.Errorf("스토리지 클라이언트 생성 실패: %w", err)
+	}
+
+	b, err := client.Bucket(bucket)
+	if err != nil {
+		return fmt.Errorf("버킷 가져오기 실패: %w", err)
+	}
+
+	attrs, err := b.Object(object).Attrs(ctx)
+	if err != nil {
+		if errors.Is(err, storage.ErrObjectNotExist) {
+			return echo.NewHTTPError(http.StatusBadRequest, "이미지 파일을 찾을 수 없습니다.")
+		}
+		return fmt.Errorf("이미지 파일 확인 실패: %w", err)
+	}
+	if !strings.HasPrefix(attrs.ContentType, "image/") {
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지 파일만 업로드할 수 있습니다.")
+	}
+
+	return nil
+}
+
+func validateDiaryImageObjectPath(object, uid, date string) error {
+	parts := strings.Split(object, "/")
+	if len(parts) != 5 || parts[0] != "diary" {
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지 경로가 올바르지 않습니다.")
+	}
+
+	uploadDate := parts[1]
+	objectUID := parts[2]
+	diaryDate := parts[3]
+	fileName := parts[4]
+
+	if _, err := deariodate.NormalizeRequired(uploadDate); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지 업로드 날짜가 올바르지 않습니다.")
+	}
+	normalizedDiaryDate, err := deariodate.NormalizeRequired(diaryDate)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지 일기 날짜가 올바르지 않습니다.")
+	}
+	if objectUID != uid || normalizedDiaryDate != date {
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지 소유자가 올바르지 않습니다.")
+	}
+	if !diaryImageFileNamePattern.MatchString(fileName) {
+		return echo.NewHTTPError(http.StatusBadRequest, "이미지 파일명이 올바르지 않습니다.")
+	}
+
+	return nil
 }
 
 // diaryAndSlot은 일기와 비어 있는 이미지 슬롯을 반환한다.
