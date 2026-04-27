@@ -3,5 +3,34 @@ set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
 
-echo "커밋 전 전체 검사를 실행합니다..."
+changed_files="$(git diff --cached --name-only --diff-filter=ACMR)"
+
+should_run_check=false
+
+is_check_target() {
+  local file="$1"
+
+  case "$file" in
+    *.go|go.mod|go.sum|.golangci.yml|.golangci.yaml)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+while IFS= read -r file; do
+  if is_check_target "$file"; then
+    should_run_check=true
+    break
+  fi
+done <<< "$changed_files"
+
+if [[ "$should_run_check" != true ]]; then
+  echo "Go 검사 대상 변경이 없어 커밋 전 검사를 생략합니다."
+  exit 0
+fi
+
+echo "Go 검사 대상 변경을 감지해 커밋 전 전체 검사를 실행합니다..."
 ./task.sh check build test lint
