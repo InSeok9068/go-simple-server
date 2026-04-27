@@ -34,7 +34,6 @@ templ DiaryContentForm(date string, content string) {
 		<div class="border field">
 			<textarea
 				name="content"
-				autofocus
 				x-data=""
 				hx-post="/diary/save"
 				hx-swap="none"
@@ -103,7 +102,7 @@ templ FeedbackActions(date string) {
 			<button data-ui="#ai-feedback">
 				<span>일기요정</span>
 			</button>
-			<menu class="right-align top group no-wrap left" id="ai-feedback">
+			<menu class="right-align top group no-wrap left large-space" id="ai-feedback">
 				@AiFeedbackButton("1", "칭찬받기")
 				@AiFeedbackButton("2", "위로받기")
 				@AiFeedbackButton("3", "충고받기")
