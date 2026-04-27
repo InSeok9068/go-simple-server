@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+echo "커밋 전 전체 검사를 실행합니다..."
+./task.sh check build test lint

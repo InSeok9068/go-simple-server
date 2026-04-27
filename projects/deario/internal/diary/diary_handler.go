@@ -11,6 +11,7 @@ import (
 	"simple-server/internal/validate"
 	"simple-server/pkg/util/authutil"
 	"simple-server/projects/deario/db"
+	"simple-server/projects/deario/internal/deariodate"
 	"simple-server/projects/deario/views/components"
 	"simple-server/projects/deario/views/pages"
 
@@ -19,11 +20,10 @@ import (
 
 // IndexPage는 메인 페이지를 렌더링한다.
 func IndexPage(c echo.Context) error {
-	date := c.QueryParam("date")
-	if date == "" {
-		date = time.Now().Format("20060102")
+	date, err := deariodate.NormalizeWithDefault(c.QueryParam("date"))
+	if err != nil {
+		return err
 	}
-	date = strings.ReplaceAll(date, "-", "")
 
 	uid, _ := authutil.SessionUID(c)
 
@@ -59,11 +59,9 @@ func GetDiary(c echo.Context) error {
 		return err
 	}
 
-	date := c.FormValue("date")
-	if date == "" {
-		date = time.Now().Format("20060102")
-	} else {
-		date = strings.ReplaceAll(date, "-", "")
+	date, err := deariodate.NormalizeWithDefault(c.FormValue("date"))
+	if err != nil {
+		return err
 	}
 
 	queries, err := db.GetQueries()
@@ -194,7 +192,10 @@ func SaveDiary(c echo.Context) error {
 		return validate.HTTPError(err, &dto)
 	}
 
-	date := dto.Date
+	date, err := deariodate.NormalizeRequired(dto.Date)
+	if err != nil {
+		return err
+	}
 	content := strings.TrimSpace(dto.Content)
 
 	queries, err := db.GetQueries()

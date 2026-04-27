@@ -20,7 +20,7 @@ show_help() {
   echo -e "${YELLOW}주요 명령어:${NC}"
   echo -e "  ${GREEN}help${NC} [명령어]"
   echo -e "  ${GREEN}switch${NC} <project>"
-  echo -e "  ${GREEN}check${NC} [build|test|lint]"
+  echo -e "  ${GREEN}check${NC} [build|test|lint] (기본: build)"
   echo -e "  ${GREEN}deps${NC} [backend|tool|frontend]"
   echo -e "  ${GREEN}fmt${NC} [go|templ|tailwind|prettier]"
   echo -e "  ${GREEN}build-linux${NC} [project]"
