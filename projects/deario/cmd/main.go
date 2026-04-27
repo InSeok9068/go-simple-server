@@ -8,6 +8,7 @@ import (
 	resources "simple-server"
 	"simple-server/projects/deario/db"
 	"simple-server/projects/deario/internal/ai"
+	"simple-server/projects/deario/internal/applock"
 	"simple-server/projects/deario/internal/auth"
 	"simple-server/projects/deario/internal/diary"
 	"simple-server/projects/deario/internal/notification"
@@ -94,12 +95,17 @@ func setUpServer() *echo.Echo {
 		slog.Error("Firebase 인증 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
-	e.GET("/", diary.IndexPage)
+	e.GET("/", applock.GuardIndex(diary.IndexPage))
 	e.GET("/login", auth.LoginPage)
 	e.GET("/privacy", privacy.PrivacyPage)
 	e.POST("/logout", auth.Logout)
-	e.GET("/diary", diary.GetDiary)
-	e.GET("/diary/list", diary.ListDiaries)
+	e.GET("/app-lock", applock.LockPage)
+	e.POST("/app-lock/unlock", applock.Unlock)
+	e.POST("/app-lock/lock", applock.Lock)
+	e.POST("/app-lock/pin", applock.RequireUnlocked(applock.UpdatePIN))
+	e.POST("/app-lock/disable", applock.RequireUnlocked(applock.Disable))
+	e.GET("/diary", applock.RequireUnlocked(diary.GetDiary))
+	e.GET("/diary/list", applock.RequireUnlocked(diary.ListDiaries))
 	/* 공개 라우터 */
 
 	/* 권한 라우터 */
@@ -108,6 +114,7 @@ func setUpServer() *echo.Echo {
 		slog.Error("Casbin 권한 미들웨어 등록 실패", "error", err)
 		os.Exit(1)
 	}
+	authGroup.Use(applock.RequireUnlocked)
 	authGroup.GET("/diary/month", diary.MonthlyDiaryDates)
 	authGroup.GET("/diary/random", diary.RedirectToRandomDiary)
 	authGroup.POST("/diary/save", diary.SaveDiary)

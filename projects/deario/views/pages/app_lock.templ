@@ -1,0 +1,58 @@
+package pages
+
+import shared "simple-server/shared/views"
+
+templ AppLock() {
+	<!DOCTYPE html>
+	<html lang="ko">
+		<head>
+			@shared.HeadsWithBeer("잠금")
+			@shared.HeadsWithGoogleFonts("Gamja Flower")
+			<link rel="manifest" href="/manifest.json"/>
+		</head>
+		<body data-app-lock-page="true">
+			@shared.Snackbar()
+			<main class="responsive app-lock-page">
+				<section class="app-lock-panel">
+					<i class="extra">lock</i>
+					<h4>Deario</h4>
+					<form hx-post="/app-lock/unlock" hx-swap="none">
+						<div class="border field label">
+							<input
+								class="pin-mask-input"
+								type="text"
+								name="pin"
+								inputmode="numeric"
+								pattern="[0-9]*"
+								autocomplete="off"
+								autocorrect="off"
+								spellcheck="false"
+								enterkeyhint="done"
+								style="-webkit-text-security: disc;"
+								minlength="4"
+								maxlength="6"
+								autofocus
+							/>
+							<label>PIN</label>
+						</div>
+						<nav class="right-align">
+							<button type="submit">
+								<i>lock_open</i>
+								<span>열기</span>
+							</button>
+						</nav>
+					</form>
+					<form hx-post="/logout" hx-swap="none" hx-on:htmx:after-on-load="location.href='/login'">
+						<nav class="right-align">
+							<button type="submit" class="surface-variant">
+								<i>logout</i>
+								<span>로그아웃</span>
+							</button>
+						</nav>
+					</form>
+				</section>
+			</main>
+			<script src="/static/app_lock.js"></script>
+		</body>
+	</html>
+}

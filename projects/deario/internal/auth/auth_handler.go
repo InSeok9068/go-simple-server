@@ -3,6 +3,7 @@ package auth
 import (
 	"net/http"
 
+	"simple-server/projects/deario/internal/applock"
 	shared "simple-server/shared/views"
 
 	"github.com/gorilla/sessions"
@@ -24,6 +25,10 @@ func Logout(c echo.Context) error {
 
 	sess.Options = &sessions.Options{Path: "/", MaxAge: -1}
 	if err := sess.Save(c.Request(), c.Response()); err != nil {
+		return err
+	}
+
+	if err := applock.ClearUnlockSession(c); err != nil {
 		return err
 	}
 

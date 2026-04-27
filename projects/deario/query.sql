@@ -131,6 +131,15 @@ SET
     random_range = excluded.random_range,
     updated = datetime ('now');
 
+-- name: UpdateAppLock :exec
+UPDATE user_setting
+SET
+    app_lock_enabled = ?,
+    app_lock_pin_hash = ?,
+    updated = datetime ('now')
+WHERE
+    uid = ?;
+
 -- name: UpsertPushKey :exec
 INSERT INTO
     user_setting (uid, push_token)
