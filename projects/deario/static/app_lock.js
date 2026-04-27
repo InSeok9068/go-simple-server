@@ -40,7 +40,7 @@
   }
 
   function clearLockMarkers() {
-    sessionStorage.removeItem(HIDDEN_AT_KEY)
+    localStorage.removeItem(HIDDEN_AT_KEY)
     sessionStorage.removeItem(LOCK_REQUESTED_KEY)
   }
 
@@ -100,15 +100,15 @@
       return
     }
 
-    sessionStorage.setItem(HIDDEN_AT_KEY, String(now()))
+    localStorage.setItem(HIDDEN_AT_KEY, String(now()))
     applyPrivacyMask()
   }
 
   function lockIfNeededOnReturn() {
-    const hiddenAt = Number(sessionStorage.getItem(HIDDEN_AT_KEY) || "0")
+    const hiddenAt = Number(localStorage.getItem(HIDDEN_AT_KEY) || "0")
     const alreadyRequested = sessionStorage.getItem(LOCK_REQUESTED_KEY) === "1"
 
-    sessionStorage.removeItem(HIDDEN_AT_KEY)
+    localStorage.removeItem(HIDDEN_AT_KEY)
 
     if (shouldSkipLock()) {
       clearPrivacyMask()
@@ -162,7 +162,7 @@
     if (shouldSkipLock()) {
       return
     }
-    sessionStorage.setItem(HIDDEN_AT_KEY, String(now()))
+    localStorage.setItem(HIDDEN_AT_KEY, String(now()))
     applyPrivacyMask()
   })
 
