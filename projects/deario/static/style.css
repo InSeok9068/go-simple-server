@@ -39,6 +39,10 @@ body {
   width: min(100%, 24rem);
 }
 
+.pin-mask-input {
+  -webkit-text-security: disc;
+}
+
 body.deario-privacy-mask > * {
   visibility: hidden !important;
 }

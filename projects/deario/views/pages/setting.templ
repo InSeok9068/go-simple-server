@@ -51,39 +51,51 @@ templ Setting(userSetting db.UserSetting) {
 							</div>
 							<div class="border field label">
 								<input
-									type="password"
+									class="pin-mask-input"
+									type="text"
 									name="current_pin"
 									inputmode="numeric"
 									pattern="[0-9]*"
 									minlength="4"
 									maxlength="6"
-									autocomplete="current-password"
+									autocomplete="off"
+									autocorrect="off"
+									spellcheck="false"
+									enterkeyhint="done"
 									form="app-lock-pin-form"
 								/>
 								<label>현재 PIN</label>
 							</div>
 							<div class="border field label">
 								<input
-									type="password"
+									class="pin-mask-input"
+									type="text"
 									name="pin"
 									inputmode="numeric"
 									pattern="[0-9]*"
 									minlength="4"
 									maxlength="6"
-									autocomplete="new-password"
+									autocomplete="off"
+									autocorrect="off"
+									spellcheck="false"
+									enterkeyhint="done"
 									form="app-lock-pin-form"
 								/>
 								<label>새 PIN</label>
 							</div>
 							<div class="border field label">
 								<input
-									type="password"
+									class="pin-mask-input"
+									type="text"
 									name="pin_confirm"
 									inputmode="numeric"
 									pattern="[0-9]*"
 									minlength="4"
 									maxlength="6"
-									autocomplete="new-password"
+									autocomplete="off"
+									autocorrect="off"
+									spellcheck="false"
+									enterkeyhint="done"
 									form="app-lock-pin-form"
 								/>
 								<label>PIN 확인</label>
@@ -96,13 +108,17 @@ templ Setting(userSetting db.UserSetting) {
 							</nav>
 							<div class="border field label">
 								<input
-									type="password"
+									class="pin-mask-input"
+									type="text"
 									name="current_pin"
 									inputmode="numeric"
 									pattern="[0-9]*"
 									minlength="4"
 									maxlength="6"
-									autocomplete="current-password"
+									autocomplete="off"
+									autocorrect="off"
+									spellcheck="false"
+									enterkeyhint="done"
 									form="app-lock-disable-form"
 								/>
 								<label>현재 PIN</label>
@@ -116,26 +132,34 @@ templ Setting(userSetting db.UserSetting) {
 						} else {
 							<div class="border field label">
 								<input
-									type="password"
+									class="pin-mask-input"
+									type="text"
 									name="pin"
 									inputmode="numeric"
 									pattern="[0-9]*"
 									minlength="4"
 									maxlength="6"
-									autocomplete="new-password"
+									autocomplete="off"
+									autocorrect="off"
+									spellcheck="false"
+									enterkeyhint="done"
 									form="app-lock-pin-form"
 								/>
 								<label>새 PIN</label>
 							</div>
 							<div class="border field label">
 								<input
-									type="password"
+									class="pin-mask-input"
+									type="text"
 									name="pin_confirm"
 									inputmode="numeric"
 									pattern="[0-9]*"
 									minlength="4"
 									maxlength="6"
-									autocomplete="new-password"
+									autocomplete="off"
+									autocorrect="off"
+									spellcheck="false"
+									enterkeyhint="done"
 									form="app-lock-pin-form"
 								/>
 								<label>PIN 확인</label>

@@ -19,11 +19,15 @@ templ AppLock() {
 					<form hx-post="/app-lock/unlock" hx-swap="none">
 						<div class="border field label">
 							<input
-								type="password"
+								class="pin-mask-input"
+								type="text"
 								name="pin"
 								inputmode="numeric"
 								pattern="[0-9]*"
-								autocomplete="current-password"
+								autocomplete="off"
+								autocorrect="off"
+								spellcheck="false"
+								enterkeyhint="done"
 								minlength="4"
 								maxlength="6"
 								autofocus
