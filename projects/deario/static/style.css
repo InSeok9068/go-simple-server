@@ -39,6 +39,19 @@ body {
   width: min(100%, 24rem);
 }
 
+body.deario-privacy-mask > * {
+  visibility: hidden !important;
+}
+
+body.deario-privacy-mask::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  visibility: visible;
+  background: var(--surface, #fff);
+}
+
 /* List.js Pagination BeerCSS 스타일 적용 */
 ul.pagination {
   list-style: none;

@@ -85,13 +85,20 @@ func Unlock(c echo.Context) error {
 
 // Lock은 현재 브라우저 세션의 앱 잠금 해제를 취소한다.
 func Lock(c echo.Context) error {
-	if _, err := authutil.SessionUID(c); err != nil {
+	uid, err := authutil.SessionUID(c)
+	if err != nil {
+		return err
+	}
+	setting, err := userSetting(c, uid)
+	if err != nil {
 		return err
 	}
 	if err := ClearUnlockSession(c); err != nil {
 		return err
 	}
-	c.Response().Header().Set("Hx-Redirect", "/app-lock")
+	if setting.AppLockEnabled == 1 {
+		c.Response().Header().Set("Hx-Redirect", "/app-lock")
+	}
 	return c.NoContent(http.StatusNoContent)
 }
 
