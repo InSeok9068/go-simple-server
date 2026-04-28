@@ -1,7 +1,8 @@
 @import "markdown.css";
 
 :root {
-  --font-family: "Gamja Flower";
+  --font-family: "Gamja Flower", "Gowun Dodum", sans-serif;
+  --font: var(--font-family);
 }
 
 body {
@@ -55,6 +56,22 @@ body {
 
 .pin-mask-input {
   -webkit-text-security: disc;
+}
+
+.deario-settings-page,
+.deario-settings-page form,
+.deario-settings-page fieldset,
+.deario-settings-page .field {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.deario-settings-page {
+  overflow-x: hidden;
+}
+
+.deario-settings-page fieldset {
+  inline-size: 100%;
 }
 
 body.deario-privacy-mask > * {
