@@ -111,8 +111,8 @@ document.addEventListener("alpine:init", () => {
       const fonts = {
         gamja: '"Gamja Flower", "Gowun Dodum", sans-serif',
         gowun_dodum: '"Gowun Dodum", sans-serif',
-        sunflower: '"Sunflower", "Gowun Dodum", sans-serif',
-        jua: '"Jua", "Gowun Dodum", sans-serif',
+        sunflower: '"Sunflower", "Nanum Gothic", "Gowun Dodum", sans-serif',
+        jua: '"Jua", "Poor Story", "Nanum Gothic", "Gowun Dodum", sans-serif',
         poor_story: '"Poor Story", "Gowun Dodum", sans-serif',
         nanum_gothic: '"Nanum Gothic", "Gowun Dodum", sans-serif',
         humanist: "var(--font-humanist)",
