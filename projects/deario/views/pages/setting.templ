@@ -14,7 +14,7 @@ templ Setting(userSetting db.UserSetting) {
 		<head>
 			@shared.HeadsWithBeer("설정")
 			@shared.HeadsWithFirebaseAuth()
-			@shared.HeadsWithGoogleFonts("Gamja Flower")
+			@shared.HeadsWithGoogleFonts("Gamja Flower", "Gowun Dodum", "Sunflower:wght@300;500;700", "Jua", "Diphylleia")
 			<link rel="manifest" href="/manifest.json"/>
 			<script src="/static/deario.js"></script>
 			<script src="/static/app_lock.js"></script>
@@ -201,6 +201,10 @@ templ Setting(userSetting db.UserSetting) {
 						<div class="border field label">
 							<select x-data="" x-model="$store.font.value" x-on:change="$store.font.set($event.target.value)">
 								<option value="gamja">감자꽃 (기본)</option>
+								<option value="gowun_dodum">고운돋움</option>
+								<option value="sunflower">해바라기</option>
+								<option value="jua">주아</option>
+								<option value="diphylleia">디필레아</option>
 								<option value="humanist">따뜻한 휴머니스트</option>
 								<option value="neo_grotesque">깔끔한 모던 산세리프</option>
 								<option value="monospace_code">코드 느낌 모노스페이스</option>
