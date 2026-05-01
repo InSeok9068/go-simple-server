@@ -21,6 +21,97 @@ firebase.initializeApp(firebaseConfig)
 // FCM Messaging 초기화
 const messaging = firebase.messaging()
 
+const OFFLINE_NAVIGATION_HTML = `<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deario 오프라인</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #fff8f8;
+        color: #211a1a;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      main {
+        width: min(360px, calc(100vw - 48px));
+      }
+
+      h1 {
+        margin: 0 0 24px;
+        font-size: 40px;
+        font-weight: 500;
+      }
+
+      p {
+        margin: 0 0 10px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      button {
+        min-height: 44px;
+        margin-top: 24px;
+        padding: 0 20px;
+        border: 0;
+        border-radius: 22px;
+        background: #a6383b;
+        color: #ffffff;
+        font: inherit;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Deario</h1>
+      <p>오프라인 상태입니다.</p>
+      <p>일기 내용 보호를 위해 저장된 화면을 표시하지 않습니다.</p>
+      <button type="button" onclick="location.reload()">새로고침</button>
+    </main>
+  </body>
+</html>`
+
+self.addEventListener("install", function () {
+  self.skipWaiting()
+})
+
+self.addEventListener("activate", function (event) {
+  event.waitUntil(self.clients.claim())
+})
+
+self.addEventListener("fetch", function (event) {
+  if (event.request.method !== "GET" || event.request.mode !== "navigate") {
+    return
+  }
+
+  event.respondWith(
+    fetch(event.request).catch(function () {
+      return new Response(OFFLINE_NAVIGATION_HTML, {
+        status: 200,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store",
+        },
+      })
+    }),
+  )
+})
+
 // 백그라운드 메시지 수신
 messaging.onBackgroundMessage(function (payload) {
   console.log(

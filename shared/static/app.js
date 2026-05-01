@@ -109,17 +109,21 @@ document.addEventListener("alpine:init", () => {
     },
     apply() {
       const fonts = {
-        gamja: '"Gamja Flower"',
+        gamja: '"Gamja Flower", "Gowun Dodum", sans-serif',
+        gowun_dodum: '"Gowun Dodum", sans-serif',
+        sunflower: '"Sunflower", "Nanum Gothic", "Gowun Dodum", sans-serif',
+        jua: '"Jua", "Poor Story", "Nanum Gothic", "Gowun Dodum", sans-serif',
+        poor_story: '"Poor Story", "Gowun Dodum", sans-serif',
+        nanum_gothic: '"Nanum Gothic", "Gowun Dodum", sans-serif',
         humanist: "var(--font-humanist)",
         neo_grotesque: "var(--font-neo-grotesque)",
         monospace_code: "var(--font-monospace-code)",
         industrial: "var(--font-industrial)",
         rounded_sans: "var(--font-rounded-sans)",
       }
-      document.documentElement.style.setProperty(
-        "--font-family",
-        fonts[this.value] || "Gamja Flower",
-      )
+      const fontFamily = fonts[this.value] || fonts.gamja
+      document.documentElement.style.setProperty("--font-family", fontFamily)
+      document.documentElement.style.setProperty("--font", fontFamily)
     },
   })
 
