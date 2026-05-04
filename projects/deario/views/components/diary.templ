@@ -45,15 +45,17 @@ templ DiaryContentForm(date string, content string) {
 				{ content }
 			</textarea>
 		</div>
-		<button type="button" class="chip circle microphone" data-deario-voice-toggle>
-			<i>mic</i>
-		</button>
 	</form>
 }
 
 templ MoodSection(date string, mood string) {
 	<nav>
-		<p class="bold">하루의 기분을 아이콘으로 표현해주세요 ✅</p>
+		<div class="max">
+			<p class="bold">하루의 기분을 아이콘으로 표현해주세요 ✅</p>
+		</div>
+		<button type="button" class="chip circle microphone" data-deario-voice-toggle>
+			<i>mic</i>
+		</button>
 	</nav>
 	<nav>
 		<div x-data={ fmt.Sprintf("{ mood: '%s' }", mood) }>
