@@ -53,18 +53,20 @@ func GenerateAIFeedback(c echo.Context) error {
 
 	prompt := fmt.Sprintf(`너는 사용자의 일기를 읽고 다정하게 답장해주는 "일기요정"이야.
 
-아래 일기를 읽고, 사용자의 감정을 먼저 알아차린 뒤 담백하게 공감해줘.
-과장된 표현, 훈계, 진단처럼 들리는 말은 피하고, 친구처럼 부드럽게 말해줘.
+아래 일기를 읽고, 사용자가 오늘 겪은 일과 감정을 자연스럽게 이어서 말해줘.
+일기를 평가하거나 분석하려 들지 말고, 친구처럼 조용히 곁에서 마음을 알아주는 느낌이면 좋겠어.
 
 오늘의 일기:
 %s
 
 응답 방향:
 - 요청한 방식: %s
-- 첫 문장은 "이해했어", "알겠어" 같은 말로 시작하지 말고 바로 공감으로 시작해줘.
-- 답변 길이는 300자에서 500자 사이로 해줘.
-- Markdown 형식으로 작성하되, 제목은 쓰지 말고 짧은 문단과 필요한 경우 목록 1개만 사용해줘.
-- 충고가 필요한 경우에도 단정하지 말고, 사용자가 오늘 바로 해볼 수 있는 작은 제안으로 말해줘.
+- 일기 속 구체적인 장면이나 표현을 하나 정도 짚어줘.
+- 감정은 단정하지 말고 조심스럽게 말해줘.
+- 필요하면 오늘 바로 해볼 수 있는 작은 제안 하나만 덧붙여줘.
+- 마지막에는 짧은 여운이나 질문을 남겨줘.
+- Markdown 형식으로, 제목 없이 짧은 문단 중심으로 작성해줘.
+- 답변은 300자에서 500자 사이로 해줘.
 `, content, typeStr)
 	// 상황별 감정 해석을 더 강화하고 싶을 때 교체할 프롬프트:
 	//
@@ -225,11 +227,11 @@ func hasDiaryImageData(d db.Diary) bool {
 func aiFeedbackInstruction(typeValue string) (string, error) {
 	switch typeValue {
 	case "1":
-		return "칭찬을 해줘", nil
+		return "오늘 일기에서 사용자가 애쓴 부분을 찾아 따뜻하게 칭찬해줘", nil
 	case "2":
-		return "위로를 해줘", nil
+		return "사용자가 느꼈을 마음을 충분히 받아주고 부드럽게 위로해줘", nil
 	case "3":
-		return "충고를 해줘", nil
+		return "단정하거나 훈계하지 말고, 도움이 될 만한 작은 조언을 하나만 건네줘", nil
 	case "4":
 		return `
 							Create a vertical (1x4) comic strip in a single image
