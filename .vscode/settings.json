@@ -12,7 +12,7 @@
     "tmp": true,
     "main.*": true,
     ".idea": true,
-    ".githooks": true,
+    // ".githooks": true,
     "tailwind": true,
     "node_modules": true,
     "package.json": true
