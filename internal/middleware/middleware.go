@@ -47,6 +47,7 @@ func RegisterCommonMiddleware(e *echo.Echo) error {
 
 	e.StaticFS("/shared/static", sharedStaticFS) // 공통 정적 파일
 	e.StaticFS("/static", projectStaticFS)       // 프로젝트 정적 파일
+	e.FileFS("/favicon.ico", "favicon.ico", sharedStaticFS)
 
 	// 1) 트레이싱: 가장 바깥에서 전체 구간을 감싸기
 	e.Use(otelecho.Middleware(serviceName, otelecho.WithSkipper(func(c echo.Context) bool {
