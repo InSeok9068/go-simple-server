@@ -99,7 +99,8 @@ update_tools() {
         "github.com/a-h/templ/cmd/templ@latest"
         "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"
         "github.com/sqlc-dev/sqlc/cmd/sqlc@latest"
-        "github.com/dexter2389/go-tailwind-sorter@latest"
+        # v0.3.0은 백틱 :class 표현식을 파괴하는 회귀 버그가 있어 v0.2.5로 고정
+        "github.com/dexter2389/go-tailwind-sorter@v0.2.5"
         "golang.org/x/vuln/cmd/govulncheck@latest"
     )
 

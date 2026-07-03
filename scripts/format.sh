@@ -7,7 +7,7 @@ BLUE='\033[0;34m'; GREEN='\033[0;32m'; NC='\033[0m'
 # Function to run tailwind formatting
 run_tailwind() {
   echo -e "${BLUE}Running tailwind sorter...${NC}"
-  go-tailwind-sorter . --fix
+  go tool github.com/dexter2389/go-tailwind-sorter . --fix
 }
 
 # Function to run prettier
