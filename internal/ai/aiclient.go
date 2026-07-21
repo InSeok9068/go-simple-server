@@ -18,7 +18,7 @@ func geminiAPIKey() (string, error) {
 }
 
 func Request(ctx context.Context, prompt string, model ...string) (string, error) {
-	modelStr := "gemini-3.5-flash"
+	modelStr := "gemini-3.1-flash-lite"
 	if len(model) > 0 {
 		modelStr = model[0]
 	}
