@@ -3,6 +3,7 @@ package applock
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"simple-server/internal/validate"
@@ -15,17 +16,17 @@ import (
 )
 
 type unlockDTO struct {
-	PIN string `form:"pin" validate:"required,numeric,min=4,max=6" message:"PIN은 숫자 4~6자리로 입력해주세요."`
+	PIN string `form:"pin" validate:"required,numeric,min=4" message:"PIN은 숫자 4자리 이상으로 입력해주세요."`
 }
 
 type updatePINDTO struct {
-	CurrentPIN string `form:"current_pin" validate:"omitempty,numeric,min=4,max=6" message:"현재 PIN은 숫자 4~6자리로 입력해주세요."`
-	PIN        string `form:"pin" validate:"required,numeric,min=4,max=6" message:"새 PIN은 숫자 4~6자리로 입력해주세요."`
-	PINConfirm string `form:"pin_confirm" validate:"required,numeric,min=4,max=6" message:"PIN 확인은 숫자 4~6자리로 입력해주세요."`
+	CurrentPIN string `form:"current_pin" validate:"omitempty,numeric,min=4" message:"현재 PIN은 숫자 4자리 이상으로 입력해주세요."`
+	PIN        string `form:"pin" validate:"required,numeric,min=4" message:"새 PIN은 숫자 4자리 이상으로 입력해주세요."`
+	PINConfirm string `form:"pin_confirm" validate:"required,numeric,min=4" message:"PIN 확인은 숫자 4자리 이상으로 입력해주세요."`
 }
 
 type disableDTO struct {
-	CurrentPIN string `form:"current_pin" validate:"required,numeric,min=4,max=6" message:"현재 PIN은 숫자 4~6자리로 입력해주세요."`
+	CurrentPIN string `form:"current_pin" validate:"required,numeric,min=4" message:"현재 PIN은 숫자 4자리 이상으로 입력해주세요."`
 }
 
 // LockPage는 앱 잠금 화면을 렌더링한다.
@@ -64,6 +65,10 @@ func Unlock(c echo.Context) error {
 		return redirectAfterUnlock(c)
 	}
 
+	if remaining := unlockLockRemaining(uid); remaining > 0 {
+		return echo.NewHTTPError(http.StatusTooManyRequests, fmt.Sprintf("PIN을 여러 번 틀렸습니다. %d초 후 다시 시도해주세요.", remaining))
+	}
+
 	var dto unlockDTO
 	if err := c.Bind(&dto); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "요청 본문이 올바르지 않습니다.")
@@ -73,8 +78,11 @@ func Unlock(c echo.Context) error {
 	}
 
 	if !isPINValid(setting.AppLockPinHash, dto.PIN) {
+		recordUnlockFailure(uid)
 		return echo.NewHTTPError(http.StatusUnauthorized, "PIN이 올바르지 않습니다.")
 	}
+
+	resetUnlockFailure(uid)
 
 	if err := SaveUnlockSession(c, uid); err != nil {
 		return err

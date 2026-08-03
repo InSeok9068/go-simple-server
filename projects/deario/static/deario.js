@@ -13,6 +13,7 @@
 
   document.addEventListener("alpine:init", registerSaveStore)
   document.addEventListener("click", handleLogoutClick)
+  document.addEventListener("click", handleAiReportClick)
   document.addEventListener("input", handleDiaryInput)
   document.addEventListener("htmx:afterRequest", handleDiarySaveRequest)
   document.addEventListener("htmx:afterOnLoad", handleHtmxAfterOnLoad)
@@ -43,6 +44,14 @@
 
     event.preventDefault()
     window.logoutUser?.()
+  }
+
+  function handleAiReportClick(event) {
+    const trigger = event.target.closest?.("[data-deario-ai-report]")
+    if (!trigger) return
+
+    event.preventDefault()
+    showInfo("AI 상담 리포트는 준비 중인 기능입니다.")
   }
 
   function handleDiaryInput(event) {
