@@ -29,7 +29,7 @@ templ HeadsDefault(title string) {
 templ HeadsCustom() {
 	<link rel="stylesheet" href="/shared/static/style.css"/>
 	<link rel="stylesheet" href="/static/style.css"/>
-	<script src="/shared/static/app.js?v=20260428-font-fallback-match"></script>
+	<script src="/shared/static/app.js?v=20260814-korean-fonts"></script>
 }
 
 // Beer
@@ -87,6 +87,12 @@ templ HeadsWithFirebaseAuth() {
 }
 
 templ HeadsWithGoogleFonts(font ...string) {
+	<link
+		rel="stylesheet"
+		as="style"
+		crossorigin
+		href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+	/>
 	<link
 		rel="stylesheet"
 		href={ "https://fonts.googleapis.com/css2?family=" +

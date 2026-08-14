@@ -90,10 +90,21 @@ document.addEventListener("alpine:init", () => {
   })
 
   Alpine.store("font", {
-    value: "gamja",
+    value: "pretendard",
+    families: {
+      pretendard:
+        '"Pretendard Variable", Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif',
+      noto_sans_kr: '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif',
+      nanum_square_round: '"NanumSquareRound", "Noto Sans KR", sans-serif',
+      gowun_dodum: '"Gowun Dodum", "Noto Sans KR", sans-serif',
+      gmarket_sans: '"GmarketSans", "Noto Sans KR", sans-serif',
+      noto_serif_kr: '"Noto Serif KR", "AppleMyungjo", Batang, serif',
+      gowun_batang: '"Gowun Batang", "Noto Serif KR", serif',
+      hahmlet: '"Hahmlet", "Gowun Batang", serif',
+    },
     init() {
       const saved = localStorage.getItem("font")
-      if (saved) {
+      if (saved && this.families[saved]) {
         this.value = saved
       }
       this.apply()
@@ -108,20 +119,7 @@ document.addEventListener("alpine:init", () => {
       }
     },
     apply() {
-      const fonts = {
-        gamja: '"Gamja Flower", "Gowun Dodum", sans-serif',
-        gowun_dodum: '"Gowun Dodum", sans-serif',
-        sunflower: '"Sunflower", "Nanum Gothic", "Gowun Dodum", sans-serif',
-        jua: '"Jua", "Poor Story", "Nanum Gothic", "Gowun Dodum", sans-serif',
-        poor_story: '"Poor Story", "Gowun Dodum", sans-serif',
-        nanum_gothic: '"Nanum Gothic", "Gowun Dodum", sans-serif',
-        humanist: "var(--font-humanist)",
-        neo_grotesque: "var(--font-neo-grotesque)",
-        monospace_code: "var(--font-monospace-code)",
-        industrial: "var(--font-industrial)",
-        rounded_sans: "var(--font-rounded-sans)",
-      }
-      const fontFamily = fonts[this.value] || fonts.gamja
+      const fontFamily = this.families[this.value] || this.families.pretendard
       document.documentElement.style.setProperty("--font-family", fontFamily)
       document.documentElement.style.setProperty("--font", fontFamily)
     },
