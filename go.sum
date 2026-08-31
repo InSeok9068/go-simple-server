@@ -206,8 +206,6 @@ github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/denis-tingaikin/go-header v0.5.0 h1:SRdnP5ZKvcO9KKRP1KJrhFR3RrlGuD+42t4429eC9k8=
 github.com/denis-tingaikin/go-header v0.5.0/go.mod h1:mMenU5bWrok6Wl2UsZjy+1okegmwQ3UgWl4V1D8gjlY=
-github.com/dexter2389/go-tailwind-sorter v0.2.4 h1:vmcAxPXkq5o7MUf/qdV9Syhcu8rGv7WQsnoBV3+LsAU=
-github.com/dexter2389/go-tailwind-sorter v0.2.4/go.mod h1:aWzJ98KvaoWm4H+xLz8mVBraGwWb0DYMuw0Nnh1GP1U=
 github.com/dexter2389/go-tailwind-sorter v0.2.5 h1:ujM4ZX/HXzQoiCo8vta/HEWrFYxdZ8x0ggUSEbYirh0=
 github.com/dexter2389/go-tailwind-sorter v0.2.5/go.mod h1:aWzJ98KvaoWm4H+xLz8mVBraGwWb0DYMuw0Nnh1GP1U=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f h1:lO4WD4F/rVNCu3HqELle0jiPLLBs70cWOduZpkS1E78=

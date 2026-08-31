@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	aiclient "simple-server/internal/ai"
 	"simple-server/projects/deario/db"
 	"strings"
 	"sync"
@@ -146,7 +145,7 @@ func GenerateAIReportJob() {
 
 		// AI 클라이언트를 사용하여 리포트 생성 요청
 		// 모델로 'gemini-2.5-pro'를 명시적으로 지정
-		report, err := aiclient.Request(ctx, prompt, "gemini-2.5-pro")
+		// report, err := aiclient.Request(ctx, prompt, "gemini-2.5-pro")
 		if err != nil {
 			slog.Error("AI 리포트 생성 실패", "uid", uid, "error", err)
 			return err // AI 요청 실패 시 재시도
@@ -154,7 +153,7 @@ func GenerateAIReportJob() {
 
 		// 생성된 리포트는 일단 로그로 출력합니다.
 		// TODO: 향후 이 부분에 이메일 발송 또는 DB 저장 로직을 추가할 수 있습니다.
-		slog.Info("AI 리포트 생성 성공", "uid", uid, "report", report)
+		slog.Info("AI 리포트 생성 성공", "uid", uid, "report", "")
 
 		return nil
 	})
