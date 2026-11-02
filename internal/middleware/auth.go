@@ -52,7 +52,8 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 		return err
 	}
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(config.GetEnv("SESSION_SECRET")))))
+	store := sessions.NewCookieStore([]byte(config.GetEnv("SESSION_SECRET")))
+	e.Use(session.Middleware(store))
 
 	e.POST("/create-session", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -73,34 +74,34 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.").SetInternal(err)
 		}
 
-		sess, err := session.Get("session_v2", c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "로그인 중 기존 세션을 읽지 못했습니다.").SetInternal(err)
-		}
-
-		sess.Options = &sessions.Options{
-			Path:     "/",
-			MaxAge:   86400 * 180,
-			HttpOnly: true,
-			Secure:   config.IsProdEnv(),
-			SameSite: http.SameSiteLaxMode,
-		}
-		sess.Values["uid"] = token.UID
-
-		if err := sess.Save(c.Request(), c.Response()); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "로그인 세션을 저장하지 못했습니다.").SetInternal(err)
-		}
-
 		if ensureUserFn != nil {
 			if err := ensureUserFn(ctx, token.UID); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "로그인 사용자 정보를 준비하지 못했습니다.").SetInternal(err)
 			}
 		}
 
+		if err := saveFirebaseSession(c, store, token.UID); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "로그인 세션을 저장하지 못했습니다.").SetInternal(err)
+		}
+
 		return c.NoContent(http.StatusNoContent)
 	})
 
 	return nil
+}
+
+func saveFirebaseSession(c echo.Context, store sessions.Store, uid string) error {
+	// Firebase 토큰 검증 후에는 기존 쿠키를 읽지 않고 새 세션으로 교체한다.
+	sess := sessions.NewSession(store, "session_v2")
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 180,
+		HttpOnly: true,
+		Secure:   config.IsProdEnv(),
+		SameSite: http.SameSiteLaxMode,
+	}
+	sess.Values["uid"] = uid
+	return sess.Save(c.Request(), c.Response())
 }
 
 /* 인증 */

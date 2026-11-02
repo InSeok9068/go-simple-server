@@ -61,11 +61,14 @@ const uiConfig = {
           if (response.ok) {
             window.location.href = "/"
           } else {
-            showError("세션 생성 실패")
+            loader.classList.add("hidden")
+            showError("로그인 세션을 생성하지 못했습니다. 다시 시도해주세요.")
           }
         })
         .catch((err) => {
-          console.error("세션 생성 중 에러:", err)
+          loader.classList.add("hidden")
+          console.error("세션 생성 중 오류:", err)
+          showError("로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.")
         })
 
       // return false로 하면 signInSuccessUrl로 리다이렉트 안 함

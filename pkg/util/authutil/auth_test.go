@@ -32,10 +32,10 @@ func TestSessionUIDInvalidCookiePreservesCause(t *testing.T) {
 	if httpErr.Internal == nil {
 		t.Fatal("세션 읽기 실패의 원본 오류가 보존되어야 합니다")
 	}
-	if rec.Code != http.StatusInternalServerError {
+	if rec.Code != http.StatusUnauthorized {
 		t.Fatalf("응답 상태가 올바르지 않습니다: %d", rec.Code)
 	}
-	want := "{\"message\":\"세션을 가져오는 중 오류가 발생했습니다.\"}\n"
+	want := "{\"message\":\"로그인 세션이 만료되었거나 유효하지 않습니다. 다시 로그인해주세요.\"}\n"
 	if rec.Body.String() != want {
 		t.Fatalf("응답에는 사용자용 메시지만 포함되어야 합니다: %s", rec.Body.String())
 	}
