@@ -58,24 +58,24 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 		ctx := c.Request().Context()
 		auth, err := App.Auth(ctx)
 		if err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusInternalServerError, "인증 서비스를 초기화하지 못했습니다.").SetInternal(err)
 		}
 
 		var req struct {
 			Token string `json:"token"`
 		}
 		if err := c.Bind(&req); err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusBadRequest, "로그인 요청 형식이 올바르지 않습니다.").SetInternal(err)
 		}
 
 		token, err := auth.VerifyIDToken(ctx, req.Token)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.")
+			return echo.NewHTTPError(http.StatusUnauthorized, "유효하지 않은 사용자입니다.").SetInternal(err)
 		}
 
 		sess, err := session.Get("session_v2", c)
 		if err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusInternalServerError, "로그인 중 기존 세션을 읽지 못했습니다.").SetInternal(err)
 		}
 
 		sess.Options = &sessions.Options{
@@ -88,12 +88,12 @@ func RegisterFirebaseAuthMiddleware(e *echo.Echo, ensureUserFn func(ctx context.
 		sess.Values["uid"] = token.UID
 
 		if err := sess.Save(c.Request(), c.Response()); err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusInternalServerError, "로그인 세션을 저장하지 못했습니다.").SetInternal(err)
 		}
 
 		if ensureUserFn != nil {
 			if err := ensureUserFn(ctx, token.UID); err != nil {
-				return err
+				return echo.NewHTTPError(http.StatusInternalServerError, "로그인 사용자 정보를 준비하지 못했습니다.").SetInternal(err)
 			}
 		}
 

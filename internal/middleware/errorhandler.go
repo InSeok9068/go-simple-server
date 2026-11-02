@@ -34,11 +34,26 @@ func RegisterErrorHandler(e *echo.Echo) {
 			message = http.StatusText(code)
 		}
 
+		var internalErr error
+		if he != nil {
+			internalErr = he.Internal
+		}
+		sessionCookieCount := 0
+		for _, cookie := range c.Request().Cookies() {
+			if cookie.Name == "session_v2" {
+				sessionCookieCount++
+			}
+		}
+
 		slog.ErrorContext(c.Request().Context(), "요청 처리 실패",
 			"error", err,
 			"status", code,
 			"method", c.Request().Method,
 			"path", c.Path(),
+			"내부_오류", internalErr,
+			"접속_호스트", c.Request().Host,
+			"브라우저", c.Request().UserAgent(),
+			"로그인_쿠키_개수", sessionCookieCount,
 		)
 
 		if !c.Response().Committed {
