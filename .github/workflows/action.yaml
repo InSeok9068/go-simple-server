@@ -55,7 +55,7 @@ jobs:
       # 7. 템플릿 컴포넌트 생성
       - name: Templ Generate
         run: |
-          go run github.com/a-h/templ/cmd/templ@latest generate
+          ./task.sh templ-generate
 
       # # 7. Lint 실행
       # - name: golangci-lint
